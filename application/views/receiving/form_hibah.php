@@ -1,0 +1,150 @@
+<div class="col-md-12">
+	<?=form_open("receiving/save_non_po",["method"=>"post","id"=>"fm_receiving"],$model)?>
+	<div class="row">
+		<div class="col-md-4">
+			<div class="box box-primary">
+				<div class="box-header with-border">
+					<h3 class="box-title">Data Hibah</h3>
+				</div>
+				<div class="box-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <?=form_hidden("rec_id")?>
+                            <?=create_input("receiver_num")?>
+                            <?=create_input("rec_num")?>
+                            <?=create_inputDate("receiver_date",[
+                                "format"=>"yyyy-mm-dd",
+                                "autoclose"=>"true"
+                            ])?>
+                            <?=create_select2([
+                                "attr" =>["name"=>"receiver_unit=Unit penerima","id"=>"receiver_unit","class"=>"form-control"],
+                                "model"=>["m_ms_unit" => ["get_ms_unit",["0"=>'0']],
+                                                "column"  => ["unit_id","unit_name"]
+                                            ]
+                            ])?>
+                            <?=create_select2([
+                                "attr" =>["name"=>"estimate_resource=sumber anggaran","id"=>"estimate_resource","class"=>"form-control"],
+                                "model"=>["m_receiving" => ["get_estimate_resource",["0"=>'0']],
+                                                "column"  => ["estimate_resource","estimate_resource"]
+                                            ],
+                                "select2" => ["tags"=>true]
+                            ])?>
+                        </div>
+                        <div class="col-md-6">
+                            <?=create_select([
+                                "attr" =>["name"=>"own_id=Kepemilikan","id"=>"own_id","class"=>"form-control"],
+                                "model"=>["m_receiving" => ["get_hibah",["refcat_id"=>'37']],
+                                                "column"  => ["reff_id","reff_name"]
+                                            ],
+                            ])?>
+                            <?=create_input("hibah_name=Dari")?>
+                            <?=create_select([
+                                "attr" =>["name"=>"hibah_cat=Kategori Hibah","id"=>"hibah_cat","class"=>"form-control"],
+                                "model"=>["m_receiving" => ["get_hibah",["refcat_id"=>'21']],
+                                                "column"  => ["reff_id","reff_name"]
+                                            ],
+                            ])?>
+                            <?=create_select([
+                                "attr"=>["name"=>"rec_type=Tipe Penerimaan","id"=>"rec_type","class"=>"form-control"],
+                                "option"=> [["id"=>'1',"text"=>"Hibah"],["id"=>'2',"text"=>"Item Konsinyasi"]],
+                            ])?>
+                        </div>
+                    </div>
+					
+				</div>
+			</div>
+		</div>
+        <DIV class="col-md-8">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">List Item</h3>
+                    <div class="box-tools pull-right">
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Grand Total</label>
+                            <div class="col-sm-8">
+                                <input type="text" name="grand_total" id="grand_total" readonly="true" class="form-control uang" style="text-align: right;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="list_item box-body" id="list_item">
+                </div>
+            </div>
+        </DIV>
+	</div>
+<?=form_close()?>
+      <div class="box-footer">
+      		<button class="btn btn-primary" type="button" onclick="$('#fm_receiving').submit()">Save</button>
+      		<button class="btn btn-warning" type="button" id="btn-cancel">Cancel</button>
+      </div>
+    </div>
+<script type="text/javascript">
+	$("#btn-cancel").click( () => {
+		$("#form_receiving").hide();
+		$("#form_receiving").html('');
+	});
+	$(document).ready(()=>{
+        $(".list_item").inputMultiRow({
+	            column: ()=>{
+					var dataku;
+					$.ajax({
+						'async': false,
+						'type': "GET",
+						'dataType': 'json',
+						'url': "receiving/show_multiRows",
+						'success': function (data) {
+							dataku = data;
+						}
+					});
+					return dataku;
+	                },
+                "data": dataHibah
+	    });
+	});
+
+    $("body").on("focus", ".autocom_item_id", function() {
+	    $(this).autocomplete({
+            source: "<?php echo site_url('receiving/get_item');?>",
+            select: function (event, ui) {
+                $(this).closest('tr').find('.item_id').val(ui.item.item_id);
+                $(this).closest('tr').find('.item_pack').val(ui.item.item_package);
+                $(this).closest('tr').find('.item_unit').val(ui.item.item_unitofitem);
+            }
+        }).data("ui-autocomplete")._renderItem = function (ul, item) {
+            return $("<li>")
+                .append('<a>'
+                    + '<table class="table"><tr>'
+                    + '<td style="width:150px">' + item.value + '</td>'
+                    + '<td style="width:40px">' + item.item_package + '</td>'
+                    + '</tr></table></a>')
+                .appendTo(ul);
+        };
+	});
+
+    $("body").on("focus", ".expired_date", function() {
+		$(this).inputmask("99-99-9999",{ "placeholder": "dd-mm-yyyy" });
+	});
+
+    $("body").on("keyup", ".qty_pack, .price_item, .unit_per_pack", function() {
+		hitungTotal($(this));
+	});
+
+    function hitungTotal(row) {
+		let qtyPack = parseFloat($.isNumeric(row.closest('tr').find('.qty_pack').val())?row.closest('tr').find('.qty_pack').val():0);
+		let qty = parseFloat($.isNumeric(row.closest('tr').find('.unit_per_pack').val())?row.closest('tr').find('.unit_per_pack').val():0);
+		let harga = parseFloat($.isNumeric(row.closest('tr').find('.price_item').val())?row.closest('tr').find('.price_item').val():0);
+		let total = (qtyPack*qty)*harga;
+		row.closest('tr').find('.price_total').val(total);
+        hitunggrandTotal();
+	}
+
+    function hitunggrandTotal(){
+		let grandtotal=0;
+		$(".price_total").each(function(){
+			let total = parseFloat($.isNumeric($(this).val())?$(this).val():0);
+			grandtotal += total;
+		});
+		$('#grand_total').val(grandtotal);
+	}
+  <?=$this->config->item('footerJS')?>
+</script>
