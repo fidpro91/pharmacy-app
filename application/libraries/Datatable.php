@@ -1,7 +1,7 @@
 <?php
-if (!defined('BASEPATH')) exit('No direct script access allowed');  
- 
-class Datatable 
+if (!defined('BASEPATH')) exit('No direct script access allowed');
+
+class Datatable
 {
     public function get_data($kolom,$filter = array(),$model,$attr = array())
     {
@@ -27,7 +27,7 @@ class Datatable
         if ( isset($search) && $search != "" ) {
             $sWhere = "AND (";
             for ( $i = 0 ; $i < count($aColumns) ; $i++ ) {
-                    $sWhere .= " LOWER(".$aColumns[$i].") LIKE LOWER('%".($search)."%') OR ";
+                    $sWhere .= " LOWER(".$aColumns[$i]."::TEXT) LIKE LOWER('%".($search)."%') OR ";
             }
             $sWhere = substr_replace( $sWhere, "", - 3 );
             $sWhere .= ')';

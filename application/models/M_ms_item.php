@@ -66,6 +66,16 @@ class M_ms_item extends CI_Model {
 		return $data;
 	}
 
+	public function get_column_multiple()
+	{
+		$col = [
+			"own_id",
+			"price_buy",
+			"price_sell"
+		];
+		return $col;
+	}
+
 	public function validation()
 	{
 		foreach ($this->rules() as $key => $value) {
@@ -94,5 +104,54 @@ class M_ms_item extends CI_Model {
 	public function find_one($where)
 	{
 		return $this->db->get_where("admin.ms_item",$where)->row();
+	}
+
+	public function get_data_formularium()
+	{
+		$sql    = "SELECT * FROM admin.ms_reff where refcat_id = 33 order by reff_code ";
+        $result = $this->db->query($sql);
+        $result = $result->result();
+        return $result;
+	}
+
+	public function get_package($term)
+	{
+		$sql    = 	"select package_name as value, package_name from admin.v_package where (lower(package_name) like '%$term%') ";
+		$result = $this->db->query($sql);
+		$result = $result->result();
+		return $result;
+	}
+	public function get_satuan($term)
+	{
+		$sql    = 	"select unitofitem_name as value, unitofitem_name from admin.v_unitofitem where (lower(unitofitem_name) like '%$term%') ";
+		$result = $this->db->query($sql);
+		$result = $result->result();
+		return $result;
+	}
+
+	public function get_data_bentuk()
+	{
+		$sql    = "SELECT * FROM admin.ms_reff where refcat_id = 36 order by reff_code ";
+        $result = $this->db->query($sql);
+        $result = $result->result();
+        return $result;
+	}
+
+	public function get_own($select)
+	{
+		$sql    = "SELECT $select FROM farmasi.ownership ";
+		$result = $this->db->query($sql);
+		$result = $result->result();
+		return $result;
+	}
+
+	public function get_price_detail($id)
+	{
+		$data = $this->db->query("SELECT p.own_id,p.price_buy,p.price_sell FROM admin.ms_item i
+		LEFT JOIN farmasi.price p on i.item_id = p.item_id
+		left JOIN farmasi.ownership o on p.own_id = o.own_id
+		WHERE i.item_id =$id")->result();
+		return $data;
+
 	}
 }
