@@ -6,6 +6,10 @@ class Sale extends MY_Generator {
 	public function __construct()
 	{
 		parent::__construct();
+		$this->datascript->lib_datepicker()
+						 ->lib_inputmulti()
+						 ->lib_select2()
+						 ->lib_inputmask();
 		$this->load->model('m_sale');
 	}
 
@@ -111,4 +115,123 @@ class Sale extends MY_Generator {
 		$data['model'] = $this->m_sale->rules();
 		$this->load->view("sale/form",$data);
 	}
+
+	public function show_form_pasien()
+	{
+		$this->load->view("sale/form_pasien");
+	}
+
+	public function show_form_racikan()
+	{
+		$data['model'] = [];
+		$this->load->view("sale/form_racikan",$data);
+	}
+
+	public function show_form_nonracikan()
+	{
+		$data['model'] = [];
+		$this->load->view("sale/form_non_racikan",$data);
+	}
+
+	public function show_multiRows()
+	{
+		$this->load->model("m_sale_detail");
+		$data = $this->m_sale_detail->get_column_multiple();
+		$colauto = ["item_id"=>"Nama Barang"];
+		foreach ($data as $key => $value) {
+			if (array_key_exists($value, $colauto)) {
+				$row[] = [
+					"id" => $value,
+					"label" => $colauto[$value],
+					"type" => 'autocomplete',
+					"width" => '35%',
+				];
+			}else{
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"width" => ($value=='price_total')?'18%':'14%',
+				];
+			}
+		}
+		echo json_encode($row);
+	}
+
+	public function set_item_racikan()
+	{
+		$post = $this->input->post();
+		$html="";
+		$total=0;
+		$item="";
+		foreach ($post['list_item_racikan'] as $key => $value) {
+			$total += $value['price_total'];
+			$item .="(".$value['sale_qty'].")"."<br>";
+		}
+		if (!empty($this->session->userdata('itemRacik'))) {
+			$itemRacik = $this->session->userdata('itemRacik');
+			$itemRacik = array_merge_recursive($post,$itemRacik);
+		}else{
+			$itemRacik = $post;
+		}
+		$this->session->set_userdata('itemRacik',$itemRacik);
+		$item = rtrim($item,"<br>");
+		$html .= "
+			<div class='comment-text'>
+				<span class='comment-text'>
+					<b>".$post['nama_racikan']."</b>
+					<span class=\"text-muted pull-right\">
+						".convert_currency(($total+$post['biaya_racikan']))."
+					</span>
+					<p>$item</p>
+				</span>
+			</div>
+			";
+		echo $html;
+
+	}
+
+	public function set_item_nonracikan()
+	{
+		$post = $this->input->post();
+		$html="";
+		$total=0;
+		$item="";
+		foreach ($post['list_obat_nonracikan'] as $key => $value) {
+			$total += $value['price_total'];
+			$item .="(".$value['sale_qty'].")"."<br>";
+		}
+		if (!empty($this->session->userdata('itemNonRacik'))) {
+			$itemNonRacik = $this->session->userdata('itemNonRacik');
+			$itemNonRacik = array_merge_recursive($post,$itemNonRacik);
+		}else{
+			$itemNonRacik = $post;
+		}
+		$this->session->set_userdata('itemNonRacik',$itemNonRacik);
+		$item = rtrim($item,"<br>");
+		echo $html;
+
+	}
+
+	public function set_data_pasien()
+	{
+		# code...
+	}
+
+	public function get_item()
+	{
+		$term = $this->input->get('term');
+		$this->load->model('m_stock_fifo');
+		$where = " AND lower(mi.item_name) like lower('%$term%') AND sf.stock_saldo > 0";
+		echo json_encode($this->m_stock_fifo->get_stock_item($where));
+	}
+
+	public function get_data_pasien()
+	{
+		$term = $this->input->get('term');
+		$this->load->model('m_stock_fifo');
+		$where = " AND lower(mi.item_name) like lower('%$term%')";
+		echo json_encode($this->m_sale->get_data_pasien($where));
+	}
 }
+?>

@@ -14,7 +14,11 @@
     <!-- Main content -->
     <section class="content">
       <!-- Default box -->
-      <div class="box">
+      
+      <div class="row">
+        <div class="col-md-12" id="form_sale"></div>
+      </div>
+      <div class="box" id="data_sale"  style="display: none;">
         <?=$this->session->flashdata('message')?>
         <div class="box-header with-border">
           <h3 class="box-title">Form Sale</h3>
@@ -23,9 +27,7 @@
               <i class="fa fa-plus"></i> Add</button>
           </div>
         </div>
-        <div class="box-body" id="form_sale" style="display: none;">
-        </div>
-        <div class="box-body" id="data_sale">
+        <div class="box-body">
           <?=create_table("tb_sale","M_sale",["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
         </div>
         <div class="box-footer">
@@ -39,9 +41,14 @@
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
+<?= modal_open("modal_pasien", "Biodata pasien","modal-lg") ?>
+<?= modal_close() ?>
 <script type="text/javascript">
     var table;
     $(document).ready(function() {
+      $("#modal_pasien").modal('show');
+      $("#modal_pasien").find(".modal-body").load("sale/show_form_pasien");
+      $("#form_sale").load("sale/show_form");
         table = $('#tb_sale').DataTable({ 
             "processing": true, 
             "serverSide": true, 
@@ -68,6 +75,7 @@
     });
     $("#btn-add").click(function() {
       $("#form_sale").show();
+      $("#data_sale").hide();
       $("#form_sale").load("sale/show_form");
     });
     function set_val(id) {

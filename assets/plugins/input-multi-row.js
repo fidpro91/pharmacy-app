@@ -35,7 +35,7 @@
               if (obj.type == 'text') {
                   row += "<td><input type=\"text\" name=\""+nama+"["+key+"]["+obj.id+"]\" class=\"form-control input-sm "+obj.id+"\" value=\""+objek[obj.id]+"\" "+attr+"/></td>";
               }else if(obj.type == 'autocomplete'){
-                  row += "<td><input type=\"text\" class=\"form-control input-sm autocom_"+obj.id+"\" value=\""+objek["label_"+obj.id]+"\"/><input type=\"hidden\" name=\""+nama+"["+key+"]["+obj.id+"]\" class=\"form-control input-sm "+obj.id+"\" value=\""+objek[obj.id]+"\"/></td>";
+                  row += "<td><input type=\"text\" class=\"form-control input-sm autocom_"+obj.id+"\" value=\""+objek["label_"+obj.id]+"\" name=\"autocom_"+obj.id+"\" /><input type=\"hidden\" name=\""+nama+"["+key+"]["+obj.id+"]\" class=\"form-control input-sm "+obj.id+"\" value=\""+objek[obj.id]+"\"/></td>";
               }else if(obj.type == 'select'){
                   row += "<td><select name=\""+nama+"["+key+"]["+obj.id+"]\" class=\"form-control input-sm "+obj.id+"\" "+attr+">";
                   var selected = "";
@@ -73,7 +73,7 @@
             if (obj.type == 'text') {
                 row += "<td><input type=\"text\" name=\""+nama+"["+num+"]["+obj.id+"]\" class=\"form-control input-sm "+obj.id+"\" "+attr+"/></td>";
             }else if(obj.type == 'autocomplete'){
-                row += "<td><input type=\"text\" class=\"form-control input-sm autocom_"+obj.id+"\" /><input type=\"hidden\" name=\""+nama+"["+num+"]["+obj.id+"]\" class=\"form-control input-sm "+obj.id+"\" /></td>";
+                row += "<td><input type=\"text\" class=\"form-control input-sm autocom_"+obj.id+"\" name=\"autocom_"+obj.id+"\" /><input type=\"hidden\" name=\""+nama+"["+num+"]["+obj.id+"]\" class=\"form-control input-sm "+obj.id+"\" /></td>";
             }else if(obj.type == 'select'){
                 row += "<td><select name=\""+nama+"["+num+"]["+obj.id+"]\" class=\"form-control input-sm "+obj.id+"\" "+attr+">";
                 $.each(obj.data,function(a,b){

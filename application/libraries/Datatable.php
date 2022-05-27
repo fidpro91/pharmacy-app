@@ -21,21 +21,36 @@ class Datatable
             if (!is_array($value)) {
                 $aColumns[] = $value;
             }else{
-                $aColumns[] = $key;
+                if (isset($value['field'])){
+                    $key = $value['field'];
+                }
+                if (isset($value['initial'])) {
+                    $aColumns[] = $value['initial'].'.'.$key;
+                }else {
+                    $aColumns[] = $key;
+                }
             }
         }
         if ( isset($search) && $search != "" ) {
             $sWhere = "AND (";
             for ( $i = 0 ; $i < count($aColumns) ; $i++ ) {
-                    $sWhere .= " LOWER(".$aColumns[$i]."::TEXT) LIKE LOWER('%".($search)."%') OR ";
+                    $sWhere .= " LOWER(".$aColumns[$i]."::TEXT) LIKE LOWER('%".pg_escape_string($search)."%') OR ";
             }
             $sWhere = substr_replace( $sWhere, "", - 3 );
             $sWhere .= ')';
         }
         $CI =& get_instance();
-        $CI->load->model($model,'modelku');
+        if (is_array($model)) {
+            $CI->load->model($model['name'],'modelku');
+            $countData      = $model['countData'];
+            $dataResource   = $model['dataResource'];
+        }else{
+            $countData      = 'get_total';
+            $dataResource   = 'get_data';
+            $CI->load->model($model,'modelku');
+        }
 
-        $iTotalRecords  = $CI->modelku->get_total($sWhere,$aColumns);
+        $iTotalRecords  = $CI->modelku->{$countData}($sWhere,$aColumns);
         $length = intval($attr['length']);
         $length = $length < 0 ? $iTotalRecords : $length;
         $start  = intval($attr['start']);
@@ -59,7 +74,7 @@ class Datatable
                         $sOrder = "";
                 }*/
         }
-        $data = $CI->modelku->get_data($sLimit,$sWhere,$sOrder,$aColumns);
+        $data = $CI->modelku->{$dataResource}($sLimit,$sWhere,$sOrder,$aColumns);
         $records        = array();
         $records["dataku"] = $data;
         $records["draw"] = $draw;
