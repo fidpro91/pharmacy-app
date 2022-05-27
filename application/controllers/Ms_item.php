@@ -158,6 +158,7 @@ class Ms_item extends MY_Generator {
 	{
 		$data['model'] = $this->m_ms_item->rules();
 		$data['own'] = $this->db->query("select own_id, own_name from farmasi.ownership where own_active = 't'")->result();
+//		$respond= $this->m_item->get_item_by_id($id);
 		$this->load->view("ms_item/form",$data);
 	}
 

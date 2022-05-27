@@ -21,29 +21,26 @@ class M_ms_supplier extends CI_Model {
 	public function get_column()
 	{
 		$col = [
-				"supplier_id",
-				"supplier_code",
-				"supplier_name",
-				"supplier_address",
-				"supplier_phone",
-				"supplier_contact",
-				"supplier_active",
-				"jenis_supplier"];
+				"supplier_code"=>["label"=>"kode"],
+				"supplier_name"=>["label"=>"nama"],
+				"supplier_address"=>["label"=>"alamat"],
+				"supplier_phone"=>["label"=>"telepon"],
+				"supplier_contact"=>["label"=>"kontak"],
+				];
 		return $col;
 	}
 
 	public function rules()
 	{
 		$data = [
-										"supplier_code" => "trim|required",
-					"supplier_name" => "trim",
-					"supplier_address" => "trim",
-					"supplier_phone" => "trim",
-					"supplier_contact" => "trim",
-					"supplier_active" => "trim",
-					"jenis_supplier" => "trim",
-
-				];
+			"supplier_code" => "trim|required",
+			"supplier_name" => "trim",
+			"supplier_address" => "trim",
+			"supplier_phone" => "trim",
+			"supplier_contact" => "trim",
+			"supplier_active" => "trim",
+			"jenis_supplier" => "trim",
+		];
 		return $data;
 	}
 

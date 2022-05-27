@@ -21,26 +21,16 @@ class M_ms_item extends CI_Model {
 	public function get_column()
 	{
 		$col = [
-				"item_id",
-				"item_code",
-				"item_name",
-				"item_desc",
-				"item_active",
-				"comodity_id",
-				"classification_id",
-				"item_unitofitem",
-				"item_package",
-				"is_formularium",
-				"is_generic",
-				"gol",
-				"jns",
-				"item_name_generic",
-				"qty_packtounit",
-				"type_formularium",
-				"atc_ood",
-				"item_dosis",
-				"item_strength",
-				"item_form"];
+			"item_id",
+			"item_code"=>["label"=>"Kode"],
+			"item_name"=>["label"=>"Nama"],
+			"item_name_generic"=>["label"=>"Nama Generik"],
+			"item_unitofitem"=>["label"=>"satuan"],
+			"item_package"=>["label"=>"kemasan"],
+			"qty_packtounit"=>["label"=>"jml satuan/kemasan"],
+
+
+		];
 		return $col;
 	}
 
