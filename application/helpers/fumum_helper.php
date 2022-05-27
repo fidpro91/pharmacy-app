@@ -70,4 +70,19 @@ function remove_currency($angka)
 	$rupiah= str_replace(",","", $angka);
 	return $rupiah;
 }
+
+function get_statusKunjungan($id)
+{
+	$kunjungan = [
+		"10" => "PULANG",
+		"30" => "DILAYANI",
+		"20" => "DILAYANI",
+		"35" => "BATAL",
+	];
+	if (!empty($kunjungan[$id])) {
+		return $kunjungan[$id];
+	}else{
+		return "REGISTRASI";
+	}
+}
 ?>
