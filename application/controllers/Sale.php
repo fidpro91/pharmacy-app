@@ -109,6 +109,26 @@ class Sale extends MY_Generator {
 	public function show_form()
 	{
 		$data['model'] = $this->m_sale->rules();
-		$this->load->view("sale/form",$data);
+		//$this->load->view("sale/form",$data);
+		$this->load->view("sale/form_sale",$data);
+	}
+
+	public function get_no_rm($tipe)
+	{
+		$respond= array();
+		$term 	= $this->input->get('term', true);
+
+		if($tipe == 'norm')
+			{
+				$where = " AND px_norm like '%$term%'";
+				$respond= $this->m_sale->get_norm($where);
+			}
+		else
+			{
+				$where = "AND LOWER(px_name) like '%$term%'";
+				$respond= $this->m_sale->get_norm($where);
+			}
+		
+		echo json_encode($respond);
 	}
 }
