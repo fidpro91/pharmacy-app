@@ -37,6 +37,11 @@ $(document).ready(()=>{
                     'url': "sale/show_multiRows",
                     'success': function (data) {
                         dataku = data;
+						// const sub_total_racikan = $("#sub_total_racikan").text();
+						// const sub_total_nonracikan = $("#sub_total_nonracikan").text();
+						// const total = Math.round(sub_total_nonracikan)+Math.round(sub_total_racikan);
+						// $("#pembulatan_biaya").html(total);
+						// $("#grand_total").html(total);
                     }
                 });
                 return dataku;
@@ -44,6 +49,16 @@ $(document).ready(()=>{
             "data": dataItemSale
     });
 });
+
+$("body").on("change", ".tb_list_item_racikan", function() {
+	$('.tb_list_item_racikan > tbody  > tr').each(function() {
+		const jumlah_barang = $(this).find(".sale_qty").val();
+		const harga_satuan = $(this).find(".sale_price").val();
+		const total_item = jumlah_barang * harga_satuan;
+		$(this).find('.price_total').val(total_item);
+	})
+});
+
 $("#btn-save-racikan").click(()=>{
     $.ajax({
         'async': false,
@@ -53,7 +68,15 @@ $("#btn-save-racikan").click(()=>{
         'success': function (data) {
             // console.log(data);
             $(".list_obat_racikan").append(data);
+            $.get("sale/get_total_racikan", function(data2){
+                $("#sub_total_racikan").html(output=parseInt(data2).toLocaleString(););
+                const sub_total_nonracikan = $("#sub_total_nonracikan").text();
+                const total = Math.round(data2)+Math.round(sub_total_nonracikan);
+                $("#pembulatan_biaya").html(output=parseInt(total).toLocaleString(););
+                $("#grand_total").html(output=parseInt(total).toLocaleString(););
+            });
         }
     });
 });
+
 </script>

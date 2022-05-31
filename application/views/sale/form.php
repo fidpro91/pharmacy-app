@@ -53,22 +53,22 @@
 	</div>
 	<div class="col-md-12">
 		<li class="list-group-item">
-			<b>Sub Total Racikan</b> <a class="pull-right">BLUD</a>
+			<b>Sub Total Racikan</b> <a class="pull-right" id="sub_total_racikan">0</a>
 		</li>
 		<li class="list-group-item">
-			<b>Sub Total Non Racikan</b> <a class="pull-right" id="skor_individu">0</a>
+			<b>Sub Total Non Racikan</b> <a class="pull-right" id="sub_total_nonracikan">0</a>
 		</li>
 		<li class="list-group-item">
-			<b>Pembulatan Biaya</b> <a class="pull-right" id="skor_pelayanan">27.056</a>
+			<b>Pembulatan Biaya</b> <a class="pull-right" id="pembulatan_biaya">0</a>
 		</li>
 		<li class="list-group-item">
-			<b>Grand Total</b> <a class="pull-right" id="skor_pelayanan">27.056</a>
+			<b>Grand Total</b> <a class="pull-right" id="grand_total">0</a>
 		</li>
 	</div>
 	<?= form_close() ?>
 	<div class="col-md-12">
 		<div class="box-footer">
-			<button class="btn btn-primary" type="button" onclick="$('#fm_farmasi.sale').submit()">Save</button>
+			<button class="btn btn-primary" type="button" onclick="save_sale()">Save</button>
 			<button class="btn btn-warning" type="button" id="btn-cancel">Cancel</button>
 		</div>
 	</div>
@@ -108,5 +108,9 @@
 		$("#form_sale").hide();
 		$("#form_sale").html('');
 	});
+	function save_sale() {
+
+		alert("simpan")
+	}
 	<?= $this->config->item('footerJS') ?>
 </script>
