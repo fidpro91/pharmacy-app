@@ -48,11 +48,11 @@
 				'success': function (data) {
 					$(".list_obat_nonracikan2").append(data);
 					$.get("sale/get_total_nonracikan", function(data2){
-						$("#sub_total_nonracikan").html(output=parseInt(data2).toLocaleString(););
+						$("#sub_total_nonracikan").html(parseInt(data2).toLocaleString());
 						const sub_total_racikan = $("#sub_total_racikan").text();
 						const total = Math.round(data2)+Math.round(sub_total_racikan);
-						$("#pembulatan_biaya").html(output=parseInt(tota).toLocaleString(););
-						$("#grand_total").html(output=parseInt(total).toLocaleString(););
+						$("#pembulatan_biaya").html(parseInt(tota).toLocaleString());
+						$("#grand_total").html(parseInt(total).toLocaleString());
 					});
 					
 
