@@ -274,9 +274,6 @@ class Sale extends MY_Generator {
 
 	}
 
-<<<<<<< HEAD
-
-=======
 	public function get_total_nonracikan()
 	{
 		$dtNonracikan = $this->session->userdata('itemNonRacik');
@@ -312,11 +309,7 @@ class Sale extends MY_Generator {
 
 	}
 
-	public function set_data_pasien()
-	{
-		# code...
-	}
->>>>>>> deae6b35f4c8c6b999aecc6ed6c6dd0a8f060921
+	
 
 	public function get_item()
 	{
@@ -341,9 +334,6 @@ class Sale extends MY_Generator {
 		
 	}
 
-<<<<<<< HEAD
-			
-=======
 	public function save_non_racikan()
 	{
 		$this->session->set_userdata($resp);
@@ -354,6 +344,5 @@ class Sale extends MY_Generator {
 		$this->session->unset_userdata('itemRacik');
 		$this->session->unset_userdata('itemNonRacik');
 	}
->>>>>>> deae6b35f4c8c6b999aecc6ed6c6dd0a8f060921
 }
 ?>
