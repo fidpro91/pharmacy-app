@@ -1,7 +1,7 @@
 <?php
-if (!defined('BASEPATH')) exit('No direct script access allowed');  
- 
-class Datatable 
+if (!defined('BASEPATH')) exit('No direct script access allowed');
+
+class Datatable
 {
     public function get_data($kolom,$filter = array(),$model,$attr = array())
     {

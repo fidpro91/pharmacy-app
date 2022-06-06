@@ -5,7 +5,7 @@ class M_stock_fifo extends CI_Model {
 	public function get_data($sLimit,$sWhere,$sOrder,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).", as id_key  from newfarmasi.stock_fifo where 0=0 $sWhere $sOrder $sLimit
+				select ".implode(',', $aColumns).", as id_key  from farmasi.stock_fifo where 0=0 $sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
 	}
@@ -13,7 +13,7 @@ class M_stock_fifo extends CI_Model {
 	public function get_total($sWhere,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).", as id_key  from newfarmasi.stock_fifo where 0=0 $sWhere
+				select ".implode(',', $aColumns).", as id_key  from farmasi.stock_fifo where 0=0 $sWhere
 			")->num_rows();
 		return $data;
 	}
@@ -58,12 +58,12 @@ class M_stock_fifo extends CI_Model {
 
 	public function get_stock_fifo($where)
 	{
-		return $this->db->get_where("newfarmasi.stock_fifo",$where)->result();
+		return $this->db->get_where("farmasi.stock_fifo",$where)->result();
 	}
 
 	public function find_one($where)
 	{
-		return $this->db->get_where("newfarmasi.stock_fifo",$where)->row();
+		return $this->db->get_where("farmasi.stock_fifo",$where)->row();
 	}
 
 	public function get_stock_item($where)

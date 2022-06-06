@@ -51,8 +51,8 @@ class Sale extends MY_Generator {
 		$fields = $this->m_sale->get_column();
 		$data 	= $this->datatable->get_data($fields,$filter = array(),'m_sale',$attr);
 		$records["aaData"] = array();
-		$no   	= 1 + $attr['start']; 
-        foreach ($data['dataku'] as $index=>$row) { 
+		$no   	= 1 + $attr['start'];
+        foreach ($data['dataku'] as $index=>$row) {
             $obj = array($row['id_key'],$no);
             foreach ($fields as $key => $value) {
             	if (is_array($value)) {
@@ -170,7 +170,30 @@ class Sale extends MY_Generator {
 					"type" => 'autocomplete',
 					"width" => '35%',
 				];
-			}else{
+			}
+			elseif($value == "sale_price"){
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"width" => ($value=='price_total')?'18%':'14%',
+					"attr"=>[
+						"readonly"=>'readonly'
+					]
+				];
+			}
+			elseif($value == "price_total"){
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"width" => ($value=='price_total')?'18%':'14%',
+					"attr"=>[
+						"readonly"=>"readonly"
+					]
+				];
+			}
+			else{
 				$row[] = [
 					"id" => $value,
 					"label" => ucwords(str_replace('_', ' ', $value)),
@@ -225,19 +248,75 @@ class Sale extends MY_Generator {
 			$total += $value['price_total'];
 			$item .="(".$value['sale_qty'].")"."<br>";
 		}
+
 		if (!empty($this->session->userdata('itemNonRacik'))) {
 			$itemNonRacik = $this->session->userdata('itemNonRacik');
 			$itemNonRacik = array_merge_recursive($post,$itemNonRacik);
 		}else{
 			$itemNonRacik = $post;
 		}
+
 		$this->session->set_userdata('itemNonRacik',$itemNonRacik);
 		$item = rtrim($item,"<br>");
+		$html .= "
+			<div class='comment-text'>
+				<span class='comment-text'>
+					<b>".$post['autocom_item_id']."</b>
+					<span class=\"text-muted pull-right\">
+						".convert_currency(($total))."
+					</span>
+					<p>$item</p>
+				</span>
+			</div>
+			";
+//		var_dump($this->session->userdata('itemNonRacik'));
 		echo $html;
 
 	}
 
+<<<<<<< HEAD
 
+=======
+	public function get_total_nonracikan()
+	{
+		$dtNonracikan = $this->session->userdata('itemNonRacik');
+		// var_dump($dtNonracikan);die;
+		$sub_total = 0;
+		foreach ($dtNonracikan['list_obat_nonracikan'] as $nonracikan){
+			$sub_total +=$nonracikan['price_total'];
+		}
+		echo $sub_total;
+
+	}
+
+	public function get_total_racikan()
+	{
+		$dtRacikan = $this->session->userdata('itemRacik');
+		// var_dump($dtRacikan['biaya_racikan']);die;
+		$total_item = 0;
+		foreach ($dtRacikan['list_item_racikan'] as $item) {
+			$total_item += $item['price_total'];
+		}
+		$total_racikan = 0;
+		if(is_array($dtRacikan['biaya_racikan'])){
+			foreach($dtRacikan['biaya_racikan'] as $key=>$b_racikan){
+				$total_racikan += $b_racikan;
+			}
+		}else{
+			$total_racikan = $dtRacikan['biaya_racikan'];
+		}
+		
+		$sub_total = $total_item+$total_racikan;
+		// var_dump($sub_total);die;
+		echo $sub_total;
+
+	}
+
+	public function set_data_pasien()
+	{
+		# code...
+	}
+>>>>>>> deae6b35f4c8c6b999aecc6ed6c6dd0a8f060921
 
 	public function get_item()
 	{
@@ -262,6 +341,19 @@ class Sale extends MY_Generator {
 		
 	}
 
+<<<<<<< HEAD
 			
+=======
+	public function save_non_racikan()
+	{
+		$this->session->set_userdata($resp);
+	}
+
+	public function hapus_sess()
+	{
+		$this->session->unset_userdata('itemRacik');
+		$this->session->unset_userdata('itemNonRacik');
+	}
+>>>>>>> deae6b35f4c8c6b999aecc6ed6c6dd0a8f060921
 }
 ?>

@@ -21,26 +21,16 @@ class M_ms_item extends CI_Model {
 	public function get_column()
 	{
 		$col = [
-				"item_id",
-				"item_code",
-				"item_name",
-				"item_desc",
-				"item_active",
-				"comodity_id",
-				"classification_id",
-				"item_unitofitem",
-				"item_package",
-				"is_formularium",
-				"is_generic",
-				"gol",
-				"jns",
-				"item_name_generic",
-				"qty_packtounit",
-				"type_formularium",
-				"atc_ood",
-				"item_dosis",
-				"item_strength",
-				"item_form"];
+			"item_id",
+			"item_code"=>["label"=>"Kode"],
+			"item_name"=>["label"=>"Nama"],
+			"item_name_generic"=>["label"=>"Nama Generik"],
+			"item_unitofitem"=>["label"=>"satuan"],
+			"item_package"=>["label"=>"kemasan"],
+			"qty_packtounit"=>["label"=>"jml satuan/kemasan"],
+
+
+		];
 		return $col;
 	}
 
@@ -64,6 +54,16 @@ class M_ms_item extends CI_Model {
 					"item_form" => "trim|integer",
 				];
 		return $data;
+	}
+
+	public function get_column_multiple()
+	{
+		$col = [
+			"own_id",
+			"price_buy",
+			"price_sell"
+		];
+		return $col;
 	}
 
 	public function validation()
@@ -94,5 +94,54 @@ class M_ms_item extends CI_Model {
 	public function find_one($where)
 	{
 		return $this->db->get_where("admin.ms_item",$where)->row();
+	}
+
+	public function get_data_formularium()
+	{
+		$sql    = "SELECT * FROM admin.ms_reff where refcat_id = 33 order by reff_code ";
+        $result = $this->db->query($sql);
+        $result = $result->result();
+        return $result;
+	}
+
+	public function get_package($term)
+	{
+		$sql    = 	"select package_name as value, package_name from admin.v_package where (lower(package_name) like '%$term%') ";
+		$result = $this->db->query($sql);
+		$result = $result->result();
+		return $result;
+	}
+	public function get_satuan($term)
+	{
+		$sql    = 	"select unitofitem_name as value, unitofitem_name from admin.v_unitofitem where (lower(unitofitem_name) like '%$term%') ";
+		$result = $this->db->query($sql);
+		$result = $result->result();
+		return $result;
+	}
+
+	public function get_data_bentuk()
+	{
+		$sql    = "SELECT * FROM admin.ms_reff where refcat_id = 36 order by reff_code ";
+        $result = $this->db->query($sql);
+        $result = $result->result();
+        return $result;
+	}
+
+	public function get_own($select)
+	{
+		$sql    = "SELECT $select FROM farmasi.ownership ";
+		$result = $this->db->query($sql);
+		$result = $result->result();
+		return $result;
+	}
+
+	public function get_price_detail($id)
+	{
+		$data = $this->db->query("SELECT p.own_id,p.price_buy,p.price_sell FROM admin.ms_item i
+		LEFT JOIN farmasi.price p on i.item_id = p.item_id
+		left JOIN farmasi.ownership o on p.own_id = o.own_id
+		WHERE i.item_id =$id")->result();
+		return $data;
+
 	}
 }
