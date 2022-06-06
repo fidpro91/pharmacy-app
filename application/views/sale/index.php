@@ -14,7 +14,7 @@
     <!-- Main content -->
     <section class="content">
       <!-- Default box -->
-      
+
       <div class="row">
         <div class="col-md-12" id="form_sale"></div>
       </div>
@@ -27,9 +27,11 @@
               <i class="fa fa-plus"></i> Add</button>
           </div>
         </div>
-        <div class="box-body">
+		  <div class="box-body" id="form_sale" style="display: none;">
+		  </div>
+		  <div class="box-body" id="data_sale">
           <?=create_table("tb_sale","M_sale",["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
-        </div>
+		  </div>
         <div class="box-footer">
           <button class="btn btn-danger" id="btn-deleteChecked"><i class="fa fa-trash"></i> Delete</button>
         </div>
@@ -49,10 +51,10 @@
       $("#modal_pasien").modal('show');
       $("#modal_pasien").find(".modal-body").load("sale/show_form_pasien");
       $("#form_sale").load("sale/show_form");
-        table = $('#tb_sale').DataTable({ 
-            "processing": true, 
-            "serverSide": true, 
-            "order": [], 
+        table = $('#tb_sale').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "order": [],
             "scrollX": true,
             "ajax": {
                 "url": "<?php echo site_url('sale/get_data')?>",
@@ -70,7 +72,7 @@
                'render': function (data, type, full, meta){
                    return '<input type="checkbox" name="id[]" value="' + $('<div/>').text(data).html() + '">';
                }
-            }], 
+            }],
         });
     });
     $("#btn-add").click(function() {

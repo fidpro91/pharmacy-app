@@ -37,15 +37,15 @@
 						<th colspan="2" style="text-align: center;">INVOICE NO :</th>
 					</tr>
 					<tr>
-						<th colspan="2" style="text-align: center;">0000</th>
+						<th colspan="2" style="text-align: center;" id="tno_invoice">0000</th>
 					</tr>
 					<tr>
 						<td>NORM</td>
-						<td class="pull-right">123</td>
+						<td class="pull-right" id="tno_rm">123</td>
 					</tr>
 					<tr>
 						<td>NAMA PASIEN</td>
-						<td class="pull-right">456</td>
+						<td class="pull-right" id="tpx_name">456</td>
 					</tr>
 				</table>
 			</div>

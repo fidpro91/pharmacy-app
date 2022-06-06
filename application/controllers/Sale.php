@@ -113,30 +113,30 @@ class Sale extends MY_Generator {
 	public function show_form()
 	{
 		$data['model'] = $this->m_sale->rules();
-		//$this->load->view("sale/form",$data);
-		$this->load->view("sale/form_sale",$data);
+		$this->load->view("sale/form",$data);
+//		$this->load->view("sale/form_sale",$data);
 	}
 
 	public function get_no_rm($tipe)
 	{
 		$respond= array();
-		$term 	= $this->input->get('term', true); 
-		
+		$term 	= $this->input->get('term', true);
+
 		if($tipe == 'norm')
 			{
 				$where = " AND px_norm like '%$term%'";
 				$select = "*,px_norm as label";
 				$respond= $this->m_sale->get_data_pasien($where,$select);
-				
+
 			}
 		else
 			{
 				$where = "AND LOWER(px_name) like '%$term%'";
 				$select = "*,px_name as label";
 				$respond= $this->m_sale->get_data_pasien($where,$select);
-				
+
 			}
-		
+
 		echo json_encode($respond);
 	}
 
@@ -302,14 +302,14 @@ class Sale extends MY_Generator {
 		}else{
 			$total_racikan = $dtRacikan['biaya_racikan'];
 		}
-		
+
 		$sub_total = $total_item+$total_racikan;
 		// var_dump($sub_total);die;
 		echo $sub_total;
 
 	}
 
-	
+
 
 	public function get_item()
 	{
@@ -322,16 +322,14 @@ class Sale extends MY_Generator {
 	public function set_data_pasien()
 	{
 		$post = $this->input->post();
-		$this->session->set_userdata('pasien',$post); 
+		$this->session->set_userdata('pasien',$post);
 		$data= $this->session->userdata('pasien');
 		if(!empty($data)){
+
 			echo "sukses";
 		}else{
 			echo "gagal";
 		}
-		
-	
-		
 	}
 
 	public function save_non_racikan()
@@ -343,6 +341,7 @@ class Sale extends MY_Generator {
 	{
 		$this->session->unset_userdata('itemRacik');
 		$this->session->unset_userdata('itemNonRacik');
+		$this->session->unset_userdata('pasien');
 	}
 }
 ?>
