@@ -154,12 +154,12 @@ class M_sale extends CI_Model
 						,lay.par_id,lay.par_name,lay.surety_id,
 						lay.status_kunjungan,lay.nomor_sep
 						FROM
-							yanmed.patient P 
+							yanmed.patient P
 							INNER JOIN (
-									
+
 							)lay ON lay.px_id = p.px_id
 							WHERE p.px_active = 't'
-					UNION ALL					
+					UNION ALL
 				SELECT P.px_id,
 					P.px_norm,
 					P.px_name,
@@ -177,12 +177,12 @@ class M_sale extends CI_Model
 					$result = $this->db->query($sql);
 					$result = $result->result();
 					return $result;
-				} 
+				}
 	} */
 
 	public function get_data_pasien($where,$select)
 	{
-		
+
 		$sql = "SELECT $select FROM (
 SELECT P.px_id,
 		P.px_norm,
@@ -288,5 +288,28 @@ WHERE 0=0 $where
 		return $this->db->get_where("yanmed.ms_surety",$where)->result();
 	}
 
-	
+	function get_no_resep($unit_id,$tgl_resep = null)
+	{
+		$now = new \DateTime('now');
+		$tgl = $now->format('Y-m-d');
+		if ($tgl_resep) {
+			$tgl = $tgl_resep;
+		}
+		$depo = $this->db->where('unit_id',$unit_id)->select('unit_nickname')->get('admin.ms_unit')->row();
+		$result = $this	->db
+			->query(
+				"select '$depo->unit_nickname'|| '/' || trim(
+							coalesce(max(regexp_replace(((string_to_array(sale_num,'/'))[2]), '[^0-9]*', '', 'g')::integer)+1,1)::VARCHAR) || '/'  || to_char(now(),'dd.mm.YYYY')  as nomax 
+							from farmasi.sale 
+							where to_char(sale_date,'YYYY-mm-dd')= '".$tgl."' and unit_id = '$unit_id'"
+			)
+			->row();
+
+
+		if  (isset($result->nomax))
+			return $result->nomax;
+		else
+			return $depo->unit_nickname.'/'.'1'.'/'.$now->format('d.m.Y');
+
+	}
 }
