@@ -322,14 +322,14 @@ class Sale extends MY_Generator {
 	public function set_data_pasien()
 	{
 		$post = $this->input->post();
-		$this->session->set_userdata('pasien',$post);
-		$data= $this->session->userdata('pasien');
+		$dt['pasien'] = $post;
+		$this->session->set_userdata('penjualan',$post);
+		/* $data= $this->session->userdata('pasien');
 		if(!empty($data)){
-
 			echo "sukses";
 		}else{
 			echo "gagal";
-		}
+		} */
 	}
 
 	public function save_non_racikan()
