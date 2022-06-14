@@ -48,14 +48,13 @@
 				'success': function (data) {
 					$(".list_obat_nonracikan2").append(data);
 					$.get("sale/get_total_nonracikan", function(data2){
-						$("#sub_total_nonracikan").html(parseInt(data2).toLocaleString());
-						const sub_total_racikan = $("#sub_total_racikan").text();
+						$("#sub_total_nonracikan").html(data2);
+						const sub_total_racikan =$("#sub_total_racikan").text();
 						const total = Math.round(data2)+Math.round(sub_total_racikan);
-						$("#pembulatan_biaya").html(parseInt(tota).toLocaleString());
-						$("#grand_total").html(parseInt(total).toLocaleString());
+						$("#pembulatan_biaya").html(total);
+						$("#grand_total").html(total);
 					});
-					
-
+					$("#modal_nonracikan").modal('hide');
 				}
 			});
 		});

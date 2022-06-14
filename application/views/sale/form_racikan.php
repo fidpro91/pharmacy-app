@@ -69,12 +69,13 @@ $("#btn-save-racikan").click(()=>{
             // console.log(data);
             $(".list_obat_racikan").append(data);
             $.get("sale/get_total_racikan", function(data2){
-                $("#sub_total_racikan").html(parseInt(data2).toLocaleString());
+                $("#sub_total_racikan").html(data2);
                 const sub_total_nonracikan = $("#sub_total_nonracikan").text();
                 const total = Math.round(data2)+Math.round(sub_total_nonracikan);
-                $("#pembulatan_biaya").html(parseInt(total).toLocaleString());
-                $("#grand_total").html(parseInt(total).toLocaleString());
+                $("#pembulatan_biaya").html(total);
+                $("#grand_total").html(total);
             });
+			$("#modal_racikan").modal('hide');
         }
     });
 });

@@ -255,9 +255,9 @@ class Sale extends MY_Generator {
 		}else{
 			$itemNonRacik = $post;
 		}
-
 		$this->session->set_userdata('itemNonRacik',$itemNonRacik);
 		$item = rtrim($item,"<br>");
+
 		$html .= "
 			<div class='comment-text'>
 				<span class='comment-text'>
@@ -342,6 +342,11 @@ class Sale extends MY_Generator {
 		$this->session->unset_userdata('itemRacik');
 		$this->session->unset_userdata('itemNonRacik');
 		$this->session->unset_userdata('pasien');
+	}
+
+	public function get_no_sale()
+	{
+		echo $this->m_sale->get_no_resep(109);
 	}
 }
 ?>

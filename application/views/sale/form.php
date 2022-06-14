@@ -109,8 +109,19 @@
 		$("#form_sale").html('');
 	});
 	function save_sale() {
-
 		alert("simpan")
 	}
+
+	function nomor_resep() {
+		$.get( "<?php echo base_url();?>sale/get_no_sale/", function( data ) {
+			console.log(data);
+			$('#tno_invoice').html(data);
+		});
+	}
+
+	$(document).ready(function () {
+		nomor_resep();
+	})
+
 	<?= $this->config->item('footerJS') ?>
 </script>
