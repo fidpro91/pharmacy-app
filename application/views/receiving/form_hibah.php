@@ -10,12 +10,18 @@
                     <div class="row">
                         <div class="col-md-6">
                             <?=form_hidden("rec_id")?>
-                            <?=create_input("receiver_num")?>
-                            <?=create_input("rec_num")?>
                             <?=create_inputDate("receiver_date",[
                                 "format"=>"yyyy-mm-dd",
                                 "autoclose"=>"true"
+                            ],[
+                                "value"     => date("Y-m-d"),
+                                "readonly" => true
                             ])?>
+                            <?=create_input("receiver_num",[
+                                "value"     => $norec,
+                                "readonly"  => true
+                            ])?>
+                            <?=create_input("rec_num")?>
                             <?=create_select2([
                                 "attr" =>["name"=>"receiver_unit=Unit penerima","id"=>"receiver_unit","class"=>"form-control"],
                                 "model"=>["m_ms_unit" => ["get_ms_unit",["0"=>'0']],
@@ -100,6 +106,7 @@
 	                },
                 "data": dataHibah
 	    });
+        $(".uang").inputmask("IDR");
 	});
 
     $("body").on("focus", ".autocom_item_id", function() {

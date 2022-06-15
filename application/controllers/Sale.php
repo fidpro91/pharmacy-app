@@ -331,12 +331,7 @@ class Sale extends MY_Generator {
 			echo "gagal";
 		} */
 	}
-
-	public function save_non_racikan()
-	{
-		$this->session->set_userdata($resp);
-	}
-
+	
 	public function hapus_sess()
 	{
 		$this->session->unset_userdata('itemRacik');
@@ -346,7 +341,15 @@ class Sale extends MY_Generator {
 
 	public function get_no_sale()
 	{
-		echo $this->m_sale->get_no_resep(109);
+		echo generate_code_transaksi([
+			"text"	=> "S/NOMOR/".date("d.m.Y"),
+			"table"	=> "farmasi.sale",
+			"column"	=> "sale_num",
+			"delimiter" => "/",
+			"number"	=> "2",
+			"lpad"		=> "4",
+			"filter"	=> ""
+		]);
 	}
 }
 ?>
