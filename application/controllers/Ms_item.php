@@ -32,14 +32,15 @@ class Ms_item extends MY_Generator {
 				$insertId = $this->db->query("select currval('admin.item_id_seq')")->row();
 
 				for ($i=0;$i<count($data['list_item']);$i++){
+
 					$dtown = [
 						"item_id"=>$insertId->currval,
-						"own_id"=>$data['own_id'][$i],
-						"price_buy"=>$data['price_buy'][$i],
-						"price_sell"=>$data['price_sell'][$i],
+						"own_id"=>$data['list_item'][$i]['own_id'],
+						"price_buy"=>$data['list_item'][$i]['price_buy'],
+						"price_sell"=>$data['list_item'][$i]['price_sell'],
 					];
 					$this->db->insert('farmasi.price',$dtown);
-				}
+				};
 			}
 			$err = $this->db->error();
 			if ($err['message']) {
