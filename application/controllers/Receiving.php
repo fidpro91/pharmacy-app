@@ -277,12 +277,30 @@ class Receiving extends MY_Generator {
 	public function show_form()
 	{
 		$data['model'] = $this->m_receiving->rules();
+		$data['norec'] = generate_code_transaksi([
+			"text"	=> "R/PBF/NOMOR/".date("d.m.Y"),
+			"table"	=> "newfarmasi.receiving",
+			"column"	=> "receiver_num",
+			"delimiter" => "/",
+			"number"	=> "3",
+			"lpad"		=> "5",
+			"filter"	=> " AND rec_type='0'"
+		]);
 		$this->load->view("receiving/form",$data);
 	}
 
 	public function show_form_hibah()
 	{
 		$data['model'] = $this->m_receiving->rules();
+		$data['norec'] = generate_code_transaksi([
+			"text"	=> "R/HIBAH/NOMOR/".date("d.m.Y"),
+			"table"	=> "newfarmasi.receiving",
+			"column"	=> "receiver_num",
+			"delimiter" => "/",
+			"number"	=> "3",
+			"lpad"		=> "5",
+			"filter"	=> " AND rec_type='1'"
+		]);
 		$this->load->view("receiving/form_hibah",$data);
 	}
 

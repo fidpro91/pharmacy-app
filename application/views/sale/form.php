@@ -114,8 +114,7 @@
 
 	function nomor_resep() {
 		$.get( "<?php echo base_url();?>sale/get_no_sale/", function( data ) {
-			console.log(data);
-			$('#tno_invoice').html(data);
+			$('#tno_invoice').text(data);
 		});
 	}
 
