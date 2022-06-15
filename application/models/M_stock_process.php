@@ -5,7 +5,7 @@ class M_stock_process extends CI_Model {
 	public function get_data($sLimit,$sWhere,$sOrder,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).", as id_key  from newfarmasi.stock_process where 0=0 $sWhere $sOrder $sLimit
+				select ".implode(',', $aColumns).", stockprocess_id as id_key  from newfarmasi.stock_process where 0=0 $sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
 	}
@@ -13,7 +13,7 @@ class M_stock_process extends CI_Model {
 	public function get_total($sWhere,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).", as id_key  from newfarmasi.stock_process where 0=0 $sWhere
+				select ".implode(',', $aColumns).", stockprocess_id as id_key  from newfarmasi.stock_process where 0=0 $sWhere
 			")->num_rows();
 		return $data;
 	}
@@ -35,8 +35,8 @@ class M_stock_process extends CI_Model {
 				"item_price",
 				"total_price",
 				"description",
-				"type_act",
-				"stockprocess_id"];
+				"type_act"
+				];
 		return $col;
 	}
 

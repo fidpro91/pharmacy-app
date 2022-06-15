@@ -277,7 +277,7 @@ class Sale extends MY_Generator {
 	public function get_total_nonracikan()
 	{
 		$dtNonracikan = $this->session->userdata('itemNonRacik');
-		// var_dump($dtNonracikan);die;
+		 var_dump($dtNonracikan);die;
 		$sub_total = 0;
 		foreach ($dtNonracikan['list_obat_nonracikan'] as $nonracikan){
 			$sub_total +=$nonracikan['price_total'];

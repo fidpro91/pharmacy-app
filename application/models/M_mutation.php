@@ -38,10 +38,22 @@ class M_mutation extends CI_Model {
 	{
 		$col = [
 				"bon_no",
-				"mutation_id",
+				//"mutation_id",
 				"mutation_date",
-				"user_require",
-				"mutation_status",
+				//"user_require",
+				"mutation_status"=> [
+					"label" => "Status",
+					"custom" => function ($a) {
+						if ($a == '1') {
+							$condition = ["class" => "label-primary", "text" => "Meminta"];
+						}else if ($a == '2') {
+							$condition = ["class" => "label-danger", "text" => "diproses"];
+						}else {
+							$condition = ["class" => "label-danger", "text" => "terima"];
+						}
+						return label_status($condition);
+					}
+				] ,
 				"user_sender",
 				"user_receiver",
 				"unit_require",
