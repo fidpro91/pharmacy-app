@@ -70,6 +70,9 @@
               'targets': [0,1,-1],
                'searchable': false,
                'orderable': false,
+             },{
+              'targets': [0,-1],
+               'visible': false,
              },
             {
                'targets': 0,
