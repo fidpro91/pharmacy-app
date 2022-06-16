@@ -20,14 +20,14 @@ class Receiving extends MY_Generator {
 
 	public function save()
 	{
-		$data = $this->input->post();
+		$data = $this->input->post(); print_r($data);die;
 		// if ($this->m_receiving->validation()) {
 			$input = [];
-			foreach ($this->m_receiving->rules() as $key => $value) {
+			foreach ($this->m_receiving->rules() as $key => $value) { 
 				$input[$key] = isset($data[$key])?$data[$key]:null;
 			}
 			$dataPo = $this->db->get_where("farmasi.po",["po_id"=>$input['po_id']])->row();
-			$input['supplier_id'] = $dataPo->supplier_id;
+			$input['supplier_id'] = $dataPo->supplier_id; 
 			$input['rec_type'] = 0;
 			$input['own_id'] = $dataPo->own_id;
 			$this->db->trans_begin();

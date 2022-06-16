@@ -5,7 +5,11 @@ class M_stock_process extends CI_Model {
 	public function get_data($sLimit,$sWhere,$sOrder,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).", stockprocess_id as id_key  from newfarmasi.stock_process where 0=0 $sWhere $sOrder $sLimit
+				select ".implode(',', $aColumns).", stockprocess_id as id_key  from newfarmasi.stock_process sp 
+				INNER JOIN ADMIN.ms_item mi ON sp.item_id = mi.item_id	
+				left join farmasi.ownership sw on sp.own_id = sw.own_id
+				left join admin.ms_unit u on sp.unit_id = u.unit_id
+				where 0=0 $sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
 	}
@@ -13,7 +17,11 @@ class M_stock_process extends CI_Model {
 	public function get_total($sWhere,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).", stockprocess_id as id_key  from newfarmasi.stock_process where 0=0 $sWhere
+				select ".implode(',', $aColumns).", stockprocess_id as id_key  from newfarmasi.stock_process sp 
+				INNER JOIN ADMIN.ms_item mi ON sp.item_id = mi.item_id	
+				left join farmasi.ownership sw on sp.own_id = sw.own_id
+				left join admin.ms_unit u on sp.unit_id = u.unit_id
+				where 0=0 $sWhere
 			")->num_rows();
 		return $data;
 	}
@@ -21,21 +29,18 @@ class M_stock_process extends CI_Model {
 	public function get_column()
 	{
 		$col = [
-				"item_id",
-				"own_id",
-				"unit_id",
-				"date_trans",
-				"date_act",
-				"trans_num",
-				"trans_type",
-				"stock_before",
-				"debet",
-				"kredit",
-				"stock_after",
-				"item_price",
-				"total_price",
-				"description",
-				"type_act"
+				"item_name"=>['label'=>'nama obat'],
+				"own_name"=>['label'=>'Kepemilikan'],
+				"unit_name",
+				"date_trans"=>['label'=>'Tgl Transaksi'],
+				"trans_num"=>['label'=>'No Transaksi'],
+				"stock_before"=>['label'=>'Stock Awal'],				
+				"debet"=>['label'=>'Masuk'],
+				"kredit"=>['label'=>'Keluar'],
+				"stock_after"=>['label'=>'Stock Sisa'],
+				"item_price"=>['label'=>'Harga satuan'],
+				"total_price"=>['label'=>'Total Harga'],
+				"description"=>['label'=>'Keterangan']
 				];
 		return $col;
 	}
@@ -51,7 +56,7 @@ class M_stock_process extends CI_Model {
 					"trans_num" => "trim",
 					"trans_type" => "trim|integer",
 					"stock_before" => "trim|integer",
-																														"description" => "trim",
+					"description" => "trim",
 					"type_act" => "trim|integer",
 					
 				];
