@@ -18,7 +18,7 @@
         <?=$this->session->flashdata('message')?>
         <div class="box-header with-border">
           <h3 class="box-title">Form Stock Process</h3>
-          >
+          
         </div>
 
         <div class="panel-body" id="data_ms_siswa">
@@ -31,6 +31,9 @@
                           "column" => ["unit_id", "unit_name"]
                   ],
           ]) ?>
+       </div>
+       <div class="col-md-2" id="tgl">
+       <?=create_inputDaterange("tgl_transaksi",["locale"=>["format"=>"YYYY-MM-DD","separator"=>"/"]],"required")?>
        </div>
                 </div>
               </div>
@@ -63,6 +66,7 @@
                 "type": "POST",
                 "data": function(f) {        
                 f.unit = $("#filter_kelas").val();
+                f.tgl = $("#tgl_transaksi").val();
             }
             },
             'columnDefs': [
@@ -82,7 +86,7 @@
                }
             }], 
         });
-        $("#filter_kelas").change(() => {
+        $("#filter_kelas,#tgl_transaksi").change(() => {
       table.draw();
     });
     });

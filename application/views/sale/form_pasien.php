@@ -147,16 +147,14 @@ $("body").on("focus", "#nama", function() {
 
 function changeSurety(){
 
-	var sale_type = $("#surety_id").val();
+	var sale_type = $("#surety_id").val(); 
 	if(sale_type == 1 || sale_type == 33){
-		$('#sale_type option[value="0"]').attr('selected', true);
-
+		$('#sale_type option[value="0"]').val('selected', true);      
 	}
 	else{
 		$('#sale_type option[value="1"]').attr('selected', true);
-
+        
 	}
-
 }
 $("#btn-save-pasien").click(()=>{
     $.ajax({

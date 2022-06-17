@@ -6,7 +6,8 @@ class Stock_process extends MY_Generator {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->datascript->lib_select2();
+		$this->datascript->lib_select2()
+					     ->lib_daterange();
 		$this->load->model('m_stock_process');
 	}
 
@@ -44,9 +45,11 @@ class Stock_process extends MY_Generator {
 	public function get_data()
 	{
 		$this->load->library('datatable');
-		$attr 	= $this->input->post();
+		$attr 	= $this->input->post(); 
 		$fields = $this->m_stock_process->get_column();
+		list($tgl1,$tgl2) = explode('/', $attr['tgl']); 
 		$filter = [];
+		$filter["custom" ] = "(date(date_trans) between '$tgl1' and '$tgl2')"; 
 		if (!empty($attr['unit'])) {
 			$filter = array_merge($filter, ["sp.unit_id" => $attr['unit']]);
 		}

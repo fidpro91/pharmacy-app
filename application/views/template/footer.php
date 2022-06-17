@@ -22,6 +22,7 @@
       currency: 'IDR',
     }).format(val);
   }
+  
   $("#checkAll").click(() => {
     if ($("#checkAll").is(':checked')) {
       $("#tb_ms_jabatan input[type='checkbox']").attr("checked", true);
