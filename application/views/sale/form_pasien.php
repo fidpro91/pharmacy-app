@@ -204,13 +204,18 @@
             'type': "post",
             'data': $("#form_pasien").serialize(),
             'url': "sale/set_data_pasien",
-            'dataType': 'json',
-            'success': function(data) { 
-                $("#tno_rm").append(data.patient_norm);
-                $("#tpx_name").append(data.patient_name);  
-                $("#modal_pasien").modal('hide');
+            'dataType' : 'json',
+            'success': function(data) {
+                if (data.code !== '200') {
+                    alert(data.message);
+                    return false;
+                }
+                let profit = data.profit*100;
+                $("#labelProfit").append('('+profit+'%)');
+                $("#margin_profit").val(data.profit);
                 $("#tno_rm").html($("#no_rm").val());
                 $("#tpx_name").html($("#nama").val());
+                $("#modal_pasien").modal('hide');
             }
         });
     }
