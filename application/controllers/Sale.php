@@ -193,6 +193,7 @@ class Sale extends MY_Generator {
 			$respond= $this->m_sale->get_data_pasien($where,$select);
 		}
 		echo json_encode($respond);
+		
 	}
 
 	public function show_form_pasien()
@@ -386,13 +387,14 @@ class Sale extends MY_Generator {
 		$post = $this->input->post();
 		$dt['pasien'] = $post;
 		$this->session->set_userdata('penjualan',$post);
-		/* $data= $this->session->userdata('pasien');
-		if(!empty($data)){
-			echo "sukses";
-		}else{
-			echo "gagal";
-		} */
+		echo json_encode($respond);
+		$this->session->set_userdata('x',$respond);
+		$data_px = $this->session->userdata('x',$respond); 
+		echo json_encode($data_px); print_r($data_px);die;
+		
 	}
+
+
 	
 	public function hapus_sess()
 	{

@@ -32,7 +32,7 @@
 	<div class="col-md-4">
 		<div class="box">
 			<div class="box-body">
-				<table class="table">
+				<table class="table1">
 					<tr>
 						<th colspan="2" style="text-align: center;">INVOICE NO :</th>
 					</tr>
@@ -41,11 +41,11 @@
 					</tr>
 					<tr>
 						<td>NORM</td>
-						<td class="pull-right" id="tno_rm">123</td>
+						<td class="pull-right" id="tno_rm"></td>
 					</tr>
 					<tr>
 						<td>NAMA PASIEN</td>
-						<td class="pull-right" id="tpx_name">456</td>
+						<td class="pull-right" id="tpx_name"></td>
 					</tr>
 				</table>
 			</div>
@@ -129,5 +129,7 @@
 		$("#pembulatan_biaya").text(formatMoney(embalase));
 		$("#grand_total").text(formatMoney(totalAll));
 	}
+
+	
 	<?= $this->config->item('footerJS') ?>
 </script>

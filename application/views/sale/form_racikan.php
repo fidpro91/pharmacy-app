@@ -64,7 +64,7 @@ $("#btn-save-racikan").click(()=>{
         'async': false,
         'type': "post",
         'data': $("#form_racikan").serialize(),
-        'url': "sale/set_item_racikan",
+        'url': "sale/get_no_rm",
         'dataType':'json',
         'success': function (data) {
             $(".list_obat_racikan").append(data.html);

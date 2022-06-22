@@ -204,12 +204,16 @@
             'type': "post",
             'data': $("#form_pasien").serialize(),
             'url': "sale/set_data_pasien",
-            'success': function(data) {
+            'dataType': 'json',
+            'success': function(data) { 
+                $("#tno_rm").append(data.patient_norm);
+                $("#tpx_name").append(data.patient_name);  
                 $("#modal_pasien").modal('hide');
                 $("#tno_rm").html($("#no_rm").val());
                 $("#tpx_name").html($("#nama").val());
             }
         });
-    });
+    }
+    );
     <?= $this->config->item('footerJS') ?>
 </script>
