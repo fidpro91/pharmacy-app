@@ -64,7 +64,7 @@ $("#btn-save-racikan").click(()=>{
         'async': false,
         'type': "post",
         'data': $("#form_racikan").serialize(),
-        'url': "sale/get_no_rm",
+        'url': "sale/set_item_racikan",
         'dataType':'json',
         'success': function (data) {
             $(".list_obat_racikan").append(data.html);
@@ -72,8 +72,6 @@ $("#btn-save-racikan").click(()=>{
             total = total+data.total;
             $("#sub_total_racikan").text(formatMoney(total));
             $("#sub_total_racikan").attr("isi",total);
-            $("#total_biaya_racikan").text(formatMoney(data.biaya_racik));
-            $("#total_biaya_racikan").attr("isi",data.biaya_racik);
             grandTotal();
 			$("#modal_racikan").modal('hide');
         }
