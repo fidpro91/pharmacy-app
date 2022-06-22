@@ -67,22 +67,16 @@ class M_sale_detail extends CI_Model
 		$data = [
 			"sale_id" => "trim|integer|required",
 			"item_id" => "trim|integer|required",
-			"recdet_id" => "trim|integer|required",
+			"sale_price" => "trim|integer|required",
+			"sale_qty" => "trim|integer|required",
+			"racikan" => "trim",
 			"dosis" => "trim",
+			"kronis" => "trim",
 			"racikan_qty" => "trim|integer",
 			"racikan_id" => "trim",
 			"racikan_dosis" => "trim",
-			"verificated" => "trim",
-			"verificator_id" => "trim|integer",
-			"verified_at" => "trim",
 			"racikan_desc" => "trim",
 			"own_id" => "trim|integer",
-			"usage_date" => "trim",
-			"package_price" => "trim",
-			"subtotal_package_price" => "trim",
-			"detail_dosis" => "trim",
-			"drug_per_day" => "trim",
-
 		];
 		return $data;
 	}

@@ -1,5 +1,5 @@
 <div class="row">
-<?= form_open("sale/save", ["method" => "post", "id" => "fm_farmasi.sale"], $model) ?>
+<?= form_open("sale/save", ["method" => "post", "id" => "fm_sale_h"], $model) ?>
 	<?= form_hidden("sale_id") ?>
 	<div class="col-md-4">
 		<div class="box">
@@ -37,7 +37,7 @@
 						<th colspan="2" style="text-align: center;">INVOICE NO :</th>
 					</tr>
 					<tr>
-						<th colspan="2" style="text-align: center;" id="tno_invoice">0000</th>
+						<th colspan="2" style="text-align: center;" id="tno_invoice"><?=$sale_num?></th>
 					</tr>
 					<tr>
 						<td>NORM</td>
@@ -53,10 +53,10 @@
 	</div>
 	<div class="col-md-12">
 		<li class="list-group-item">
-			<b>Sub Total Racikan</b> <a class="pull-right" id="sub_total_racikan">0</a>
+			<b>Sub Total Racikan</b> <a class="pull-right" id="sub_total_racikan" isi="0">0</a>
 		</li>
 		<li class="list-group-item">
-			<b>Sub Total Non Racikan</b> <a class="pull-right" id="sub_total_nonracikan">0</a>
+			<b>Sub Total Non Racikan</b> <a class="pull-right" id="sub_total_nonracikan" isi="0">0</a>
 		</li>
 		<li class="list-group-item">
 			<b>Pembulatan Biaya</b> <a class="pull-right" id="pembulatan_biaya">0</a>
@@ -67,8 +67,8 @@
 	</div>
 	<?= form_close() ?>
 	<div class="col-md-12">
-		<div class="box-footer">
-			<button class="btn btn-primary" type="button" onclick="save_sale()">Save</button>
+		<div class="box-footer" align="center">
+			<button class="btn btn-primary" type="button" onclick="$('#fm_sale_h').submit()">Save</button>
 			<button class="btn btn-warning" type="button" id="btn-cancel">Cancel</button>
 		</div>
 	</div>
@@ -112,15 +112,22 @@
 		alert("simpan")
 	}
 
-	function nomor_resep() {
-		$.get( "<?php echo base_url();?>sale/get_no_sale/", function( data ) {
-			$('#tno_invoice').text(data);
-		});
+	function formatMoney(val=0){
+        return new Intl.NumberFormat('id-ID',  {
+                style: 'currency',
+                currency: 'IDR',
+        }).format(val);
+    }
+
+	function grandTotal() {
+		let totalNonRacikan = parseFloat($.isNumeric($('#sub_total_nonracikan').attr('isi'))?$('#sub_total_nonracikan').attr('isi'):0);
+		let totalRacikan = parseFloat($.isNumeric($('#sub_total_racikan').attr('isi'))?$('#sub_total_racikan').attr('isi'):0);
+		let totalAll = totalNonRacikan+totalRacikan;
+		let embalase = totalAll/100;
+		embalase = Math.abs(Math.ceil(embalase)-embalase)*100;
+		totalAll = totalAll+embalase;
+		$("#pembulatan_biaya").text(formatMoney(embalase));
+		$("#grand_total").text(formatMoney(totalAll));
 	}
-
-	$(document).ready(function () {
-		nomor_resep();
-	})
-
 	<?= $this->config->item('footerJS') ?>
 </script>
