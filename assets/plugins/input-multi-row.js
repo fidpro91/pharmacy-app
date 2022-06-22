@@ -58,9 +58,9 @@
 							obj.id +
 							'" value="' +
 							objek["label_" + obj.id] +
-							'" name="autocom_' +
+							'" name="'+nama+'['+key+']'+'[autocom_' +
 							obj.id +
-							'" /><input type="hidden" name="' +
+							']" /><input type="hidden" name="' +
 							nama +
 							"[" +
 							key +
@@ -153,9 +153,9 @@
 						row +=
 							'<td><input type="text" class="form-control input-sm autocom_' +
 							obj.id +
-							'" name="autocom_' +
+							'" name="'+nama+'['+num+']'+'[autocom_' +
 							obj.id +
-							'" /><input type="hidden" name="' +
+							']" /><input type="hidden" name="' +
 							nama +
 							"[" +
 							num +

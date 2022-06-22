@@ -51,7 +51,7 @@
       $("#modal_pasien").modal('show');
       $("#modal_pasien").find(".modal-body").load("sale/show_form_pasien");
       $("#form_sale").load("sale/show_form");
-        table = $('#tb_sale').DataTable({
+        /* table = $('#tb_sale').DataTable({
             "processing": true,
             "serverSide": true,
             "order": [],
@@ -73,7 +73,7 @@
                    return '<input type="checkbox" name="id[]" value="' + $('<div/>').text(data).html() + '">';
                }
             }],
-        });
+        }); */
     });
     $("#btn-add").click(function() {
       $("#form_sale").show();
