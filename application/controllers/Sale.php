@@ -11,6 +11,7 @@ class Sale extends MY_Generator {
 						 ->lib_select2()
 						 ->lib_inputmask();
 		$this->load->model('m_sale');
+		$this->load->model('m_sale_detail');
 	}
 
 	public function index()
@@ -22,7 +23,7 @@ class Sale extends MY_Generator {
 	public function save()
 	{
 		$data = $this->input->post();
-		$sess = $this->session->userdata('penjualan');
+		$sess = $this->session->userdata('penjualan')['pasien'];
 		$this->db->trans_begin();
 		// if ($this->m_sale->validation()) {
 			$input = [];
@@ -30,10 +31,11 @@ class Sale extends MY_Generator {
 				$input[$key] = (!empty($sess[$key])?$sess[$key]:null);
 			}
 			$input['unit_id'] = 18;
-			$input['user_id'] = $this->session->user_id;
+			$input['user_id'] = 1;
 			$input['sale_num'] = $this->get_no_sale();
 			$racikan = $this->session->userdata('itemRacik');
 			$nonRacikan = $this->session->userdata('itemNonRacik');
+			
 			$totalRacikan = array_sum(array_column($racikan, 'total'));
 			$totalService = array_sum(array_column($racikan, 'biaya_racikan'));
 			$grandtotal = $totalRacikan+$nonRacikan['total'];
@@ -46,41 +48,17 @@ class Sale extends MY_Generator {
 			//insert into farmasi.sale
 			$this->db->insert("farmasi.sale",$input);
 			$saleId = $this->db->query("select currval('public.sale_id_seq')")->row('currval');
-			$this->load->model('m_sale_detail');
 			//nonracikan
-			$itemNonRacikan=[];
-			foreach ($nonRacikan['list_obat_nonracikan'] as $x => $y) {
-				foreach ($this->m_sale_detail->rules() as $key => $value) {
-					$itemNonRacikan[$x][$key] = (isset($y[$key])?$y[$key]:null);
-				}
-				$itemNonRacikan[$x]['kronis'] = $input['kronis'];
-				$itemNonRacikan[$x]['own_id'] = $input['own_id'];
-				$itemNonRacikan[$x]['sale_id'] = $saleId;
-				$itemNonRacikan[$x]['racikan'] = 'f';
-			}
-			// print_r($itemNonRacikan);
-			$itemRacikan=[];
-			$i=0;
-			foreach ($racikan as $key => $value) {
-				foreach ($value['header'] as $x => $v) {
-					if (is_array($v)) {
-						foreach ($v as $x => $y) {
-							foreach ($this->m_sale_detail->rules() as $key => $xx) {
-								$itemRacikan[$i][$key] = (isset($y[$key])?$y[$key]:null);
-							}
-							$itemRacikan[$i]['racikan_id'] = $value['header']['nama_racikan'];
-							$itemRacikan[$i]['racikan_qty'] = $value['header']['qty_racikan'];
-							$itemRacikan[$i]['racikan_dosis'] = $value['header']['signa'];
-							$itemRacikan[$i]['sale_id'] = $saleId;
-							$itemRacikan[$i]['racikan'] = 't';
-							$itemRacikan[$i]['kronis'] = $input['kronis'];
-							$itemRacikan[$i]['own_id'] = $input['own_id'];
-							$i++;
-						}
-					}
-				}
-			}
-			$saleDetail = array_merge_recursive($itemNonRacikan,$itemRacikan);
+			$nonRacikan['detail'] = array_map(function($arr) use ($saleId){
+				return $arr + ['sale_id' => $saleId];
+			}, $nonRacikan['detail']);
+
+			//racikan
+			$racikan['detail'] = array_map(function($arr) use ($saleId){
+				return $arr + ['sale_id' => $saleId];
+			}, $racikan['detail']);
+			
+			$saleDetail = array_merge_recursive($nonRacikan['detail'],$racikan['detail']);
 			//insert sale detail
 			$this->db->insert_batch("farmasi.sale_detail",$saleDetail);
 			
@@ -266,22 +244,39 @@ class Sale extends MY_Generator {
 		$html="";
 		$total=0;
 		$item="";
-		foreach ($post['list_item_racikan'] as $key => $value) {
-			$total += $value['price_total'];
-			$item .= $value['autocom_item_id']."(".$value['sale_qty'].")"."<br>";
+		$header = $this->session->userdata('penjualan');
+		foreach ($post['list_item_racikan'] as $x => $v) {
+			foreach ($this->m_sale_detail->rules() as $key => $value) {
+				if ($key != 'sale_id') {
+					$itemRacik[$x][$key] = (isset($v[$key])?$v[$key]:null);
+				}
+			}
+			$itemRacik[$x]['kronis'] = $header['pasien']['kronis'];
+			$itemRacik[$x]['own_id'] = $header['pasien']['own_id'];
+			$itemRacik[$x]['percent_profit'] = $header['profit'];
+			$itemRacik[$x]['racikan_id'] = $post['nama_racikan'];
+			$itemRacik[$x]['racikan_qty'] = $post['qty_racikan'];
+			$itemRacik[$x]['racikan_dosis'] = $post['signa'];
+			$price_total = ($v['price_total']*$header['profit'])+$v['price_total'];
+			$itemRacik[$x]['subtotal'] = $price_total;
+			$itemRacik[$x]['racikan'] = 't';
+			$total += $price_total;
+			$item .= $v['autocom_item_id']."(".$v['sale_qty'].")"."<br>";
 		}
-		$total = $total+$post['biaya_racikan'];
-		$sess[] = [
-			"header"	=> $post,
-			"total"		=> $total
-		];
+		$total = $total;
 		if (!empty($this->session->userdata('itemRacik'))) {
-			$itemRacik = $this->session->userdata('itemRacik');
-			$itemRacik = array_merge_recursive($sess,$itemRacik);
+			$itemRacikOld = $this->session->userdata('itemRacik');
+			$itemRacikan['detail'] 		= array_merge_recursive($itemRacik,$itemRacikOld['detail']);
+			$itemRacikan['biaya_racik']	= $itemRacikOld['biaya_racik']+$post['biaya_racikan'];
+			$itemRacikan['total']			= $itemRacikOld['total']+$total;
 		}else{
-			$itemRacik = $sess;
+			$itemRacikan = [
+				"detail"		=> $itemRacik,
+				'biaya_racik'	=> $post['biaya_racikan'],
+				"total"			=> $total
+			];
 		}
-		$this->session->set_userdata('itemRacik',$itemRacik);
+		$this->session->set_userdata('itemRacik',$itemRacikan);
 		$item = rtrim($item,"<br>");
 		$html .= "
 			<div class='comment-text'>
@@ -295,7 +290,8 @@ class Sale extends MY_Generator {
 			</div>
 			";
 		$resp = [
-			'total' => $total,
+			'total' 		=> $total,
+			'biaya_racik'	=> $post['biaya_racikan'],
 			'html'	=> $html
 		];
 		echo json_encode($resp);
@@ -307,29 +303,41 @@ class Sale extends MY_Generator {
 		$html="";
 		$total=0;
 		$item="";
-		foreach ($post['list_obat_nonracikan'] as $key => $value) {
-			$total += $value['price_total'];
-			$item .= $value['autocom_item_id']."(".$value['sale_qty'].")"."<br>";
+		$header = $this->session->userdata('penjualan');
+		foreach ($post['list_obat_nonracikan'] as $x => $v) {
+			foreach ($this->m_sale_detail->rules() as $key => $value) {
+				if ($key != 'sale_id') {
+					$itemNonRacikan[$x][$key] = (isset($v[$key])?$v[$key]:null);
+				}
+			}
+			
+			$itemNonRacikan[$x]['kronis'] = $header['pasien']['kronis'];
+			$itemNonRacikan[$x]['own_id'] = $header['pasien']['own_id'];
+			$itemNonRacikan[$x]['racikan'] = 'f';
+			$itemNonRacikan[$x]['percent_profit'] = $header['profit'];
+			$price_total = ($v['price_total']*$header['profit'])+$v['price_total'];
+			$itemNonRacikan[$x]['subtotal'] = $price_total;
+			$total += $price_total;
+			$item .= $v['autocom_item_id']."(".$v['sale_qty'].")"."<br>";
 			$html .= "
 			<div class='comment-text'>
 				<span class='comment-text'>
 					<b>".$item."</b>
 					<span class=\"text-muted pull-right\">
-						".convert_currency(($value['price_total']))."
+						".convert_currency(($v['price_total']))."
 					</span>
 				</span>
 			</div>
 			";
 		}
-		$post['total'] = $total;
+		$nonRacikan['detail'] = $itemNonRacikan;
+		$nonRacikan['total'] = $total;
 		if (!empty($this->session->userdata('itemNonRacik'))) {
-			$itemNonRacik = $this->session->userdata('itemNonRacik');
-			$post['total'] = $itemNonRacik['total'];
-			$itemNonRacik = array_merge_recursive($post,$itemNonRacik);
-		}else{
-			$itemNonRacik = $post;
+			$itemNonRacikOld = $this->session->userdata('itemNonRacik');
+			$nonRacikan['detail'] = array_merge_recursive($itemNonRacikan,$itemNonRacikOld['detail']);
+			$nonRacikan['total'] = $itemNonRacikOld['total']+$total;
 		}
-		$this->session->set_userdata('itemNonRacik',$itemNonRacik);
+		$this->session->set_userdata('itemNonRacik',$nonRacikan);
 		$resp = [
 			'total' => $total,
 			'html'	=> $html
@@ -385,13 +393,25 @@ class Sale extends MY_Generator {
 	{
 		$post = $this->input->post();
 		$dt['pasien'] = $post;
-		$this->session->set_userdata('penjualan',$post);
-		/* $data= $this->session->userdata('pasien');
-		if(!empty($data)){
-			echo "sukses";
+		$dt['profit'] = $this->db->get_where('farmasi.surety_ownership',[
+			"surety_id"	=> $post['surety_id'],
+			"own_id"	=> $post['own_id']
+		]);
+		if ($dt['profit']->num_rows() <= 0) {
+			$resp=[
+				"code" 		=> "201",
+				"message"	=> "Margin keuntungan untuk penjamin ini belum disetting"
+			];
 		}else{
-			echo "gagal";
-		} */
+			$dt['profit'] = $dt['profit']->row('percent_profit');
+			$resp=[
+				"code" 		=> "200",
+				"message"	=> "OK",
+				"profit"	=> $dt['profit']
+			];
+			$this->session->set_userdata('penjualan',$dt);
+		}
+		echo json_encode($resp);
 	}
 	
 	public function hapus_sess()
