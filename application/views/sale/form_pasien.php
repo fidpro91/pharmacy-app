@@ -83,6 +83,7 @@
                         "column" => ["unit_id", "unit_name"]
                     ],
                 ]) ?>
+                <?=create_textarea("alamat=Alamat Lengkap",["readonly" => true])?>
 
             </div>
             <div class="col-md-12" style="text-align:center ;">
@@ -99,15 +100,16 @@
         $(this).autocomplete({
             source: "<?php echo site_url('sale/get_no_rm/norm'); ?>/"+$("#tipe_patient").val(),
             select: function(event, ui) {
-                $('#patient_norm').val(ui.item.px_norm);
+                $('#patient_norm').val(ui.item.px_norm); 
                 $('#patient_name').val(ui.item.px_name);
+                $('#alamat').val(ui.item.px_address);
                 if ($("#tipe_patient").val() == 1) {
                     $('#visit_id').val(ui.item.visit_id);
                     $('#doctor_id').val(ui.item.par_id);
                     $('#service_id').val(ui.item.srv_id);
                     $('#doctor_name').val(ui.item.par_name);
                     $('#unit_id_lay').val(ui.item.unit_id);
-                    $('#unit_id').val(ui.item.unit_id);
+                    $('#unit_id').val(ui.item.unit_id);                   
                     if (ui.item.surety_id) {
                         $('#surety_id').val(ui.item.surety_id);
                     }
@@ -152,6 +154,7 @@
             select: function(event, ui) {
                 $('#patient_norm').val(ui.item.px_norm);
                 $('#patient_name').val(ui.item.px_name);
+                $('#alamat').val(ui.item.px_address);
                 $('#visit_id').val(ui.item.visit_id);
                 $('#doctor_id').val(ui.item.par_id);
                 $('#service_id').val(ui.item.srv_id);
@@ -212,12 +215,18 @@
                 }
                 let profit = data.profit*100;
                 $("#labelProfit").append('('+profit+'%)');
+                $("#tno_rm").append(data.px_norm);
+                $("#tpx_name").append(data.px_name+''); 
+                $("#px_alamat").append(data.alamat); 
+                $("#dokter_").append(data.dokter); 
+                $("#surety_").append(data.surety);                
                 $("#margin_profit").val(data.profit);
                 $("#tno_rm").html($("#no_rm").val());
                 $("#tpx_name").html($("#nama").val());
                 $("#modal_pasien").modal('hide');
             }
         });
-    });
+    }
+    );
     <?= $this->config->item('footerJS') ?>
 </script>
