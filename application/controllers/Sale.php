@@ -394,6 +394,11 @@ class Sale extends MY_Generator {
 	{
 		$post = $this->input->post();
 		$dt['pasien'] = $post;
+		$dt['surety']=$this->db->query("select surety_name from yanmed.ms_surety where surety_id = ".$post['surety_id']." ");
+		$dt['surety'] = $dt['surety']->row('surety_name');
+		$dt['dokter']= $this->db->query("select concat(employee_ft,employee_name,employee_bt) as nama_dokter from hr.employee where employee_id = ".$post['doctor_id']." "); 
+		$dt['dokter'] = $dt['dokter']->row('nama_dokter');
+
 		$dt['profit'] = $this->db->get_where('farmasi.surety_ownership',[
 			"surety_id"	=> $post['surety_id'],
 			"own_id"	=> $post['own_id']
@@ -408,11 +413,19 @@ class Sale extends MY_Generator {
 			$resp=[
 				"code" 		=> "200",
 				"message"	=> "OK",
-				"profit"	=> $dt['profit']
+				"profit"	=> $dt['profit'],
+				"px_name"   => $post['patient_name'],
+				"px_norm"   => $post['patient_norm'],
+				"alamat"    => $post['alamat'],
+				"surety"    => $dt['surety'],
+				"dokter"	=> $dt['dokter']
+				
 			];
 			$this->session->set_userdata('penjualan',$dt);
-		}
+			
+		}		
 		echo json_encode($resp);
+		
 	}
 
 

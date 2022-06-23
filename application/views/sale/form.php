@@ -47,6 +47,22 @@
 						<td>NAMA PASIEN</td>
 						<td class="pull-right" id="tpx_name"></td>
 					</tr>
+					<tr>
+						<td>Margin Keuntungn</td>
+						<td class="pull-right" id="labelProfit"></td>
+					</tr>
+					<tr>
+						<td>Alamat</td>
+						<td class="pull-right" id="px_alamat"></td>
+					</tr>
+					<tr>
+						<td>Dokter</td>
+						<td class="pull-right" id="dokter_"></td>
+					</tr>
+					<tr>
+				   <td>Penjamin</td>
+						<td class="pull-right" id="surety_"></td>
+					</tr>
 				</table>
 			</div>
 		</div>
