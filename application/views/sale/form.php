@@ -34,34 +34,40 @@
 			<div class="box-body">
 				<table class="table1">
 					<tr>
-						<th colspan="2" style="text-align: center;">INVOICE NO :</th>
+						<th colspan="3" style="text-align: center;">INVOICE NO :</th>
 					</tr>
 					<tr>
-						<th colspan="2" style="text-align: center;" id="tno_invoice"><?=$sale_num?></th>
+						<th colspan="3" style="text-align: center;" id="tno_invoice"><?=$sale_num?></th>
 					</tr>
 					<tr>
-						<td>NORM</td>
-						<td class="pull-right" id="tno_rm"></td>
+						<td style="width:30%;">NORM</td>
+						<td style="width:5%;">:</td>
+						<td class="pull-right" style="width:100%;" id="tno_rm"></td>
 					</tr>
 					<tr>
-						<td>NAMA PASIEN</td>
-						<td class="pull-right" id="tpx_name"></td>
+						<td style="width:30%;">NAMA PASIEN</td>
+						<td style="width:5%;">:</td>
+						<td class="pull-right" style="width:100%;" id="tpx_name"></td>
+					</tr>					
+					<tr>
+						<td style="width:30%;">ALAMAT</td>
+						<td style="width:5%;">:</td>
+						<td class="pull-right" style="width:100%;" id="px_alamat"></td>
 					</tr>
 					<tr>
-						<td>Margin Keuntungn</td>
-						<td class="pull-right" id="labelProfit"></td>
+						<td style="width:30%;">DOKTER</td>
+						<td style="width:5%;">:</td>
+						<td class="pull-right" style="width:100%;" id="dokter_"></td>
 					</tr>
 					<tr>
-						<td>Alamat</td>
-						<td class="pull-right" id="px_alamat"></td>
+				   <td style="width:30%;">PENJAMIN</td>
+				  		 <td style="width:5%;">:</td>
+						<td class="pull-right" style="width:100%;" id="surety_"></td>
 					</tr>
 					<tr>
-						<td>Dokter</td>
-						<td class="pull-right" id="dokter_"></td>
-					</tr>
-					<tr>
-				   <td>Penjamin</td>
-						<td class="pull-right" id="surety_"></td>
+						<td style="width:30%;">MARGIN OBAT</td>
+						<td style="width:5%;">:</td>
+						<td class="pull-right" style="width:100%;" id="labelProfit"></td>
 					</tr>
 				</table>
 			</div>
