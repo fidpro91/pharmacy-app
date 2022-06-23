@@ -52,28 +52,30 @@
 		</div>
 	</div>
 	<div class="row">
-		<div class="col-md-6">
-			<li class="list-group-item">
-				<b>Biaya Racikan</b> <a class="pull-right" id="total_biaya_racikan" isi="0">0</a>
-			</li>
-			<li class="list-group-item">
-				<b>Sub Total Racikan</b> <a class="pull-right" id="sub_total_racikan" isi="0">0</a>
-			</li>
-			<li class="list-group-item">
-				<b>Sub Total Non Racikan</b> <a class="pull-right" id="sub_total_nonracikan" isi="0">0</a>
-			</li>
-		</div>
-		<div class="col-md-6">
-			<li class="list-group-item">
-				<?=form_hidden('margin_profit')?>
-				<b id="labelProfit">Profit </b> <a class="pull-right" id="profit_rp">0</a>
-			</li>
-			<li class="list-group-item">
-				<b>Pembulatan Biaya</b> <a class="pull-right" id="pembulatan_biaya">0</a>
-			</li>
-			<li class="list-group-item">
-				<b>Grand Total</b> <a class="pull-right" id="grand_total">0</a>
-			</li>
+		<div class="col-md-12">
+			<div class="col-xs-6">
+				<li class="list-group-item">
+					<b>Biaya Racikan</b> <a class="pull-right" id="total_biaya_racikan" isi="0">0</a>
+				</li>
+				<li class="list-group-item">
+					<b>Sub Total Racikan</b> <a class="pull-right" id="sub_total_racikan" isi="0">0</a>
+				</li>
+				<li class="list-group-item">
+					<b>Sub Total Non Racikan</b> <a class="pull-right" id="sub_total_nonracikan" isi="0">0</a>
+				</li>
+			</div>
+			<div class="col-xs-6">
+				<li class="list-group-item">
+					<?=form_hidden('margin_profit')?>
+					<b id="labelProfit">Profit </b> <a class="pull-right" id="profit_rp">0</a>
+				</li>
+				<li class="list-group-item">
+					<b>Pembulatan Biaya</b> <a class="pull-right" id="pembulatan_biaya">0</a>
+				</li>
+				<li class="list-group-item">
+					<b>Grand Total</b> <a class="pull-right" id="grand_total">0</a>
+				</li>
+			</div>
 		</div>
 	</div>
 	<?= form_close() ?>

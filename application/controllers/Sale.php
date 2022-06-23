@@ -16,7 +16,10 @@ class Sale extends MY_Generator {
 
 	public function index()
 	{
-		session_destroy();
+		// session_destroy();
+		$this->session->unset_userdata([
+			'penjualan','itemRacik','itemNonRacik'
+		]);
 		$this->theme('sale/index');
 	}
 
@@ -31,7 +34,7 @@ class Sale extends MY_Generator {
 				$input[$key] = (!empty($sess[$key])?$sess[$key]:null);
 			}
 			$input['unit_id'] = 18;
-			$input['user_id'] = 1;
+			$input['user_id'] = $this->session->user_id;
 			$input['sale_num'] = $this->get_no_sale();
 			$racikan = $this->session->userdata('itemRacik');
 			$nonRacikan = $this->session->userdata('itemNonRacik');
