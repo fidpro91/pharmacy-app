@@ -9,19 +9,19 @@
 				<div class="box-body">
 					<div class="col-md-6">
 						<?=form_hidden("rec_id")?>
-						<?=create_inputDate("receiver_date",[
+						<?=create_inputDate("receiver_date=tgl Penerimaan",[
 							"format"=>"yyyy-mm-dd",
 							"autoclose"=>"true"
 						],[
 							"value" 	=> date('Y-m-d'),
 							"readonly"	=> true
 						])?>
-						<?=create_input("receiver_num",[
+						<?=create_input("receiver_num=No Penerimaan",[
 							"value" 	=> $norec,
 							"readonly"	=> true,
 						])?>
-						<?=create_input("rec_num")?>
-						<?=create_inputDate("rec_date",[
+						<?=create_input("rec_num=No Faktur")?>
+						<?=create_inputDate("rec_date=Tgl Faktur",[
 							"format"=>"yyyy-mm-dd",
 							"autoclose"=>"true"
 						],[
@@ -48,6 +48,7 @@
 											"column"  => ["po_id","detail_po"]
 										],
 						])?>
+					
 						<?=create_select([
 							"attr"=>["name"=>"pay_type=Tipe pembayaran","id"=>"pay_type","class"=>"form-control"],
 							"option"=> [["id"=>'1',"text"=>"Tunai"],["id"=>'2',"text"=>"Kredit"]],
@@ -75,11 +76,12 @@
 			<?=create_inputmask("grand_total","IDR",["readonly"=>true])?>
 		</div>
 	</div>
-<?=form_close()?>
+	<?=form_close()?>
       <div class="box-footer">
       		<button class="btn btn-primary" type="button" onclick="$('#fm_receiving').submit()">Save</button>
       		<button class="btn btn-warning" type="button" id="btn-cancel">Cancel</button>
       </div>
+	
     </div>
 <script type="text/javascript">
 	$("#btn-cancel").click( () => {

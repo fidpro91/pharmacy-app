@@ -10,34 +10,47 @@ class Sale_return extends MY_Generator {
 						 ->lib_select2()
 						 ->lib_inputmask();
 		$this->load->model('m_sale_return');
+		$this->load->model('m_sale_return_detail');
 	}
 
 	public function index()
 	{
+		$this->session->unset_userdata([
+			'itemReturn'
+		]);
 		$this->theme('sale_return/index');
 	}
 
 	public function save()
 	{
 		$data = $this->input->post();
-		if ($this->m_sale_return->validation()) {
-			$input = [];
-			foreach ($this->m_sale_return->rules() as $key => $value) {
-				$input[$key] = $data[$key];
-			}
-			if ($data['sr_id']) {
-				$this->db->where('sr_id',$data['sr_id'])->update('farmasi.sale_return',$input);
-			}else{
-				$this->db->insert('farmasi.sale_return',$input);
-			}
-			$err = $this->db->error();
-			if ($err['message']) {
-				$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
-			}else{
-				$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
-			}
+		$input = [];
+		$this->db->trans_begin();
+		$detailRetur = $this->session->userdata('itemReturn');
+		foreach ($this->m_sale_return->rules() as $key => $value) {
+			$input[$key] = (isset($data[$key])?$data[$key]:null);
+		}
+		// $input['user_id'] = $this->session->user_id;
+		$input['user_id'] = 11;
+		$input['sr_total'] = $data['total_return'];
+		$input['sr_embalase'] = $data['embalase'];
+		//insert sale return
+		$this->db->insert('farmasi.sale_return',$input);
+		$sr_id = $this->db->insert_id();
+
+		//retur detail
+		$detailRetur['detail'] = array_map(function($arr) use ($sr_id){
+			return $arr + ['sr_id' => $sr_id];
+		}, $detailRetur['detail']);
+
+		$this->db->insert_batch("farmasi.sale_return_detail",$detailRetur['detail']);
+		$err = $this->db->error();
+		if ($this->db->trans_status === false) {
+			$this->db->trans_rollback();
+			$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
 		}else{
-			$this->session->set_flashdata('message',validation_errors('<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>','</div>'));
+			$this->db->trans_commit();
+			$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
 		}
 		redirect('sale_return');
 
@@ -139,6 +152,57 @@ class Sale_return extends MY_Generator {
 		$data['data'] 	= $this->m_sale_return->get_saleDetail($srv_id);
 		$data['sr_num']	= $this->get_no_sale();
 		$this->load->view("sale_return/form_item",$data);
+	}
+
+	public function set_item_retur()
+	{
+		$post = $this->input->post();
+		$totalItem=0;
+		$totalQty=0;
+		$totalRp=0;
+		$itemRetur=[];
+		$itemReturnOld = $this->session->userdata('itemReturn');
+		foreach ($post['div_detail'] as $x => $v) {
+			if(isset($v['itemdet_id'])){
+				$sale = explode('|',$v['itemdet_id']);
+				if (!empty($itemReturnOld)) {
+					$row = array_search($sale[1], array_column($itemReturnOld['detail'], 'saledetail_id'));
+					if ($row !== false) {
+						continue;
+					}
+				}
+				$v['sale_id'] = $sale[0];
+				$v['saledetail_id'] = $sale[1];
+				$v['item_id'] = $sale[2];
+				foreach ($this->m_sale_return_detail->rules() as $key => $value) {
+					if ($key != 'sr_id') {
+						$itemRetur[$x][$key] = (isset($v[$key])?$v[$key]:null);
+					}
+				}
+				$totalItem++;
+				$totalQty += $v['qty_return'];
+				$totalRp += $v['total_return'];
+			}
+		}
+		$detailRetur['detail'] = $itemRetur;
+		$detailRetur['totalItem'] = $totalItem;
+		$detailRetur['totalQty'] = $totalQty;
+		$detailRetur['totalRp'] = $totalRp;
+		if (!empty($itemReturnOld)) {
+			$detailRetur['detail'] = array_merge_recursive($itemReturnOld['detail'],$detailRetur['detail']);
+			$detailRetur['totalItem'] = $itemReturnOld['totalItem']+$totalItem;
+			$detailRetur['totalQty'] = $itemReturnOld['totalQty']+$totalQty;
+			$detailRetur['totalRp'] = $itemReturnOld['totalRp']+$totalRp;
+		}
+		$detailRetur['detail'] = array_unique($detailRetur['detail'],SORT_REGULAR);
+		$this->session->set_userdata('itemReturn',$detailRetur);
+		echo json_encode([
+			"code" 		=> '200',
+			"message"	=> 'Oke',
+			'totalItem'	=> $detailRetur['totalItem'],
+			'totalQty'	=> $detailRetur['totalQty'],
+			'totalRp'	=> $detailRetur['totalRp'],
+		]);
 	}
 
 	public function get_no_sale()

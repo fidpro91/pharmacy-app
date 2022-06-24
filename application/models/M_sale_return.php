@@ -60,27 +60,11 @@ class M_sale_return extends CI_Model
 		$data = [
 			"sr_num" => "trim|required",
 			"sr_date" => "trim",
-			"date_act" => "trim",
-			"sr_status" => "trim|integer",
-			"sr_shift" => "trim|integer",
 			"user_id" => "trim|integer",
 			"unit_id" => "trim|integer",
-			"own_id" => "trim|integer",
-			"sale_id" => "trim|integer|required",
 			"visit_id" => "trim|integer",
 			"patient_name" => "trim",
 			"service_id" => "trim|integer",
-			"surety_id" => "trim|integer",
-			"doctor_id" => "trim|integer",
-			"doctor_name" => "trim",
-			"rcp_id" => "trim|integer",
-			"cash_id" => "trim|integer",
-			"verificated" => "trim",
-			"verificator_id" => "trim|integer",
-			"verified_at" => "trim",
-			"rec_id" => "trim|integer",
-			"cashretur_id" => "trim|integer",
-
 		];
 		return $data;
 	}

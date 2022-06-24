@@ -3,66 +3,57 @@
 		min-height: 330px !important;
 	}
 </style>
-<div class="col-md-12">
-	<?= form_open("sale_return/save", ["method" => "post", "class" => "form-horizontal", "id" => "fm_sale_return"], $model) ?>
-	<div class="col-md-4">
-		<div class="box box-primary">
-			<div class="box-header with-border">
-				<h3 class="box-title">Informasi Retur</h3>
+<div class="row">
+	<div class="col-md-12">
+		<?= form_open("sale_return/save", ["method" => "post", "id" => "fm_sale_return"], $model) ?>
+		<div class="col-md-3">
+			<div class="box box-primary">
+				<div class="box-header with-border">
+					<h3 class="box-title">Informasi Retur</h3>
+				</div>
+				<div class="box-body">
+					<?= form_hidden("sr_id") ?>
+					<?= form_hidden("service_id") ?>
+					<?= form_hidden("visit_id") ?>
+					<?= create_inputDate("sr_date", [
+						"format" => "yyyy-mm-dd",
+						"autoclose" => "true"
+					],[
+						"value"		=> date('Y-m-d'),
+						'readonly'	=> true
+					])?>
+					<?= create_input("sr_num",[
+						"readonly"	=>true,
+						"value"		=> $sr_num
+					]) ?>
+					<?= create_input("unit_id") ?>
+					<?= create_input("patient_norm") ?>
+					<?= create_input("patient_name") ?>
+				</div>
 			</div>
-			<div class="box-body">
-				<?= form_hidden("sr_id") ?>
-				<?= form_hidden("service_id") ?>
-				<?= form_hidden("visit_id") ?>
-				<?= create_inputDate("sr_date", [
-                    "format" => "yyyy-mm-dd",
-                    "autoclose" => "true"
-                ],[
-					"value"		=> date('Y-m-d'),
-					'readonly'	=> true
-				])?>
-				<?= create_input("sr_num",[
-					"readonly"	=>true,
-					"value"		=> $sr_num
-				]) ?>
-				<?= create_input("unit_id") ?>
-				<?= create_input("patient_norm") ?>
-				<?= create_input("patient_name") ?>
+			<div class="box box-primary">
+				<div class="box-body">
+					<?= create_input("total_item") ?>
+					<?= create_input("total_qty") ?>
+					<?= create_input("embalase") ?>
+					<?= create_input("total_return") ?>
+				</div>
 			</div>
 		</div>
-	</div>
-	<div class="col-md-8">
-		<div class="box box-primary">
-			<div class="box-header with-border">
-				<h3 class="box-title">Item Retur</h3>
-			</div>
-			<div class="list_item box-body">
+		<div class="col-md-9">
+			<div class="box box-primary">
+				<div class="box-header with-border">
+					<h3 class="box-title">Item Retur</h3>
+				</div>
+				<div class="list_item box-body">
+				</div>
 			</div>
 		</div>
-	</div>
-	<!-- <?= create_input("user_id") ?>
-	<?= create_input("own_id") ?>
-	<?= create_input("sale_id") ?>
-	<?= create_input("sale_type") ?>
-	<?= create_input("surety_id") ?>
-	<?= create_input("sr_embalase") ?>
-	<?= create_input("sr_services") ?>
-	<?= create_input("doctor_id") ?>
-	<?= create_input("doctor_name") ?>
-	<?= create_input("rcp_id") ?>
-	<?= create_input("cash_id") ?>
-	<?= create_input("verificated") ?>
-	<?= create_input("verificator_id") ?>
-	<?= create_input("verified_at") ?>
-	<?= create_input("rec_id") ?>
-	<?= create_input("cashretur_id") ?>
-	<?= create_input("sr_total") ?>
-	<?= create_input("discount") ?>
-	<?= create_input("sr_total_before_discount") ?> -->
-	<?= form_close() ?>
-	<div class="box-footer">
-		<button class="btn btn-primary" type="button" onclick="$('#fm_sale_return').submit()">Save</button>
-		<button class="btn btn-warning" type="button" id="btn-cancel">Cancel</button>
+		<?= form_close() ?>
+		<div class="box-footer">
+			<button class="btn btn-primary" type="button" onclick="$('#fm_sale_return').submit()">Save</button>
+			<button class="btn btn-warning" type="button" id="btn-cancel">Cancel</button>
+		</div>
 	</div>
 </div>
 <script type="text/javascript">
@@ -95,5 +86,12 @@
         return false;
     });
 
+	function grandTotal(total) {
+		let embalase = total/100;
+		embalase = Math.abs(Math.ceil(embalase)-embalase)*100;
+		total = total+embalase;
+		$("#embalase").val(embalase);
+		$("#total_return").val(total);
+	}
 	<?= $this->config->item('footerJS') ?>
 </script>

@@ -20,7 +20,7 @@
           <h3 class="box-title">Form Sale Return</h3>
           <div class="box-tools pull-right">
             <button type="button" id="btn-add" class="btn btn-primary">
-              <i class="fa fa-plus"></i> Add</button>
+              <i class="fa fa-edit "></i> New</button>
           </div>
         </div>
         <div class="box-body" id="form_sale_return">

@@ -6,8 +6,9 @@ class M_receiving extends CI_Model {
 	{
 		$data = $this->db->query("
 				select ".implode(',', $aColumns).",rec_id as id_key from (
-					select r.*,mr.reff_name as own_name from newfarmasi.receiving r 
-					left join admin.ms_reff mr on r.own_id = mr.reff_id
+					select r.*,mr.own_name as own_name,supplier_name from newfarmasi.receiving r 
+					LEFT JOIN farmasi.ownership mr ON r.own_id = mr.own_id 
+					left join admin.ms_supplier sp on r.supplier_id = sp.supplier_id
 					where 0=0 $sWhere $sOrder $sLimit
 				)x
 			")->result_array();
@@ -17,7 +18,9 @@ class M_receiving extends CI_Model {
 	public function get_total($sWhere,$aColumns)
 	{
 		$data = $this->db->query("
-				select rec_id as id_key  from newfarmasi.receiving where 0=0 $sWhere
+				select rec_id as id_key  from newfarmasi.receiving r 
+				left join admin.ms_supplier sp on r.supplier_id = sp.supplier_id
+				where 0=0 $sWhere
 			")->num_rows();
 		return $data;
 	}
@@ -25,20 +28,32 @@ class M_receiving extends CI_Model {
 	public function get_column()
 	{
 		$col = [
-				"receiver_date",
-				"rec_num",
-				"receiver_num",
-				"own_name",
-				"rec_type",
-				"status",
-				"pay_type"=>["custom"=>function($x){
+				"receiver_date"=>["label"=>"Tgl.Penerimaan"],
+				"rec_num"=>["label"=>"No.Faktur"],
+				"receiver_num"=>["label"=>"No.Penerimaan"],
+				"own_name"=>["label"=>"Kepemilikan"],
+				"rec_type"=>[
+					"label" => "Jenis Penerimaan",
+					"custom" => function ($a) {
+						if ($a == '0') {
+							$condition = ["class" => "label-primary", "text" => "Penerimaan Po"];
+						}else if($a == '1'){
+							$condition = ["class" => "label-success", "text" => "Hibah"];
+						}else{
+							$condition = ["class" => "label-danger", "text" => "Konsinyasi"];
+						}
+						return label_status($condition);
+					}
+				],
+				"supplier_name"=>["label"=>"Supplier"],
+				"pay_type"=>["label" => "Tipe Pembayaran","custom"=>function($x){
 					if($x==1){
 						return 'Tunai';
 					}else {
 						return 'Kredit';
 					}
 				}],
-				"estimate_resource",
+				//"estimate_resource",
 				"grand_total",
 			];
 		return $col;
@@ -67,7 +82,7 @@ class M_receiving extends CI_Model {
 					"hibah_cat" => "trim|integer",
 					"pay_type" => "trim|required",
 					"estimate_resource" => "trim|required",
-					"supplier_id" => "trim|integer|required",
+					"supplier_id" => "trim|integer",
 					"user_id" => "trim|integer",
 					"item_status" => "trim|integer",
 					"transfer_date" => "trim",
