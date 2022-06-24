@@ -338,7 +338,7 @@ function create_inputMask($name,$jsscript = array(),$attr=array())
     }else{
     	$js .= "\n$('#".$name."').inputmask(\"".$jsscript."\")";
     }
-    $CI->config->set_item('footerJS',$js);
+  //  $CI->config->set_item('footerJS',$js);
     return $txt;
 }
 

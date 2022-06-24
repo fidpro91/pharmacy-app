@@ -20,7 +20,7 @@ class Receiving extends MY_Generator {
 
 	public function save()
 	{
-		$data = $this->input->post(); print_r($data);die;
+		$data = $this->input->post(); //print_r($data);
 		// if ($this->m_receiving->validation()) {
 			$input = [];
 			foreach ($this->m_receiving->rules() as $key => $value) { 

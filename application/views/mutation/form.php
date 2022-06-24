@@ -1,16 +1,16 @@
     <div class="col-md-12">
     	<?= form_open("mutation/save", ["method" => "post", "class" => "form-horizontal", "id" => "fm_mutation"], $model) ?>
     	<?= form_hidden("mutation_id") ?>
-    	<?= create_inputDate("mutation_date", [
+    	<?= create_inputDate("mutation_date=Tgl Mutasi", [
 			"format" => "yyyy-mm-dd",
 			"autoclose" => "true"
 		]) ?>
-    	<?= create_input("mutation_no") ?>
+    	<?= create_input("mutation_no=No. Mutasi") ?>
     	<?= create_select([
 			"attr" => ["name" => "own_id=Kepemilikan", "id" => "own_id", "class" => "form-control"],
 			"model" => [
-				"m_ms_reff" => ["get_ms_reff", ["refcat_id" => '37']],
-				"column"  => ["reff_id", "reff_name"]
+				"m_ownership" => ["get_ownership", ["0"=>'0']],
+				"column"  => ["own_id", "own_name"]
 			]
 		]) ?>
     	<?= create_select2([
