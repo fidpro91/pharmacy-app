@@ -16,20 +16,20 @@
       <!-- Default box -->
 
       <div class="row">
-        <div class="col-md-12" id="form_sale"></div>
+        <div class="col-md-12" id="form_sale"  id="form_sale" style="display: none;"></div>
       </div>
-      <div class="box" id="data_sale"  style="display: none;">
+      <div class="box" id="data_sale">
         <?=$this->session->flashdata('message')?>
         <div class="box-header with-border">
-          <h3 class="box-title">Form Sale</h3>
-          <div class="box-tools pull-right">
+          <div class="box-tools pull-left">
+            <?= form_dropdown("unit_id_depo", $unit, '', 'class="form-control select2" id="unit_id_depo"') ?>
+          </div>
+            <div class="box-tools pull-right">
             <button type="button" id="btn-add" class="btn btn-primary">
               <i class="fa fa-plus"></i> Add</button>
           </div>
         </div>
-		  <div class="box-body" id="form_sale" style="display: none;">
-		  </div>
-		  <div class="box-body" id="data_sale">
+		  <div class="box-body">
           <?=create_table("tb_sale","M_sale",["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
 		  </div>
         <div class="box-footer">
@@ -48,17 +48,18 @@
 <script type="text/javascript">
     var table;
     $(document).ready(function() {
-      $("#modal_pasien").modal('show');
-      $("#modal_pasien").find(".modal-body").load("sale/show_form_pasien");
-      $("#form_sale").load("sale/show_form");
-        /* table = $('#tb_sale').DataTable({
+      // $("#form_sale").load("sale/show_form");
+        table = $('#tb_sale').DataTable({
             "processing": true,
             "serverSide": true,
             "order": [],
             "scrollX": true,
             "ajax": {
                 "url": "<?php echo site_url('sale/get_data')?>",
-                "type": "POST"
+                "type": "POST",
+                "data" : function (f) {
+                    f.unit_id = $("#unit_id_depo").val();
+                  }
             },
             'columnDefs': [
             {
@@ -73,8 +74,11 @@
                    return '<input type="checkbox" name="id[]" value="' + $('<div/>').text(data).html() + '">';
                }
             }],
-        }); */
+        });
     });
+    $("#unit_id_depo").change(() => {
+			table.draw();
+		});
     $("#btn-add").click(function() {
       $("#form_sale").show();
       $("#data_sale").hide();

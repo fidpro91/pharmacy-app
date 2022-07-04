@@ -31,16 +31,24 @@
 					<?= create_input("patient_name") ?>
 				</div>
 			</div>
-			<div class="box box-primary">
-				<div class="box-body">
-					<?= create_input("total_item") ?>
-					<?= create_input("total_qty") ?>
-					<?= create_input("embalase") ?>
-					<?= create_input("total_return") ?>
-				</div>
-			</div>
 		</div>
 		<div class="col-md-9">
+			<div class="box box-primary">
+				<div class="box-body">
+					<div class="col-xs-3">
+						<?= create_inputMask("total_item","IDR") ?>
+					</div>
+					<div class="col-xs-3">
+						<?= create_inputMask("total_qty","IDR") ?>
+					</div>
+					<div class="col-xs-3">
+						<?= create_inputMask("embalase","IDR") ?>
+					</div>
+					<div class="col-xs-3">
+						<?= create_inputMask("total_return","IDR") ?>
+					</div>
+				</div>
+			</div>
 			<div class="box box-primary">
 				<div class="box-header with-border">
 					<h3 class="box-title">Item Retur</h3>
@@ -50,7 +58,7 @@
 			</div>
 		</div>
 		<?= form_close() ?>
-		<div class="box-footer">
+		<div class="box-footer" align="center">
 			<button class="btn btn-primary" type="button" onclick="$('#fm_sale_return').submit()">Save</button>
 			<button class="btn btn-warning" type="button" id="btn-cancel">Cancel</button>
 		</div>
@@ -85,6 +93,10 @@
         };
         return false;
     });
+
+	$("#fm_sale_return").on("submit",()=>{
+		$("#total_item").attr('readonly',false);
+	});
 
 	function grandTotal(total) {
 		let embalase = total/100;

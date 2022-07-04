@@ -23,7 +23,7 @@
               <i class="fa fa-edit "></i> New</button>
           </div>
         </div>
-        <div class="box-body" id="form_sale_return">
+        <div class="box-body" id="form_sale_return" style="display: none;">
         </div>
         <div class="box-body" id="data_sale_return">
           <?=create_table("tb_sale_return","M_sale_return",["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>

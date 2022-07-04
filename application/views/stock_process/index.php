@@ -85,6 +85,7 @@
             "serverSide": true, 
             "order": [], 
             "scrollX": true,
+            "pageLength": 100,
             "ajax": {
                 "url": "<?php echo site_url('stock_process/get_data')?>",
                 "type": "POST",

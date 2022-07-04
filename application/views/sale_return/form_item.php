@@ -50,7 +50,7 @@
 </table>
 <?= form_close() ?>
 <div class="box-footer" align="center">
-    <button class="btn btn-success" id="btn-add-item" type="button"><i class="fa fa-plus"></i> Tambah</button>
+    <button class="btn btn-success" id="btn-add-item" type="button"><i class="fa fa-plus"></i> Konfirm Cek Lis</button>
 </div>
 <script>
     $("#btn-add-item").click(() => {
@@ -79,12 +79,12 @@
         let harga = parseFloat($.isNumeric(row.closest('tr').find('.sale_price').val()) ? row.closest('tr').find('.sale_price').val() : 0);
         let total = (qty * harga);
         row.closest('tr').find('.total_retur').val(total);
-        hitunggrandTotal();
         // hitungDiskon(row,'persen');
     }
+    var tableItem;
     $(document).ready(() => {
         $(".money").inputmask('IDR');
-        $("#table_item").DataTable({
+        tableItem = $("#table_item").DataTable({
             "paging": false,
             "sorting": false,
             "ordering": false

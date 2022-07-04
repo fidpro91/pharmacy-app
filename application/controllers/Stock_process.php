@@ -7,6 +7,7 @@ class Stock_process extends MY_Generator {
 	{
 		parent::__construct();
 		$this->datascript->lib_select2()
+						 ->lib_datatableExt()
 					     ->lib_daterange();
 		$this->load->model('m_stock_process');
 	}

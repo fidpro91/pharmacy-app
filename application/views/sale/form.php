@@ -113,9 +113,14 @@
 <?= modal_close() ?>
 </div>
 <script type="text/javascript">
+	$(document).ready(()=>{
+		$("#modal_pasien").modal('show');
+      	$("#modal_pasien").find(".modal-body").load("sale/show_form_pasien");
+	});
+	
 	$("body").on("focus", ".autocom_item_id", function() {
 	    $(this).autocomplete({
-            source: "<?php echo site_url('sale/get_item');?>",
+            source: "<?php echo site_url('sale/get_item');?>/"+$("#unit_id_depo").val(),
             select: function (event, ui) {
                 $(this).closest('tr').find('.item_id').val(ui.item.item_id);
                 $(this).closest('tr').find('.sale_price').val(ui.item.harga);
@@ -131,6 +136,25 @@
                 .appendTo(ul);
         };
 	});
+
+	$('#fm_sale_h').on("submit",function(){
+		$.blockUI();
+		$.ajax({
+			'type': "post",
+			'data'	: $(this).serialize(),
+			'dataType': 'json',
+			'url': "sale/save",
+			'success': function (data) {
+				$.unblockUI();
+				alert(data.message);
+				if (data.code == '200') {
+					location.reload(true);
+				}
+			}
+		});
+		return false;
+	});
+
 	$("#btn-racikan").click(() => {
 		$("#modal_racikan").modal('show');
 		$("#modal_racikan").find(".modal-body").load("sale/show_form_racikan");
@@ -143,9 +167,6 @@
 		$("#form_sale").hide();
 		$("#form_sale").html('');
 	});
-	function save_sale() {
-		alert("simpan")
-	}
 
 	function formatMoney(val=0){
         return new Intl.NumberFormat('id-ID',  {
