@@ -90,7 +90,7 @@ class M_mutation extends CI_Model {
 						}else if ($a == '2') {
 							$condition = ["class" => "label-danger", "text" => "diproses"];
 						}else {
-							$condition = ["class" => "label-danger", "text" => "terima"];
+							$condition = ["class" => "label-success", "text" => "terima"];
 						}
 						return label_status($condition);
 					}
@@ -140,10 +140,10 @@ class M_mutation extends CI_Model {
 		return $this->db->get_where("newfarmasi.mutation",$where)->row();
 	}
 
-	public function get_item_autocomplete($select=null,$where)
+	public function get_item_autocomplete($where)
 	{
 		return $this->db->query(
-			"SELECT $select mi.item_id,mi.item_package,mi.item_name,mi.item_code,mi.item_unitofitem,
+			"SELECT  mi.item_id,mi.item_package,mi.item_name as value,mi.item_code,mi.item_unitofitem,
 			sum(sf.stock_saldo)as total_stock
 			FROM newfarmasi.stock_fifo sf
 			JOIN admin.ms_item mi ON sf.item_id = mi.item_id
@@ -156,7 +156,7 @@ class M_mutation extends CI_Model {
 	{
 		$data["header"] = $this->db->join("admin.ms_unit mu","mu.unit_id=m.unit_require")
 								   ->join("admin.ms_user mus","mus.user_id=m.user_require","left")
-								   ->join("admin.ms_reff mr","mr.reff_id=m.own_id","left")
+								   ->join("farmasi.ownership mr","mr.own_id=m.own_id","left")
 								   ->get_where("newfarmasi.mutation m",$where)->row();
 		
 		$data["detail"] = $this->db->join("admin.ms_item mi","mi.item_id=md.item_id")
@@ -164,5 +164,14 @@ class M_mutation extends CI_Model {
 								   ->result();
 		
 		return $data;
+	}
+
+	public function get_user_in_unit($where){
+		return $this->db->join("hr.employee e","e.employee_id = u.employee_id")
+						->join("hr.employee_on_unit eu","eu.employee_id = e.employee_id")
+						->join("farmasi.v_unit_farmasi vf","vf.unit_id = eu.unit_id")
+						->where("cat_unit_code in ('0502','0503','0504')")
+						->where($where)
+						->get("admin.ms_user u")->result();
 	}
 }

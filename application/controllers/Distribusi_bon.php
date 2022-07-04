@@ -7,6 +7,7 @@ class Distribusi_bon extends MY_Generator {
 	{
 		parent::__construct();
 		$this->datascript->lib_datepicker()
+						 ->lib_daterange()
 						 ->lib_inputmulti()
 						 ->lib_select2()
 						 ->lib_inputmask();
@@ -72,7 +73,7 @@ class Distribusi_bon extends MY_Generator {
 			$this->db->trans_commit();
 			$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
 		}
-		redirect('mutation');
+		redirect('Distribusi_bon');
 
 	}
 
@@ -99,9 +100,15 @@ class Distribusi_bon extends MY_Generator {
 		$this->load->library('datatable');
 		$attr 	= $this->input->post();
 		$fields = $this->m_mutation->get_column_bon();
-        $filter = [
-            "mutation_status" => 1
-        ];
+		list($tgl1,$tgl2) = explode('/', $attr['tgl']); 
+        $filter = [];	
+		$filter["custom"]= "(date(mutation_date) between '$tgl1' and '$tgl2')";	
+		if ($attr['unit'] !='') {
+			$filter = array_merge($filter, ["unit_require" => $attr['unit']]);
+		}	
+		if($attr['sts'] != ' '){
+			$filter =array_merge($filter, ["mutation_status" => $attr['sts']]);
+		}
 		$data 	= $this->datatable->get_data($fields,$filter,'m_mutation',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 

@@ -39,8 +39,8 @@
                         <div class="col-md-6">
                             <?=create_select([
                                 "attr" =>["name"=>"own_id=Kepemilikan","id"=>"own_id","class"=>"form-control"],
-                                "model"=>["m_receiving" => ["get_hibah",["refcat_id"=>'37']],
-                                                "column"  => ["reff_id","reff_name"]
+                                "model"=>["m_receiving" => ["get_owner",["0"=>'0']],
+                                                "column"  => ["own_id","own_name"]
                                             ],
                             ])?>
                             <?=create_input("hibah_name=Dari")?>
@@ -52,7 +52,7 @@
                             ])?>
                             <?=create_select([
                                 "attr"=>["name"=>"rec_type=Tipe Penerimaan","id"=>"rec_type","class"=>"form-control"],
-                                "option"=> [["id"=>'1',"text"=>"Hibah"],["id"=>'2',"text"=>"Item Konsinyasi"]],
+                                "option"=> [["id"=>'1',"text"=>"Penerimaan Po"],["id"=>'1',"text"=>"Penerimaan Hibah"],["id"=>'2',"text"=>"Penerimaan Konsinyasi"]],
                             ])?>
                         </div>
                     </div>
@@ -91,7 +91,7 @@
 	$(document).ready(()=>{
         $(".list_item").inputMultiRow({
 	            column: ()=>{
-					var dataku;
+					var dataku; 
 					$.ajax({
 						'async': false,
 						'type': "GET",
@@ -103,9 +103,9 @@
 					});
 					return dataku;
 	                },
-                "data": dataHibah
-	    });
-        $(".uang").inputmask("IDR");
+                "data": dataHibah 
+	    }); 
+        $(".uang").inputmask("IDR"); 
 	});
 
     $("body").on("focus", ".autocom_item_id", function() {

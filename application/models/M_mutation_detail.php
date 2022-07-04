@@ -44,6 +44,20 @@ class M_mutation_detail extends CI_Model {
 		return $col;
 	}
 
+	
+	public function get_column_multiple_permintaan()
+	{
+		$col = [
+				"item_id",
+				"stock_unit",
+				"qty_request",
+				"qty_pack"
+			];
+		return $col;
+	}
+
+
+
 	public function get_column_multiple_bon()
 	{
 		$col = [

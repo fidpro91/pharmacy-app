@@ -71,9 +71,9 @@
 			</div>
 		</div>
 		<div class="col-sm-12">
-			<?=create_inputmask("rec_taxes=PPN","IDR",["readonly"=>true])?>
-			<?=create_inputmask("discount_total","IDR",["readonly"=>true])?>
-			<?=create_inputmask("grand_total","IDR",["readonly"=>true])?>
+			<?=create_inputmask("rec_taxes=PPN","IDR")?>
+			<?=create_inputmask("discount_total","IDR")?>
+			<?=create_inputmask("grand_total","IDR")?>
 		</div>
 	</div>
 	<?=form_close()?>

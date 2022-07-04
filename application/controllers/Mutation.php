@@ -17,7 +17,6 @@ class Mutation extends MY_Generator {
 	{
 		$this->theme('mutation/index');
 	}
-
 	public function show_multiRows()
 	{
 		$this->load->model("m_mutation_detail");
@@ -45,12 +44,12 @@ class Mutation extends MY_Generator {
 	public function get_item($own_id,$unit_id)
 	{
 		$term = $this->input->get('term');
-
+		
 		$where = " AND sf.own_id = '$own_id' AND sf.unit_id='$unit_id' AND (
 			lower(mi.item_name) like lower('%$term%')
-		)";
-		$select=" mi.item_name as value,";
-		echo json_encode($this->m_mutation->get_item_autocomplete($select,$where));
+		)";	
+		//$select=" mi.item_name as value,";	
+		echo json_encode($this->m_mutation->get_item_autocomplete($where));
 	}
 
 	public function save()
