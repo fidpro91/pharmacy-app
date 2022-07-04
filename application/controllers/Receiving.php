@@ -39,7 +39,7 @@ class Receiving extends MY_Generator {
 				$data['rec_id'] = $this->db->insert_id();
 			}
 			$data['own_id'] = $dataPo->own_id;
-			$sukses=$this->insert_recdet($data);
+			$sukses=$this->insert_recdet($data);		
 			$err = $this->db->error();
 			if ($err['message'] || $sukses === false) {
 				$this->db->trans_rollback();

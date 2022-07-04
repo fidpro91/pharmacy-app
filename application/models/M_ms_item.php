@@ -91,6 +91,23 @@ class M_ms_item extends CI_Model {
 		return $data;
 	}
 
+	public function get_item_stok($where)
+	{
+		$data = $this->db->query(
+			"SELECT	rd.item_id,i.item_name,i.item_name as value,
+			i.item_code,i.comodity_id,i.classification_id,i.item_unitofitem AS item_satuan,
+			rd.stock_summary as stok,COALESCE(p.price_sell::numeric,0) as price_sell
+			FROM
+				farmasi.stock rd
+				JOIN ADMIN.ms_item i ON rd.item_id = i.item_id
+				LEFT JOIN farmasi.price P ON rd.item_id = P.item_id 
+				AND p.own_id = rd.own_id 
+			where 0=0 $where"
+
+			)->result();
+		return $data;
+	}
+
 	public function find_one($where)
 	{
 		return $this->db->get_where("admin.ms_item",$where)->row();

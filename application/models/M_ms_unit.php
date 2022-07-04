@@ -69,8 +69,10 @@ class M_ms_unit extends CI_Model {
 
 	public function get_ms_unit()
 	{
-		return $this->db->get_where("admin.ms_unit")->result();
-	}
+		return $this->db->get_where("admin.ms_unit","unit_type in (3,31,32,33,34)")->result();
+	}	
+
+	
 
 	public function find_one($where)
 	{

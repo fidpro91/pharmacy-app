@@ -77,4 +77,6 @@ class M_stock_fifo extends CI_Model {
 
 		return $data;
 	}
+
+
 }

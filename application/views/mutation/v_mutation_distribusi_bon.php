@@ -17,14 +17,29 @@
       <div class="box">
         <?=$this->session->flashdata('message')?>
         <div class="box-header with-border">
-          <h3 class="box-title">Form Distribusi BON Unit</h3>
-          <div class="box-tools pull-right">
-            <!-- filer unit -->
-          </div>
+          <h3 class="box-title">Form Distribusi BON Unit</h3>        
+        </div>  
+        <div class="col-md-3">     
+          <?= create_select([
+              "attr" => ["name" => "filter_unit=Filter Unit", "id" => "filter_unit", "class" => "form-control"],
+              "model"=>["m_ms_unit" => "get_ms_unit",
+              "column"  => ["unit_id","unit_name"]
+            ],
+            ]) ?>  
+          </div>  
+          <div class="col-md-3">     
+          <?=create_inputDaterange("tanggal",["locale"=>["format"=>"YYYY-MM-DD","separator"=>"/"]])?>
+          </div>  
+          <div class="col-md-3">     
+          <?= create_select([
+              "attr" => ["name" => "status=status mutasi","id" => "status","class" => "form-control"],
+              "option" => [["id" => ' ', "text" => 'Pilih'], ["id" => '1', "text" => "Meminta"], ["id" => '2', "text" => "diproses"],["id" => '3', "text" => "terima"]]
+            ]) ?>
+            </div>
+        <div class="box-body" id="form_mutation" style="display: none;">        
         </div>
-        <div class="box-body" id="form_mutation" style="display: none;">
-        </div>
-        <div class="box-body" id="data_mutation">
+        
+        <div class="box-body" id="data_mutation">        
           <?=create_table("tb_mutation",["M_mutation"=>"get_column_bon"],["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
         </div>
         <div class="box-footer">
@@ -51,7 +66,12 @@
             "scrollX": true,
             "ajax": {
                 "url": "<?php echo site_url('Distribusi_bon/get_data')?>",
-                "type": "POST"
+                "type": "POST",
+                "data":function(f){
+                  f.unit=$("#filter_unit").val();
+                  f.tgl=$("#tanggal").val();
+                  f.sts=$("#status").val();
+                }
             },
             'columnDefs': [
             {
@@ -67,6 +87,9 @@
                }
             }], 
         });
+        $("#filter_unit,#tanggal,#status").change(()=>{
+            table.draw();
+            });
     });
     $("#btn-add").click(function() {
       $("#form_mutation").show();
@@ -111,4 +134,5 @@
           },'json');
         }
     });
+    <?=$this->config->item('footerJS')?>
 </script>

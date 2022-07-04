@@ -8,11 +8,9 @@
                     "class" => "form-control",
                     "style" => "width:100%;"
                 ],
-        "model" => [
-            "m_ms_unit" => ["get_ms_unit", ["0" => '0']],
-            "column"  => ["unit_id", "unit_name"]
-        ]
-    ]) ?>
+                "model"=>["m_mutation" => ["get_user_in_unit",[0,"u.user_id"=>$this->session->user_id]],
+                "column"  => ["unit_id","unit_name"]]
+            ]) ?>
     <?= create_inputDate("mutation_date=tanggal kirim", [
         "format" => "yyyy-mm-dd",
         "autoclose" => "true"
@@ -33,7 +31,7 @@
 				<th><?=$dataBon['header']->unit_name?></th>
 				<th>KEPEMILKAN</th>
 				<th>:</th>
-				<th><?=$dataBon['header']->reff_name?></th>
+				<th><?=$dataBon['header']->own_name?></th>
 			</tr>
 			<tr>
 				<th>USER MINTA</th>
@@ -49,6 +47,7 @@
                 <th>NAMA ITEM</th>
                 <th>SATUAN</th>
                 <th>JML MINTA</th>
+                <th>JML STOK</th>
                 <th>JML KIRIM</th>
             </tr>
             <?php
@@ -59,6 +58,7 @@
                             <td>$value->item_name</td>
                             <td>$value->item_package</td>
                             <td>$value->qty_request</td>
+                            <td>$value->stock_unit</td>
                             <td>
                                 ".form_hidden("list_item[$key][mutation_detil_id]",$value->mutation_detil_id).form_input([
                                     "type"  => "text",
