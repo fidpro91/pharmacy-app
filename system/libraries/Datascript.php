@@ -37,6 +37,8 @@ class CI_Datascript
 		$this->js .= '<script src="'.$this->folder_js.'bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>'."\n";
 		$this->js .= '<script src="'.$this->folder_js.'plugins/jquery-validation/jquery.validate.min.js"></script>'."\n";
 		$this->js .= '<script src="'.$this->folder_js.'plugins/jquery-validation/additional-methods.min.js"></script>'."\n";
+		$this->js .= '<script src="'.$this->folder_js.'plugins/blockui/jquery.blockUI.js"></script>'."\n";
+		
 		$this->combine = $this->css."\n\n\n".$this->js;
 		$this->CI->config->set_item('my_library',$this->combine);
 		return $this;

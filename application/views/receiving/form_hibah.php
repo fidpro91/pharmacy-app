@@ -56,7 +56,6 @@
                             ])?>
                         </div>
                     </div>
-					
 				</div>
 			</div>
 		</div>
@@ -68,7 +67,7 @@
                         <div class="form-group">
                             <label class="col-sm-4 control-label">Grand Total</label>
                             <div class="col-sm-8">
-                                <input type="text" name="grand_total" id="grand_total" readonly="true" class="form-control uang" style="text-align: right;">
+                                <input type="text" name="grand_total" id="grand_total" class="form-control uang" style="text-align: right;">
                             </div>
                         </div>
                     </div>

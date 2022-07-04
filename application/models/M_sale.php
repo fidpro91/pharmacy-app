@@ -6,7 +6,8 @@ class M_sale extends CI_Model
 	public function get_data($sLimit, $sWhere, $sOrder, $aColumns)
 	{
 		$data = $this->db->query("
-				select " . implode(',', $aColumns) . ",sale_id as id_key  from farmasi.sale where 0=0 $sWhere $sOrder $sLimit
+				select " . implode(',', $aColumns) . ",sale_id as id_key from farmasi.sale 
+				where to_char(sale_date,'YYYY') = '2022' $sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
 	}
@@ -14,7 +15,8 @@ class M_sale extends CI_Model
 	public function get_total($sWhere, $aColumns)
 	{
 		$data = $this->db->query("
-				select " . implode(',', $aColumns) . ",sale_id as id_key  from farmasi.sale where 0=0 $sWhere
+				select " . implode(',', $aColumns) . ",sale_id as id_key from farmasi.sale 
+				where to_char(sale_date,'YYYY') = '2022' $sWhere
 			")->num_rows();
 		return $data;
 	}

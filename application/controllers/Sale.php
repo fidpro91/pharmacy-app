@@ -20,7 +20,12 @@ class Sale extends MY_Generator {
 		$this->session->unset_userdata([
 			'penjualan','itemRacik','itemNonRacik'
 		]);
-		$this->theme('sale/index');
+		$this->load->model("m_ms_unit");
+		foreach ($this->m_ms_unit->get_ms_unit() as $key => $value) {
+			$kat[$value->unit_id] = $value->unit_name;
+		}
+		$data['unit'] = $kat;
+		$this->theme('sale/index',$data);
 	}
 
 	public function save()
@@ -34,13 +39,18 @@ class Sale extends MY_Generator {
 				$input[$key] = (!empty($sess[$key])?$sess[$key]:null);
 			}
 			$input['unit_id'] = 18;
-			$input['user_id'] = $this->session->user_id;
+			$input['user_id'] = ($this->session->user_id?$this->session->user_id:21);
 			$input['sale_num'] = $this->get_no_sale();
 			$racikan = $this->session->userdata('itemRacik');
 			$nonRacikan = $this->session->userdata('itemNonRacik');
 			
-			$totalRacikan = array_sum(array_column($racikan, 'total'));
-			$totalService = array_sum(array_column($racikan, 'biaya_racikan'));
+			if (!empty($racikan)) {
+				$totalRacikan = array_sum(array_column($racikan, 'total'));
+				$totalService = array_sum(array_column($racikan, 'biaya_racikan'));
+			}else{
+				$totalRacikan = 0;
+				$totalService = 0;
+			}
 			$grandtotal = $totalRacikan+$nonRacikan['total'];
 			$embalase = $grandtotal/100;
 			$embalase = abs(ceil($embalase)-$embalase)*100;
@@ -55,28 +65,37 @@ class Sale extends MY_Generator {
 			$nonRacikan['detail'] = array_map(function($arr) use ($saleId){
 				return $arr + ['sale_id' => $saleId];
 			}, $nonRacikan['detail']);
-
-			//racikan
-			$racikan['detail'] = array_map(function($arr) use ($saleId){
-				return $arr + ['sale_id' => $saleId];
-			}, $racikan['detail']);
+			$saleDetail = $nonRacikan['detail'];
 			
-			$saleDetail = array_merge_recursive($nonRacikan['detail'],$racikan['detail']);
+			//racikan
+			if (!empty($racikan)) {
+				$racikan['detail'] = array_map(function($arr) use ($saleId){
+					return $arr + ['sale_id' => $saleId];
+				}, $racikan['detail']);
+				$saleDetail = array_merge_recursive($nonRacikan['detail'],$racikan['detail']);
+			}
+			
 			//insert sale detail
 			$this->db->insert_batch("farmasi.sale_detail",$saleDetail);
-			
 			$err = $this->db->error();
 			if ($this->db->trans_status() === false) {
 				$this->db->trans_rollback();
-				$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
+				$resp = [
+					"code" 		=> "202",
+					"message"	=> $err['message']
+				];
 			}else{
 				$this->db->trans_commit();
-				$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
+				$resp = [
+					"code" 		=> "200",
+					"message"	=> "Data berhasil disimpan"
+				];
 			}
 		/* }else{
 			$this->session->set_flashdata('message',validation_errors('<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>','</div>'));
 		} */
-		redirect('sale');
+		echo json_encode($resp);
+		// redirect('sale');
 
 	}
 
@@ -85,7 +104,8 @@ class Sale extends MY_Generator {
 		$this->load->library('datatable');
 		$attr 	= $this->input->post();
 		$fields = $this->m_sale->get_column();
-		$data 	= $this->datatable->get_data($fields,$filter = array(),'m_sale',$attr);
+		$filter["unit_id"] = $attr['unit_id'];
+		$data 	= $this->datatable->get_data($fields,$filter,'m_sale',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start'];
         foreach ($data['dataku'] as $index=>$row) {
@@ -119,6 +139,7 @@ class Sale extends MY_Generator {
 
 	public function delete_row($id)
 	{
+		$this->db->where('sale_id',$id)->delete("sale_detail");
 		$this->db->where('sale_id',$id)->delete("sale");
 		$resp = array();
 		if ($this->db->affected_rows()) {
@@ -385,11 +406,11 @@ class Sale extends MY_Generator {
 
 
 
-	public function get_item()
+	public function get_item($unit_id)
 	{
 		$term = $this->input->get('term');
 		$this->load->model('m_stock_fifo');
-		$where = " AND lower(mi.item_name) like lower('%$term%') AND sf.stock_saldo > 0";
+		$where = " AND unit_id = '".$unit_id."' AND lower(mi.item_name) like lower('%$term%') AND sf.stock_saldo > 0";
 		echo json_encode($this->m_stock_fifo->get_stock_item($where));
 	}
 
