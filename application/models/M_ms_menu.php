@@ -39,6 +39,7 @@ class M_ms_menu extends CI_Model {
 										"menu_code" => "trim|required",
 					"menu_name" => "trim|required",
 					"menu_url" => "trim",
+					"menu_status" => "trim",
 					"menu_parent_id" => "trim|integer",
 										"menu_icon" => "trim",
 					"modul_id" => "trim|integer",
