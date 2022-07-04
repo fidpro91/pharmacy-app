@@ -118,6 +118,16 @@ class Production extends MY_Generator {
 	public function find_one($id)
 	{
 		$data = $this->db->where('production_id',$id)->get("farmasi.production")->row();
+		$data->produk = $this->db->join("admin.ms_item mi","mi.item_id=p.item_id")
+								  ->select('COALESCE(p.item_price::numeric,0) as item_price ,mi.item_id,mi.item_package AS unit_pack,mi.item_name AS label_item_id,
+								  mi.item_code,mi.item_unitofitem AS item_unit,qty_item')
+								  ->get_where("farmasi.production_indetail p",["p.production_id"=>$id])
+								  ->result();
+		$data->hasil = $this->db->join("admin.ms_item mi","mi.item_id=p.item_id")
+								->select("COALESCE(p.item_price::numeric,0) as item_price,mi.item_id,mi.item_package AS unit_pack,mi.item_name AS label_item_id,
+											mi.item_code,mi.item_unitofitem AS item_unit,qty_item")
+								->get_where("farmasi.production_outdetail p",["p.production_id"=>$id])
+								->result();
 
 		echo json_encode($data);
 	}
@@ -164,16 +174,7 @@ class Production extends MY_Generator {
 					"type" => 'autocomplete',
 					"width" => '40%',
 				];
-			}elseif($value == "stok"){
-				$row[] = [
-					"id" => $value,
-					"label" => ucwords(str_replace('_', ' ', $value)),
-					"type" => 'text',
-					"width" => ($value=='stok')?'18%':'14%',
-					"attr"=>[
-						"readonly"=>'readonly'
-					]
-				];
+			
 			}elseif($value == "item_price"){
 				$row[] = [
 					"id" => $value,
@@ -241,16 +242,6 @@ class Production extends MY_Generator {
 				   AND sf.own_id = '$own_id' AND sf.unit_id='$unit_id'";
 		echo json_encode($this->m_stock_fifo->get_stock_item($where));
 	}
-
-	public function get_item_hasil($own_id,$unit_id)
-	{
-		$term = $this->input->get('term',true);
-		$this->load->model('m_stock_fifo');
-		$where = " AND lower(mi.item_name) like lower('%$term%') AND sf.stock_saldo > 0 
-				   AND sf.own_id = '$own_id' AND sf.unit_id='$unit_id'";
-		echo json_encode($this->m_stock_fifo->get_stock_item($where));
-	}
-
 	public function show_form()
 	{
 		$data['model'] = $this->m_production->rules();

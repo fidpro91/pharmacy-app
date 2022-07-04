@@ -41,6 +41,8 @@
   <!-- /.content-wrapper -->
 <script type="text/javascript">
     var table;
+    var item_hasil;
+    var item_produk;
     $(document).ready(function() {
         table = $('#tb_production').DataTable({ 
             "processing": true, 
@@ -72,13 +74,28 @@
     });
     function set_val(id) {
       $("#form_production").show();
-      $.get('production/find_one/'+id,(data)=>{
+      $.ajax({
+        'async': false,
+        'type': "GET",
+        'dataType': 'json',
+        'url': 'production/find_one/'+id,
+        'success': function(data) {
           $("#form_production").load("production/show_form",()=>{
             $.each(data,(ind,obj)=>{
                 $("#"+ind).val(obj);
             });
           });
-      },'json');
+          item_hasil = data.hasil; //alert(item_hasil);
+          item_produk = data.produk;
+        }
+      });
+      // $.get('production/find_one/'+id,(data)=>{
+      //     $("#form_production").load("production/show_form",()=>{
+      //       $.each(data,(ind,obj)=>{
+      //           $("#"+ind).val(obj);
+      //       });
+      //     });
+      // },'json');
     }
 
     function deleteRow(id) {

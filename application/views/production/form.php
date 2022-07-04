@@ -92,11 +92,13 @@
 						}
 					});
 					return dataku;
-	                },                
+	                },   "data" : item_produk           
 	    });        
 	});
 
 	$(document).ready(()=>{
+		//var item_hasil ;
+		//console.log(item_hasil);
         $(".item_hasil").inputMultiRow({
 	            column: ()=>{
 					var dataku; 
@@ -110,7 +112,8 @@
 						}
 					});
 					return dataku;
-	                },                
+	                },   
+					"data" : item_hasil            
 	    });        
 	});
 
@@ -118,12 +121,12 @@
 	    $(this).autocomplete({
             source: "<?php echo site_url('Production/get_item');?>/" + $("#own_id").val() + "/" + $("#unit_id").val(),
             select: function (event, ui) {
-                $(this).closest('tr').find('.item_id').val(ui.item.item_id);               
-				$(this).closest('tr').find('.stok').val(ui.item.total_stock);	
+                $(this).closest('tr').find('.item_id').val(ui.item.item_id);    
+				
 				$(this).closest('tr').find('.item_price').val(ui.item.harga);			
                
             }
-        }).data("ui-autocomplete")._renderItem = function (ul, item) {
+        }).data("ui-autocomplete")._renderItem = function (ul, item) { 
             return $("<li>")
                 .append('<a>'
                     + '<table class="table"><tr>'
