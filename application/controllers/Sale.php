@@ -208,6 +208,7 @@ class Sale extends MY_Generator {
 	public function set_item_racikan()
 	{
 		$post = $this->input->post();
+
 		$html="";
 		$total=0;
 		$item="";
@@ -241,6 +242,7 @@ class Sale extends MY_Generator {
 	public function set_item_nonracikan()
 	{
 		$post = $this->input->post();
+//		var_dump($post);die();
 		$html="";
 		$total=0;
 		$item="";
