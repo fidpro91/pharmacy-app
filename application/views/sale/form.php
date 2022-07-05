@@ -1,5 +1,5 @@
 <div class="row">
-<?= form_open("sale/save", ["method" => "post", "id" => "fm_farmasi.sale"], $model) ?>
+<?= form_open("sale/save", ["method" => "post", "id" => "fm_sale_h"], $model) ?>
 	<?= form_hidden("sale_id") ?>
 	<div class="col-md-4">
 		<div class="box">
@@ -32,43 +32,78 @@
 	<div class="col-md-4">
 		<div class="box">
 			<div class="box-body">
-				<table class="table">
+				<table class="table1">
 					<tr>
-						<th colspan="2" style="text-align: center;">INVOICE NO :</th>
+						<th colspan="3" style="text-align: center;">INVOICE NO :</th>
 					</tr>
 					<tr>
-						<th colspan="2" style="text-align: center;" id="tno_invoice">0000</th>
+						<th colspan="3" style="text-align: center;" id="tno_invoice"><?=$sale_num?></th>
 					</tr>
 					<tr>
-						<td>NORM</td>
-						<td class="pull-right" id="tno_rm">123</td>
+						<td style="width:30%;">NORM</td>
+						<td style="width:5%;">:</td>
+						<td class="pull-right" style="width:100%;" id="tno_rm"></td>
 					</tr>
 					<tr>
-						<td>NAMA PASIEN</td>
-						<td class="pull-right" id="tpx_name">456</td>
+						<td style="width:30%;">NAMA PASIEN</td>
+						<td style="width:5%;">:</td>
+						<td class="pull-right" style="width:100%;" id="tpx_name"></td>
+					</tr>					
+					<tr>
+						<td style="width:30%;">ALAMAT</td>
+						<td style="width:5%;">:</td>
+						<td class="pull-right" style="width:100%;" id="px_alamat"></td>
+					</tr>
+					<tr>
+						<td style="width:30%;">DOKTER</td>
+						<td style="width:5%;">:</td>
+						<td class="pull-right" style="width:100%;" id="dokter_"></td>
+					</tr>
+					<tr>
+				   <td style="width:30%;">PENJAMIN</td>
+				  		 <td style="width:5%;">:</td>
+						<td class="pull-right" style="width:100%;" id="surety_"></td>
+					</tr>
+					<tr>
+						<td style="width:30%;">MARGIN OBAT</td>
+						<td style="width:5%;">:</td>
+						<td class="pull-right" style="width:100%;" id="labelProfit"></td>
 					</tr>
 				</table>
 			</div>
 		</div>
 	</div>
-	<div class="col-md-12">
-		<li class="list-group-item">
-			<b>Sub Total Racikan</b> <a class="pull-right" id="sub_total_racikan">0</a>
-		</li>
-		<li class="list-group-item">
-			<b>Sub Total Non Racikan</b> <a class="pull-right" id="sub_total_nonracikan">0</a>
-		</li>
-		<li class="list-group-item">
-			<b>Pembulatan Biaya</b> <a class="pull-right" id="pembulatan_biaya">0</a>
-		</li>
-		<li class="list-group-item">
-			<b>Grand Total</b> <a class="pull-right" id="grand_total">0</a>
-		</li>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="col-xs-6">
+				<li class="list-group-item">
+					<b>Biaya Racikan</b> <a class="pull-right" id="total_biaya_racikan" isi="0">0</a>
+				</li>
+				<li class="list-group-item">
+					<b>Sub Total Racikan</b> <a class="pull-right" id="sub_total_racikan" isi="0">0</a>
+				</li>
+				<li class="list-group-item">
+					<b>Sub Total Non Racikan</b> <a class="pull-right" id="sub_total_nonracikan" isi="0">0</a>
+				</li>
+			</div>
+			<div class="col-xs-6">
+				<li class="list-group-item">
+					<?=form_hidden('margin_profit')?>
+					<b id="labelProfit">Profit </b> <a class="pull-right" id="profit_rp">0</a>
+				</li>
+				<li class="list-group-item">
+					<b>Pembulatan Biaya</b> <a class="pull-right" id="pembulatan_biaya">0</a>
+				</li>
+				<li class="list-group-item">
+					<b>Grand Total</b> <a class="pull-right" id="grand_total">0</a>
+				</li>
+			</div>
+		</div>
 	</div>
 	<?= form_close() ?>
 	<div class="col-md-12">
-		<div class="box-footer">
-			<button class="btn btn-primary" type="button" onclick="save_sale()">Save</button>
+		<div class="box-footer" align="center">
+			<button class="btn btn-primary" type="button" onclick="$('#fm_sale_h').submit()">Save</button>
 			<button class="btn btn-warning" type="button" id="btn-cancel">Cancel</button>
 		</div>
 	</div>
@@ -78,9 +113,14 @@
 <?= modal_close() ?>
 </div>
 <script type="text/javascript">
+	$(document).ready(()=>{
+		$("#modal_pasien").modal('show');
+      	$("#modal_pasien").find(".modal-body").load("sale/show_form_pasien");
+	});
+	
 	$("body").on("focus", ".autocom_item_id", function() {
 	    $(this).autocomplete({
-            source: "<?php echo site_url('sale/get_item');?>",
+            source: "<?php echo site_url('sale/get_item');?>/"+$("#unit_id_depo").val(),
             select: function (event, ui) {
                 $(this).closest('tr').find('.item_id').val(ui.item.item_id);
                 $(this).closest('tr').find('.sale_price').val(ui.item.harga);
@@ -96,6 +136,25 @@
                 .appendTo(ul);
         };
 	});
+
+	$('#fm_sale_h').on("submit",function(){
+		$.blockUI();
+		$.ajax({
+			'type': "post",
+			'data'	: $(this).serialize(),
+			'dataType': 'json',
+			'url': "sale/save",
+			'success': function (data) {
+				$.unblockUI();
+				alert(data.message);
+				if (data.code == '200') {
+					location.reload(true);
+				}
+			}
+		});
+		return false;
+	});
+
 	$("#btn-racikan").click(() => {
 		$("#modal_racikan").modal('show');
 		$("#modal_racikan").find(".modal-body").load("sale/show_form_racikan");
@@ -108,20 +167,25 @@
 		$("#form_sale").hide();
 		$("#form_sale").html('');
 	});
-	function save_sale() {
-		alert("simpan")
+
+	function formatMoney(val=0){
+        return new Intl.NumberFormat('id-ID',  {
+                style: 'currency',
+                currency: 'IDR',
+        }).format(val);
+    }
+
+	function grandTotal() {
+		let totalNonRacikan = parseFloat($.isNumeric($('#sub_total_nonracikan').attr('isi'))?$('#sub_total_nonracikan').attr('isi'):0);
+		let totalRacikan = parseFloat($.isNumeric($('#sub_total_racikan').attr('isi'))?$('#sub_total_racikan').attr('isi'):0);
+		let totalAll = totalNonRacikan+totalRacikan;
+		let embalase = totalAll/100;
+		embalase = Math.abs(Math.ceil(embalase)-embalase)*100;
+		totalAll = totalAll+embalase;
+		$("#pembulatan_biaya").text(formatMoney(embalase));
+		$("#grand_total").text(formatMoney(totalAll));
 	}
 
-	function nomor_resep() {
-		$.get( "<?php echo base_url();?>sale/get_no_sale/", function( data ) {
-			console.log(data);
-			$('#tno_invoice').html(data);
-		});
-	}
-
-	$(document).ready(function () {
-		nomor_resep();
-	})
-
+	
 	<?= $this->config->item('footerJS') ?>
 </script>

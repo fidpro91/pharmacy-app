@@ -10,12 +10,18 @@
                     <div class="row">
                         <div class="col-md-6">
                             <?=form_hidden("rec_id")?>
-                            <?=create_input("receiver_num")?>
-                            <?=create_input("rec_num")?>
                             <?=create_inputDate("receiver_date",[
                                 "format"=>"yyyy-mm-dd",
                                 "autoclose"=>"true"
+                            ],[
+                                "value"     => date("Y-m-d"),
+                                "readonly" => true
                             ])?>
+                            <?=create_input("receiver_num",[
+                                "value"     => $norec,
+                                "readonly"  => true
+                            ])?>
+                            <?=create_input("rec_num")?>
                             <?=create_select2([
                                 "attr" =>["name"=>"receiver_unit=Unit penerima","id"=>"receiver_unit","class"=>"form-control"],
                                 "model"=>["m_ms_unit" => ["get_ms_unit",["0"=>'0']],
@@ -33,8 +39,8 @@
                         <div class="col-md-6">
                             <?=create_select([
                                 "attr" =>["name"=>"own_id=Kepemilikan","id"=>"own_id","class"=>"form-control"],
-                                "model"=>["m_receiving" => ["get_hibah",["refcat_id"=>'37']],
-                                                "column"  => ["reff_id","reff_name"]
+                                "model"=>["m_receiving" => ["get_owner",["0"=>'0']],
+                                                "column"  => ["own_id","own_name"]
                                             ],
                             ])?>
                             <?=create_input("hibah_name=Dari")?>
@@ -46,11 +52,10 @@
                             ])?>
                             <?=create_select([
                                 "attr"=>["name"=>"rec_type=Tipe Penerimaan","id"=>"rec_type","class"=>"form-control"],
-                                "option"=> [["id"=>'1',"text"=>"Hibah"],["id"=>'2',"text"=>"Item Konsinyasi"]],
+                                "option"=> [["id"=>'1',"text"=>"Penerimaan Po"],["id"=>'1',"text"=>"Penerimaan Hibah"],["id"=>'2',"text"=>"Penerimaan Konsinyasi"]],
                             ])?>
                         </div>
                     </div>
-					
 				</div>
 			</div>
 		</div>
@@ -62,7 +67,7 @@
                         <div class="form-group">
                             <label class="col-sm-4 control-label">Grand Total</label>
                             <div class="col-sm-8">
-                                <input type="text" name="grand_total" id="grand_total" readonly="true" class="form-control uang" style="text-align: right;">
+                                <input type="text" name="grand_total" id="grand_total" class="form-control uang" style="text-align: right;">
                             </div>
                         </div>
                     </div>
@@ -86,7 +91,7 @@
 	$(document).ready(()=>{
         $(".list_item").inputMultiRow({
 	            column: ()=>{
-					var dataku;
+					var dataku; 
 					$.ajax({
 						'async': false,
 						'type': "GET",
@@ -98,8 +103,9 @@
 					});
 					return dataku;
 	                },
-                "data": dataHibah
-	    });
+                "data": dataHibah 
+	    }); 
+        $(".uang").inputmask("IDR"); 
 	});
 
     $("body").on("focus", ".autocom_item_id", function() {

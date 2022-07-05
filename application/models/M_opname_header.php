@@ -21,14 +21,15 @@ class M_opname_header extends CI_Model {
 	public function get_column()
 	{
 		$col = [
-				"opname_header_id",
+				//"opname_header_id",
 				"opname_no",
 				"opname_date",
 				"unit_id",
 				"own_id",
 				"user_id",
 				"opname_note",
-				"is_approved"];
+				"is_approved"
+			];
 		return $col;
 	}
 

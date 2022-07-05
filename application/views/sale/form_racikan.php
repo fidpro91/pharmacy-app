@@ -65,16 +65,14 @@ $("#btn-save-racikan").click(()=>{
         'type': "post",
         'data': $("#form_racikan").serialize(),
         'url': "sale/set_item_racikan",
+        'dataType':'json',
         'success': function (data) {
-            // console.log(data);
-            $(".list_obat_racikan").append(data);
-            $.get("sale/get_total_racikan", function(data2){
-                $("#sub_total_racikan").html(data2);
-                const sub_total_nonracikan = $("#sub_total_nonracikan").text();
-                const total = Math.round(data2)+Math.round(sub_total_nonracikan);
-                $("#pembulatan_biaya").html(total);
-                $("#grand_total").html(total);
-            });
+            $(".list_obat_racikan").append(data.html);
+            let total = parseFloat($.isNumeric($('#sub_total_racikan').attr('isi'))?$('#sub_total_racikan').attr('isi'):0);
+            total = total+data.total;
+            $("#sub_total_racikan").text(formatMoney(total));
+            $("#sub_total_racikan").attr("isi",total);
+            grandTotal();
 			$("#modal_racikan").modal('hide');
         }
     });

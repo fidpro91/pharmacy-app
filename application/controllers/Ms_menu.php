@@ -11,20 +11,21 @@ class Ms_menu extends MY_Generator {
 
 	public function index()
 	{
-		$data['data'] = [];
-		$this->theme('ms_menu/index',$data);
+		$this->theme('ms_menu/index');
 	}
 
 	public function save()
 	{
 		$data = $this->input->post();
-
 		if ($this->m_ms_menu->validation()) {
+			$input = [];
+			foreach ($this->m_ms_menu->rules() as $key => $value) {
+				$input[$key] = $data[$key];
+			}
 			if ($data['menu_id']) {
-				$this->db->where('menu_id',$data['menu_id'])->update('ms_menu',$data);
+				$this->db->where('menu_id',$data['menu_id'])->update('admin.ms_menu',$input);
 			}else{
-				unset($data['menu_id']);
-				$this->db->insert('ms_menu',$data);
+				$this->db->insert('admin.ms_menu',$input);
 			}
 			$err = $this->db->error();
 			if ($err['message']) {
@@ -47,7 +48,7 @@ class Ms_menu extends MY_Generator {
 		$data 	= $this->datatable->get_data($fields,$filter = array(),'m_ms_menu',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
-       foreach ($data['dataku'] as $index=>$row) { 
+        foreach ($data['dataku'] as $index=>$row) { 
             $obj = array($row['id_key'],$no);
             foreach ($fields as $key => $value) {
             	if (is_array($value)) {
@@ -71,14 +72,14 @@ class Ms_menu extends MY_Generator {
 
 	public function find_one($id)
 	{
-		$data = $this->db->where('menu_id',$id)->get("ms_menu")->row();
+		$data = $this->db->where('menu_id',$id)->get("admin.ms_menu")->row();
 
 		echo json_encode($data);
 	}
 
 	public function delete_row($id)
 	{
-		$this->db->where('menu_id',$id)->delete("ms_menu");
+		$this->db->where('menu_id',$id)->delete("admin.ms_menu");
 		$resp = array();
 		if ($this->db->affected_rows()) {
 			$resp['message'] = 'Data berhasil dihapus';
@@ -93,7 +94,7 @@ class Ms_menu extends MY_Generator {
 	{
 		$resp = array();
 		foreach ($this->input->post('data') as $key => $value) {
-			$this->db->where('menu_id',$value)->delete("ms_menu");
+			$this->db->where('menu_id',$value)->delete("admin.ms_menu");
 			$err = $this->db->error();
 			if ($err['message']) {
 				$resp['message'] .= $err['message']."\n";
@@ -107,6 +108,7 @@ class Ms_menu extends MY_Generator {
 
 	public function show_form()
 	{
-		$this->load->view("ms_menu/form");
+		$data['model'] = $this->m_ms_menu->rules();
+		$this->load->view("ms_menu/form",$data);
 	}
 }

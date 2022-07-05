@@ -6,6 +6,10 @@ class Receiving_retur extends MY_Generator {
 	public function __construct()
 	{
 		parent::__construct();
+		$this->datascript->lib_datepicker()
+						 ->lib_inputmulti()
+						 ->lib_select2()
+						 ->lib_inputmask();
 		$this->load->model('m_receiving_retur');
 	}
 
@@ -20,17 +24,43 @@ class Receiving_retur extends MY_Generator {
 		if ($this->m_receiving_retur->validation()) {
 			$input = [];
 			foreach ($this->m_receiving_retur->rules() as $key => $value) {
-				$input[$key] = $data[$key];
+				$input[$key] = (!empty($data[$key])?$data[$key]:null);
 			}
+			$input['rr_status'] = 'f';
+			$input['user_id'] 	= $this->session->user_id;
+			$this->db->trans_begin();
 			if ($data['rr_id']) {
+				$this->db->where("rr_id",$data['rr_id'])->delete("newfarmasi.receiving_retur_detil");
 				$this->db->where('rr_id',$data['rr_id'])->update('newfarmasi.receiving_retur',$input);
+				$rr_id = $data['rr_id'];
 			}else{
-				$this->db->insert('newfarmasi.receiving_retur',$input);
+				$this->db->insert("newfarmasi.receiving_retur",$input);
+				$rr_id = $this->db->insert_id();
 			}
+			$this->load->model("m_receiving_retur_detil");
+			$inputDetail=[];
+			foreach ($data['list_item'] as $a => $value) {
+				if(empty($value['item_id'])){
+					continue;
+				}
+				foreach ($this->m_receiving_retur_detil->rules() as $key => $x) {
+					$inputDetail[$a][$key] = (!empty($value[$key])?$value[$key]:null);
+				}
+				$dataRec = explode('|',$value['id_penerimaan']);
+				$inputDetail[$a]['rr_id'] 	= $rr_id;
+				$inputDetail[$a]['rec_id'] 	= $dataRec[0];
+				$inputDetail[$a]['recdet_id'] 	= $dataRec[1];
+				$inputDetail[$a]['supplier_id'] 	= $dataRec[2];
+				$inputDetail[$a]['rrd_type']		= $input['rr_type'];
+			}
+			$this->db->insert_batch("newfarmasi.receiving_retur_detil",$inputDetail);
+			
 			$err = $this->db->error();
-			if ($err['message']) {
+			if ($this->db->trans_status() === false) {
+				$this->db->trans_rollback();
 				$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
 			}else{
+				$this->db->trans_commit();
 				$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
 			}
 		}else{
@@ -43,7 +73,7 @@ class Receiving_retur extends MY_Generator {
 	public function show_multiRows()
 	{
 		$this->load->model("m_receiving_retur_detil");
-		$data = $this->m_mutation_detail->get_column_multiple();
+		$data = $this->m_receiving_retur_detil->get_column_multiple();
 		$colauto = ["item_id"=>"Nama Barang"];
 		foreach ($data as $key => $value) {
 			if (array_key_exists($value, $colauto)) {
@@ -51,7 +81,7 @@ class Receiving_retur extends MY_Generator {
 					"id" => $value,
 					"label" => $colauto[$value],
 					"type" => 'autocomplete',
-					"width" => '40%',
+					"width" => '25%',
 				];
 			}else{
 				$row[] = [
@@ -62,6 +92,13 @@ class Receiving_retur extends MY_Generator {
 			}
 		}
 		echo json_encode($row);
+	}
+
+	public function get_item()
+	{
+		$term = $this->input->get('term');
+		$where = " AND lower(mi.item_name) like lower('%$term%')";
+		echo json_encode($this->m_receiving_retur->get_item($where));
 	}
 
 	public function get_data()
@@ -132,7 +169,30 @@ class Receiving_retur extends MY_Generator {
 
 	public function show_form()
 	{
-		$data['model'] = $this->m_receiving_retur->rules();
+		$data['model'] 		= $this->m_receiving_retur->rules();
+		$data['numretur']	= generate_code_transaksi([
+									"text"	=> "RB/".date("Y/m")."/NOMOR",
+									"table"	=> "newfarmasi.receiving_retur",
+									"column"	=> "num_retur",
+									"delimiter" => "/",
+									"number"	=> "4",
+									"lpad"		=> "4",
+									"filter"	=> ""
+								]);
 		$this->load->view("receiving_retur/form",$data);
+	}
+
+	public function find_rr_detail($id)
+	{
+		$retur = $this->db->query("
+		SELECT rd.*,mi.item_name as label_item_id,sp.supplier_name as supplier,concat(rd.rec_id,'|',rd.recdet_id,'|',rd.supplier_id) as id_penerimaan,rd2.qty_unit as qty_terima
+		FROM newfarmasi.receiving_retur_detil rd
+		JOIN admin.ms_item mi on mi.item_id = rd.item_id
+		join farmasi.receiving_detail rd2 on rd.recdet_id = rd2.recdet_id
+		JOIN admin.ms_supplier sp ON rd.supplier_id = sp.supplier_id
+		where rd.rr_id = '$id'
+		")->result();
+		
+		echo json_encode($retur);
 	}
 }

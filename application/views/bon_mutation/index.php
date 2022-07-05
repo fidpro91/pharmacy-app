@@ -3,7 +3,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        <?=ucwords('BON bon_mutation')?>
+        <?=ucwords('BON PERMINTAAN')?>
       </h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -17,14 +17,29 @@
       <div class="box">
         <?=$this->session->flashdata('message')?>
         <div class="box-header with-border">
-          <h3 class="box-title">Form BON bon_mutation</h3>
-          <div class="box-tools pull-right">
+          <h3 class="box-title">Form BON PERMINTAAN</h3>         
+          <div class="box-tools pull-right">         
             <button type="button" id="btn-add" class="btn btn-primary">
-              <i class="fa fa-plus"></i> Add</button>
+              <i class="fa fa-plus"></i> Add</button>              
           </div>
         </div>
-        <div class="box-body" id="form_mutation" style="display: none;">
-        </div>
+        <div id="unit" class="col-md-4">
+        <?= create_select([
+              "attr" => ["name" => "filter_unit=Filter Unit", "id" => "filter_unit", "class" => "form-control"],
+              "model"=>["m_mutation" => ["get_user_in_unit",[0,"u.user_id"=>$this->session->user_id]],
+              "column"  => ["unit_id","unit_name"]
+            ],
+            ]) ?>
+            </div>
+            <div id="filstatus" class="col-md-4">
+        <?= create_select([
+              "attr" => ["name" => "mutation_status=status mutasi", "id" => "mutation_status", "class" => "form-control"],
+              "option" => [["id" => ' ', "text" => 'Pilih'], ["id" => '1', "text" => "Meminta"], ["id" => '2', "text" => "diproses"],["id" => '3', "text" => "terima"]]
+            ]) ?>
+            </div>
+           
+        <div class="box-body" id="form_mutation" style="display: none;">        
+        </div>        
         <div class="box-body" id="data_mutation">
           <?=create_table("tb_mutation",["M_mutation"=>"get_column_bon"],["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
         </div>
@@ -41,6 +56,7 @@
     var table;
     var mutationDetail;
     $(document).ready(function() {
+      ('#unit')
         table = $('#tb_mutation').DataTable({ 
             "processing": true, 
             "serverSide": true, 
@@ -48,7 +64,11 @@
             "scrollX": true,
             "ajax": {
                 "url": "<?php echo site_url('bon_mutation/get_data')?>",
-                "type": "POST"
+                "type": "POST",
+                "data": function(a){
+                  a.unit = $("#filter_unit").val();
+                  a.status = $("#mutation_status").val();
+                }
             },
             'columnDefs': [
             {
@@ -61,9 +81,14 @@
                'visible': false,
             }], 
         });
+        $("#filter_unit,#mutation_status").change(() => {
+      table.draw();
+    });
     });
     $("#btn-add").click(function() {
       $("#form_mutation").show();
+      $("#unit").hide();
+      $("#filstatus").hide();
       $("#form_mutation").load("bon_mutation/show_form");
     });
     function set_val(id) {
@@ -97,4 +122,5 @@
         },'json');
       }
     }
+    <?=$this->config->item('footerJS')?>
 </script>

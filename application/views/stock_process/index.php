@@ -18,13 +18,27 @@
         <?=$this->session->flashdata('message')?>
         <div class="box-header with-border">
           <h3 class="box-title">Form Stock Process</h3>
-          <div class="box-tools pull-right">
-            <button type="button" id="btn-add" class="btn btn-primary">
-              <i class="fa fa-plus"></i> Add</button>
-          </div>
+          
         </div>
+
+        <div class="panel-body" id="data_ms_siswa">
+      <div class="row">
+      <div class="col-md-2" id="unit">
+          <?= create_select2([
+                  "attr" => ["name" => "filter_kelas=filter unit", "id" => "filter_kelas", "class" => "form-control", 'required' => true],
+                  "model" => [
+                          "m_ms_unit" => "get_ms_unit",
+                          "column" => ["unit_id", "unit_name"]
+                  ],
+          ]) ?>
+       </div>
+       <div class="col-md-2" id="tgl">
+       <?=create_inputDaterange("tgl_transaksi",["locale"=>["format"=>"YYYY-MM-DD","separator"=>"/"]],"required")?>
+       </div>
+                </div>
+              </div>
         <div class="box-body" id="form_stock_process" style="display: none;">
-        </div>
+        </div>       
         <div class="box-body" id="data_stock_process">
           <?=create_table("tb_stock_process","M_stock_process",["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
         </div>
@@ -43,19 +57,51 @@
     var table;
     $(document).ready(function() {
         table = $('#tb_stock_process').DataTable({ 
+          dom: 'Bfrtip',
+            buttons: [
+                  {
+                  "extend": 'pdf',
+                  "text": '<i class="fa fa-file-pdf-o" style="color: green;"></i> PDF',
+                  "titleAttr": 'PDF',                               
+                  "action": newexportaction,
+                  "orientation" : 'landscape',
+                  "pageSize" : 'LEGAL',
+                  "download": 'open'
+                },
+                {
+                  "extend": 'excel',
+                  "text": '<i class="fa fa-file-excel-o" style="color: green;"></i> EXCEL',
+                  "titleAttr": 'Excel',                               
+                  "action": newexportaction
+                },
+                {
+                  "extend": 'print',
+                  "text": '<i class="fa fa-print" style="color: green;"></i> CETAK',
+                  "titleAttr": 'Print',                                
+                  "action": newexportaction
+                }
+            ], 
             "processing": true, 
             "serverSide": true, 
             "order": [], 
             "scrollX": true,
+            "pageLength": 100,
             "ajax": {
                 "url": "<?php echo site_url('stock_process/get_data')?>",
-                "type": "POST"
+                "type": "POST",
+                "data": function(f) {        
+                f.unit = $("#filter_kelas").val();
+                f.tgl = $("#tgl_transaksi").val();
+            }
             },
             'columnDefs': [
             {
               'targets': [0,1,-1],
                'searchable': false,
                'orderable': false,
+             },{
+              'targets': [0,-1],
+               'visible': false,
              },
             {
                'targets': 0,
@@ -65,6 +111,9 @@
                }
             }], 
         });
+        $("#filter_kelas,#tgl_transaksi").change(() => {
+      table.draw();
+    });
     });
     $("#btn-add").click(function() {
       $("#form_stock_process").show();
@@ -114,4 +163,5 @@
           },'json');
         }
     });
+    <?= $this->config->item('footerJS') ?>
 </script>

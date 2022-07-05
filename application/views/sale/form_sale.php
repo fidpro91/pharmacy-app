@@ -1,11 +1,11 @@
 <div class="col-md-12">
-      			<?=form_open("sale/save",["method"=>"post","id"=>"fm_farmasi.sale"],$model)?>
+      			<?=form_open("sale/save",["method"=>"post","id"=>"fm_sale"],$model)?>
 		<?=form_hidden("sale_id")?>
     <?=create_input("patient_name")?>
     <?=create_input("patient_norm")?>
 <?=form_close()?>
       <div class="box-footer">
-      		<button class="btn btn-primary" type="button" onclick="$('#fm_farmasi.sale').submit()">Save</button>
+      		<button class="btn btn-primary" type="button" onclick="$('#fm_sale').submit()">Save</button>
       		<button class="btn btn-warning" type="button" id="btn-cancel">Cancel</button>
       </div>
     </div>

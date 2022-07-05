@@ -41,6 +41,7 @@
   <!-- /.content-wrapper -->
 <script type="text/javascript">
     var table;
+    var dataRetur;
     $(document).ready(function() {
         table = $('#tb_receiving_retur').DataTable({ 
             "processing": true, 
@@ -67,12 +68,22 @@
         });
     });
     $("#btn-add").click(function() {
+      dataRetur = null;
       $("#form_receiving_retur").show();
       $("#form_receiving_retur").load("receiving_retur/show_form");
     });
     function set_val(id) {
       $("#form_receiving_retur").show();
       $.get('receiving_retur/find_one/'+id,(data)=>{
+            $.ajax({
+              'async': false,
+              'type': "GET",
+              'dataType': 'json',
+              'url': "receiving_retur/find_rr_detail/" + id,
+              'success': function (data) {
+                dataRetur = data;
+              }
+          });
           $("#form_receiving_retur").load("receiving_retur/show_form",()=>{
             $.each(data,(ind,obj)=>{
                 $("#"+ind).val(obj);

@@ -11,36 +11,91 @@ class Sale extends MY_Generator {
 						 ->lib_select2()
 						 ->lib_inputmask();
 		$this->load->model('m_sale');
+		$this->load->model('m_sale_detail');
 	}
 
 	public function index()
 	{
-		$this->theme('sale/index');
+		// session_destroy();
+		$this->session->unset_userdata([
+			'penjualan','itemRacik','itemNonRacik'
+		]);
+		$this->load->model("m_ms_unit");
+		foreach ($this->m_ms_unit->get_ms_unit() as $key => $value) {
+			$kat[$value->unit_id] = $value->unit_name;
+		}
+		$data['unit'] = $kat;
+		$this->theme('sale/index',$data);
 	}
 
 	public function save()
 	{
 		$data = $this->input->post();
-		if ($this->m_sale->validation()) {
+		$sess = $this->session->userdata('penjualan')['pasien'];
+		$this->db->trans_begin();
+		// if ($this->m_sale->validation()) {
 			$input = [];
 			foreach ($this->m_sale->rules() as $key => $value) {
-				$input[$key] = $data[$key];
+				$input[$key] = (!empty($sess[$key])?$sess[$key]:null);
 			}
-			if ($data['sale_id']) {
-				$this->db->where('sale_id',$data['sale_id'])->update('sale',$input);
+			$input['unit_id'] = 18;
+			$input['user_id'] = ($this->session->user_id?$this->session->user_id:21);
+			$input['sale_num'] = $this->get_no_sale();
+			$racikan = $this->session->userdata('itemRacik');
+			$nonRacikan = $this->session->userdata('itemNonRacik');
+			
+			if (!empty($racikan)) {
+				$totalRacikan = array_sum(array_column($racikan, 'total'));
+				$totalService = array_sum(array_column($racikan, 'biaya_racikan'));
 			}else{
-				$this->db->insert('sale',$input);
+				$totalRacikan = 0;
+				$totalService = 0;
 			}
+			$grandtotal = $totalRacikan+$nonRacikan['total'];
+			$embalase = $grandtotal/100;
+			$embalase = abs(ceil($embalase)-$embalase)*100;
+			$input['sale_total'] = $grandtotal+$embalase;
+			$input['embalase_item_sale'] = $embalase;
+			$input['sale_services'] = $totalService;
+
+			//insert into farmasi.sale
+			$this->db->insert("farmasi.sale",$input);
+			$saleId = $this->db->query("select currval('public.sale_id_seq')")->row('currval');
+			//nonracikan
+			$nonRacikan['detail'] = array_map(function($arr) use ($saleId){
+				return $arr + ['sale_id' => $saleId];
+			}, $nonRacikan['detail']);
+			$saleDetail = $nonRacikan['detail'];
+			
+			//racikan
+			if (!empty($racikan)) {
+				$racikan['detail'] = array_map(function($arr) use ($saleId){
+					return $arr + ['sale_id' => $saleId];
+				}, $racikan['detail']);
+				$saleDetail = array_merge_recursive($nonRacikan['detail'],$racikan['detail']);
+			}
+			
+			//insert sale detail
+			$this->db->insert_batch("farmasi.sale_detail",$saleDetail);
 			$err = $this->db->error();
-			if ($err['message']) {
-				$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
+			if ($this->db->trans_status() === false) {
+				$this->db->trans_rollback();
+				$resp = [
+					"code" 		=> "202",
+					"message"	=> $err['message']
+				];
 			}else{
-				$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
+				$this->db->trans_commit();
+				$resp = [
+					"code" 		=> "200",
+					"message"	=> "Data berhasil disimpan"
+				];
 			}
-		}else{
+		/* }else{
 			$this->session->set_flashdata('message',validation_errors('<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>','</div>'));
-		}
-		redirect('sale');
+		} */
+		echo json_encode($resp);
+		// redirect('sale');
 
 	}
 
@@ -49,7 +104,8 @@ class Sale extends MY_Generator {
 		$this->load->library('datatable');
 		$attr 	= $this->input->post();
 		$fields = $this->m_sale->get_column();
-		$data 	= $this->datatable->get_data($fields,$filter = array(),'m_sale',$attr);
+		$filter["unit_id"] = $attr['unit_id'];
+		$data 	= $this->datatable->get_data($fields,$filter,'m_sale',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start'];
         foreach ($data['dataku'] as $index=>$row) {
@@ -83,6 +139,7 @@ class Sale extends MY_Generator {
 
 	public function delete_row($id)
 	{
+		$this->db->where('sale_id',$id)->delete("sale_detail");
 		$this->db->where('sale_id',$id)->delete("sale");
 		$resp = array();
 		if ($this->db->affected_rows()) {
@@ -113,31 +170,32 @@ class Sale extends MY_Generator {
 	public function show_form()
 	{
 		$data['model'] = $this->m_sale->rules();
+		$data['sale_num'] = $this->get_no_sale();
 		$this->load->view("sale/form",$data);
-//		$this->load->view("sale/form_sale",$data);
 	}
 
-	public function get_no_rm($tipe)
+	public function get_no_rm($tipe,$kunjungan='1')
 	{
 		$respond= array();
 		$term 	= $this->input->get('term', true);
 
 		if($tipe == 'norm')
-			{
-				$where = " AND px_norm like '%$term%'";
-				$select = "*,px_norm as label";
-				$respond= $this->m_sale->get_data_pasien($where,$select);
-
-			}
-		else
-			{
-				$where = "AND LOWER(px_name) like '%$term%'";
-				$select = "*,px_name as label";
-				$respond= $this->m_sale->get_data_pasien($where,$select);
-
-			}
-
+		{
+			$where = " AND px_norm like '%$term%'";
+			$select = "p.px_norm as label,";
+		}else
+		{
+			$where = "AND LOWER(px_name) like '%$term%'";
+			$select = "p.px_name as label,";
+		}
+		
+		if ($kunjungan=='1') {
+			$respond= $this->m_sale->get_pasien_pelayanan($where,$select);
+		}else{
+			$respond= $this->m_sale->get_data_pasien($where,$select);
+		}
 		echo json_encode($respond);
+		
 	}
 
 	public function show_form_pasien()
@@ -212,31 +270,57 @@ class Sale extends MY_Generator {
 		$html="";
 		$total=0;
 		$item="";
-		foreach ($post['list_item_racikan'] as $key => $value) {
-			$total += $value['price_total'];
-			$item .="(".$value['sale_qty'].")"."<br>";
+		$header = $this->session->userdata('penjualan');
+		foreach ($post['list_item_racikan'] as $x => $v) {
+			foreach ($this->m_sale_detail->rules() as $key => $value) {
+				if ($key != 'sale_id') {
+					$itemRacik[$x][$key] = (isset($v[$key])?$v[$key]:null);
+				}
+			}
+			$itemRacik[$x]['kronis'] = $header['pasien']['kronis'];
+			$itemRacik[$x]['own_id'] = $header['pasien']['own_id'];
+			$itemRacik[$x]['percent_profit'] = $header['profit'];
+			$itemRacik[$x]['racikan_id'] = $post['nama_racikan'];
+			$itemRacik[$x]['racikan_qty'] = $post['qty_racikan'];
+			$itemRacik[$x]['racikan_dosis'] = $post['signa'];
+			$price_total = ($v['price_total']*$header['profit'])+$v['price_total'];
+			$itemRacik[$x]['subtotal'] = $price_total;
+			$itemRacik[$x]['racikan'] = 't';
+			$total += $price_total;
+			$item .= $v['autocom_item_id']."(".$v['sale_qty'].")"."<br>";
 		}
+		$total = $total;
 		if (!empty($this->session->userdata('itemRacik'))) {
-			$itemRacik = $this->session->userdata('itemRacik');
-			$itemRacik = array_merge_recursive($post,$itemRacik);
+			$itemRacikOld = $this->session->userdata('itemRacik');
+			$itemRacikan['detail'] 		= array_merge_recursive($itemRacik,$itemRacikOld['detail']);
+			$itemRacikan['biaya_racik']	= $itemRacikOld['biaya_racik']+$post['biaya_racikan'];
+			$itemRacikan['total']			= $itemRacikOld['total']+$total;
 		}else{
-			$itemRacik = $post;
+			$itemRacikan = [
+				"detail"		=> $itemRacik,
+				'biaya_racik'	=> $post['biaya_racikan'],
+				"total"			=> $total
+			];
 		}
-		$this->session->set_userdata('itemRacik',$itemRacik);
+		$this->session->set_userdata('itemRacik',$itemRacikan);
 		$item = rtrim($item,"<br>");
 		$html .= "
 			<div class='comment-text'>
 				<span class='comment-text'>
 					<b>".$post['nama_racikan']."</b>
 					<span class=\"text-muted pull-right\">
-						".convert_currency(($total+$post['biaya_racikan']))."
+						".convert_currency(($total))."
 					</span>
 					<p>$item</p>
 				</span>
 			</div>
 			";
-		echo $html;
-
+		$resp = [
+			'total' 		=> $total,
+			'biaya_racik'	=> $post['biaya_racikan'],
+			'html'	=> $html
+		];
+		echo json_encode($resp);
 	}
 
 	public function set_item_nonracikan()
@@ -246,40 +330,51 @@ class Sale extends MY_Generator {
 		$html="";
 		$total=0;
 		$item="";
-		foreach ($post['list_obat_nonracikan'] as $key => $value) {
-			$total += $value['price_total'];
-			$item .="(".$value['sale_qty'].")"."<br>";
-		}
-
-		if (!empty($this->session->userdata('itemNonRacik'))) {
-			$itemNonRacik = $this->session->userdata('itemNonRacik');
-			$itemNonRacik = array_merge_recursive($post,$itemNonRacik);
-		}else{
-			$itemNonRacik = $post;
-		}
-		$this->session->set_userdata('itemNonRacik',$itemNonRacik);
-		$item = rtrim($item,"<br>");
-
-		$html .= "
+		$header = $this->session->userdata('penjualan');
+		foreach ($post['list_obat_nonracikan'] as $x => $v) {
+			foreach ($this->m_sale_detail->rules() as $key => $value) {
+				if ($key != 'sale_id') {
+					$itemNonRacikan[$x][$key] = (isset($v[$key])?$v[$key]:null);
+				}
+			}
+			
+			$itemNonRacikan[$x]['kronis'] = $header['pasien']['kronis'];
+			$itemNonRacikan[$x]['own_id'] = $header['pasien']['own_id'];
+			$itemNonRacikan[$x]['racikan'] = 'f';
+			$itemNonRacikan[$x]['percent_profit'] = $header['profit'];
+			$price_total = ($v['price_total']*$header['profit'])+$v['price_total'];
+			$itemNonRacikan[$x]['subtotal'] = $price_total;
+			$total += $price_total;
+			$item .= $v['autocom_item_id']."(".$v['sale_qty'].")"."<br>";
+			$html .= "
 			<div class='comment-text'>
 				<span class='comment-text'>
-					<b>".$post['autocom_item_id']."</b>
+					<b>".$item."</b>
 					<span class=\"text-muted pull-right\">
-						".convert_currency(($total))."
+						".convert_currency(($v['price_total']))."
 					</span>
-					<p>$item</p>
 				</span>
 			</div>
 			";
-//		var_dump($this->session->userdata('itemNonRacik'));
-		echo $html;
-
+		}
+		$nonRacikan['detail'] = $itemNonRacikan;
+		$nonRacikan['total'] = $total;
+		if (!empty($this->session->userdata('itemNonRacik'))) {
+			$itemNonRacikOld = $this->session->userdata('itemNonRacik');
+			$nonRacikan['detail'] = array_merge_recursive($itemNonRacikan,$itemNonRacikOld['detail']);
+			$nonRacikan['total'] = $itemNonRacikOld['total']+$total;
+		}
+		$this->session->set_userdata('itemNonRacik',$nonRacikan);
+		$resp = [
+			'total' => $total,
+			'html'	=> $html
+		];
+		echo json_encode($resp);
 	}
 
 	public function get_total_nonracikan()
 	{
 		$dtNonracikan = $this->session->userdata('itemNonRacik');
-		// var_dump($dtNonracikan);die;
 		$sub_total = 0;
 		foreach ($dtNonracikan['list_obat_nonracikan'] as $nonracikan){
 			$sub_total +=$nonracikan['price_total'];
@@ -313,32 +408,54 @@ class Sale extends MY_Generator {
 
 
 
-	public function get_item()
+	public function get_item($unit_id)
 	{
 		$term = $this->input->get('term');
 		$this->load->model('m_stock_fifo');
-		$where = " AND lower(mi.item_name) like lower('%$term%') AND sf.stock_saldo > 0";
+		$where = " AND unit_id = '".$unit_id."' AND lower(mi.item_name) like lower('%$term%') AND sf.stock_saldo > 0";
 		echo json_encode($this->m_stock_fifo->get_stock_item($where));
 	}
 
 	public function set_data_pasien()
 	{
 		$post = $this->input->post();
-		$this->session->set_userdata('pasien',$post);
-		$data= $this->session->userdata('pasien');
-		if(!empty($data)){
+		$dt['pasien'] = $post;
+		$dt['surety']=$this->db->query("select surety_name from yanmed.ms_surety where surety_id = ".$post['surety_id']." ");
+		$dt['surety'] = $dt['surety']->row('surety_name');
+		$dt['dokter']= $this->db->query("select concat(employee_ft,employee_name,employee_bt) as nama_dokter from hr.employee where employee_id = ".$post['doctor_id']." "); 
+		$dt['dokter'] = $dt['dokter']->row('nama_dokter');
 
-			echo "sukses";
+		$dt['profit'] = $this->db->get_where('farmasi.surety_ownership',[
+			"surety_id"	=> $post['surety_id'],
+			"own_id"	=> $post['own_id']
+		]);
+		if ($dt['profit']->num_rows() <= 0) {
+			$resp=[
+				"code" 		=> "201",
+				"message"	=> "Margin keuntungan untuk penjamin ini belum disetting"
+			];
 		}else{
-			echo "gagal";
-		}
+			$dt['profit'] = $dt['profit']->row('percent_profit');
+			$resp=[
+				"code" 		=> "200",
+				"message"	=> "OK",
+				"profit"	=> $dt['profit'],
+				"px_name"   => $post['patient_name'],
+				"px_norm"   => $post['patient_norm'],
+				"alamat"    => $post['alamat'],
+				"surety"    => $dt['surety'],
+				"dokter"	=> $dt['dokter']
+				
+			];
+			$this->session->set_userdata('penjualan',$dt);
+			
+		}		
+		echo json_encode($resp);
+		
 	}
 
-	public function save_non_racikan()
-	{
-		$this->session->set_userdata($resp);
-	}
 
+	
 	public function hapus_sess()
 	{
 		$this->session->unset_userdata('itemRacik');
@@ -348,7 +465,15 @@ class Sale extends MY_Generator {
 
 	public function get_no_sale()
 	{
-		echo $this->m_sale->get_no_resep(109);
+		return generate_code_transaksi([
+			"text"	=> "S/NOMOR/".date("d.m.Y"),
+			"table"	=> "farmasi.sale",
+			"column"	=> "sale_num",
+			"delimiter" => "/",
+			"number"	=> "2",
+			"lpad"		=> "4",
+			"filter"	=> ""
+		]);
 	}
 }
 ?>

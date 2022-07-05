@@ -36,18 +36,16 @@ class M_receiving_retur_detil extends CI_Model {
 		return $col;
 	}
 
-	public function get_column_mutiple()
+	public function get_column_multiple()
 	{
 		$col = [
 				"item_id",
-				"rec_id",
 				"rrd_qty",
-				"rrd_price",
-				"rr_id",
-				"recdet_id",
 				"rrd_note",
-				"supplier_id",
-				"supplier_id"
+				"rrd_price",
+				"qty_terima",
+				"supplier",
+				"id_penerimaan",
 			];
 		return $col;
 	}

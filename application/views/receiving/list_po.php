@@ -1,6 +1,6 @@
-<table class="table table-bordered">
+<table class="table table-bordered" id="table_po">
     <tr>
-        <th><input type="checkbox" id="checkAll"/></th>
+        <th><input type="checkbox" id="checkAllPo"/></th>
         <th>ITEM</th>
         <th>ED</th>
         <th>SATUAN UNIT</th>
@@ -56,9 +56,16 @@
 	});
 
     $("#ppn").change(()=>{
-		let ppn = parseInt($("#ppn").val())*($.isNumeric($("#grand_total").val())?$("#grand_total").val():0)/100;
-		$("#rec_taxes").val(ppn);
+		hitunggrandTotal();
 	});
+
+	$("#checkAllPo").click(() => {
+    if ($("#checkAllPo").is(':checked')) {
+      $("#table_po input[type='checkbox']").attr("checked", true);
+    } else {
+      $("#table_po input[type='checkbox']").attr("checked", false);
+    }
+  });
 
 	function hitungTotal_terima(row) {
 		let total_po = parseInt(row.closest('tr').find("td:eq(4)").text());
@@ -87,10 +94,14 @@
 			grandtotal += totalcost;
 		}); */
 		// alert(grandtotal);
-        grandtotal = grandtotal + ($.isNumeric($("#rec_taxes").val()?$("#rec_taxes").val():0));
+
+		let ppn = parseInt($("#ppn").val())*($.isNumeric($("#grand_total").val())?$("#grand_total").val():0)/100;
+        grandtotal = grandtotal + ppn;
+		
+		$("#rec_taxes").val(ppn);
 		$('#grand_total').val(grandtotal);
 		$('#discount_total').val(totalDiskon);
-		$("#ppn").trigger("change");
+		// $("#ppn").trigger("change");
 	}
 
     function hitungTotal(row) {

@@ -11,17 +11,21 @@ class Bon_mutation extends MY_Generator {
 						 ->lib_select2()
 						 ->lib_inputmask();
 		$this->load->model('m_mutation');
+		$this->load->model('m_ms_unit');
 	}
 
 	public function index()
 	{
+		
 		$this->theme('bon_mutation/index');
 	}
+
+	
 
 	public function show_multiRows()
 	{
 		$this->load->model("m_mutation_detail");
-		$data = $this->m_mutation_detail->get_column_multiple();
+		$data = $this->m_mutation_detail->get_column_multiple_permintaan();
 		$colauto = ["item_id"=>"Nama Barang"];
 		foreach ($data as $key => $value) {
 			if (array_key_exists($value, $colauto)) {
@@ -44,14 +48,22 @@ class Bon_mutation extends MY_Generator {
 
 	public function get_item($own_id,$unit_id)
 	{
-		$term = $this->input->get('term');
+		$term = $this->input->get('term'); 
 
 		$where = " AND sf.own_id = '$own_id' AND sf.unit_id='$unit_id' AND (
 			lower(mi.item_name) like lower('%$term%')
 		)";
-		$select=" mi.item_name as value,";
-		echo json_encode($this->m_mutation->get_item_autocomplete($select,$where));
+		//$select=" mi.item_name as value,";
+		echo json_encode($this->m_mutation->get_item_autocomplete($where));
 	}
+
+	// public function get_item()
+	// {
+	// 	$term = $this->input->get('term');
+	// 	$this->load->model('m_stock_fifo');
+	// 	$where = " AND lower(mi.item_name) like lower('%$term%') AND sf.stock_saldo > 0";
+	// 	echo json_encode($this->m_stock_fifo->get_stock_item($where));
+	// }
 
 	public function save()
 	{
@@ -110,9 +122,16 @@ class Bon_mutation extends MY_Generator {
 	public function get_data()
 	{
 		$this->load->library('datatable');
-		$attr 	= $this->input->post();
+		
+		$attr 	= $this->input->post();  
 		$fields = $this->m_mutation->get_column_bon();
         $filter = [];
+		if ($attr['unit'] !='') {
+			$filter = array_merge($filter, ["unit_require" => $attr['unit']]);
+		} 
+		if ($attr['status'] != ' ') {
+			$filter = array_merge($filter, ["mutation_status" => $attr['status']]);
+		} 
 		$data 	= $this->datatable->get_data($fields,$filter,'m_mutation',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
@@ -189,9 +208,20 @@ class Bon_mutation extends MY_Generator {
 		echo json_encode($resp);
 	}
 
+
+
 	public function show_form()
 	{
 		$data['model'] = $this->m_mutation->rules();
+		$data['norec'] = generate_code_transaksi([
+			"text"	=> "M/PBF/NOMOR/".date("d.m.Y"),
+			"table"	=> "newfarmasi.mutation",
+			"column"	=> "bon_no",
+			"delimiter" => "/",
+			"number"	=> "3",
+			"lpad"		=> "5",
+			"filter"	=> ""
+		]);
 		$this->load->view("bon_mutation/form",$data);
 	}
 

@@ -21,10 +21,19 @@ class M_ownership extends CI_Model {
 	public function get_column()
 	{
 		$col = [
-				"own_id",
+				//"own_id",
 				"own_name",
-				"own_active",
-				"order_num",
+				"own_active"=>["label"=>"status",
+							  "custom"=> function($a){
+								if($a == 't'){
+									 $condition=["class"=>"label-primary","text"=>"Aktif"];
+								}else{
+									 $condition=["class"=>"label-danger","text"=>"Non Aktif"];
+								}
+								return label_status($condition);
+							  }],
+							  
+				//"order_num",
 				"own_code"];
 		return $col;
 	}

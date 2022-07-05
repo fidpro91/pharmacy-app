@@ -6,7 +6,8 @@ class M_sale extends CI_Model
 	public function get_data($sLimit, $sWhere, $sOrder, $aColumns)
 	{
 		$data = $this->db->query("
-				select " . implode(',', $aColumns) . ",sale_id as id_key  from farmasi.sale where 0=0 $sWhere $sOrder $sLimit
+				select " . implode(',', $aColumns) . ",sale_id as id_key from farmasi.sale 
+				where to_char(sale_date,'YYYY') = '2022' $sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
 	}
@@ -14,7 +15,8 @@ class M_sale extends CI_Model
 	public function get_total($sWhere, $aColumns)
 	{
 		$data = $this->db->query("
-				select " . implode(',', $aColumns) . ",sale_id as id_key  from farmasi.sale where 0=0 $sWhere
+				select " . implode(',', $aColumns) . ",sale_id as id_key from farmasi.sale 
+				where to_char(sale_date,'YYYY') = '2022' $sWhere
 			")->num_rows();
 		return $data;
 	}
@@ -85,38 +87,20 @@ class M_sale extends CI_Model
 			"sale_date" => "trim|required",
 			"unit_id" => "trim|integer|required",
 			"visit_id" => "trim|integer",
+			"patient_norm" => "trim",
 			"patient_name" => "trim",
-			"user_id" => "trim|integer|required",
-			"date_act" => "trim",
+			"kronis" => "trim",
+			"user_id" => "trim|integer",
 			"sale_status" => "trim|integer",
-			"sale_shift" => "trim|integer",
 			"service_id" => "trim|integer",
 			"surety_id" => "trim|integer",
 			"doctor_id" => "trim|integer",
 			"own_id" => "trim|integer",
-			"rcp_id" => "trim|integer",
-			"cash_id" => "trim|integer",
-			"finish_user_id" => "trim|integer",
-			"finish_time" => "trim",
 			"doctor_name" => "trim",
-			"verificated" => "trim",
-			"verificator_id" => "trim|integer",
-			"verified_at" => "trim",
 			"sale_total" => "trim|integer",
-			"sale_cover" => "trim|integer",
-			"patient_norm" => "trim",
-			"pay_act" => "trim",
 			"embalase_item_sale" => "trim|integer",
-			"sale_total_beforediscount" => "trim|integer",
-			"sale_discount_percent" => "trim|numeric",
-			"sale_discount_nominal" => "trim|integer",
-			"start_time" => "trim",
-			"usage_date" => "trim",
-			"sale_no" => "trim",
+			"sale_services" => "trim|integer",
 			"unit_id_lay" => "trim|integer",
-			"unit_name_lay" => "trim",
-			"transfer_by" => "trim|integer",
-
 		];
 		return $data;
 	}
@@ -140,147 +124,57 @@ class M_sale extends CI_Model
 		return $this->db->get_where("farmasi.sale", $where)->row();
 	}
 
-	/* public function FunctionName(Type $var = null)
-	{
-		$sql = "SELECT * FROM (
-				SELECT P.px_id,
-					P.px_norm,
-					P.px_name,
-					P.px_address,
-							to_char( P.px_birthdate, 'DD-MM-YYYY' ) tgl_lahir,
-							concat ( '(', COALESCE ( P.px_phone, '0' ), ')' ) telepon,
-						lay.visit_id,lay.srv_id,lay.srv_date,lay.unit_id,
-						lay.unit_name
-						,lay.par_id,lay.par_name,lay.surety_id,
-						lay.status_kunjungan,lay.nomor_sep
-						FROM
-							yanmed.patient P
-							INNER JOIN (
-
-							)lay ON lay.px_id = p.px_id
-							WHERE p.px_active = 't'
-					UNION ALL
-				SELECT P.px_id,
-					P.px_norm,
-					P.px_name,
-					P.px_address,
-							to_char( P.px_birthdate, 'DD-MM-YYYY' ) tgl_lahir,
-							concat ( '(', COALESCE ( P.px_phone, '0' ), ')' ) telepon,NULL,NULL,NULL,NULL,'(APS)',NULL,NULL,NULL,'NON KUNJUNGAN',NULL
-					FROM yanmed.patient p
-					where p.px_active = 't'
-				) y
-			WHERE 0=0 $where
-							ORDER BY
-								COALESCE (y.visit_id :: INT, y.px_id) DESC,
-								COALESCE (y.srv_id, y.px_id) DESC
-							LIMIT 25";
-					$result = $this->db->query($sql);
-					$result = $result->result();
-					return $result;
-				}
-	} */
-
+	
 	public function get_data_pasien($where,$select)
 	{
 
-		$sql = "SELECT $select FROM (
-SELECT P.px_id,
-		P.px_norm,
-		P.px_name,
-		P.px_address,
-				to_char( P.px_birthdate, 'DD-MM-YYYY' ) tgl_lahir,
-				concat ( '(', COALESCE ( P.px_phone, '0' ), ')' ) telepon,
-			lay.visit_id,lay.srv_id,lay.srv_date,lay.unit_id,
-			lay.unit_name
-			,lay.par_id,lay.par_name,lay.surety_id,
-			lay.status_kunjungan,lay.nomor_sep
-			FROM
-				yanmed.patient P 
-				INNER JOIN (
-						SELECT * FROM (
-							SELECT v.px_id,v.visit_id,
-							s.srv_id,
-							to_char( s.srv_date, 'DD-MM-YYYY' ) AS srv_date,
-							s.unit_id,
-							mun.unit_name,
-							s.par_id,
-							concat ( emp.employee_ft, ' ', emp.employee_name, ' ', emp.employee_bt ) par_name,
-							s.surety_id,
-							CASE
-									
-									WHEN ((
-											v.visit_end_date IS NOT NULL 
-											) 
-										AND ( v.visit_status <> 35 )) THEN
-										'PULANG' :: TEXT 
-										WHEN ( v.visit_status = 70 ) THEN
-										'DAFTAR MANDIRI' :: TEXT 
-										WHEN ( v.visit_status = 66 ) THEN
-										'DIKONFIRMASI ADMISI' :: TEXT 
-										WHEN ( v.visit_status = 65 ) THEN
-										'KONFIRMASI CEK IN' :: TEXT 
-										WHEN ( v.visit_status = 64 ) THEN
-										'KONFIRMASI CEK IN PINDAH KAMAR' :: TEXT 
-										WHEN ( v.visit_status = 60 ) THEN
-										'REGISTRASI RS' :: TEXT 
-										WHEN ( v.visit_status = 55 ) THEN
-										'TANPA PEMBAYARAN RETRIBUSI' :: TEXT 
-										WHEN ( v.visit_status = 50 ) THEN
-										'PEMBAYARAN RETRIBUSI' :: TEXT 
-										WHEN ( v.visit_status = 40 ) THEN
-										'ANTRIAN' :: TEXT 
-										WHEN ( v.visit_status = 35 ) THEN
-										'BATAL' :: TEXT 
-										WHEN ((
-												v.visit_status = 30 
-												) 
-											OR ( v.visit_status = 20 )) THEN
-											'DILAYANI' :: TEXT 
-											WHEN ( v.visit_status = 15 ) THEN
-											'PENDING KRS' :: TEXT 
-											WHEN ( v.visit_status = 10 ) THEN
-											'PULANG' :: TEXT ELSE'-' :: TEXT 
-										END AS status_kunjungan,
-										COALESCE ( v.sep_no, '-' ) AS nomor_sep,
-										CASE WHEN v.surety_id = 1 AND v.visit_end_date IS NOT NULL THEN 't' 
-												 WHEN v.surety_id = 1 AND v.visit_end_date IS NULL THEN 'f' 
-											ELSE
-											CASE
-												 WHEN v.surety_id > 1 AND ((
-												DATE_PART( 'day', now() :: TIMESTAMP - v.visit_end_date :: TIMESTAMP ) * 24 + DATE_PART( 'hour', now() :: TIMESTAMP - v.visit_end_date :: TIMESTAMP )) <= 72 OR v.visit_end_date IS NULL) THEN 'f' 
-												ELSE 't' END
-									END as is_closed
-									FROM
-										yanmed.visit v
-										INNER JOIN yanmed.services s ON v.visit_id = s.visit_id
-										INNER JOIN ADMIN.ms_unit mun ON s.unit_id = mun.unit_id
-										LEFT JOIN hr.employee emp ON s.par_id = emp.employee_id 
-									WHERE
-										s.unit_id NOT IN ( 45, 105, 12 ) 
-									AND EXTRACT ( 'year' FROM v.visit_date ) >= ( EXTRACT ( 'YEAR' FROM now()) - 1 ) 
-								AND v.visit_status NOT IN ( 35, 60, 70 )
-							) x
-							WHERE x.is_closed = 'f'
-				)lay ON lay.px_id = p.px_id
-				WHERE p.px_active = 't'
-		UNION ALL					
-SELECT P.px_id,
-		P.px_norm,
-		P.px_name,
-		P.px_address,
-				to_char( P.px_birthdate, 'DD-MM-YYYY' ) tgl_lahir,
-				concat ( '(', COALESCE ( P.px_phone, '0' ), ')' ) telepon,NULL,NULL,NULL,NULL,'(APS)',NULL,NULL,NULL,'NON KUNJUNGAN',NULL
-		FROM yanmed.patient p
-		where p.px_active = 't'
-	) y
-WHERE 0=0 $where
-				ORDER BY
-					COALESCE (y.visit_id :: INT, y.px_id) DESC,
-					COALESCE (y.srv_id, y.px_id) DESC
-				LIMIT 25";
+		$sql = "SELECT $select P
+			.px_id,
+			P.px_norm,
+			P.px_name,
+			P.px_address,
+			to_char( P.px_birthdate, 'DD-MM-YYYY' ) tgl_lahir,
+			concat ( '(', COALESCE ( P.px_phone, lpad('0', 12, '0') ), ')' ) telepon
+		FROM
+			yanmed.patient p
+		WHERE px_active ='t' $where";
 		$result = $this->db->query($sql);
 		$result = $result->result();
 		return $result;
+	}
+
+	public function get_pasien_pelayanan($where,$select)
+	{
+		return $this->db->query("
+			SELECT  $select P
+				.px_id,
+				P.px_norm,
+				P.px_name,
+				P.px_address,
+				to_char( P.px_birthdate, 'DD-MM-YYYY' ) tgl_lahir,
+				concat ( '(', COALESCE ( P.px_phone, lpad('0', 12, '0') ), ')' ) telepon,
+				v.visit_id,
+				s.srv_id,
+				s.srv_date,
+				s.unit_id,
+				mu.unit_name,
+				s.surety_id,
+				s.par_id,
+				concat ( emp.employee_ft, emp.employee_name, emp.employee_bt ) par_name,
+				v.sep_no,
+				s.srv_status 
+			FROM
+				yanmed.patient
+				P JOIN yanmed.visit v ON v.px_id = P.px_id
+				JOIN yanmed.services s ON v.visit_id = s.visit_id
+				JOIN ADMIN.ms_unit mu ON mu.unit_id = s.unit_id
+				LEFT JOIN hr.employee emp ON s.par_id = emp.employee_id 
+			WHERE
+				s.unit_id NOT IN ( 45, 105, 12 ) 
+				AND EXTRACT ( 'year' FROM v.visit_date ) >= ( EXTRACT ( 'YEAR' FROM now()) - 1 ) 
+				AND v.visit_status NOT IN (35,60,70) $where
+			order by s.srv_date desc
+		")->result();
 	}
 
 	public function get_penjamin($where)
@@ -288,28 +182,21 @@ WHERE 0=0 $where
 		return $this->db->get_where("yanmed.ms_surety",$where)->result();
 	}
 
-	function get_no_resep($unit_id,$tgl_resep = null)
+	public function get_unit_layanan($where)
 	{
-		$now = new \DateTime('now');
-		$tgl = $now->format('Y-m-d');
-		if ($tgl_resep) {
-			$tgl = $tgl_resep;
-		}
-		$depo = $this->db->where('unit_id',$unit_id)->select('unit_nickname')->get('admin.ms_unit')->row();
-		$result = $this	->db
-			->query(
-				"select '$depo->unit_nickname'|| '/' || trim(
-							coalesce(max(regexp_replace(((string_to_array(sale_num,'/'))[2]), '[^0-9]*', '', 'g')::integer)+1,1)::VARCHAR) || '/'  || to_char(now(),'dd.mm.YYYY')  as nomax 
-							from farmasi.sale 
-							where to_char(sale_date,'YYYY-mm-dd')= '".$tgl."' and unit_id = '$unit_id'"
-			)
-			->row();
-
-
-		if  (isset($result->nomax))
-			return $result->nomax;
-		else
-			return $depo->unit_nickname.'/'.'1'.'/'.$now->format('d.m.Y');
-
+		return $this->db->where("unit_type in (21,22,23)",null)->get_where("admin.ms_unit",$where)->result();
 	}
+
+	public function get_dokter()
+	{
+		return $this->db->where("lower(employee_ft) like '%dr%' and employee_active = 't'",null)
+					  	->select("employee_id,concat(employee_ft,employee_name,employee_bt)nama_dokter",false)
+						->get("hr.employee")->result();
+	}
+
+
+
+
 }
+
+	
