@@ -45,6 +45,10 @@ class M_stock_process extends CI_Model {
 		return $col;
 	}
 
+	
+
+
+
 	public function rules()
 	{
 		$data = [

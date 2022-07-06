@@ -10,11 +10,13 @@ class Stock_process extends MY_Generator {
 						 ->lib_datatableExt()
 					     ->lib_daterange();
 		$this->load->model('m_stock_process');
+		$this->load->model('m_data_stok');
 	}
 
 	public function index()
 	{
 		$this->theme('stock_process/index');
+		//$this->theme('stock_process/v_stok_proses');
 	}
 
 	public function save()
@@ -79,6 +81,7 @@ class Stock_process extends MY_Generator {
         echo json_encode($data);
 	}
 
+	
 	public function find_one($id)
 	{
 		$data = $this->db->where('$pkey',$id)->get("newfarmasi.stock_process")->row();
@@ -119,5 +122,46 @@ class Stock_process extends MY_Generator {
 	{
 		$data['model'] = $this->m_stock_process->rules();
 		$this->load->view("stock_process/form",$data);
+	}
+
+	public function show_data()
+	{		
+		$this->theme('stock_process/v_stok_proses');
+	}
+
+	public function get_data_stok()
+	{
+		$this->load->library('datatable');
+		$attr 	= $this->input->post();
+		$fields = $this->m_data_stok->get_column();
+		$data 	= $this->datatable->get_data($fields,$filter = array(),'m_data_stok',$attr);
+		$records["aaData"] = array();
+		$no   	= 1 + $attr['start']; 
+        foreach ($data['dataku'] as $index=>$row) { 
+            $obj = array($row['id_key'],$no);
+            foreach ($fields as $key => $value) {
+            	if (is_array($value)) {
+            		if (isset($value['custom'])){
+            			$obj[] = call_user_func($value['custom'],$row[$key]);
+            		}else{
+            			$obj[] = $row[$key];
+            		}
+            	}else{
+            		$obj[] = $row[$value];
+            	}
+            }
+            //$obj[] = create_btnAction(["update","delete"],$row['id_key']);
+			$obj[] = create_btnAction([[
+				"btn-act" => "cek_stok(" . $row['id_key'] . ")",
+				"btn-icon" => "fa fa-eye",
+				"btn-class" => "btn-warning",
+			]
+			],$row['id_key']);
+            $records["aaData"][] = $obj;
+            $no++;
+        }
+        $data = array_merge($data,$records);
+        unset($data['dataku']);
+        echo json_encode($data);
 	}
 }

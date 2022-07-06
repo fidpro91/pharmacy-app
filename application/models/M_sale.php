@@ -6,8 +6,13 @@ class M_sale extends CI_Model
 	public function get_data($sLimit, $sWhere, $sOrder, $aColumns)
 	{
 		$data = $this->db->query("
-				select " . implode(',', $aColumns) . ",sale_id as id_key from farmasi.sale 
-				where to_char(sale_date,'YYYY') = '2022' $sWhere $sOrder $sLimit
+				select " . implode(',', $aColumns) . ",x.id_key 
+				from (select 
+				sale_num,sale_date,concat (patient_name,' (',patient_norm,')') as nama,sale_total,
+				sale_status,surety_name,doctor_name,cash_id,patient_norm,sale_id AS id_key 
+				from farmasi.sale sl
+				left join yanmed.ms_surety su on sl.surety_id = su.surety_id	
+				where to_char(sale_date,'YYYY') = '2022' $sWhere $sOrder $sLimit) x
 			")->result_array();
 		return $data;
 	}
@@ -15,67 +20,29 @@ class M_sale extends CI_Model
 	public function get_total($sWhere, $aColumns)
 	{
 		$data = $this->db->query("
-				select " . implode(',', $aColumns) . ",sale_id as id_key from farmasi.sale 
-				where to_char(sale_date,'YYYY') = '2022' $sWhere
+		select " . implode(',', $aColumns) . ",x.id_key 
+		from (select 
+		sale_num,sale_date,concat (patient_name,' (',patient_norm,')') as nama,sale_total,
+		sale_status,surety_name,doctor_name,cash_id,patient_norm,sale_id AS id_key 
+		from farmasi.sale sl
+		left join yanmed.ms_surety su on sl.surety_id = su.surety_id	
+		where to_char(sale_date,'YYYY') = '2022' $sWhere) x
 			")->num_rows();
 		return $data;
 	}
 
 	public function get_column()
 	{
-		$col = [
-			"sale_id",
+		$col = [			
 			"sale_num",
-			"sale_date",
-			"unit_id",
-			"visit_id",
-			"patient_name",
-			"user_id",
-			"date_act",
-			"sale_status",
-			"sale_shift",
-			"sale_type",
-			"service_id",
-			"surety_id",
-			"sale_embalase",
-			"sale_services",
-			"doctor_id",
-			"own_id",
-			"rcp_id",
-			"cash_id",
-			"finish_user_id",
-			"finish_time",
+			"sale_date",			
+			"nama",			
+			"sale_status",			
+			"surety_name",			
 			"doctor_name",
-			"verificated",
-			"verificator_id",
-			"verified_at",
 			"sale_total",
-			"sale_cover",
-			"patient_norm",
-			"kronis",
-			"pay_act",
-			"embalase_item_sale",
-			"sale_total_returned",
-			"sale_total_ppn",
-			"sale_total_payment",
-			"sale_is_paid",
-			"sale_total_surety",
-			"sale_total_beforediscount",
-			"sale_discount_percent",
-			"sale_discount_nominal",
-			"kronis_drug_usage",
-			"apoteker_service_item",
-			"apoteker_service_total",
-			"apoteker_service_status",
-			"start_time",
-			"usage_date",
-			"total_price_package",
-			"sale_no",
-			"unit_id_lay",
-			"unit_name_lay",
-			"transfer_date",
-			"transfer_by",
-			"no_transaksi"
+			"cash_id",
+						
 		];
 		return $col;
 	}

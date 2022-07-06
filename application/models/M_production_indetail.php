@@ -31,7 +31,8 @@ class M_production_indetail extends CI_Model {
 	public function get_column_multi()
 	{
 		$col = [				
-				"item_id",			
+				"item_id",	
+				"stok",		
 				"item_price",
 				"qty_item"
 				];

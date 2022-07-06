@@ -72,7 +72,7 @@
       $("#form_production").show();
       $("#form_production").load("production/show_form");
     });
-    function set_val(id) {
+    function set_val(id) {      
       $("#form_production").show();
       $.ajax({
         'async': false,
@@ -83,19 +83,15 @@
           $("#form_production").load("production/show_form",()=>{
             $.each(data,(ind,obj)=>{
                 $("#"+ind).val(obj);
-            });
+               
+            }); 
+            
           });
-          item_hasil = data.hasil; //alert(item_hasil);
-          item_produk = data.produk;
+          item_hasil = data.hasil; //a
+          item_produk = data.produk; 
         }
       });
-      // $.get('production/find_one/'+id,(data)=>{
-      //     $("#form_production").load("production/show_form",()=>{
-      //       $.each(data,(ind,obj)=>{
-      //           $("#"+ind).val(obj);
-      //       });
-      //     });
-      // },'json');
+   
     }
 
     function deleteRow(id) {

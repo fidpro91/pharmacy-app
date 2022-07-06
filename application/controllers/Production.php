@@ -175,6 +175,16 @@ class Production extends MY_Generator {
 					"width" => '40%',
 				];
 			
+			}elseif($value == "stok"){
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"width" => ($value=='stok')?'18%':'14%',
+					"attr"=>[
+						"readonly"=>'readonly'
+					]
+				];
 			}elseif($value == "item_price"){
 				$row[] = [
 					"id" => $value,
@@ -191,9 +201,7 @@ class Production extends MY_Generator {
 					"label" => ucwords(str_replace('_', ' ', $value)),
 					"type" => 'text'
 				];
-			}
-			
-			
+			}			
 		}
 		echo json_encode($row);
 	}
@@ -227,8 +235,7 @@ class Production extends MY_Generator {
 					"label" => ucwords(str_replace('_', ' ', $value)),
 					"type" => 'text'
 				];
-			}
-			
+			}	
 			
 		}
 		echo json_encode($row); //print_r($row);
