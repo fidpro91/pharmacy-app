@@ -27,21 +27,24 @@ class Production extends MY_Generator {
 			$input['user_id'] 					= $this->session->user_id;
 			$input['production_status'] 		= '0';
 			$this->form_validation->set_data($input);
+			$this->db->trans_begin();
 			if ($this->m_production->validation()) {
 				
 			if ($data['production_id']) {
-				$this->db->where('production_id',$data['production_id'])->update('farmasi.production',$input);
+				$this->db->where('production_id',$data['production_id'])->update('newfarmasi.production',$input);
 			}else{
-				$this->db->insert('farmasi.production',$input);
-				$data['production_id'] = $this->db->insert_id();
+				$this->db->insert('newfarmasi.production',$input);
+				$data['production_id'] = $this->db->query("select currval('farmasi.production_production_id_seq') as id")->row('id');
 			}
-			//$produk=$this->insert_produk($data);
+			$produk=$this->insert_produk($data);
 			$hasil=$this->insert_hasil($data); 
 			
 			$err = $this->db->error();
 			if ($err['message'] && $produk==false && $hasil==false) {
+				$this->db->trans_rollback();
 				$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
 			}else{
+				$this->db->trans_commit();
 				$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
 			}
 		}else{
@@ -63,7 +66,7 @@ class Production extends MY_Generator {
 				$detail[$x][$r] = isset($value[$r])?$value[$r]:null; 
 			}
 			$detail[$x]['production_id'] 	= $data['production_id'];
-			$this->db->insert("farmasi.production_indetail",$detail[$x]);
+			$this->db->insert("newfarmasi.production_indetail",$detail[$x]);
 		$sukses=true;
 		}
 	}
@@ -79,7 +82,7 @@ class Production extends MY_Generator {
 				$detail[$x][$r] = isset($value[$r])?$value[$r]:null; 
 			}
 			$detail[$x]['production_id'] 	= $data['production_id'];
-			$this->db->insert("farmasi.production_outdetail",$detail[$x]);
+			$this->db->insert("newfarmasi.production_outdetail",$detail[$x]);
 		$sukses=true;
 		}
 	}
@@ -117,14 +120,14 @@ class Production extends MY_Generator {
 
 	public function find_one($id)
 	{
-		$data = $this->db->where('production_id',$id)->get("farmasi.production")->row();
+		$data = $this->db->where('production_id',$id)->get("newfarmasi.production")->row();
 
 		echo json_encode($data);
 	}
 
 	public function delete_row($id)
 	{
-		$this->db->where('production_id',$id)->delete("farmasi.production");
+		$this->db->where('production_id',$id)->delete("newfarmasi.production");
 		$resp = array();
 		if ($this->db->affected_rows()) {
 			$resp['message'] = 'Data berhasil dihapus';
@@ -139,7 +142,7 @@ class Production extends MY_Generator {
 	{
 		$resp = array();
 		foreach ($this->input->post('data') as $key => $value) {
-			$this->db->where('production_id',$value)->delete("farmasi.production");
+			$this->db->where('production_id',$value)->delete("newfarmasi.production");
 			$err = $this->db->error();
 			if ($err['message']) {
 				$resp['message'] .= $err['message']."\n";
@@ -256,7 +259,7 @@ class Production extends MY_Generator {
 		$data['model'] = $this->m_production->rules();
 		$data['norec'] = generate_code_transaksi([
 			"text"	=> "PRO/NOMOR/".date("d.m.Y"),
-			"table"	=> "farmasi.production",
+			"table"	=> "newfarmasi.production",
 			"column"	=> "production_no",
 			"delimiter" => "/",
 			"number"	=> "2",

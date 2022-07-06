@@ -5,7 +5,7 @@ class M_production_indetail extends CI_Model {
 	public function get_data($sLimit,$sWhere,$sOrder,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).",production_indetail_id as id_key  from farmasi.production_indetail where 0=0 $sWhere $sOrder $sLimit
+				select ".implode(',', $aColumns).",production_indetail_id as id_key  from newfarmasi.production_indetail where 0=0 $sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
 	}
@@ -13,7 +13,7 @@ class M_production_indetail extends CI_Model {
 	public function get_total($sWhere,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).",production_indetail_id as id_key  from farmasi.production_indetail where 0=0 $sWhere
+				select ".implode(',', $aColumns).",production_indetail_id as id_key  from newfarmasi.production_indetail where 0=0 $sWhere
 			")->num_rows();
 		return $data;
 	}
@@ -63,11 +63,11 @@ class M_production_indetail extends CI_Model {
 
 	public function get_production_indetail($where)
 	{
-		return $this->db->get_where("farmasi.production_indetail",$where)->result();
+		return $this->db->get_where("newfarmasi.production_indetail",$where)->result();
 	}
 
 	public function find_one($where)
 	{
-		return $this->db->get_where("farmasi.production_indetail",$where)->row();
+		return $this->db->get_where("newfarmasi.production_indetail",$where)->row();
 	}
 }
