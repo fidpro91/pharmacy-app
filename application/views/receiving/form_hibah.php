@@ -67,7 +67,7 @@
                         <div class="form-group">
                             <label class="col-sm-4 control-label">Grand Total</label>
                             <div class="col-sm-8">
-                                <input type="text" name="grand_total" id="grand_total" class="form-control uang" style="text-align: right;">
+                                <input type="text" name="grand_total" id="grand_total" class="form-control uang" style="text-align: right;" readonly>
                             </div>
                         </div>
                     </div>
@@ -131,6 +131,10 @@
 		$(this).inputmask("99-99-9999",{ "placeholder": "dd-mm-yyyy" });
 	});
 
+    $("body").on("focus", ".price_item, .price_total", function() {
+		$(this).inputmask("IDR");
+	});
+
     $("body").on("keyup", ".qty_pack, .price_item, .unit_per_pack", function() {
 		hitungTotal($(this));
 	});
@@ -152,5 +156,23 @@
 		});
 		$('#grand_total').val(grandtotal);
 	}
+
+    $('#fm_receiving').on("submit",function(){
+		$.blockUI();
+		$.ajax({
+			'type': "post",
+			'data'	: $(this).serialize(),
+			'dataType': 'json',
+			'url': "receiving/save_non_po",
+			'success': function (data) {
+				$.unblockUI();
+				alert(data.message);
+				if (data.code == '200') {
+					location.reload(true);
+				}
+			}
+		});
+		return false;
+	});
   <?=$this->config->item('footerJS')?>
 </script>

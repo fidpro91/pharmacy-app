@@ -17,7 +17,9 @@
       <div class="box">
         <?=$this->session->flashdata('message')?>
         <div class="box-header with-border">
-          <h3 class="box-title">Form Sale Return</h3>
+          <div class="box-tools pull-left">
+            <?= form_dropdown("unit_id_depo", $unit, '', 'class="form-control select2" id="unit_id_depo"') ?>
+          </div>
           <div class="box-tools pull-right">
             <button type="button" id="btn-add" class="btn btn-primary">
               <i class="fa fa-edit "></i> New</button>
@@ -50,7 +52,10 @@
             "scrollX": true,
             "ajax": {
                 "url": "<?php echo site_url('sale_return/get_data')?>",
-                "type": "POST"
+                "type": "POST",
+                "data" : function (f) {
+                    f.unit_id = $("#unit_id_depo").val();
+                  }
             },
             'columnDefs': [
             {
@@ -65,6 +70,10 @@
                    return '<input type="checkbox" name="id[]" value="' + $('<div/>').text(data).html() + '">';
                }
             }], 
+        });
+
+        $("#unit_id_depo").change(() => {
+          table.draw();
         });
     });
     $("#btn-add").click(function() {

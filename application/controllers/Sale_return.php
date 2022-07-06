@@ -18,7 +18,12 @@ class Sale_return extends MY_Generator {
 		$this->session->unset_userdata([
 			'itemReturn'
 		]);
-		$this->theme('sale_return/index');
+		$this->load->model("m_ms_unit");
+		foreach ($this->m_ms_unit->get_ms_unit() as $key => $value) {
+			$kat[$value->unit_id] = $value->unit_name;
+		}
+		$data['unit'] = $kat;
+		$this->theme('sale_return/index',$data);
 	}
 
 	public function save()
@@ -45,14 +50,21 @@ class Sale_return extends MY_Generator {
 
 		$this->db->insert_batch("farmasi.sale_return_detail",$detailRetur['detail']);
 		$err = $this->db->error();
-		if ($this->db->trans_status === false) {
+		if ($this->db->trans_status() === false) {
 			$this->db->trans_rollback();
-			$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
+			$resp = [
+				"code" 		=> "202",
+				"message"	=> $err['message']
+			];
 		}else{
 			$this->db->trans_commit();
-			$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
+			$resp = [
+				"code" 		=> "200",
+				"message"	=> "Data berhasil disimpan"
+			];
 		}
-		redirect('sale_return');
+		echo json_encode($resp);
+		// redirect('sale_return');
 
 	}
 
@@ -61,7 +73,8 @@ class Sale_return extends MY_Generator {
 		$this->load->library('datatable');
 		$attr 	= $this->input->post();
 		$fields = $this->m_sale_return->get_column();
-		$data 	= $this->datatable->get_data($fields,$filter = array(),'m_sale_return',$attr);
+		$filter['unit_id']=$attr['unit_id'];
+		$data 	= $this->datatable->get_data($fields,$filter,'m_sale_return',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
         foreach ($data['dataku'] as $index=>$row) { 
@@ -77,7 +90,7 @@ class Sale_return extends MY_Generator {
             		$obj[] = $row[$value];
             	}
             }
-            $obj[] = create_btnAction(["update","delete"],$row['id_key']);
+            $obj[] = create_btnAction(["delete"],$row['id_key']);
             $records["aaData"][] = $obj;
             $no++;
         }
@@ -113,6 +126,7 @@ class Sale_return extends MY_Generator {
 
 	public function delete_row($id)
 	{
+		$this->db->where('sr_id',$id)->delete("farmasi.sale_return_detail");
 		$this->db->where('sr_id',$id)->delete("farmasi.sale_return");
 		$resp = array();
 		if ($this->db->affected_rows()) {
@@ -128,6 +142,7 @@ class Sale_return extends MY_Generator {
 	{
 		$resp = array();
 		foreach ($this->input->post('data') as $key => $value) {
+			$this->db->where('sr_id',$value)->delete("farmasi.sale_return_detail");
 			$this->db->where('sr_id',$value)->delete("farmasi.sale_return");
 			$err = $this->db->error();
 			if ($err['message']) {

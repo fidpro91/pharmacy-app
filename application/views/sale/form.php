@@ -141,7 +141,7 @@
 		$.blockUI();
 		$.ajax({
 			'type': "post",
-			'data'	: $(this).serialize(),
+			'data'	: $(this).serialize()+"&unit_id="+$("#unit_id_depo").val(),
 			'dataType': 'json',
 			'url': "sale/save",
 			'success': function (data) {

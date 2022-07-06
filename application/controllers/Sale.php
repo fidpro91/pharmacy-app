@@ -38,7 +38,7 @@ class Sale extends MY_Generator {
 			foreach ($this->m_sale->rules() as $key => $value) {
 				$input[$key] = (!empty($sess[$key])?$sess[$key]:null);
 			}
-			$input['unit_id'] = 18;
+			$input['unit_id'] = $data['unit_id'];
 			$input['user_id'] = ($this->session->user_id?$this->session->user_id:21);
 			$input['sale_num'] = $this->get_no_sale();
 			$racikan = $this->session->userdata('itemRacik');

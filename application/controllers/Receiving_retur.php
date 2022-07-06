@@ -28,6 +28,7 @@ class Receiving_retur extends MY_Generator {
 			}
 			$input['rr_status'] = 'f';
 			$input['user_id'] 	= $this->session->user_id;
+			$input['unit_id'] 	= 55;
 			$this->db->trans_begin();
 			if ($data['rr_id']) {
 				$this->db->where("rr_id",$data['rr_id'])->delete("newfarmasi.receiving_retur_detil");
@@ -51,6 +52,7 @@ class Receiving_retur extends MY_Generator {
 				$inputDetail[$a]['rec_id'] 	= $dataRec[0];
 				$inputDetail[$a]['recdet_id'] 	= $dataRec[1];
 				$inputDetail[$a]['supplier_id'] 	= $dataRec[2];
+				$inputDetail[$a]['own_id'] 	= $dataRec[3];
 				$inputDetail[$a]['rrd_type']		= $input['rr_type'];
 			}
 			$this->db->insert_batch("newfarmasi.receiving_retur_detil",$inputDetail);
@@ -140,6 +142,7 @@ class Receiving_retur extends MY_Generator {
 
 	public function delete_row($id)
 	{
+		$this->db->where("rr_id",$id)->delete("newfarmasi.receiving_retur_detil");
 		$this->db->where('rr_id',$id)->delete("newfarmasi.receiving_retur");
 		$resp = array();
 		if ($this->db->affected_rows()) {
@@ -155,6 +158,7 @@ class Receiving_retur extends MY_Generator {
 	{
 		$resp = array();
 		foreach ($this->input->post('data') as $key => $value) {
+			$this->db->where("rr_id",$value)->delete("newfarmasi.receiving_retur_detil");
 			$this->db->where('rr_id',$value)->delete("newfarmasi.receiving_retur");
 			$err = $this->db->error();
 			if ($err['message']) {
@@ -185,14 +189,13 @@ class Receiving_retur extends MY_Generator {
 	public function find_rr_detail($id)
 	{
 		$retur = $this->db->query("
-		SELECT rd.*,mi.item_name as label_item_id,sp.supplier_name as supplier,concat(rd.rec_id,'|',rd.recdet_id,'|',rd.supplier_id) as id_penerimaan,rd2.qty_unit as qty_terima
+		SELECT rd.*,mi.item_name as label_item_id,sp.supplier_name as supplier,concat(rd.rec_id,'|',rd.recdet_id,'|',rd.supplier_id,'|',rd.own_id) as id_penerimaan,rd2.qty_unit as qty_terima
 		FROM newfarmasi.receiving_retur_detil rd
 		JOIN admin.ms_item mi on mi.item_id = rd.item_id
-		join farmasi.receiving_detail rd2 on rd.recdet_id = rd2.recdet_id
+		join newfarmasi.receiving_detail rd2 on rd.recdet_id = rd2.recdet_id
 		JOIN admin.ms_supplier sp ON rd.supplier_id = sp.supplier_id
 		where rd.rr_id = '$id'
 		")->result();
-		
 		echo json_encode($retur);
 	}
 }

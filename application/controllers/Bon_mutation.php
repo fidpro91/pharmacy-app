@@ -323,20 +323,17 @@ class Bon_mutation extends MY_Generator {
 				}
 			}
 		}elseif ($type='plus') {
-			$stock= $this->db->order_by("stock_id","desc")
-							->get_where("newfarmasi.stock_fifo",$param);
-			if ($stock->num_rows()>0) {
-				$stock = $stock->row();
-				$this->db->where("stock_id",$stock->stock_id)->update("newfarmasi.stock_fifo",[
-					"stock_saldo" => ($stock->stock_saldo+$qty),
-					"stock_in"	  => ($stock->stock_in-$qty+$qty)
-				]);
+			$baru = $param;
+			$baru["stock_in"] 		= $qty;
+			$baru["stock_saldo"] 	= $qty;
+			$baru[key($fk)] 		= array_values($fk)[0];
+			$this->db->insert("newfarmasi.stock_fifo",$baru);
+			if ($this->db->get_where("newfarmasi.stock",$param)->num_rows()>0) {
+				$this->db->set("stock_summary","(stock_summary+".$qty.")",false);
+				$this->db->where($param)->update("newfarmasi.stock");
 			}else{
-				$baru = $param;
-				$baru["stock_in"] 		= $qty;
-				$baru["stock_saldo"] 	= $qty;
-				$baru[key($fk)] 		= array_values($fk)[0];
-				$this->db->insert("newfarmasi.stock_fifo",$baru);
+				$param["stock_summary"] = $qty;
+				$this->db->insert("newfarmasi.stock",$param);
 			}
 		}
 	}
