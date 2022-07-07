@@ -29,6 +29,9 @@
                 <?= create_inputDate("sale_date", [
                     "format" => "yyyy-mm-dd",
                     "autoclose" => "true"
+                ],[
+                    "readonly" => true,
+                    "value"     => date('Y-m-d')
                 ]) ?>
                 <?= create_input("patient_norm") ?>
                 <?= create_input("patient_name") ?>

@@ -43,15 +43,22 @@ class Receiving extends MY_Generator {
 			$err = $this->db->error();
 			if ($err['message'] || $sukses === false) {
 				$this->db->trans_rollback();
-				$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
+				$resp = [
+					"code" 		=> "202",
+					"message"	=> $err['message']
+				];
 			}else{
 				$this->db->trans_commit();
-				$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
+				$resp = [
+					"code" 		=> "200",
+					"message"	=> "Data berhasil disimpan"
+				];
 			}
+			echo json_encode($resp);
 		/* }else{
 			$this->session->set_flashdata('message',validation_errors('<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>','</div>'));
 		} */
-		redirect('receiving');
+		// redirect('receiving');
 
 	}
 
@@ -77,15 +84,22 @@ class Receiving extends MY_Generator {
 			$err = $this->db->error();
 			if ($err['message'] || $sukses === false) {
 				$this->db->trans_rollback();
-				$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
+				$resp = [
+					"code" 		=> "202",
+					"message"	=> $err['message']
+				];
 			}else{
 				$this->db->trans_commit();
-				$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
+				$resp = [
+					"code" 		=> "200",
+					"message"	=> "Data berhasil disimpan"
+				];
 			}
+			echo json_encode($resp);
 		/* }else{
 			$this->session->set_flashdata('message',validation_errors('<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>','</div>'));
 		} */
-		redirect('receiving');
+		// redirect('receiving');
 
 	}
 
@@ -278,7 +292,7 @@ class Receiving extends MY_Generator {
 	{
 		$data['model'] = $this->m_receiving->rules();
 		$data['norec'] = generate_code_transaksi([
-			"text"	=> "R/PBF/NOMOR/".date("d.m.Y"),
+			"text"	=> "REC/PBF/NOMOR/".date("d.m.Y"),
 			"table"	=> "newfarmasi.receiving",
 			"column"	=> "receiver_num",
 			"delimiter" => "/",
@@ -293,7 +307,7 @@ class Receiving extends MY_Generator {
 	{
 		$data['model'] = $this->m_receiving->rules();
 		$data['norec'] = generate_code_transaksi([
-			"text"	=> "R/HIBAH/NOMOR/".date("d.m.Y"),
+			"text"	=> "REC/HIBAH/NOMOR/".date("d.m.Y"),
 			"table"	=> "newfarmasi.receiving",
 			"column"	=> "receiver_num",
 			"delimiter" => "/",

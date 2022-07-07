@@ -5,7 +5,7 @@ class M_production extends CI_Model {
 	public function get_data($sLimit,$sWhere,$sOrder,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).",production_id as id_key  from farmasi.production p
+				select ".implode(',', $aColumns).",production_id as id_key  from newfarmasi.production p
 				left join farmasi.ownership o on p.own_id = o.own_id
 				 where 0=0 $sWhere $sOrder $sLimit
 			")->result_array();
@@ -15,7 +15,7 @@ class M_production extends CI_Model {
 	public function get_total($sWhere,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).",production_id as id_key  from farmasi.production  p
+				select ".implode(',', $aColumns).",production_id as id_key  from newfarmasi.production  p
 				left join farmasi.ownership o on p.own_id = o.own_id
 				 where 0=0 $sWhere
 			")->num_rows();
@@ -59,11 +59,11 @@ class M_production extends CI_Model {
 
 	public function get_production($where)
 	{
-		return $this->db->get_where("farmasi.production",$where)->result();
+		return $this->db->get_where("newfarmasi.production",$where)->result();
 	}
 
 	public function find_one($where)
 	{
-		return $this->db->get_where("farmasi.production",$where)->row();
+		return $this->db->get_where("newfarmasi.production",$where)->row();
 	}
 }

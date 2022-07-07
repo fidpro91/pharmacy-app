@@ -26,7 +26,6 @@
 						"readonly"	=>true,
 						"value"		=> $sr_num
 					]) ?>
-					<?= create_input("unit_id") ?>
 					<?= create_input("patient_norm") ?>
 					<?= create_input("patient_name") ?>
 				</div>
@@ -36,16 +35,16 @@
 			<div class="box box-primary">
 				<div class="box-body">
 					<div class="col-xs-3">
-						<?= create_inputMask("total_item","IDR") ?>
+						<?= create_inputMask("total_item","IDR",["readonly"=>true]) ?>
 					</div>
 					<div class="col-xs-3">
-						<?= create_inputMask("total_qty","IDR") ?>
+						<?= create_inputMask("total_qty","IDR",["readonly"=>true]) ?>
 					</div>
 					<div class="col-xs-3">
-						<?= create_inputMask("embalase","IDR") ?>
+						<?= create_inputMask("embalase","IDR",["readonly"=>true]) ?>
 					</div>
 					<div class="col-xs-3">
-						<?= create_inputMask("total_return","IDR") ?>
+						<?= create_inputMask("total_return","IDR",["readonly"=>true]) ?>
 					</div>
 				</div>
 			</div>
@@ -96,6 +95,24 @@
 
 	$("#fm_sale_return").on("submit",()=>{
 		$("#total_item").attr('readonly',false);
+	});
+
+	$('#fm_sale_return').on("submit",function(){
+		$.blockUI();
+		$.ajax({
+			'type': "post",
+			'data'	: $(this).serialize()+"&unit_id="+$("#unit_id_depo").val(),
+			'dataType': 'json',
+			'url': "sale_return/save",
+			'success': function (data) {
+				$.unblockUI();
+				alert(data.message);
+				if (data.code == '200') {
+					location.reload(true);
+				}
+			}
+		});
+		return false;
 	});
 
 	function grandTotal(total) {
