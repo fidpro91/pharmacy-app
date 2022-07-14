@@ -89,10 +89,110 @@ class Distribusi_bon extends MY_Generator {
 					 [
 						"qty_send" => $value["qty_send"]
 					 ]);
+			
+			$mutationDetail = $this->db->get_where("newfarmasi.mutation_detail",[
+				"mutation_detil_id" => $value['mutation_detil_id']
+			])->row();
+			$this->update_stock([
+				"unit_id" 	=> $data['unit_sender'],
+				"own_id"	=> $data['own_id'],
+				"item_id"	=> $mutationDetail->item_id,
+			],$mutationDetail->qty_send,"minus");
+			$dataku["item_id"] = $mutationDetail->item_id;
+			$dataku["own_id"] = $data['own_id'];
+			$dataku["unit_id"] = $data['unit_sender'];
+			$dataku["qty"] = $mutationDetail->qty_send;
+			$dataku["trans_num"] = $data['mutation_no'];
+			$dataku["trans_type"] = 3;
+			$this->insert_stock_process($dataku);
             $sukses = true;
 		}
 
         return $sukses;
+	}
+
+	public function update_stock($param,$qty,$type="plus",$fk=null)
+	{
+		if ($type=='minus') {
+			$data = $this->db->get_where("newfarmasi.stock_fifo",$param)->result();
+			$stock_saldo=0;
+			foreach ($data as $key => $value) {
+				if ($value->stock_saldo >= $qty) {
+					$stock_saldo=$value->stock_saldo-$qty;
+					$this->db->where("stock_id",$value->stock_id)
+							->update("newfarmasi.stock_fifo",[
+								"stock_saldo" => $stock_saldo
+							]);
+					$this->db->set("stock_summary","(stock_summary-".$qty.")",false);
+					$this->db->where([
+						"item_id"	=> $value->item_id,
+						"unit_id"	=> $value->unit_id,
+						"own_id"	=> $value->own_id,
+					])->update("newfarmasi.stock");
+					break;
+				}elseif ($value->stock_saldo < $qty) {
+					$stock_saldo=($qty-$value->stock_saldo);
+					$qty = $stock_saldo;
+					$this->db->where("stock_id",$value->stock_id)
+							->update("newfarmasi.stock_fifo",[
+								"stock_saldo" => 0
+							]);
+					$this->db->set("stock_summary","(stock_summary-".$value->stock_saldo.")",false);
+					$this->db->where([
+						"item_id"	=> $value->item_id,
+						"unit_id"	=> $value->unit_id,
+						"own_id"	=> $value->own_id,
+					])->update("newfarmasi.stock");
+				}
+			}
+		}elseif ($type='plus') {
+			$baru = $param;
+			$baru = [
+				"stock_in" 		=> $qty,
+				"stock_saldo" 	=> $qty,
+				key($fk)		=> array_values($fk)[0]  
+			];
+			$this->db->insert("newfarmasi.stock_fifo",$baru);
+			$stock= $this->db->order_by("id","desc")
+							->get_where("newfarmasi.stock",$param);
+			if ($stock->num_rows()>0) {
+				$stock=$stock->row();
+				$this->db->set("stock_summary","(stock_summary-".$qty.")",false);
+				$this->db->where([
+					"item_id"	=> $stock->item_id,
+					"unit_id"	=> $stock->unit_id,
+					"own_id"	=> $stock->own_id,
+				])->update("newfarmasi.stock");
+			}else{
+				$param["stock_summary"] = $qty;
+				$this->db->insert("newfarmasi.stock",$param);
+			}
+		}
+	}
+
+	public function insert_stock_process($dataku)
+	{
+		$this->load->model("m_stock_process");
+        foreach ($this->m_stock_process->rules() as $key => $value) {
+            $dataku[$key] = (isset($dataku[$key])?$dataku[$key]:null);
+        }
+		$dataku["date_act"] = $dataku["date_trans"] = 'now()';
+		$oldStock = $this->db->order_by("stockprocess_id","DESC")->get_where("newfarmasi.stock_process",[
+			"unit_id" => $dataku["unit_id"],
+			"own_id"  => $dataku["own_id"],
+			"item_id" => $dataku["item_id"]
+		])->row();
+		$stockAwal = (isset($oldStock->stock_after)?$oldStock->stock_after:0);
+		$harga = (isset($oldStock->item_price)?$oldStock->item_price:0);
+		$dataku["stock_before"] = $stockAwal;
+		$dataku["item_price"] 	= $harga;
+		$dataku["kredit"] 		= $dataku["qty"];
+		$dataku["debet"] 		= 0;
+		$dataku["stock_after"] 	= $stockAwal-$dataku["qty"];
+		$dataku["total_price"] 	= ($harga*$dataku["qty"]);
+		$dataku["description"] 	= "Mutasi Keluar No : ".$dataku["trans_num"];
+		unset($dataku["qty"]);
+		$this->db->insert("newfarmasi.stock_process",$dataku);
 	}
 
 	public function get_data()
@@ -104,7 +204,7 @@ class Distribusi_bon extends MY_Generator {
         $filter = [];	
 		$filter["custom"]= "(date(mutation_date) between '$tgl1' and '$tgl2')";	
 		if ($attr['unit'] !='') {
-			$filter = array_merge($filter, ["unit_require" => $attr['unit']]);
+			$filter = array_merge($filter, ["unit_sender" => $attr['unit']]);
 		}	
 		if($attr['sts'] != ' '){
 			$filter =array_merge($filter, ["mutation_status" => $attr['sts']]);

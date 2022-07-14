@@ -137,6 +137,36 @@
         };
 	});
 
+	function removeRacikan(a,b,biaya,total){
+		$.ajax({
+			'type': "get",
+			'url': "sale/remove_item_racikan/"+b+"/"+biaya+"/"+total,
+			'dataType':'json',
+			'success': function (data) {
+				$(a).closest('div').remove();
+				$("#sub_total_racikan").text(formatNumeric(data.total));
+				$("#sub_total_racikan").attr("isi",(data.total));
+				$("#total_biaya_racikan").attr("isi",(data.biaya_racik));
+				$("#total_biaya_racikan").text(formatNumeric(data.biaya_racik));
+				grandTotal();
+			}
+		});
+	}
+
+	function removeNonRacikan(a,b,biaya){
+		$.ajax({
+			'type': "get",
+			'url': "sale/remove_item_nonracikan/"+b+"/"+biaya,
+			'dataType':'json',
+			'success': function (data) {
+				$(a).closest('div').remove();
+				$("#sub_total_nonracikan").text(formatNumeric(data.total));
+				$("#sub_total_nonracikan").attr("isi",(data.total));
+				grandTotal();
+			}
+		});
+	}
+
 	$('#fm_sale_h').on("submit",function(){
 		$.blockUI();
 		$.ajax({
@@ -185,7 +215,5 @@
 		$("#pembulatan_biaya").text(formatMoney(embalase));
 		$("#grand_total").text(formatMoney(totalAll));
 	}
-
-	
 	<?= $this->config->item('footerJS') ?>
 </script>

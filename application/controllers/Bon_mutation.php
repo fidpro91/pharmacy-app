@@ -148,9 +148,10 @@ class Bon_mutation extends MY_Generator {
             		$obj[] = $row[$value];
             	}
             }
+			$arrayKonfirm = [2,3,4];
             if ($row["mutation_status"] == 1) {
 				$obj[] = create_btnAction(["update","delete"],$row['id_key']);
-			}elseif ($row["mutation_status"] == 2 || $row["mutation_status"] == 3){
+			}elseif (in_array($row["mutation_status"],$arrayKonfirm)){
 				$obj[] = create_btnAction([
 					"Konfirmasi"=>[
 						"btn-act" => "konfirm_penerimaan(".$row['id_key'].")",
@@ -234,6 +235,17 @@ class Bon_mutation extends MY_Generator {
 
 	public function konfirmasi_distribusi()
 	{
+		// print_r($this->input->post());die;
+		if ($this->input->post('button-konfirm') === '2') {
+			$this->batal_terima();
+		}else{
+			$this->konfirm_terima();
+		}
+		redirect('bon_mutation');
+	}
+
+	public function konfirm_terima()
+	{
 		$this->db->trans_begin();
 		$this->db->where([
 			"mutation_id" => $this->input->post("mutation_id")
@@ -254,14 +266,15 @@ class Bon_mutation extends MY_Generator {
 			$dataku = [
 				"unit_id" => $value->unit_require,
 				"own_id"  => $value->own_id,
-				"item_id" => $value->item_id
+				"item_id" => $value->item_id,
+				"expired_date" => $value->expired_date,
 			];
 
 			$this->update_stock($dataku,$value->qty_send,"plus",["mutation_detail_id"=>$value->mutation_detil_id]);
 			$dataku["qty"] = $value->qty_send;
 			$dataku["trans_num"] = $value->mutation_no;
 			$dataku["trans_type"] = 3;
-			$this->insert_stock_process($dataku);
+			$this->insert_stock_process($dataku,"plus");
 		}
 		if ($this->db->trans_status() === false) {
 			$err = $this->db->error();
@@ -271,66 +284,126 @@ class Bon_mutation extends MY_Generator {
 			$this->db->trans_commit();
 			$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil dikonfirmasi</div>');
 		}
-
-		redirect('bon_mutation');
 	}
 
-	public function insert_stock_process($dataku)
+	public function batal_terima()
 	{
-		$this->load->model("m_stock_process");
-        foreach ($this->m_stock_process->rules() as $key => $value) {
-            $dataku[$key] = (isset($dataku[$key])?$dataku[$key]:null);
-        }
-		$dataku["date_act"] = $dataku["date_trans"] = 'now()';
-		$oldStock = $this->db->order_by("stockprocess_id","DESC")->get_where("newfarmasi.stock_process",[
-			"unit_id" => $dataku["unit_id"],
-			"own_id"  => $dataku["own_id"],
-			"item_id" => $dataku["item_id"]
-		])->row();
-		$stockAwal = (isset($oldStock->stock_after)?$oldStock->stock_after:0);
-		$harga = (isset($oldStock->item_price)?$oldStock->item_price:0);
-		$dataku["stock_before"] = $stockAwal;
-		$dataku["item_price"] 	= $harga;
-		$dataku["kredit"] 		= 0;
-		$dataku["debet"] 		= $dataku["qty"];
-		$dataku["stock_after"] 	= $dataku["qty"]+$stockAwal;
-		$dataku["total_price"] 	= ($harga*$dataku["qty"]);
-		$dataku["description"] 	= "Mutasi masuk No : ".$dataku["trans_num"];
-		unset($dataku["qty"]);
+		$this->db->trans_begin();
+		$this->db->where([
+			"mutation_id" => $this->input->post("mutation_id")
+		])->update("newfarmasi.mutation",[
+			"mutation_status" => "4",
+			"user_receiver"	  => $this->session->user_id,
+			"received_at"	  => null
+		]);
+
+		$this->db->where([
+			"mutation_id" => $this->input->post("mutation_id")
+		])->update("newfarmasi.mutation_detail",[
+			"is_approved" => "f"
+		]);
+
+		$mutationDetail = $this->db->join("newfarmasi.mutation m","m.mutation_id=md.mutation_id")
+		->get_where("newfarmasi.mutation_detail md",["md.mutation_id"=>$this->input->post("mutation_id")])->result();
+		foreach ($mutationDetail as $key => $value) {
+			$dataku = [
+				"unit_id" => $value->unit_require,
+				"own_id"  => $value->own_id,
+				"item_id" => $value->item_id,
+				"expired_date" => $value->expired_date,
+			];
+
+			$this->update_stock($dataku,$value->qty_send,"minus",["mutation_detail_id"=>$value->mutation_detil_id]);
+			$dataku["qty"] = $value->qty_send;
+			$dataku["trans_num"] = $value->mutation_no;
+			$dataku["trans_type"] = 3;
+			$this->insert_stock_process($dataku,"minus");
+		}
+		if ($this->db->trans_status() === false) {
+			$err = $this->db->error();
+			$this->db->trans_rollback();
+			$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
+		}else{
+			$this->db->trans_commit();
+			$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil dikonfirmasi</div>');
+		}
+	}
+
+	public function insert_stock_process($dataku,$type)
+	{
+		unset($dataku['expired_date']);
+		if ($type=="plus") {
+			$this->load->model("m_stock_process");
+			foreach ($this->m_stock_process->rules() as $key => $value) {
+				$dataku[$key] = (isset($dataku[$key])?$dataku[$key]:null);
+			}
+			$dataku["date_act"] = $dataku["date_trans"] = 'now()';
+			$oldStock = $this->db->order_by("stockprocess_id","DESC")->get_where("newfarmasi.stock_process",[
+				"unit_id" => $dataku["unit_id"],
+				"own_id"  => $dataku["own_id"],
+				"item_id" => $dataku["item_id"]
+			])->row();
+			$stockAwal = (isset($oldStock->stock_after)?$oldStock->stock_after:0);
+			$harga = (isset($oldStock->item_price)?$oldStock->item_price:0);
+			$dataku["stock_before"] = $stockAwal;
+			$dataku["item_price"] 	= $harga;
+			$dataku["kredit"] 		= 0;
+			$dataku["debet"] 		= $dataku["qty"];
+			$dataku["stock_after"] 	= $dataku["qty"]+$stockAwal;
+			$dataku["total_price"] 	= ($harga*$dataku["qty"]);
+			$dataku["description"] 	= "Mutasi masuk No : ".$dataku["trans_num"];
+			unset($dataku["qty"]);
+		}else{
+			$this->load->model("m_stock_process");
+			foreach ($this->m_stock_process->rules() as $key => $value) {
+				$dataku[$key] = (isset($dataku[$key])?$dataku[$key]:null);
+			}
+			$dataku["date_act"] = $dataku["date_trans"] = 'now()';
+			$oldStock = $this->db->order_by("stockprocess_id","DESC")->get_where("newfarmasi.stock_process",[
+				"unit_id" => $dataku["unit_id"],
+				"own_id"  => $dataku["own_id"],
+				"item_id" => $dataku["item_id"]
+			])->row();
+			$stockAwal = (isset($oldStock->stock_after)?$oldStock->stock_after:0);
+			$harga = (isset($oldStock->item_price)?$oldStock->item_price:0);
+			$dataku["stock_before"] = $stockAwal;
+			$dataku["item_price"] 	= $harga;
+			$dataku["kredit"] 		= $dataku["qty"];
+			$dataku["debet"] 		= 0;
+			$dataku["stock_after"] 	= $stockAwal-$dataku["qty"];
+			$dataku["total_price"] 	= ($harga*$dataku["qty"]);
+			$dataku["description"] 	= "Batal Terima Mutasi No : ".$dataku["trans_num"];
+			unset($dataku["qty"]);
+		}
 		$this->db->insert("newfarmasi.stock_process",$dataku);
 	}
 
 	public function update_stock($param,$qty,$type="plus",$fk=null)
 	{
 		if ($type=='minus') {
-			$data = $this->db->get_where("newfarmasi.stock_fifo",$param)->result();
-			$stock_saldo=0;
-			foreach ($data as $key => $value) {
-				if ($value->stock_saldo >= $qty) {
-					$stock_saldo=$value->stock_saldo-$qty;
-					$this->db->where("stock_id",$value->stock_id)
-							->update("newfarmasi.stock_fifo",[
-								"stock_saldo" => $stock_saldo
-							]);
-					break;
-				}elseif ($value->stock_saldo < $qty) {
-					$stock_saldo=($qty-$value->stock_saldo);
-					$qty = $stock_saldo;
-					$this->db->where("stock_id",$value->stock_id)
-							->update("newfarmasi.stock_fifo",[
-								"stock_saldo" => 0
-							]);
-				}
-			}
+			$this->db->where($fk)->delete('newfarmasi.stock_fifo');
+			$this->db->set("stock_summary","(stock_summary-$qty)",false)
+					 ->update("newfarmasi.stock");
 		}elseif ($type='plus') {
-			$baru = $param;
-			$baru["stock_in"] 		= $qty;
-			$baru["stock_saldo"] 	= $qty;
-			$baru[key($fk)] 		= array_values($fk)[0];
+			$baru = [
+				"stock_in" 		=> $qty,
+				"stock_saldo" 	=> $qty,
+				key($fk)		=> array_values($fk)[0]  
+			];
+			$baru = array_merge($param,$baru);
 			$this->db->insert("newfarmasi.stock_fifo",$baru);
-			if ($this->db->get_where("newfarmasi.stock",$param)->num_rows()>0) {
-				$this->db->set("stock_summary","(stock_summary+".$qty.")",false);
-				$this->db->where($param)->update("newfarmasi.stock");
+			unset($param['expired_date']);
+			$where=$param;
+			$stock= $this->db->order_by("id","desc")
+							->get_where("newfarmasi.stock",$where);
+			if ($stock->num_rows()>0) {
+				$stock=$stock->row();
+				$this->db->set("stock_summary","(stock_summary-".$qty.")",false);
+				$this->db->where([
+					"item_id"	=> $stock->item_id,
+					"unit_id"	=> $stock->unit_id,
+					"own_id"	=> $stock->own_id,
+				])->update("newfarmasi.stock");
 			}else{
 				$param["stock_summary"] = $qty;
 				$this->db->insert("newfarmasi.stock",$param);
