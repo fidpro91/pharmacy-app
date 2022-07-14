@@ -69,7 +69,7 @@
     });
 
     function cek_stok(id) {
-		const url = '<?=base_url()?>Stock_process/get_data/' + id
+		const url = '<?=base_url()?>Stock_process/index/' + id
 		window.open(url);
 	}
 
