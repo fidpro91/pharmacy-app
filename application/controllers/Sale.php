@@ -139,8 +139,8 @@ class Sale extends MY_Generator {
 
 	public function delete_row($id)
 	{
-		$this->db->where('sale_id',$id)->delete("sale_detail");
-		$this->db->where('sale_id',$id)->delete("sale");
+		$this->db->where('sale_id',$id)->delete("farmasi.sale_detail");
+		$this->db->where('sale_id',$id)->delete("farmasi.sale");
 		$resp = array();
 		if ($this->db->affected_rows()) {
 			$resp['message'] = 'Data berhasil dihapus';
@@ -155,7 +155,7 @@ class Sale extends MY_Generator {
 	{
 		$resp = array();
 		foreach ($this->input->post('data') as $key => $value) {
-			$this->db->where('sale_id',$value)->delete("sale");
+			$this->db->where('sale_id',$value)->delete("farmasi.sale");
 			$err = $this->db->error();
 			if ($err['message']) {
 				$resp['message'] .= $err['message']."\n";
@@ -236,7 +236,8 @@ class Sale extends MY_Generator {
 					"type" => 'text',
 					"width" => ($value=='price_total')?'18%':'14%',
 					"attr"=>[
-						"readonly"=>'readonly'
+						"readonly"=>'readonly',
+						"data-inputmask"=>"'alias': 'IDR'"
 					]
 				];
 			}
@@ -247,7 +248,8 @@ class Sale extends MY_Generator {
 					"type" => 'text',
 					"width" => ($value=='price_total')?'18%':'14%',
 					"attr"=>[
-						"readonly"=>"readonly"
+						"readonly"=>"readonly",
+						"data-inputmask"=>"'alias': 'IDR'"
 					]
 				];
 			}
@@ -308,6 +310,9 @@ class Sale extends MY_Generator {
 				<span class='comment-text'>
 					<b>".$post['nama_racikan']."</b>
 					<span class=\"text-muted pull-right\">
+						<a href=\"#\" onclick=\"removeRacikan(this,'".$post['nama_racikan']."','".$post['biaya_racikan']."','$total')\" class=\"btn btn-xs btn-danger\"><i class=\"fa fa-minus\"></i></a>
+					</span>
+					<span class=\"text-muted pull-right\">
 						".convert_currency(($total))."
 					</span>
 					<p>$item</p>
@@ -318,6 +323,36 @@ class Sale extends MY_Generator {
 			'total' 		=> $total,
 			'biaya_racik'	=> $post['biaya_racikan'],
 			'html'	=> $html
+		];
+		echo json_encode($resp);
+	}
+
+	public function remove_item_racikan($id,$biaya,$total)
+	{
+		$session = $this->session->userdata('itemRacik');
+		$session['detail'] = array_filter($session['detail'], function ($var) use ($id){
+            return ($var['racikan_id'] != $id);
+        });
+		$session['biaya_racik'] = $session['biaya_racik']-$biaya;
+		$session['total'] = $session['total']-$total;
+		$this->session->set_userdata('itemRacik',$session);
+		$resp = [
+			'total' 		=> $session['total'],
+			'biaya_racik'	=> $session['biaya_racik']
+		];
+		echo json_encode($resp);
+	}
+
+	public function remove_item_nonracikan($id,$harga)
+	{
+		$session = $this->session->userdata('itemNonRacik');
+		$session['detail'] = array_filter($session['detail'], function ($var) use ($id){
+            return ($var['item_id'] != $id);
+        });
+		$session['total'] = $session['total']-$harga;
+		$this->session->set_userdata('itemNonRacik',$session);
+		$resp = [
+			'total' 		=> $session['total']
 		];
 		echo json_encode($resp);
 	}
@@ -343,11 +378,14 @@ class Sale extends MY_Generator {
 			$price_total = ($v['price_total']*$header['profit'])+$v['price_total'];
 			$itemNonRacikan[$x]['subtotal'] = $price_total;
 			$total += $price_total;
-			$item .= $v['autocom_item_id']."(".$v['sale_qty'].")"."<br>";
+			$item = $v['autocom_item_id']."(".$v['sale_qty'].")";
 			$html .= "
 			<div class='comment-text'>
 				<span class='comment-text'>
 					<b>".$item."</b>
+					<span class=\"text-muted pull-right\">
+						<a href=\"#\" onclick=\"removeNonRacikan(this,'".$v['item_id']."','".$price_total."')\" class=\"btn btn-xs btn-danger\"><i class=\"fa fa-minus\"></i></a>
+					</span>
 					<span class=\"text-muted pull-right\">
 						".convert_currency(($v['price_total']))."
 					</span>
@@ -410,7 +448,7 @@ class Sale extends MY_Generator {
 	{
 		$term = $this->input->get('term');
 		$this->load->model('m_stock_fifo');
-		$where = " AND unit_id = '".$unit_id."' AND lower(mi.item_name) like lower('%$term%') AND sf.stock_saldo > 0";
+		$where = " AND unit_id = '".$unit_id."' AND lower(mi.item_name) like lower('%$term%') AND sf.stock_summary > 0";
 		echo json_encode($this->m_stock_fifo->get_stock_item($where));
 	}
 

@@ -133,7 +133,7 @@
 					var attr = "";
 					if (obj.attr) {
 						$.each(obj.attr, function (i, o) {
-							attr += " " + i + '="' + 0 + '"';
+							attr += " " + i + '="' + o + '"';
 						});
 					}
 					if (obj.type == "text") {

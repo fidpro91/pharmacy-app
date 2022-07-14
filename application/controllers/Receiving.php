@@ -142,6 +142,7 @@ class Receiving extends MY_Generator {
 			$stockku[$x]["stock_in"] = $detail[$x]['qty_unit'];
 			$stockku[$x]["stock_saldo"] = $detail[$x]['qty_unit'];
 			$stockku[$x]["total_price"] = $detail[$x]['price_total'];
+			$stockku[$x]["expired_date"] = $detail[$x]['expired_date'];
 			$this->db->insert("newfarmasi.stock_fifo",$stockku[$x]);
 			$sukses=true;
 		}
@@ -177,6 +178,7 @@ class Receiving extends MY_Generator {
 			$stockku[$x]["stock_in"] = $detail[$x]['qty_unit'];
 			$stockku[$x]["stock_saldo"] = $detail[$x]['qty_unit'];
 			$stockku[$x]["total_price"] = $detail[$x]['price_total'];
+			$stockku[$x]["expired_date"] = $detail[$x]['expired_date'];
 			$this->db->insert("newfarmasi.stock_fifo",$stockku[$x]);
 		
 			$sukses=true;
