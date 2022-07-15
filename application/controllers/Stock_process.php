@@ -10,13 +10,13 @@ class Stock_process extends MY_Generator {
 						 ->lib_datatableExt()
 					     ->lib_daterange();
 		$this->load->model('m_stock_process');
-		$this->load->model('m_data_stok');
+		
 	}
 
 	public function index()
 	{
-		$this->theme('stock_process/index');
-		//$this->theme('stock_process/v_stok_proses');
+		$this->load->view('stock_process/index');
+		
 	}
 
 	public function save()
@@ -50,12 +50,19 @@ class Stock_process extends MY_Generator {
 		$this->load->library('datatable');
 		$attr 	= $this->input->post(); 
 		$fields = $this->m_stock_process->get_column();
-		list($tgl1,$tgl2) = explode('/', $attr['tgl']); 
 		$filter = [];
-		$filter["custom" ] = "(date(date_trans) between '$tgl1' and '$tgl2')"; 
+		$filter['sp.item_id'] = $attr['item_id'];
+		if ($attr['tgl']) {
+			list($tgl1,$tgl2) = explode('/', $attr['tgl']); 
+			$filter["custom" ] = "(date(date_trans) between '$tgl1' and '$tgl2')"; 
+		}
 		if (!empty($attr['unit'])) {
 			$filter = array_merge($filter, ["sp.unit_id" => $attr['unit']]);
 		}
+		if (!empty($attr['own_id'])) {
+			$filter = array_merge($filter, ["sp.own_id" => $attr['own_id']]);
+		}
+
 		$data 	= $this->datatable->get_data($fields,$filter,'m_stock_process',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
@@ -124,44 +131,5 @@ class Stock_process extends MY_Generator {
 		$this->load->view("stock_process/form",$data);
 	}
 
-	public function show_data()
-	{		
-		$this->theme('stock_process/v_stok_proses');
-	}
-
-	public function get_data_stok()
-	{
-		$this->load->library('datatable');
-		$attr 	= $this->input->post();
-		$fields = $this->m_data_stok->get_column();
-		$data 	= $this->datatable->get_data($fields,$filter = array(),'m_data_stok',$attr);
-		$records["aaData"] = array();
-		$no   	= 1 + $attr['start']; 
-        foreach ($data['dataku'] as $index=>$row) { 
-            $obj = array($row['id_key'],$no);
-            foreach ($fields as $key => $value) {
-            	if (is_array($value)) {
-            		if (isset($value['custom'])){
-            			$obj[] = call_user_func($value['custom'],$row[$key]);
-            		}else{
-            			$obj[] = $row[$key];
-            		}
-            	}else{
-            		$obj[] = $row[$value];
-            	}
-            }
-            //$obj[] = create_btnAction(["update","delete"],$row['id_key']);
-			$obj[] = create_btnAction([[
-				"btn-act" => "cek_stok(" . $row['id_key'] . ")",
-				"btn-icon" => "fa fa-eye",
-				"btn-class" => "btn-warning",
-			]
-			],$row['id_key']);
-            $records["aaData"][] = $obj;
-            $no++;
-        }
-        $data = array_merge($data,$records);
-        unset($data['dataku']);
-        echo json_encode($data);
-	}
+	
 }

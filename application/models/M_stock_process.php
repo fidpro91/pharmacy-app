@@ -29,18 +29,16 @@ class M_stock_process extends CI_Model {
 	public function get_column()
 	{
 		$col = [
-				"item_name"=>['label'=>'nama obat'],
-				"own_name"=>['label'=>'Kepemilikan'],
-				"unit_name",
 				"date_trans"=>['label'=>'Tgl Transaksi'],
+				"item_name"=>['label'=>'nama obat'],
+				"description"=>['label'=>'Keterangan'],				
 				"trans_num"=>['label'=>'No Transaksi'],
 				"stock_before"=>['label'=>'Stock Awal'],				
 				"debet"=>['label'=>'Masuk'],
 				"kredit"=>['label'=>'Keluar'],
-				"stock_after"=>['label'=>'Stock Sisa'],
-				"item_price"=>['label'=>'Harga satuan'],
-				"total_price"=>['label'=>'Total Harga'],
-				"description"=>['label'=>'Keterangan']
+				"stock_after"=>['label'=>'Stock Sisa']
+				
+				
 				];
 		return $col;
 	}

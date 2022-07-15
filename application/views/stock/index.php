@@ -17,15 +17,18 @@
       <div class="box">
         <?=$this->session->flashdata('message')?>
         <div class="box-header with-border">
-          <div class="box-tools pull-left">
+          <div class="box-tools pull-left col-md-3">
             <?= form_dropdown("unit_id_depo", $unit, '', 'class="form-control select2" id="unit_id_depo"') ?>
+          </div>
+          <div class="box-tools pull-left col-md-3" >
+            <?= form_dropdown("kepemilikan", $own, '', 'class="form-control select2" id="kempilikan_id"') ?>
           </div>
           <div class="box-tools pull-right">
             <button type="button" id="btn-add" class="btn btn-primary">
               <i class="fa fa-plus"></i> Add</button>
           </div>
         </div>
-        <div class="box-body" id="form_stock" style="display: none;">
+        <div class="box-body" id="kartu_Stok" style="display: none;">
         </div>
         <div class="box-body" id="data_stock">
           <?=create_table("tb_stock","M_stock",["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
@@ -50,6 +53,7 @@
                 "type": "POST",
                 "data" : function (f) {
                     f.unit_id = $("#unit_id_depo").val();
+                    f.own_id = $("#kempilikan_id").val();
                   }
             },
             'columnDefs': [
@@ -66,7 +70,7 @@
         });
     });
     
-    $("#unit_id_depo").change(() => {
+    $("#unit_id_depo,#kempilikan_id").change(() => {
 			table.draw();
 		});
 
@@ -118,4 +122,12 @@
           },'json');
         }
     });
+
+    function cek_stok(own_id,unit_id,item_id) {
+      $("#kartu_Stok").show();
+      $("#kartu_Stok").load("stock_process/index"+'/'+own_id,'/'+unit_id+'/'+item_id,function(){
+        $("#kartu_Stok").find('#item_id').val(item_id);
+      });
+      $("#data_stock").hide();
+    }
 </script>

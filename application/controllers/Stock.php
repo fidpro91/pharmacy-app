@@ -6,6 +6,7 @@ class Stock extends MY_Generator {
 	public function __construct()
 	{
 		parent::__construct();
+		$this->datascript->lib_daterange();
 		$this->load->model('m_stock');
 	}
 
@@ -15,7 +16,12 @@ class Stock extends MY_Generator {
 		foreach ($this->m_ms_unit->get_ms_unit() as $key => $value) {
 			$kat[$value->unit_id] = $value->unit_name;
 		}
+		$this->load->model("m_ownership");
+		foreach ($this->m_ownership->get_ownership() as $key => $value) {
+			$own[$value->own_id] = $value->own_name;
+		}
 		$data['unit'] = $kat;
+		$data['own'] = $own;
 		$this->theme('stock/index',$data);
 	}
 
@@ -51,6 +57,7 @@ class Stock extends MY_Generator {
 		$attr 	= $this->input->post();
 		$fields = $this->m_stock->get_column();
 		$filter['s.unit_id'] = $attr['unit_id'];
+		$filter['s.own_id'] = $attr['own_id'];
 		$data 	= $this->datatable->get_data($fields,$filter,'m_stock',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
@@ -67,7 +74,11 @@ class Stock extends MY_Generator {
             		$obj[] = $row[$value];
             	}
             }
-            $obj[] = create_btnAction(["update","delete"],$row['id_key']);
+            $obj[] = create_btnAction(["update","delete",[
+				"btn-act" => "cek_stok(".$attr['own_id'].','. $attr['unit_id']. ','.$row['item_id'].")",
+				"btn-icon" => "fa fa-eye",
+				"btn-class" => "btn-warning",
+			] ],$row['id_key']);
             $records["aaData"][] = $obj;
             $no++;
         }
