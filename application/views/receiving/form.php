@@ -96,21 +96,23 @@
 		});
 	});
 	$('#fm_receiving').on("submit",function(){
-		$.blockUI();
-		$.ajax({
-			'type': "post",
-			'data'	: $(this).serialize(),
-			'dataType': 'json',
-			'url': "receiving/save",
-			'success': function (data) {
-				$.unblockUI();
-				alert(data.message);
-				if (data.code == '200') {
-					location.reload(true);
+		$(this).data("validator").settings.submitHandler = function (form) { 
+			$.blockUI();
+			$.ajax({
+				'type': "post",
+				'data'	: $(form).serialize(),
+				'dataType': 'json',
+				'url': "receiving/save",
+				'success': function (data) {
+					$.unblockUI();
+					alert(data.message);
+					if (data.code == '200') {
+						location.reload(true);
+					}
 				}
-			}
-		});
-		return false;
+			});
+			return false;
+		};
 	});
   <?=$this->config->item('footerJS')?>
 </script>
