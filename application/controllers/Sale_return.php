@@ -73,7 +73,7 @@ class Sale_return extends MY_Generator {
 		$this->load->library('datatable');
 		$attr 	= $this->input->post();
 		$fields = $this->m_sale_return->get_column();
-		$filter['unit_id']=$attr['unit_id'];
+		$filter['st.unit_id']=$attr['unit_id'];
 		$data 	= $this->datatable->get_data($fields,$filter,'m_sale_return',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
@@ -90,7 +90,8 @@ class Sale_return extends MY_Generator {
             		$obj[] = $row[$value];
             	}
             }
-            $obj[] = create_btnAction(["delete"],$row['id_key']);
+			
+	        $obj[] = create_btnAction(["delete"],$row['id_key']);           
             $records["aaData"][] = $obj;
             $no++;
         }

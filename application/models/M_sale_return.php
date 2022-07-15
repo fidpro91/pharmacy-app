@@ -6,7 +6,11 @@ class M_sale_return extends CI_Model
 	public function get_data($sLimit, $sWhere, $sOrder, $aColumns)
 	{
 		$data = $this->db->query("
-				select " . implode(',', $aColumns) . ",sr_id as id_key  from farmasi.sale_return where 0=0 $sWhere $sOrder $sLimit
+				select " . implode(',', $aColumns) . ",sr_id as id_key  from farmasi.sale_return st
+				left join admin.ms_unit u on st.unit_id = u.unit_id
+				left join farmasi.ownership o on st.own_id = o.own_id
+				left join yanmed.ms_surety s on st.surety_id = s.surety_id
+				where 0=0 $sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
 	}
@@ -14,7 +18,11 @@ class M_sale_return extends CI_Model
 	public function get_total($sWhere, $aColumns)
 	{
 		$data = $this->db->query("
-				select " . implode(',', $aColumns) . ",sr_id as id_key  from farmasi.sale_return where 0=0 $sWhere
+				select " . implode(',', $aColumns) . ",sr_id as id_key  from farmasi.sale_return st
+				left join admin.ms_unit u on st.unit_id = u.unit_id
+				left join farmasi.ownership o on st.own_id = o.own_id
+				left join yanmed.ms_surety s on st.surety_id = s.surety_id				
+				where 0=0 $sWhere
 			")->num_rows();
 		return $data;
 	}
@@ -22,35 +30,26 @@ class M_sale_return extends CI_Model
 	public function get_column()
 	{
 		$col = [
-			"sr_id",
-			"sr_num",
-			"sr_date",
-			"date_act",
-			"sr_status",
-			"sr_shift",
-			"user_id",
-			"unit_id",
-			"own_id",
-			"sale_id",
-			"sale_type",
-			"visit_id",
-			"patient_name",
-			"service_id",
-			"surety_id",
-			"sr_embalase",
-			"sr_services",
-			"doctor_id",
-			"doctor_name",
-			"rcp_id",
-			"cash_id",
-			"verificated",
-			"verificator_id",
-			"verified_at",
-			"rec_id",
-			"cashretur_id",
-			"sr_total",
-			"discount",
-			"sr_total_before_discount"
+			"sr_num"=>["label"=>"No Retur"],
+			"sr_date"=>["label"=>"Tgl Retur"],
+			"patient_name"=>["label"=>"Nama"],	
+			"unit_name"=>["label"=>"Depo"],
+			"own_name"=>["label"=>"Kepemilikan"],	
+			"sale_type"=>[
+				"label" => "Tipe Penjualan",
+				"custom" => function ($a) {
+					if ($a == '0') {
+						$condition = ["class" => "label-primary", "text" => "Tunai"];
+					}else{
+						$condition = ["class" => "label-success", "text" => "Kredit"];
+					}
+					return label_status($condition);
+				}
+			],	
+						
+			"surety_name"=>["label"=>"Penjamin"],	
+			"doctor_name"=>["label"=>"Dpjp"],	
+			"sr_total"=>["label"=>"Total"]
 		];
 		return $col;
 	}
