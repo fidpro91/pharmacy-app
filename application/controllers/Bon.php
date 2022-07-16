@@ -27,6 +27,7 @@ class Bon extends MY_Generator {
 				$this->db->where('bon_id',$data['bon_id'])->update('farmasi.bon',$input);
 			}else{
 				$this->db->insert('farmasi.bon',$input);
+				
 			}
 			$err = $this->db->error();
 			if ($err['message']) {
@@ -141,8 +142,34 @@ class Bon extends MY_Generator {
 					"type" => 'autocomplete',
 					"width" => '35%',
 				];
+			} elseif ($value == "Stock_Terkini") {
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"attr" => [
+						"readonly" => 'readonly'
+					]
+				];
+			} elseif ($value == "Qty_Permintaan") {
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"attr" => [
+						"readonly" => 'readonly'
+					]
+				];
+			} elseif ($value == "Qty_Proses") {
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"attr" => [
+						"readonly" => 'readonly'
+					]
+				];
 			}
-			
 			else{
 				$row[] = [
 					"id" => $value,
@@ -153,5 +180,12 @@ class Bon extends MY_Generator {
 			}
 		}
 		echo json_encode($row);
+	}
+	public function get_item()
+	{
+		$term = $this->input->get('term');
+		$this->load->model('m_stock_fifo');
+		$where = "AND lower(mi.item_name) like lower('%$term%') AND sf.stock_saldo > 0";
+		echo json_encode($this->m_bon->get_stock_item($where));
 	}
 }
