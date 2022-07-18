@@ -52,7 +52,7 @@
           <!-- small box -->
           <div class="small-box bg-aqua">
             <div class="inner">
-              <h3>150</h3>
+              <h3><?= $obat_akan_exp->total; ?></h3>
 
               <p>obat yang akan expired</p>
             </div>
@@ -67,7 +67,7 @@
           <!-- small box -->
           <div class="small-box bg-green">
             <div class="inner">
-              <h3>200</h3>
+              <h3><?= $obat_exp->total; ?></h3>
 
               <p>obat expired</p>
             </div>
@@ -82,7 +82,7 @@
           <!-- small box -->
           <div class="small-box bg-yellow">
             <div class="inner">
-              <h3>44</h3>
+              <h3><?= $obat_akan_habis->total ?></h3>
 
               <p>Stock yang akan habis</p>
             </div>
@@ -97,7 +97,7 @@
           <!-- small box -->
           <div class="small-box bg-red">
             <div class="inner">
-              <h3>65</h3>
+              <h3><?= $obat_habis->total; ?></h3>
 
               <p>stock habis</p>
             </div>
@@ -197,56 +197,36 @@
                             text: 'penjualan obat, 2018'
                           },
                           tooltip: {
-                            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                            // pointFormat: '{series.name}: <b>{point.percentage:.1f}</b>'
                           },
-                          accessibility: {
-                            point: {
-                              valueSuffix: '%'
-                            }
-                          },
+                          // accessibility: {
+                          //   // point: {
+                          //   //   valueSuffix: ''
+                          //   // }
+                          // },
                           plotOptions: {
                             pie: {
                               allowPointSelect: true,
                               cursor: 'pointer',
                               dataLabels: {
                                 enabled: true,
-                                format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                                format: '<b>{point.name}</b>: {point.y} item'
                               }
                             }
                           },
                           series: [{
-                            name: 'Brands',
+                            name: 'Total',
                             colorByPoint: true,
-                            data: [{
-                              name: 'Chrome',
-                              y: 61.41,
-                              sliced: true,
-                              selected: true
-                            }, {
-                              name: 'Internet Explorer',
-                              y: 11.84
-                            }, {
-                              name: 'Firefox',
-                              y: 10.85
-                            }, {
-                              name: 'Edge',
-                              y: 4.67
-                            }, {
-                              name: 'Safari',
-                              y: 4.18
-                            }, {
-                              name: 'Sogou Explorer',
-                              y: 1.64
-                            }, {
-                              name: 'Opera',
-                              y: 1.6
-                            }, {
-                              name: 'QQ',
-                              y: 1.2
-                            }, {
-                              name: 'Other',
-                              y: 2.61
-                            }]
+                            data: [
+                              <?php foreach ($tot_perjualan_unit as $value) { ?> {
+                                  name: "<?=$value->unit_name?>",
+                                  y: <?=$value->jumlah ?>,
+                                  sliced: true,
+                                  selected: true
+                                },
+                               <?php } ?> 
+                             
+                            ]
                           }]
                         });
                       </script>
@@ -258,74 +238,42 @@
             </div>
           </div>
         </div>
+
         <div class="col-md-6">
-          <div class="info-box bg-yellow">
-            <span class="info-box-icon"><i class="ion ion-ios-pricetag-outline"></i></span>
-
-            <div class="info-box-content">
-              <span class="info-box-text">retur penjualan</span>
-              <span class="info-box-number">5,200</span>
-
-              <div class="progress">
-                <div class="progress-bar" style="width: 50%"></div>
+          <div class="box box-default">
+            <div class="box-header with-border">
+              <h3 class="box-title"> 5 penjulan Obat Terbayak per unit 2018</h3>
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
               </div>
-              <span class="progress-description">
-                50% Increase in 30 Days
-              </span>
+              <div class="box-body">
+                <div class="row">
+                  <div class="col-md-12">
+                    <?php foreach ($tot_penjualan_terbayak_unit_item as $value) { ?>
+                      <div class="info-box bg-yellow">
+                        <span class="info-box-icon"><i class="ion ion-ios-pricetag-outline"></i></span>
+
+                        <div class="info-box-content">
+                          <span class="info-box-text"><?php echo $value->unit_name ?></span>
+                          <span class="info-box-text"><?php echo $value->item_name ?></span>
+                          <span class="info-box-number"><?php echo $value->jumlah ?></span>
+                        </div>
+                        <!-- /.info-box-content -->
+                      </div>
+                    <?php } ?>
+                  </div>
+                </div>
+              </div>
+
             </div>
-            <!-- /.info-box-content -->
           </div>
+
+
+
           <!-- /.info-box -->
-          <div class="info-box bg-green">
-            <span class="info-box-icon"><i class="ion ion-ios-heart-outline"></i></span>
 
-            <div class="info-box-content">
-              <span class="info-box-text">Mentions</span>
-              <span class="info-box-number">92,050</span>
-
-              <div class="progress">
-                <div class="progress-bar" style="width: 20%"></div>
-              </div>
-              <span class="progress-description">
-                20% Increase in 30 Days
-              </span>
-            </div>
-            <!-- /.info-box-content -->
-          </div>
-          <!-- /.info-box -->
-          <div class="info-box bg-red">
-            <span class="info-box-icon"><i class="ion ion-ios-cloud-download-outline"></i></span>
-
-            <div class="info-box-content">
-              <span class="info-box-text">Downloads</span>
-              <span class="info-box-number">114,381</span>
-
-              <div class="progress">
-                <div class="progress-bar" style="width: 70%"></div>
-              </div>
-              <span class="progress-description">
-                70% Increase in 30 Days
-              </span>
-            </div>
-            <!-- /.info-box-content -->
-          </div>
-          <!-- /.info-box -->
-          <div class="info-box bg-aqua">
-            <span class="info-box-icon"><i class="ion-ios-chatbubble-outline"></i></span>
-
-            <div class="info-box-content">
-              <span class="info-box-text">Direct Messages</span>
-              <span class="info-box-number">163,921</span>
-
-              <div class="progress">
-                <div class="progress-bar" style="width: 40%"></div>
-              </div>
-              <span class="progress-description">
-                40% Increase in 30 Days
-              </span>
-            </div>
-            <!-- /.info-box-content -->
-          </div>
         </div>
 
     </section>
