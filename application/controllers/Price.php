@@ -11,7 +11,7 @@ class Price extends MY_Generator {
 
 	public function index()
 	{
-		$this->theme('price/index');
+		$this->theme('price/index','',get_class($this));
 	}
 
 	public function save()

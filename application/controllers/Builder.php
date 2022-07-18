@@ -38,7 +38,7 @@ class Builder extends MY_Generator {
 				$printmenu = "<ul"
 			}
 		}die();*/
-		$this->theme('builder/index',$data);
+		$this->theme('builder/index',$data,get_class($this));
 	}
 
 	public function create_mvc()

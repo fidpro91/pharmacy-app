@@ -14,7 +14,7 @@ class Production extends MY_Generator {
 
 	public function index()
 	{
-		$this->theme('production/index');
+		$this->theme('production/index','',get_class($this));
 	}
 
 	public function save()

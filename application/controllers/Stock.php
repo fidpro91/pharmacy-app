@@ -6,7 +6,9 @@ class Stock extends MY_Generator {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->datascript->lib_daterange();
+		$this->datascript->lib_select2()
+						 ->lib_datatableExt()
+					     ->lib_daterange();
 		$this->load->model('m_stock');
 	}
 
@@ -22,7 +24,7 @@ class Stock extends MY_Generator {
 		}
 		$data['unit'] = $kat;
 		$data['own'] = $own;
-		$this->theme('stock/index',$data);
+		$this->theme('stock/index',$data,get_class($this));
 	}
 
 	public function save()
@@ -74,11 +76,18 @@ class Stock extends MY_Generator {
             		$obj[] = $row[$value];
             	}
             }
-            $obj[] = create_btnAction(["update","delete",[
-				"btn-act" => "cek_stok(".$attr['own_id'].','. $attr['unit_id']. ','.$row['item_id'].")",
-				"btn-icon" => "fa fa-eye",
-				"btn-class" => "btn-warning",
-			] ],$row['id_key']);
+            $obj[] = create_btnAction([
+				"Kartu Stok"=>[
+					"btn-act" => "cek_stok(".$attr['own_id'].','. $attr['unit_id']. ','.$row['item_id'].")",
+					"btn-icon" => "fa fa-credit-card",
+					"btn-class" => "btn btn-sm btn-default",
+				],
+				"Penyesuaian Stok"=>[
+					"btn-act" => "penyesuaian_stok(".$row['item_id'].")",
+					"btn-icon" => "fa fa-random",
+					"btn-class" => "btn btn-sm btn-warning",
+				]
+			],$row['id_key']);
             $records["aaData"][] = $obj;
             $no++;
         }

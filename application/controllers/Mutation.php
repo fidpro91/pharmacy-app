@@ -15,7 +15,7 @@ class Mutation extends MY_Generator {
 
 	public function index()
 	{
-		$this->theme('mutation/index');
+		$this->theme('mutation/index','',get_class($this));
 	}
 	public function show_multiRows()
 	{
@@ -142,7 +142,11 @@ class Mutation extends MY_Generator {
 		$this->load->library('datatable');
 		$attr 	= $this->input->post();
 		$fields = $this->m_mutation->get_column();
-		$data 	= $this->datatable->get_data($fields,$filter = array(),'m_mutation',$attr);
+		$filter['custom'] = "to_char(m.mutation_date,'MM-YYYY') = '".$attr['bulan']."'";
+		if (!empty($attr['unit'])) {
+			$filter['m.unit_require'] = $attr['unit'];
+		}
+		$data 	= $this->datatable->get_data($fields,$filter,'m_mutation',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
         foreach ($data['dataku'] as $index=>$row) { 
@@ -158,7 +162,11 @@ class Mutation extends MY_Generator {
             		$obj[] = $row[$value];
             	}
             }
-            $obj[] = create_btnAction(["update","delete"],$row['id_key']);
+            if ($row['mutation_status']<=2) {
+				$obj[] = create_btnAction(["update","delete"],$row['id_key']);
+			}else{
+				$obj[] = "";
+			}
             $records["aaData"][] = $obj;
             $no++;
         }

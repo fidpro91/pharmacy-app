@@ -33,8 +33,6 @@ class M_sale_return extends CI_Model
 			"sr_num"=>["label"=>"No Retur"],
 			"sr_date"=>["label"=>"Tgl Retur"],
 			"patient_name"=>["label"=>"Nama"],	
-			"unit_name"=>["label"=>"Depo"],
-			"own_name"=>["label"=>"Kepemilikan"],	
 			"sale_type"=>[
 				"label" => "Tipe Penjualan",
 				"custom" => function ($a) {
@@ -46,10 +44,13 @@ class M_sale_return extends CI_Model
 					return label_status($condition);
 				}
 			],	
-						
 			"surety_name"=>["label"=>"Penjamin"],	
-			"doctor_name"=>["label"=>"Dpjp"],	
-			"sr_total"=>["label"=>"Total"]
+			"sr_total"=>[
+				"label"=>"Total",
+				"custom"=>function($a){
+					return convert_currency($a);
+				}
+			]
 		];
 		return $col;
 	}

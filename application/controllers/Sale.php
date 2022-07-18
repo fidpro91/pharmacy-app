@@ -25,7 +25,7 @@ class Sale extends MY_Generator {
 			$kat[$value->unit_id] = $value->unit_name;
 		}
 		$data['unit'] = $kat;
-		$this->theme('sale/index',$data);
+		$this->theme('sale/index',$data,get_class($this));
 	}
 
 	public function save()
@@ -105,6 +105,8 @@ class Sale extends MY_Generator {
 		$attr 	= $this->input->post();
 		$fields = $this->m_sale->get_column();
 		$filter["unit_id"] = $attr['unit_id'];
+		$filter["sale_type"] = $attr['sale_type'];
+		$filter["custom"] = " to_char(sale_date,'MM-YYYY')='".$attr['bulan']."'";
 		$data 	= $this->datatable->get_data($fields,$filter,'m_sale',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start'];
@@ -113,7 +115,7 @@ class Sale extends MY_Generator {
             foreach ($fields as $key => $value) {
             	if (is_array($value)) {
             		if (isset($value['custom'])){
-            			$obj[] = call_user_func($value['custom'],$row[$key]);
+            			$obj[] = call_user_func($value['custom'],$row);
             		}else{
             			$obj[] = $row[$key];
             		}
@@ -121,7 +123,11 @@ class Sale extends MY_Generator {
             		$obj[] = $row[$value];
             	}
             }
-            $obj[] = create_btnAction(["update","delete"],$row['id_key']);
+            if (($row['sale_type'] == 0 && empty($row['cash_id']))||($row['sale_type'] == 1)) {
+				$obj[] = create_btnAction(["update","delete"],$row['id_key']);
+			}else{
+				$obj[] = "";
+			}
             $records["aaData"][] = $obj;
             $no++;
         }
@@ -169,6 +175,9 @@ class Sale extends MY_Generator {
 
 	public function show_form()
 	{
+		$this->session->unset_userdata([
+			'penjualan','itemRacik','itemNonRacik'
+		]);
 		$data['model'] = $this->m_sale->rules();
 		$data['sale_num'] = $this->get_no_sale();
 		$this->load->view("sale/form",$data);
@@ -200,7 +209,8 @@ class Sale extends MY_Generator {
 
 	public function show_form_pasien()
 	{
-		$this->load->view("sale/form_pasien");
+		$data['sess_px'] = json_encode($this->session->userdata('penjualan'));
+		$this->load->view("sale/form_pasien",$data);
 	}
 
 	public function show_form_racikan()
@@ -317,8 +327,8 @@ class Sale extends MY_Generator {
 					</span>
 					<p>$item</p>
 				</span>
-			</div>
-			";
+			</div>";
+
 		$resp = [
 			'total' 		=> $total,
 			'biaya_racik'	=> $post['biaya_racikan'],
@@ -408,42 +418,6 @@ class Sale extends MY_Generator {
 		echo json_encode($resp);
 	}
 
-	public function get_total_nonracikan()
-	{
-		$dtNonracikan = $this->session->userdata('itemNonRacik');
-		$sub_total = 0;
-		foreach ($dtNonracikan['list_obat_nonracikan'] as $nonracikan){
-			$sub_total +=$nonracikan['price_total'];
-		}
-		echo $sub_total;
-
-	}
-
-	public function get_total_racikan()
-	{
-		$dtRacikan = $this->session->userdata('itemRacik');
-		// var_dump($dtRacikan['biaya_racikan']);die;
-		$total_item = 0;
-		foreach ($dtRacikan['list_item_racikan'] as $item) {
-			$total_item += $item['price_total'];
-		}
-		$total_racikan = 0;
-		if(is_array($dtRacikan['biaya_racikan'])){
-			foreach($dtRacikan['biaya_racikan'] as $key=>$b_racikan){
-				$total_racikan += $b_racikan;
-			}
-		}else{
-			$total_racikan = $dtRacikan['biaya_racikan'];
-		}
-
-		$sub_total = $total_item+$total_racikan;
-		// var_dump($sub_total);die;
-		echo $sub_total;
-
-	}
-
-
-
 	public function get_item($unit_id)
 	{
 		$term = $this->input->get('term');
@@ -481,22 +455,12 @@ class Sale extends MY_Generator {
 				"alamat"    => $post['alamat'],
 				"surety"    => $dt['surety'],
 				"dokter"	=> $dt['dokter']
-				
 			];
 			$this->session->set_userdata('penjualan',$dt);
 			
 		}		
 		echo json_encode($resp);
 		
-	}
-
-
-	
-	public function hapus_sess()
-	{
-		$this->session->unset_userdata('itemRacik');
-		$this->session->unset_userdata('itemNonRacik');
-		$this->session->unset_userdata('pasien');
 	}
 
 	public function get_no_sale()

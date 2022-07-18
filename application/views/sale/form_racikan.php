@@ -1,6 +1,3 @@
-<style>
-    .ui-autocomplete { z-index:2147483647; }
-</style>
 <div class="row">
     <?= form_open("", ["method" => "post", "id" => "form_racikan"]) ?>
     <div class="col-md-4">
@@ -22,12 +19,13 @@
     </div>
     <div class="col-md-12" style="text-align:center ;">
         <button class="btn btn-primary" id="btn-save-racikan" type="button">Save</button>
-        <button class="btn btn-danger" type="button" id="btn-close">Close</button>
+        <button class="btn btn-danger" type="button" id="btn-close" data-dismiss="modal" aria-label="Close">Close</button>
     </div>
     <?= form_close() ?>
 </div>
 <script>
 $(document).ready(()=>{
+    setHotkey();
     var dataItemSale;
     $(".list_item_racikan").inputMultiRow({
             column: ()=>{
@@ -52,13 +50,30 @@ $(document).ready(()=>{
     });
 });
 
+function setHotkey() {
+    $('input').unbind('keydown', 'ctrl+a');
+    $('input').bind('keydown', 'ctrl+a', addItemRacikan);
+}
+
 $("body").on("change", ".tb_list_item_racikan", function() {
 	$('.tb_list_item_racikan > tbody  > tr').each(function() {
 		const jumlah_barang = $(this).find(".sale_qty").val();
 		const harga_satuan = $(this).find(".sale_price").val();
 		const total_item = jumlah_barang * harga_satuan;
 		$(this).find('.price_total').val(total_item);
-	})
+	});
+    $(this).find("input").on('keyup', null, 'ctrl+a', function(e){
+        $(".btnplus_list_item_racikan").click();
+        $(".autocom_item_id:last").focus();
+        e.stopImmediatePropagation();
+        return false;
+    }); 
+    /* $(this).find("input").on('keydown', null, 'Ctrl+Shift+s', function(e){
+        $("#btn-save-racikan").click();
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        return false;
+    });  */
 });
 
 $("#btn-save-racikan").click(()=>{
@@ -66,23 +81,25 @@ $("#btn-save-racikan").click(()=>{
 });
 
 $("#form_racikan").on("submit",()=>{
-    $.ajax({
-        'async': false,
-        'type': "post",
-        'data': $("#form_racikan").serialize(),
-        'url': "sale/set_item_racikan",
-        'dataType':'json',
-        'success': function (data) {
-            $(".list_obat_racikan").append(data.html);
-            let total = parseFloat($.isNumeric($('#sub_total_racikan').attr('isi'))?$('#sub_total_racikan').attr('isi'):0);
-            total = total+data.total;
-            $("#sub_total_racikan").text(formatMoney(total));
-            $("#sub_total_racikan").attr("isi",total);
-            grandTotal();
-			$("#modal_racikan").modal('hide');
-        }
-    });
-    return false;
+    $("#form_racikan").data("validator").settings.submitHandler = function (form) {
+        $.ajax({
+            'async': false,
+            'type': "post",
+            'data': $(form).serialize(),
+            'url': "sale/set_item_racikan",
+            'dataType':'json',
+            'success': function (data) {
+                $(".list_obat_racikan").append(data.html);
+                let total = parseFloat($.isNumeric($('#sub_total_racikan').attr('isi'))?$('#sub_total_racikan').attr('isi'):0);
+                total = total+data.total;
+                $("#sub_total_racikan").text(formatMoney(total));
+                $("#sub_total_racikan").attr("isi",total);
+                grandTotal();
+                $("#modal_racikan").modal('hide');
+            }
+        });
+        return false;
+    }
 })
 <?= $this->config->item('footerJS') ?>
 </script>

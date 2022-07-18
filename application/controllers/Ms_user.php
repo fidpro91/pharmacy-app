@@ -12,7 +12,7 @@ class Ms_user extends MY_Generator {
 	public function index()
 	{
 		$data['data'] = [];
-		$this->theme('ms_user/index',$data);
+		$this->theme('ms_user/index',$data,get_class($this));
 	}
 
 	public function save()

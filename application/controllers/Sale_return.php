@@ -23,7 +23,7 @@ class Sale_return extends MY_Generator {
 			$kat[$value->unit_id] = $value->unit_name;
 		}
 		$data['unit'] = $kat;
-		$this->theme('sale_return/index',$data);
+		$this->theme('sale_return/index',$data,get_class($this));
 	}
 
 	public function save()
@@ -74,6 +74,7 @@ class Sale_return extends MY_Generator {
 		$attr 	= $this->input->post();
 		$fields = $this->m_sale_return->get_column();
 		$filter['st.unit_id']=$attr['unit_id'];
+		$filter['custom']="to_char(st.sr_date,'MM-YYYY') = '".$attr['bulan']."'";
 		$data 	= $this->datatable->get_data($fields,$filter,'m_sale_return',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 

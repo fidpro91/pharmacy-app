@@ -1,6 +1,16 @@
+<style>
+    .ui-autocomplete { z-index:2147483647; }
+</style>
 <div class="row">
 <?= form_open("sale/save", ["method" => "post", "id" => "fm_sale_h"], $model) ?>
 	<?= form_hidden("sale_id") ?>
+	<div class="col-md-12">
+		<div class="box">
+			<div class="box-header with-border">
+				<i class="box-title">[F3]Add Racikan | [F4]Add Non Racikan | [Ctrl+a]Add Item | [Ctrl+s] Save Transaction | [Ctrl+e] Edit Patient</i>
+			</div>
+		</div>
+	</div>
 	<div class="col-md-4">
 		<div class="box">
 			<div class="box-header with-border">
@@ -31,6 +41,9 @@
 	</div>
 	<div class="col-md-4">
 		<div class="box">
+			<div class="box-header with-border">
+				<a href="#" class="text-muted" onclick="edit_px()"><i class="fa fa-gear"></i></a>
+			</div>
 			<div class="box-body">
 				<table class="table1">
 					<tr>
@@ -107,15 +120,38 @@
 			<button class="btn btn-warning" type="button" id="btn-cancel">Cancel</button>
 		</div>
 	</div>
-<?= modal_open("modal_racikan", "List Item Racikan","modal-lg") ?>
+<?= modal_open("modal_racikan", "List Item Racikan | [Ctrl+a]Add Item | [Ctrl+Shift+s]Save","modal-lg") ?>
 <?= modal_close() ?>
-<?= modal_open("modal_nonracikan", "List Item Non Racikan","modal-lg") ?>
+<?= modal_open("modal_nonracikan", "List Item Non Racikan | [Ctrl+a]Add Item | [Ctrl+Shift+s]Save","modal-lg") ?>
 <?= modal_close() ?>
 </div>
 <script type="text/javascript">
+	var leavePage=true;
 	$(document).ready(()=>{
-		$("#modal_pasien").modal('show');
-      	$("#modal_pasien").find(".modal-body").load("sale/show_form_pasien");
+		$(document).bind('keydown', 'f3', function assets() {
+            $("#btn-racikan").click();
+            return false;
+        });
+		$(document).bind('keydown', 'f4', function assets() {
+            $("#btn-nonracikan").click();
+            return false;
+        });
+		$(document).bind('keydown', 'f5', function assets() {
+            $('#fm_sale_h').submit();
+            return false;
+        });
+		$(document).bind('keydown', 'Ctrl+e', function assets() {
+           	edit_px();
+            return false;
+        });
+		edit_px();
+	});
+
+	$("#btn-cancel").click(()=>{
+		$("#data_sale").show();
+		$("#form_sale").html('');
+		$("#form_sale").hide();
+		table.draw();
 	});
 	
 	$("body").on("focus", ".autocom_item_id", function() {
@@ -167,21 +203,50 @@
 		});
 	}
 
+	$(document).bind('keydown', 'Ctrl+a', addItemRacikan);
+	function addItemRacikan() {
+		$(".btnplus_list_item_racikan").click();
+		$(".autocom_item_id:last").focus();
+		return false;
+	}
+
+	$(document).bind('keydown', 'Ctrl+a', addItemNonRacikan);
+	function addItemNonRacikan(params) {
+		$(".btnplus_list_obat_nonracikan").click();
+		$(".autocom_item_id:last").focus();
+		return false;
+	}
+
+	$(document).bind('keydown', 'Ctrl+Shift+s', function() {
+        $("#btn-save-racikan").click();
+        $("#btn-save-non_racikan").click();
+        return false;
+    });
+
+	$(document).bind('keydown', 'Ctrl+s', function(e) {
+        $('#fm_sale_h').submit();
+		e.stopImmediatePropagation();
+        return false;
+    });
+
 	$('#fm_sale_h').on("submit",function(){
-		$.blockUI();
-		$.ajax({
-			'type': "post",
-			'data'	: $(this).serialize()+"&unit_id="+$("#unit_id_depo").val(),
-			'dataType': 'json',
-			'url': "sale/save",
-			'success': function (data) {
-				$.unblockUI();
-				alert(data.message);
-				if (data.code == '200') {
-					location.reload(true);
+		if (confirm("Simpan data?")) {
+			$.blockUI();
+			$.ajax({
+				'type': "post",
+				'data'	: $(this).serialize()+"&unit_id="+$("#unit_id_depo").val(),
+				'dataType': 'json',
+				'url': "sale/save",
+				'success': function (data) {
+					$.unblockUI();
+					leavePage=false;
+					alert(data.message);
+					if (data.code == '200') {
+						location.reload(true);
+					}
 				}
-			}
-		});
+			});
+		}
 		return false;
 	});
 
@@ -215,5 +280,16 @@
 		$("#pembulatan_biaya").text(formatMoney(embalase));
 		$("#grand_total").text(formatMoney(totalAll));
 	}
+
+	function edit_px() {
+		$("#modal_pasien").modal('show');
+      	$("#modal_pasien").find(".modal-body").load("sale/show_form_pasien");
+	}
+
+	$(window).bind('beforeunload', function(){
+        if (leavePage) {
+            return 'Are you sure you want to leave?';
+        }
+    });
 	<?= $this->config->item('footerJS') ?>
 </script>

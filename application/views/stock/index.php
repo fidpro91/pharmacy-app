@@ -23,10 +23,6 @@
           <div class="box-tools pull-left col-md-3" >
             <?= form_dropdown("kepemilikan", $own, '', 'class="form-control select2" id="kempilikan_id"') ?>
           </div>
-          <div class="box-tools pull-right">
-            <button type="button" id="btn-add" class="btn btn-primary">
-              <i class="fa fa-plus"></i> Add</button>
-          </div>
         </div>
         <div class="box-body" id="kartu_Stok" style="display: none;">
         </div>
@@ -62,6 +58,7 @@
                'searchable': false,
                'orderable': false,
              },
+             { "width": "8%", "targets": -1 },
             {
                'targets': 0,
                'className': 'dt-body-center',
