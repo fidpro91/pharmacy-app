@@ -74,6 +74,7 @@
     });
     function set_val(id) {      
       $("#form_production").show();
+      $('.stock').hide();
       $.ajax({
         'async': false,
         'type': "GET",
@@ -84,8 +85,7 @@
             $.each(data,(ind,obj)=>{
                 $("#"+ind).val(obj);
                
-            }); 
-            
+            });             
           });
           item_hasil = data.hasil; //a
           item_produk = data.produk; 

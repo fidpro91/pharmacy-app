@@ -31,15 +31,16 @@ class Sale extends MY_Generator {
 	public function save()
 	{
 		$data = $this->input->post();
-		$sess = $this->session->userdata('penjualan')['pasien'];
+		$sess = $this->session->userdata('penjualan')['pasien']; 
 		$this->db->trans_begin();
 		// if ($this->m_sale->validation()) {
 			$input = [];
 			foreach ($this->m_sale->rules() as $key => $value) {
-				$input[$key] = (!empty($sess[$key])?$sess[$key]:null);
+				$input[$key] = (!empty($sess[$key])?$sess[$key]:null); //print_r($sess[$key]);die;
 			}
 			$input['unit_id'] = $data['unit_id'];
 			$input['user_id'] = ($this->session->user_id?$this->session->user_id:21);
+			$input['sale_type'] = $sess['sale_type']; 
 			$input['sale_num'] = $this->get_no_sale();
 			$racikan = $this->session->userdata('itemRacik');
 			$nonRacikan = $this->session->userdata('itemNonRacik');
@@ -239,6 +240,25 @@ class Sale extends MY_Generator {
 					"type" => 'autocomplete',
 					"width" => '35%',
 				];
+			}elseif($value == "sale_qty"){
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',					
+					"attr"=>[
+						"onchange"	=>	'hitungTotal_terima(this)'
+					]
+				];
+			}elseif($value == "stock"){
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"width" => ($value=='stock')?'7%':'5%',
+					"attr"=>[
+						"readonly"=>'readonly'
+					]
+				];
 			}
 		
 			elseif($value == "sale_price"){
@@ -423,10 +443,11 @@ class Sale extends MY_Generator {
 	}
 
 	public function get_item($unit_id)
-	{	
+	{	$sess = $this->session->userdata('penjualan')['pasien']; //print_r($sess);die;
 		$term = $this->input->get('term'); 
 		$this->load->model('m_stock_fifo');
-		$where = " AND unit_id = '".$unit_id."' 
+		$where = " AND unit_id = '".$unit_id."'
+					and sf.own_id = '".$sess['own_id']."' 
 				   AND lower(mi.item_name) like lower('%$term%') AND sf.stock_summary > 0";
 		echo json_encode($this->m_stock_fifo->get_stock_item($where));
 	}
