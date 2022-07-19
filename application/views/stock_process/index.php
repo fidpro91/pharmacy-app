@@ -1,6 +1,14 @@
 <div class="col-md-3">
   <?=form_hidden("item_id")?>
-<?=create_inputDaterange("tgl_transaksi",["locale"=>["format"=>"YYYY-MM-DD","separator"=>"/"]],"required")?>
+  <?=create_inputDaterange("tgl_transaksi",["locale"=>["format"=>"YYYY-MM-DD","separator"=>"/"]],"required")?>
+  <?=form_button([
+    "name"      => "btn-back",
+    "id"        => "btn-back",
+    "type"      => "button",
+    "class"     => "btn btn-warning",
+    "style"     => "width:100% !important",
+    'content'   => '<i class="fa fa-arrow-circle-left "></i> Kembali'
+  ])?>
 </div>
 <div class="col-md-9">
 <?=create_table("tb_stock_process","M_stock_process",["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
@@ -70,53 +78,11 @@
       table.draw();
     });
     });
-    $("#btn-add").click(function() {
-      $("#form_stock_process").show();
-      $("#form_stock_process").load("stock_process/show_form");
-    });
-    function set_val(id) {
-      $("#form_stock_process").show();
-      $.get('stock_process/find_one/'+id,(data)=>{
-          $("#form_stock_process").load("stock_process/show_form",()=>{
-            $.each(data,(ind,obj)=>{
-                $("#"+ind).val(obj);
-            });
-          });
-      },'json');
-    }
 
-    function deleteRow(id) {
-      if (confirm("Anda yakin akan menghapus data ini?")) {
-          $.get('stock_process/delete_row/'+id,(data)=>{
-            alert(data.message);
-            location.reload();
-        },'json');
-      }
-    }
-
-    $("#checkAll").click(()=>{
-      if ($("#checkAll").is(':checked')) {
-          $("#tb_stock_process input[type='checkbox']").attr("checked",true);
-      }else{
-          $("#tb_stock_process input[type='checkbox']").attr("checked",false);
-      }
-    });
-
-    $("#btn-deleteChecked").click(function(event){
-        event.preventDefault();
-        var searchIDs = $("#tb_stock_process input:checkbox:checked").map(function(){
-              return $(this).val();
-          }).toArray();
-        if (searchIDs.length == 0) {
-          alert("Mohon cek list data yang akan dihapus");
-          return false;
-        }
-        if (confirm("Anda yakin akan menghapus data ini?")) {
-          $.post('stock_process/delete_multi',{data:searchIDs},(resp)=>{
-            alert(resp.message);
-            location.reload();
-          },'json');
-        }
+    $("#btn-back").click(function() {
+      $("#data_stock").show();
+      $("#kartu_Stok").html("");
+      $("#kartu_Stok").hide();
     });
     <?= $this->config->item('footerJS') ?>
 </script>

@@ -28,7 +28,20 @@
         <div class="box-body" id="form_sale_return" style="display: none;">
         </div>
         <div class="box-body" id="data_sale_return">
+          <div class="col-md-3">
+              <?=create_inputDate("filter_bulan=bulan retur",[
+                  "format"		=>"mm-yyyy",
+                  "viewMode"		=> "year",
+                  "minViewMode"	=> "year",
+                  "autoclose"		=>true],[
+                    "value"     => date('m-Y'),
+                    "readonly"  => true
+                  ])
+              ?>
+          </div>
+          <div class="col-md-12">
           <?=create_table("tb_sale_return","M_sale_return",["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
+          </div>
         </div>
         <div class="box-footer">
           <button class="btn btn-danger" id="btn-deleteChecked"><i class="fa fa-trash"></i> Delete</button>
@@ -55,6 +68,7 @@
                 "type": "POST",
                 "data" : function (f) {
                     f.unit_id = $("#unit_id_depo").val();
+                    f.bulan = $("#filter_bulan").val();
                   }
             },
             'columnDefs': [
@@ -72,7 +86,7 @@
             }], 
         });
 
-        $("#unit_id_depo").change(() => {
+        $("#unit_id_depo,#filter_bulan").change(() => {
           table.draw();
         });
     });
@@ -124,4 +138,5 @@
           },'json');
         }
     });
+    <?= $this->config->item('footerJS') ?>
 </script>

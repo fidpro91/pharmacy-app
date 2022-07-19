@@ -11,7 +11,7 @@ class Ms_classification extends MY_Generator {
 
 	public function index()
 	{
-		$this->theme('ms_classification/index');
+		$this->theme('ms_classification/index','',get_class($this));
 	}
 
 	public function save()

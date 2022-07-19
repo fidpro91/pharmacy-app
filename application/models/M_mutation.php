@@ -71,6 +71,7 @@ class M_mutation extends CI_Model {
 						return label_status($condition);
 					}
 				],
+				"mutation_status",
 			];
 		return $col;
 	}
@@ -111,7 +112,7 @@ class M_mutation extends CI_Model {
 					"mutation_status" => "trim|integer|required",
 					"mutation_no" => "trim",
 					"bon_no" => "trim",
-					"own_id" => "trim|integer",
+					"own_id" => "trim|integer|required",
 					"user_sender" => "trim|integer",
 					"user_receiver" => "trim|integer",
 					"unit_require" => "trim|integer|required",

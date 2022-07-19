@@ -221,7 +221,12 @@ function modal_close($footer = null) {
 	$txt .='</div>
 	          </div>
 	        </div>
-	        </div>';
+	        </div>
+			<script>
+			$(".modal").on(\'hidden.bs.modal\',function(){
+				$(this).find(\'.modal-body\').html("");
+			  });
+			</script>';
 	return $txt;
 }
 

@@ -16,7 +16,7 @@ class Distribusi_bon extends MY_Generator {
 
 	public function index()
 	{
-		$this->theme('mutation/v_mutation_distribusi_bon');
+		$this->theme('mutation/v_mutation_distribusi_bon','',get_class($this));
 	}
 
 	public function show_multiRows()

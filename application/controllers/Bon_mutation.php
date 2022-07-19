@@ -17,7 +17,7 @@ class Bon_mutation extends MY_Generator {
 	public function index()
 	{
 		
-		$this->theme('bon_mutation/index');
+		$this->theme('bon_mutation/index','',get_class($this));
 	}
 
 	

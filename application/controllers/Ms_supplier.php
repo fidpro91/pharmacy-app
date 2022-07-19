@@ -11,7 +11,7 @@ class Ms_supplier extends MY_Generator {
 
 	public function index()
 	{
-		$this->theme('ms_supplier/index');
+		$this->theme('ms_supplier/index','',get_class($this));
 	}
 
 	public function save()

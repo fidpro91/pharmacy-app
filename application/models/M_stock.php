@@ -61,9 +61,6 @@ class M_stock extends CI_Model {
 					},
 					"label" => "status",
 					"initial" => "s"
-				],
-				"total_price"=>[
-					"initial" => "s"
 				]
 			];
 		return $col;

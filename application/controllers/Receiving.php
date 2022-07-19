@@ -15,7 +15,7 @@ class Receiving extends MY_Generator {
 
 	public function index()
 	{
-		$this->theme('receiving/index');
+		$this->theme('receiving/index','',get_class($this));
 	}
 
 	public function save()
@@ -24,7 +24,7 @@ class Receiving extends MY_Generator {
 		// if ($this->m_receiving->validation()) {
 			$input = [];
 			foreach ($this->m_receiving->rules() as $key => $value) { 
-				$input[$key] = isset($data[$key])?$data[$key]:null;
+				$input[$key] = !empty($data[$key])?$data[$key]:null;
 			}
 			$dataPo = $this->db->get_where("farmasi.po",["po_id"=>$input['po_id']])->row();
 			$input['supplier_id'] = $dataPo->supplier_id; 
@@ -60,6 +60,19 @@ class Receiving extends MY_Generator {
 		} */
 		// redirect('receiving');
 
+	}
+
+	public function save_update()
+	{
+		$data = $this->input->post();
+		$this->db->where("rec_id",$data['rec_id'])->update("newfarmasi.receiving",$data);
+		$err = $this->db->error();
+		if ($err['message']) {
+			$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
+		}else{
+			$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
+		}
+		redirect("receiving");
 	}
 
 	public function save_non_po()
@@ -101,6 +114,31 @@ class Receiving extends MY_Generator {
 		} */
 		// redirect('receiving');
 
+	}
+
+	public function validasi_act($id)
+	{
+		$data=$this->db->get_where("newfarmasi.stock_fifo",["rec_id"=>$id])->result();
+		$allow=true;
+		foreach ($data as $key => $value) {
+			if ($value->stock_in > $value->stock_saldo) {
+				$allow=false;
+				break;
+			}
+		}
+		if ($allow===false) {
+			$resp=[
+				"code" 		=> "202",
+				"message"	=> "Data item sudah digunakan/dimutasi"
+			];
+		}else{
+			$resp = [
+				"code" 		=> "200",
+				"message"	=> "Oke"
+			];
+		}
+
+		return $resp;
 	}
 
 	public function insert_recdet($data)
@@ -193,7 +231,11 @@ class Receiving extends MY_Generator {
 		$this->load->library('datatable');
 		$attr 	= $this->input->post();
 		$fields = $this->m_receiving->get_column();
-		$data 	= $this->datatable->get_data($fields,$filter = array(),'m_receiving',$attr);
+		$filter['custom'] = "to_char(receiver_date,'MM-YYYY') = '".$attr['bulan']."'";
+		if (!empty($attr['own_id'])) {
+			$filter['r.own_id'] = $attr['own_id'];
+		}
+		$data 	= $this->datatable->get_data($fields,$filter,'m_receiving',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
         foreach ($data['dataku'] as $index=>$row) { 
@@ -209,7 +251,12 @@ class Receiving extends MY_Generator {
             		$obj[] = $row[$value];
             	}
             }
-            $obj[] = create_btnAction(["update","delete"],$row['id_key']);
+            $obj[] = create_btnAction(["update","delete",
+			"Input Faktur"=>[
+				"btn-act" => "update_header(".$row['id_key'].")",
+				"btn-icon" => "fa fa-cc-mastercard",
+				"btn-class" => "btn-warning"
+			]],$row['id_key']);
             $records["aaData"][] = $obj;
             $no++;
         }
@@ -218,10 +265,16 @@ class Receiving extends MY_Generator {
         echo json_encode($data);
 	}
 
-	public function find_one($id)
+	public function find_one($id,$type="search")
 	{
+		if ($type=="update") {
+			$resp=$this->validasi_act($id);
+			if ($resp['code'] != '200') {
+				echo json_encode($resp);
+				exit();
+			}
+		}
 		$data = $this->db->where('rec_id',$id)->get("newfarmasi.receiving")->row();
-
 		echo json_encode($data);
 	}
 
@@ -255,9 +308,13 @@ class Receiving extends MY_Generator {
 	public function delete_row($id)
 	{
 		$this->db->trans_begin();
+		$resp=$this->validasi_act($id);
+		if ($resp['code'] != '200') {
+			echo json_encode($resp);
+			exit();
+		}
 		$this->remove_data_recdet($id);
 		$this->db->where('rec_id',$id)->delete("newfarmasi.receiving");
-		$resp = array();
 		if ($this->db->affected_rows()) {
 			$this->db->trans_commit();
 			$resp['message'] = 'Data berhasil dihapus';
@@ -274,6 +331,12 @@ class Receiving extends MY_Generator {
 		$resp = array();
 		$this->db->trans_begin();
 		foreach ($this->input->post('data') as $key => $value) {
+			$resp=$this->validasi_act($value);
+			if ($resp['code'] != '200') {
+				echo json_encode($resp);
+				break;
+				exit();
+			}
 			$this->remove_data_recdet($value);
 			$this->db->where('rec_id',$value)->delete("newfarmasi.receiving");
 			$err = $this->db->error();
@@ -303,6 +366,12 @@ class Receiving extends MY_Generator {
 			"filter"	=> " AND rec_type='0'"
 		]);
 		$this->load->view("receiving/form",$data);
+	}
+
+	public function show_form_update()
+	{
+		$data['model'] = $this->m_receiving->rules();
+		$this->load->view("receiving/form_update",$data);
 	}
 
 	public function show_form_hibah()

@@ -15,7 +15,7 @@ class Receiving_retur extends MY_Generator {
 
 	public function index()
 	{
-		$this->theme('receiving_retur/index');
+		$this->theme('receiving_retur/index','',get_class($this));
 	}
 
 	public function save()

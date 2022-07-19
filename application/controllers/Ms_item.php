@@ -12,7 +12,7 @@ class Ms_item extends MY_Generator {
 
 	public function index()
 	{
-		$this->theme('ms_item/index');
+		$this->theme('ms_item/index','',get_class($this));
 	}
 
 	public function save()

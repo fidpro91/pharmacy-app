@@ -18,7 +18,7 @@ class MY_Generator extends CI_Controller
 	public function theme($url,$data = array(),$title='')
 	{
 
-		$header['title'] = 'Payrole Application | Home';
+		$header['title'] = SISTEM_NAME.' | '.$title;
 		$this->load->view('template/header',$header);
 		$sidebar["menu"] = $this->get_db->get_menu();
 		$this->load->view('template/sidebar',$sidebar);

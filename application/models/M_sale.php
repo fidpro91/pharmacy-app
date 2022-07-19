@@ -6,9 +6,9 @@ class M_sale extends CI_Model
 	public function get_data($sLimit, $sWhere, $sOrder, $aColumns)
 	{
 		$data = $this->db->query("
-				select " . implode(',', $aColumns) . ",x.id_key 
+				select " . implode(',', $aColumns) . ",x.id_key,x.sale_type 
 				from (select 
-				sale_num,sale_date,concat (patient_name,' (',patient_norm,')') as nama,sale_total,
+				sl.surety_id,sale_type,sale_num,sale_date,concat (patient_name,' (',patient_norm,')') as nama,sale_total,
 				sale_status,surety_name,doctor_name,cash_id,patient_norm,sale_id AS id_key 
 				from farmasi.sale sl
 				left join yanmed.ms_surety su on sl.surety_id = su.surety_id	
@@ -22,7 +22,7 @@ class M_sale extends CI_Model
 		$data = $this->db->query("
 		select " . implode(',', $aColumns) . ",x.id_key 
 		from (select 
-		sale_num,sale_date,concat (patient_name,' (',patient_norm,')') as nama,sale_total,
+		sl.surety_id,sale_type,sale_num,sale_date,concat (patient_name,' (',patient_norm,')') as nama,sale_total,
 		sale_status,surety_name,doctor_name,cash_id,patient_norm,sale_id AS id_key 
 		from farmasi.sale sl
 		left join yanmed.ms_surety su on sl.surety_id = su.surety_id	
@@ -40,9 +40,24 @@ class M_sale extends CI_Model
 			"sale_status",			
 			"surety_name",			
 			"doctor_name",
-			"sale_total",
-			"cash_id",
-						
+			"sale_total"=>[
+				"custom" => function($a){
+					return convert_currency($a['sale_total']);
+				}
+			],
+			"cash_id"=>[
+				"label"	 => "status pembayaran",
+				"custom" => function($a){
+					if (!empty($a['cash_id']) && $a['sale_type'] == 0) {
+						$label='<label class="label label-success">Terbayar</label>';
+					}elseif(empty($a['cash_id']) && $a['sale_type'] == 1){
+						$label='<label class="label label-primary">Piutang</label>';
+					}else{
+						$label='<label class="label label-danger">Belum Terbayar</label>';
+					}
+					return $label;
+				}
+			],
 		];
 		return $col;
 	}
