@@ -161,7 +161,7 @@ class M_sale extends CI_Model
 
 	public function get_penjamin($where)
 	{
-		return $this->db->get_where("yanmed.ms_surety",$where)->result();
+		return $this->db->order_by('surety_code')->get_where("yanmed.ms_surety",$where)->result();
 	}
 
 	public function get_unit_layanan($where)

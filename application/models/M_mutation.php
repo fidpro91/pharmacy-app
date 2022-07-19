@@ -144,9 +144,9 @@ class M_mutation extends CI_Model {
 	public function get_item_autocomplete($where)
 	{
 		return $this->db->query(
-			"SELECT  mi.item_id,sf.expired_date,mi.item_package,mi.item_name as value,mi.item_code,mi.item_unitofitem,
-			(sf.stock_saldo)as total_stock
-			FROM newfarmasi.stock_fifo sf
+			"SELECT  mi.item_id,mi.item_package,mi.item_name as value,mi.item_code,mi.item_unitofitem,
+			(sf.stock_summary) as total_stock
+			FROM newfarmasi.stock sf
 			JOIN admin.ms_item mi ON sf.item_id = mi.item_id
 			where 0=0 $where"
 		)->result();

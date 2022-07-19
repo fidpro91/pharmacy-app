@@ -303,6 +303,7 @@ class Receiving extends MY_Generator {
 			$this->db->where("recdet_id",$value->recdet_id)->delete("newfarmasi.receiving_detail");
 			$this->db->where("recdet_id",$value->recdet_id)->delete("newfarmasi.stock_fifo");
 		}
+		
 	}
 
 	public function delete_row($id)

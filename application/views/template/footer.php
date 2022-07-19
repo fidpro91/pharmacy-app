@@ -22,7 +22,11 @@
       currency: 'IDR',
     }).format(val);
   }
-  
+
+setTimeout(function(){
+  $(".alert").hide("slow");
+},3000);
+
 function newexportaction(e, dt, button, config) {
     var self = this;
     var oldStart = dt.settings()[0]._iDisplayStart;
