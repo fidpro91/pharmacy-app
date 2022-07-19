@@ -79,7 +79,11 @@ class M_mutation extends CI_Model {
 	public function get_column_bon()
 	{
 		$col = [
-				"bon_no"=>["label"=>"Nomor"],
+				"bon_no"=>
+				[
+					"label"	=>"Nomor",
+					"field"	=> "coalesce(bon_no,mutation_no) as bon_no"
+				],
 				//"mutation_id",
 				"mutation_date"=>["label"=>"Tgl. Mutasi"],
 				//"user_require",

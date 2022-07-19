@@ -15,14 +15,7 @@
     sitemaps: '.sidebar-menu',
     index_type: 'index.html'
   });
-
-  function formatNumeric(val = 0) {
-    return new Intl.NumberFormat({
-      style: 'currency',
-      currency: 'IDR',
-    }).format(val);
-  }
-
+  
 setTimeout(function(){
   $(".alert").hide("slow");
 },3000);
