@@ -5,7 +5,7 @@ class M_ms_group extends CI_Model {
 	public function get_data($sLimit,$sWhere,$sOrder,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).",group_id as id_key from ms_group where 0=0 $sWhere $sOrder $sLimit
+				select ".implode(',', $aColumns).",group_id as id_key  from admin.ms_group where 0=0 $sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
 	}
@@ -13,7 +13,7 @@ class M_ms_group extends CI_Model {
 	public function get_total($sWhere,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).",group_id as id_key from ms_group where 0=0 $sWhere
+				select ".implode(',', $aColumns).",group_id as id_key  from admin.ms_group where 0=0 $sWhere
 			")->num_rows();
 		return $data;
 	}
@@ -24,17 +24,8 @@ class M_ms_group extends CI_Model {
 				"group_id",
 				"group_code",
 				"group_name",
-				"group_active"=> ["label"=>"Aktif",
-						   "custom"=>function($y){
-						   	if ($y =='t'){
-						   		$condition = ["class"=>"label-primary","text"=>"Aktif"];
-						   	}else{
-            				    $condition = ["class"=>"label-danger","text"=>"Non Aktif"];
-            			} return label_status($condition);
-						   }
-						],
-
-			];
+				"group_active",
+				"group_desc"];
 		return $col;
 	}
 
@@ -44,13 +35,10 @@ class M_ms_group extends CI_Model {
 					"group_code" => "trim|required",
 					"group_name" => "trim|required",
 					"group_active" => "trim",
+					"group_desc" => "trim",
+
 				];
 		return $data;
-	}
-
-	public function get_group($value='')
-	{
-		return $this->db->get("ms_group")->result();
 	}
 
 	public function validation()
@@ -60,5 +48,15 @@ class M_ms_group extends CI_Model {
 		}
 
 		return $this->form_validation->run();
+	}
+
+	public function get_ms_group($where=null)
+	{
+		return $this->db->where("group_desc","6")->get_where("admin.ms_group",$where)->result();
+	}
+
+	public function find_one($where)
+	{
+		return $this->db->get_where("admin.ms_group",$where)->row();
 	}
 }

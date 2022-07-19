@@ -5,7 +5,7 @@ class M_ms_unit extends CI_Model {
 	public function get_data($sLimit,$sWhere,$sOrder,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).",unit_id as id_key  from admin.ms_unit where 0=0 $sWhere $sOrder $sLimit
+				select ".implode(',', $aColumns).",unit_id as id_key from admin.ms_unit where unit_type in (34,32) $sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
 	}
@@ -13,7 +13,7 @@ class M_ms_unit extends CI_Model {
 	public function get_total($sWhere,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).",unit_id as id_key  from admin.ms_unit where 0=0 $sWhere
+				select ".implode(',', $aColumns).",unit_id as id_key from admin.ms_unit where unit_type in (34,32) $sWhere
 			")->num_rows();
 		return $data;
 	}

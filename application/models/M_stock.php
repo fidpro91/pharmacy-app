@@ -6,13 +6,13 @@ class M_stock extends CI_Model {
 	{
 		$data = $this->db->query("
 				select * from (
-					select ".implode(',', $aColumns).",id as id_key,sum(sf.stock_saldo)total_stock_fifo 
+					select ".implode(',', $aColumns).",id as id_key,sum(coalesce(sf.stock_saldo,0))total_stock_fifo 
 					from newfarmasi.stock s
-					join newfarmasi.stock_fifo sf on s.item_id = sf.item_id and s.own_id = sf.own_id and s.unit_id = sf.unit_id 
+					left join newfarmasi.stock_fifo sf on s.item_id = sf.item_id and s.own_id = sf.own_id and s.unit_id = sf.unit_id 
 					join admin.ms_unit mu on mu.unit_id = s.unit_id
 					join farmasi.ownership ow on ow.own_id = s.own_id
 					join admin.ms_item mi on mi.item_id = s.item_id
-					where 0=0 $sWhere 
+					where 0=0 $sWhere
 					group by ".implode(',', $aColumns).",id
 				)x
 				$sOrder $sLimit
@@ -24,7 +24,7 @@ class M_stock extends CI_Model {
 	{
 		$data = $this->db->query("
 				select distinct ".implode(',', $aColumns).",id as id_key from newfarmasi.stock s
-				join newfarmasi.stock_fifo sf on s.item_id = sf.item_id and s.own_id = sf.own_id and s.unit_id = sf.unit_id 
+				left join newfarmasi.stock_fifo sf on s.item_id = sf.item_id and s.own_id = sf.own_id and s.unit_id = sf.unit_id 
 				join admin.ms_unit mu on mu.unit_id = s.unit_id
 				join farmasi.ownership ow on ow.own_id = s.own_id
 				join admin.ms_item mi on mi.item_id = s.item_id

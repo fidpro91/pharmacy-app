@@ -37,6 +37,16 @@ class M_employee extends CI_Model {
 		return $col;
 	}
 
+	public function get_column2()
+	{
+		$col = [
+			"employee_nip",
+			"employee_name",
+			"employee_bt"
+		];
+		return $col;
+	}
+
 	public function rules()
 	{
 		$data = [

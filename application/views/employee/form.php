@@ -18,6 +18,11 @@
 		"required" => true
 	]) ?>
 
+	<?=create_select2(["attr"=>["name"=>"group_id[]=Group Akses ","required"=>"true","id"=>"group_id","multiple"=>"true","class"=>"form-control"],
+		"model"=>["m_ms_group" => "get_ms_group",
+		"column"=>["group_id","group_name"]]
+	])?>
+	
 	<?= create_select([
 			"attr" => ["name" => "employee_active=Status", "id" => "employee_active", "class" => "form-control", 'required' => true],
 			"option" => [["id" => 't', "text" => "Aktif"], ["id" => 'f', "text" => "Non Aktif"]],
