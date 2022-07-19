@@ -76,4 +76,6 @@ class M_bon_detail extends CI_Model {
 	{
 		return $this->db->get_where("farmasi.bon_detail",$where)->row();
 	}
+
+	
 }
