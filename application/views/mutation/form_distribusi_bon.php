@@ -1,7 +1,8 @@
 <div class="col-md-12">
     <?= form_open("distribusi_bon/save_distribusi", ["method" => "post", "class" => "form-horizontal", "id" => "fm_mutation"], $model) ?>
     <?= form_hidden("mutation_id",$dataBon['header']->mutation_id) ?>
-    <?= create_select2([
+    <?= form_hidden("own_id",$dataBon['header']->own_id) ?>
+    <?= create_select([
         "attr" => [
                     "name" => "unit_sender=Unit Pengirim", 
                     "id" => "unit_sender", 
@@ -9,11 +10,16 @@
                     "style" => "width:100%;"
                 ],
                 "model"=>["m_mutation" => ["get_user_in_unit",[0,"u.user_id"=>$this->session->user_id]],
-                "column"  => ["unit_id","unit_name"]]
-            ]) ?>
+                "column"  => ["unit_id","unit_name"]],
+                "selected" => $dataBon['header']->unit_sender
+            ])
+    ?>
     <?= create_inputDate("mutation_date=tanggal kirim", [
         "format" => "yyyy-mm-dd",
         "autoclose" => "true"
+    ],[
+        "readonly"  => true,
+        "value"     => date('Y-m-d')
     ]) ?>
     <div>
 		<table class="table">

@@ -57,6 +57,7 @@ class Sale extends MY_Generator {
 			$input['sale_total'] = $grandtotal+$embalase;
 			$input['embalase_item_sale'] = $embalase;
 			$input['sale_services'] = $totalService;
+			$input['sale_date'] = date('Y-m-d');
 
 			//insert into farmasi.sale
 			$this->db->insert("farmasi.sale",$input);
@@ -279,6 +280,7 @@ class Sale extends MY_Generator {
 	public function set_item_racikan()
 	{
 		$post = $this->input->post();
+
 		$html="";
 		$total=0;
 		$item="";
@@ -371,6 +373,7 @@ class Sale extends MY_Generator {
 	public function set_item_nonracikan()
 	{
 		$post = $this->input->post();
+//		var_dump($post);die();
 		$html="";
 		$total=0;
 		$item="";
@@ -477,4 +480,3 @@ class Sale extends MY_Generator {
 		]);
 	}
 }
-?>

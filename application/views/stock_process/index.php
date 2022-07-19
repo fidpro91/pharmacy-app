@@ -15,7 +15,7 @@
 </div>
 
 <script type="text/javascript">
-    var table;
+    var tableStockProsess;
     $(document).ready(function() {
         table = $('#tb_stock_process').DataTable({ 
           dom: 'Bfrtip',
@@ -74,15 +74,19 @@
                }
             }], 
         });
-        $("#filter_kelas,#tgl_transaksi,#kempilikan_id").change(() => {
-      table.draw();
-    });
+
+        $("#filter_kelas,#tgl_transaksi,#kempilikan_id").change((e) => {
+          tableStockProsess.draw();
+          e.preventDefault();
+        });
+
     });
 
     $("#btn-back").click(function() {
-      $("#data_stock").show();
+      /* $("#data_stock").show();
       $("#kartu_Stok").html("");
-      $("#kartu_Stok").hide();
+      $("#kartu_Stok").hide(); */
+      location.reload();
     });
     <?= $this->config->item('footerJS') ?>
 </script>

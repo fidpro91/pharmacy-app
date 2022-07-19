@@ -263,9 +263,12 @@ function create_select($data)
 	if (strpos($data['attr']['name'],"=")) {
 		list($data['attr']['name'],$label) = explode("=", $data['attr']['name']);
 	}
+
 	$txt = '<div class="form-group">
               <label for="'.$data['attr']['name'].'">'.ucwords(str_replace('_', ' ', $label)).'</label>';
 	$txt .= '<select '._attributes_to_string($data['attr']).'>';
+	
+
 	if (isset($data['model'])) {
 		$CI =& get_instance();
 		$model = key($data['model']);
@@ -277,14 +280,25 @@ function create_select($data)
 			$dataSelect = $CI->$model->{current($data['model'])}();
 		}
 		 foreach ($dataSelect as $key => $value) {
-	        $txt .= "<option value =\"".$value->{$data["model"]['column'][0]}."\">".$value->{$data["model"]['column'][1]}."</option>\n";
+			$selected="";
+			if (!empty($data["selected"]) && ($value->{$data["model"]['column'][0]} === $data["selected"])) {
+				$selected = "selected";
+			}
+	        $txt .= "<option $selected value =\"".$value->{$data["model"]['column'][0]}."\">".$value->{$data["model"]['column'][1]}."</option>\n";
 	    }
 	}elseif (isset($data['option'])) {
 		foreach ($data['option'] as $key => $value) {
+			$selected="";
 			if (is_array($value)) {
-				$txt .="<option value=\"".$value['id']."\">".$value['text']."</option>\n";
+				if (!empty($data["selected"]) && $value['id'] == $data["selected"]) {
+					$selected = "selected";
+				}
+				$txt .="<option $selected value=\"".$value['id']."\">".$value['text']."</option>\n";
 			}else{
-				$txt .= "<option>".$value."</option>\n";
+				if (!empty($data["selected"]) && $value == $data["selected"]) {
+					$selected = "selected";
+				}
+				$txt .= "<option $selected>".$value."</option>\n";
 			}
 		}
 	}

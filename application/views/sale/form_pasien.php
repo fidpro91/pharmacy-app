@@ -42,7 +42,7 @@
                     "attr" => ["name" => "surety_id=Penjamin", "id" => "surety_id", "class" => "form-control", "onchange" => "changeSurety()",
                     "required"  => true],
                     "model" => [
-                        "m_sale" => ["get_penjamin", ["0" => '0']],
+                        "m_sale" => ["get_penjamin", ["surety_active" => 't']],
                         "column"  => ["surety_id", "surety_name"]
                     ]
                 ]) ?>
@@ -61,7 +61,7 @@
                         "name" => "doctor_id=Dokter", "id" => "doctor_id", "class" => "form-control"
                     ],
                     "model" => [
-                        "m_sale" => "get_dokter",
+                        "m_sale" => ["get_dokter", ["employee_active" => 't']],
                         "column" => ["employee_id", "nama_dokter"]
                     ],
                 ]) ?>

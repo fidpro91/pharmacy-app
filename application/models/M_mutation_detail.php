@@ -38,7 +38,6 @@ class M_mutation_detail extends CI_Model {
 				"item_id",
 				"qty_send",
 				"stock_unit",
-				"expired_date",
 				"unit_pack",
 				"item_unit"
 			];
