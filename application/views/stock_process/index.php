@@ -17,7 +17,7 @@
 <script type="text/javascript">
     var tableStockProsess;
     $(document).ready(function() {
-        table = $('#tb_stock_process').DataTable({ 
+      tableStockProsess  = $('#tb_stock_process').DataTable({ 
           dom: 'Bfrtip',
             buttons: [
                   {

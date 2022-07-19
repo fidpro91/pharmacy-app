@@ -10,6 +10,14 @@
   <!-- Google Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
   <?=$this->config->item('my_library')?>
+  <script>
+  function formatNumeric(val = 0) {
+    return new Intl.NumberFormat({
+      style: 'currency',
+      currency: 'IDR',
+    }).format(val);
+  }
+  </script>
 </head>
 <!-- ADD THE CLASS fixed TO GET A FIXED HEADER AND SIDEBAR LAYOUT -->
 <!-- the fixed layout is not compatible with sidebar-mini -->
