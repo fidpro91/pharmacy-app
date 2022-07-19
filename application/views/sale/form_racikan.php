@@ -4,7 +4,9 @@
 <div class="row">
     <?= form_open("", ["method" => "post", "id" => "form_racikan"]) ?>
     <div class="col-md-4">
-        <?= create_input("nama_racikan") ?>
+        <?= create_input("nama_racikan",[
+            "required" => true
+        ]) ?>
     </div>
     <div class="col-md-3">
         <?= create_input("signa") ?>
@@ -13,7 +15,7 @@
         <?= create_input("qty_racikan") ?>
     </div>
     <div class="col-md-3">
-        <?= create_input("biaya_racikan") ?>
+        <?= create_inputMask("biaya_racikan","IDR") ?>
     </div>
     <div class="col-md-12">
         <div class="list_item_racikan"></div>
@@ -60,6 +62,10 @@ $("body").on("change", ".tb_list_item_racikan", function() {
 });
 
 $("#btn-save-racikan").click(()=>{
+    $("#form_racikan").submit();
+});
+
+$("#form_racikan").on("submit",()=>{
     $.ajax({
         'async': false,
         'type': "post",
@@ -76,6 +82,7 @@ $("#btn-save-racikan").click(()=>{
 			$("#modal_racikan").modal('hide');
         }
     });
-});
-
+    return false;
+})
+<?= $this->config->item('footerJS') ?>
 </script>

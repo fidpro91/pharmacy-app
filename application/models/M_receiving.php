@@ -54,7 +54,11 @@ class M_receiving extends CI_Model {
 					}
 				}],
 				//"estimate_resource",
-				"grand_total",
+				"grand_total" => [
+					"custom" => function($a){
+						return convert_currency($a);
+					}
+				],
 			];
 		return $col;
 	}
@@ -62,8 +66,8 @@ class M_receiving extends CI_Model {
 	public function rules()
 	{
 		$data = [
-					"rec_num" => "trim|required",
-					"rec_date" => "trim|required",
+					"rec_num" => "trim",
+					"rec_date" => "trim",
 					"po_id" => "trim|integer",
 					"own_id" => "trim|integer",
 					"receiver_unit" => "trim|integer",

@@ -36,7 +36,8 @@
 				const harga_satuan = $(this).find(".sale_price").val();
 				const total_item = jumlah_barang * harga_satuan;
 				$(this).find('.price_total').val(total_item);
-        	})
+				$(this).find('.price_total').inputmask("IDR");
+        	});
 		});
 
 		$("#btn-save-non_racikan").click(()=>{
@@ -59,4 +60,5 @@
 		});
 
 	});
+	<?=$this->config->item('footerJS')?>
 </script>

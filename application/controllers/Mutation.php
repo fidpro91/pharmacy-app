@@ -22,6 +22,7 @@ class Mutation extends MY_Generator {
 		$this->load->model("m_mutation_detail");
 		$data = $this->m_mutation_detail->get_column_multiple();
 		$colauto = ["item_id"=>"Nama Barang"];
+		$readonly = ["stock_unit","unit_pack","item_unit","expired_date"];
 		foreach ($data as $key => $value) {
 			if (array_key_exists($value, $colauto)) {
 				$row[] = [
@@ -29,6 +30,24 @@ class Mutation extends MY_Generator {
 					"label" => $colauto[$value],
 					"type" => 'autocomplete',
 					"width" => '40%',
+				];
+			}elseif(in_array($value,$readonly)){
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"attr"=>[
+						"readonly"=>'readonly'
+					]
+				];
+			}elseif($value=='qty_send'){
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"attr"=>[
+						"onchange"	=>	'hitungTotal_terima(this)'
+					]
 				];
 			}else{
 				$row[] = [
@@ -62,6 +81,7 @@ class Mutation extends MY_Generator {
 		}
 		$input['user_sender'] 		= $this->session->user_id;
 		$input['mutation_status'] 	= '2';
+		$input['mutation_no'] 		= $this->get_no_mutation();
 		$this->form_validation->set_data($input);
 		if ($this->m_mutation->validation()) {
 			$this->db->trans_begin();
@@ -74,7 +94,7 @@ class Mutation extends MY_Generator {
 			}
 			$this->insert_mutation($data);
 			$err = $this->db->error();
-			if ($err['message']) {
+			if ($this->db->trans_status() === false) {
 				$this->db->trans_rollback();
 				$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
 			}else{
@@ -100,12 +120,20 @@ class Mutation extends MY_Generator {
 			}
 			$detail[$x]['mutation_id'] 		= $data['mutation_id'];
 			$detail[$x]['qty_request'] 		= $value['qty_send'];
+			$detail[$x]['expired_date'] 	= $value['expired_date'];
 			$this->db->insert("newfarmasi.mutation_detail",$detail[$x]);
 			$this->update_stock([
 				"unit_id" 	=> $data['unit_sender'],
 				"own_id"	=> $data['own_id'],
 				"item_id"	=> $value['item_id'],
 			],$value["qty_send"],"minus");
+			$dataku["item_id"] = $value['item_id'];
+			$dataku["own_id"] = $data['own_id'];
+			$dataku["unit_id"] = $data['unit_sender'];
+			$dataku["qty"] = $value['qty_send'];
+			$dataku["trans_num"] = $data['mutation_no'];
+			$dataku["trans_type"] = 3;
+			$this->insert_stock_process($dataku);
 		}
 	}
 
@@ -151,6 +179,31 @@ class Mutation extends MY_Generator {
 		echo json_encode($data);
 	}
 
+	public function insert_stock_process($dataku)
+	{
+		$this->load->model("m_stock_process");
+        foreach ($this->m_stock_process->rules() as $key => $value) {
+            $dataku[$key] = (isset($dataku[$key])?$dataku[$key]:null);
+        }
+		$dataku["date_act"] = $dataku["date_trans"] = 'now()';
+		$oldStock = $this->db->order_by("stockprocess_id","DESC")->get_where("newfarmasi.stock_process",[
+			"unit_id" => $dataku["unit_id"],
+			"own_id"  => $dataku["own_id"],
+			"item_id" => $dataku["item_id"]
+		])->row();
+		$stockAwal = (isset($oldStock->stock_after)?$oldStock->stock_after:0);
+		$harga = (isset($oldStock->item_price)?$oldStock->item_price:0);
+		$dataku["stock_before"] = $stockAwal;
+		$dataku["item_price"] 	= $harga;
+		$dataku["kredit"] 		= $dataku["qty"];
+		$dataku["debet"] 		= 0;
+		$dataku["stock_after"] 	= $stockAwal-$dataku["qty"];
+		$dataku["total_price"] 	= ($harga*$dataku["qty"]);
+		$dataku["description"] 	= "Mutasi Keluar No : ".$dataku["trans_num"];
+		unset($dataku["qty"]);
+		$this->db->insert("newfarmasi.stock_process",$dataku);
+	}
+
 	public function update_stock($param,$qty,$type="plus",$fk=null)
 	{
 		if ($type=='minus') {
@@ -163,6 +216,12 @@ class Mutation extends MY_Generator {
 							->update("newfarmasi.stock_fifo",[
 								"stock_saldo" => $stock_saldo
 							]);
+					$this->db->set("stock_summary","(stock_summary-".$qty.")",false);
+					$this->db->where([
+						"item_id"	=> $value->item_id,
+						"unit_id"	=> $value->unit_id,
+						"own_id"	=> $value->own_id,
+					])->update("newfarmasi.stock");
 					break;
 				}elseif ($value->stock_saldo < $qty) {
 					$stock_saldo=($qty-$value->stock_saldo);
@@ -171,25 +230,35 @@ class Mutation extends MY_Generator {
 							->update("newfarmasi.stock_fifo",[
 								"stock_saldo" => 0
 							]);
+					$this->db->set("stock_summary","(stock_summary-".$value->stock_saldo.")",false);
+					$this->db->where([
+						"item_id"	=> $value->item_id,
+						"unit_id"	=> $value->unit_id,
+						"own_id"	=> $value->own_id,
+					])->update("newfarmasi.stock");
 				}
 			}
 		}elseif ($type='plus') {
-			$stock= $this->db->order_by("stock_id","desc")
-							->get_where("newfarmasi.stock_fifo",$param);
+			$baru = $param;
+			$baru = [
+				"stock_in" 		=> $qty,
+				"stock_saldo" 	=> $qty,
+				key($fk)		=> array_values($fk)[0]  
+			];
+			$this->db->insert("newfarmasi.stock_fifo",$baru);
+			$stock= $this->db->order_by("id","desc")
+							->get_where("newfarmasi.stock",$param);
 			if ($stock->num_rows()>0) {
-				$stock = $stock->row();
-				$this->db->where("stock_id",$stock->stock_id)->update("newfarmasi.stock_fifo",[
-					"stock_saldo" => ($stock->stock_saldo+$qty),
-					"stock_in"	  => ($stock->stock_in-$qty+$qty)
-				]);
+				$stock=$stock->row();
+				$this->db->set("stock_summary","(stock_summary-".$qty.")",false);
+				$this->db->where([
+					"item_id"	=> $stock->item_id,
+					"unit_id"	=> $stock->unit_id,
+					"own_id"	=> $stock->own_id,
+				])->update("newfarmasi.stock");
 			}else{
-				$baru = $param;
-				$baru = [
-					"stock_in" 		=> $qty,
-					"stock_saldo" 	=> $qty,
-					key($fk)		=> array_values($fk)[0]  
-				];
-				$this->db->insert("newfarmasi.stock_fifo",$baru);
+				$param["stock_summary"] = $qty;
+				$this->db->insert("newfarmasi.stock",$param);
 			}
 		}
 	}
@@ -239,6 +308,20 @@ class Mutation extends MY_Generator {
 	public function show_form()
 	{
 		$data['model'] = $this->m_mutation->rules();
+		$data['mutation_no'] = $this->get_no_mutation();
 		$this->load->view("mutation/form",$data);
+	}
+
+	public function get_no_mutation()
+	{
+		return generate_code_transaksi([
+			"text"	=> "M/NOMOR/".date("d.m.Y"),
+			"table"	=> "newfarmasi.mutation",
+			"column"	=> "mutation_no",
+			"delimiter" => "/",
+			"number"	=> "2",
+			"lpad"		=> "4",
+			"filter"	=> ""
+		]);
 	}
 }

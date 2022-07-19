@@ -1,69 +1,80 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Stock_process extends MY_Generator {
+class Employee extends MY_Generator {
 
 	public function __construct()
 	{
 		parent::__construct();
-		$this->datascript->lib_select2()
-						 ->lib_datatableExt()
-					     ->lib_daterange();
-		$this->load->model('m_stock_process');
-		
+		$this->load->model('m_employee');
 	}
 
 	public function index()
 	{
-		$this->load->view('stock_process/index');
-		
+		$this->theme('employee/index');
 	}
 
 	public function save()
 	{
 		$data = $this->input->post();
-		if ($this->m_stock_process->validation()) {
+		if ($this->m_employee->validation()) {
 			$input = [];
-			foreach ($this->m_stock_process->rules() as $key => $value) {
+			foreach ($this->m_employee->rules() as $key => $value) {
 				$input[$key] = $data[$key];
 			}
-			if ($data['$pkey']) {
-				$this->db->where('$pkey',$data['$pkey'])->update('newfarmasi.stock_process',$input);
+			$input['empcat_id'] = 12;
+			$this->db->trans_begin();
+			if ($data['employee_id']) {
+				$this->db->where('employee_id',$data['employee_id'])->update('hr.employee',$input);
 			}else{
-				$this->db->insert('newfarmasi.stock_process',$input);
+				$this->db->insert('hr.employee',$input);
+				$data['employee_id'] = $this->db->insert_id();
 			}
+			
+			//insert or update ms_user
+			$dataUser = $this->db->get_where("admin.ms_user",["employee_id"=>$data['employee_id']])->num_rows();
+			if ($dataUser>0) {
+				$this->db->where("employee_id",$data['employee_id'])
+						 ->update("admin.ms_user",[
+							"user_name" 			=> $data['user_name'],
+							"user_password" 		=> $data['user_password'],
+							"user_salt_encrypt" 	=> md5($data['user_password']),
+							"user_status"			=> $data['employee_active'],
+							"employee_id"			=> $data["employee_id"],
+							"person_name"			=> $data["employee_name"]
+						 ]);
+			}else{
+				$this->db->insert("admin.ms_user",[
+							"user_name" 			=> $data['user_name'],
+							"user_password" 		=> $data['user_password'],
+							"user_salt_encrypt" 	=> md5($data['user_password']),
+							"user_status"			=> $data['employee_active'],
+							"employee_id"			=> $data["employee_id"],
+							"person_name"			=> $data["employee_name"]
+						 ]);
+			}
+
 			$err = $this->db->error();
-			if ($err['message']) {
+			if ($this->db->trans_status() === false) {
+				$this->db->trans_rollback();
 				$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
 			}else{
+				$this->db->trans_commit();
 				$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
 			}
 		}else{
 			$this->session->set_flashdata('message',validation_errors('<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>','</div>'));
 		}
-		redirect('stock_process');
+		redirect('employee');
 
 	}
 
 	public function get_data()
 	{
 		$this->load->library('datatable');
-		$attr 	= $this->input->post(); 
-		$fields = $this->m_stock_process->get_column();
-		$filter = [];
-		$filter['sp.item_id'] = $attr['item_id'];
-		if ($attr['tgl']) {
-			list($tgl1,$tgl2) = explode('/', $attr['tgl']); 
-			$filter["custom" ] = "(date(date_trans) between '$tgl1' and '$tgl2')"; 
-		}
-		if (!empty($attr['unit'])) {
-			$filter = array_merge($filter, ["sp.unit_id" => $attr['unit']]);
-		}
-		if (!empty($attr['own_id'])) {
-			$filter = array_merge($filter, ["sp.own_id" => $attr['own_id']]);
-		}
-
-		$data 	= $this->datatable->get_data($fields,$filter,'m_stock_process',$attr);
+		$attr 	= $this->input->post();
+		$fields = $this->m_employee->get_column();
+		$data 	= $this->datatable->get_data($fields,$filter = array(),'m_employee',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
         foreach ($data['dataku'] as $index=>$row) { 
@@ -88,17 +99,16 @@ class Stock_process extends MY_Generator {
         echo json_encode($data);
 	}
 
-	
 	public function find_one($id)
 	{
-		$data = $this->db->where('$pkey',$id)->get("newfarmasi.stock_process")->row();
+		$data = $this->db->where('employee_id',$id)->get("hr.employee")->row();
 
 		echo json_encode($data);
 	}
 
 	public function delete_row($id)
 	{
-		$this->db->where('$pkey',$id)->delete("newfarmasi.stock_process");
+		$this->db->where('employee_id',$id)->delete("hr.employee");
 		$resp = array();
 		if ($this->db->affected_rows()) {
 			$resp['message'] = 'Data berhasil dihapus';
@@ -113,7 +123,7 @@ class Stock_process extends MY_Generator {
 	{
 		$resp = array();
 		foreach ($this->input->post('data') as $key => $value) {
-			$this->db->where('$pkey',$value)->delete("newfarmasi.stock_process");
+			$this->db->where('employee_id',$value)->delete("hr.employee");
 			$err = $this->db->error();
 			if ($err['message']) {
 				$resp['message'] .= $err['message']."\n";
@@ -127,9 +137,7 @@ class Stock_process extends MY_Generator {
 
 	public function show_form()
 	{
-		$data['model'] = $this->m_stock_process->rules();
-		$this->load->view("stock_process/form",$data);
+		$data['model'] = $this->m_employee->rules();
+		$this->load->view("employee/form",$data);
 	}
-
-	
 }

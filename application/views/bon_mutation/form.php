@@ -15,7 +15,8 @@
 		]) ?>
     	<?= create_select2([
 			"attr" => ["name" => "unit_require=Unit Minta", "id" => "unit_require", "class" => "form-control"],
-			"model"=>["m_mutation" => ["get_user_in_unit",[0,"u.user_id"=>$this->session->user_id]],
+			// "model"=>["m_mutation" => ["get_user_in_unit",[0,"u.user_id"=>$this->session->user_id]],
+			"model"=>["m_mutation" => ["get_user_in_unit",[0=>0]],
 				"column"  => ["unit_id", "unit_name"]
 			]
 		]) ?>

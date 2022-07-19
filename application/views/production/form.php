@@ -92,11 +92,13 @@
 						}
 					});
 					return dataku;
-	                },                
+	                },   "data" : item_produk           
 	    });        
 	});
 
 	$(document).ready(()=>{
+		//var item_hasil ;
+		//console.log(item_hasil);
         $(".item_hasil").inputMultiRow({
 	            column: ()=>{
 					var dataku; 
@@ -110,30 +112,50 @@
 						}
 					});
 					return dataku;
-	                },                
+	                },   
+					"data" : item_hasil            
 	    });        
 	});
 
-	$("body").on("focus", ".autocom_item_id", function() {
+	$(".item_bahan").on("focus", ".autocom_item_id", function() {
 	    $(this).autocomplete({
             source: "<?php echo site_url('Production/get_item');?>/" + $("#own_id").val() + "/" + $("#unit_id").val(),
             select: function (event, ui) {
-                $(this).closest('tr').find('.item_id').val(ui.item.item_id);               
-				$(this).closest('tr').find('.stok').val(ui.item.total_stock);	
+                $(this).closest('tr').find('.item_id').val(ui.item.item_id); 
+				$(this).closest('tr').find('.stok').val(ui.item.total_stock); 			
 				$(this).closest('tr').find('.item_price').val(ui.item.harga);			
                
             }
-        }).data("ui-autocomplete")._renderItem = function (ul, item) {
+        }).data("ui-autocomplete")._renderItem = function(ul, item) {
             return $("<li>")
-                .append('<a>'
-                    + '<table class="table"><tr>'
-                    + '<td style="width:150px">' + item.value + '</td>'
-					+ '<td style="width:40px">' + item.total_stock + '</td>'                    
-                    + '</tr></table></a>')
-                .appendTo(ul);
-        };
+			.append("<div class='comment-text'>" +				
+				"</b><span class=\"text-muted pull-right\">" + item.value + "</span></span><p>" +
+				"<span>Stok : <span class=\"text-muted pull-right\">" + (item.total_stock) + "</span></span><br>" +
+				"<span>HArga : <span class=\"text-muted pull-right\">" + (item.harga) + "</span></span><br>" +
+				
+				"</div>")
+			.appendTo(ul);
+        };		
 	});
-	
+
+	$(".item_hasil").on("focus", ".autocom_item_id", function() {
+	    $(this).autocomplete({
+            source: "<?php echo site_url('Production/get_item_hasil');?>/",
+            select: function (event, ui) {
+                $(this).closest('tr').find('.item_id').val(ui.item.item_id);                
+            }
+        }).data("ui-autocomplete")._renderItem = function(ul, item) {
+            return $("<li>")
+			.append("<div class='comment-text'>" +				
+				"</b><span >" + item.value + "</span></span><p>" +				
+				"</div>")
+			.appendTo(ul);
+        };
+		
+	});
+
+
+
 
   <?=$this->config->item('footerJS')?>
 </script>

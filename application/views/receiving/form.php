@@ -71,9 +71,9 @@
 			</div>
 		</div>
 		<div class="col-sm-12">
-			<?=create_inputmask("rec_taxes=PPN","IDR")?>
-			<?=create_inputmask("discount_total","IDR")?>
-			<?=create_inputmask("grand_total","IDR")?>
+			<?=create_inputmask("rec_taxes=PPN","IDR",["readonly"=>true])?>
+			<?=create_inputmask("discount_total","IDR",["readonly"=>true])?>
+			<?=create_inputmask("grand_total","IDR",["readonly"=>true])?>
 		</div>
 	</div>
 	<?=form_close()?>
@@ -94,6 +94,25 @@
 				$("#list_item").html(resp);
 			},"html");
 		});
+	});
+	$('#fm_receiving').on("submit",function(){
+		$(this).data("validator").settings.submitHandler = function (form) { 
+			$.blockUI();
+			$.ajax({
+				'type': "post",
+				'data'	: $(form).serialize(),
+				'dataType': 'json',
+				'url': "receiving/save",
+				'success': function (data) {
+					$.unblockUI();
+					alert(data.message);
+					if (data.code == '200') {
+						location.reload(true);
+					}
+				}
+			});
+			return false;
+		};
 	});
   <?=$this->config->item('footerJS')?>
 </script>

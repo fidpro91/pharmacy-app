@@ -24,7 +24,7 @@ class Receiving extends MY_Generator {
 		// if ($this->m_receiving->validation()) {
 			$input = [];
 			foreach ($this->m_receiving->rules() as $key => $value) { 
-				$input[$key] = isset($data[$key])?$data[$key]:null;
+				$input[$key] = !empty($data[$key])?$data[$key]:null;
 			}
 			$dataPo = $this->db->get_where("farmasi.po",["po_id"=>$input['po_id']])->row();
 			$input['supplier_id'] = $dataPo->supplier_id; 
@@ -43,15 +43,22 @@ class Receiving extends MY_Generator {
 			$err = $this->db->error();
 			if ($err['message'] || $sukses === false) {
 				$this->db->trans_rollback();
-				$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
+				$resp = [
+					"code" 		=> "202",
+					"message"	=> $err['message']
+				];
 			}else{
 				$this->db->trans_commit();
-				$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
+				$resp = [
+					"code" 		=> "200",
+					"message"	=> "Data berhasil disimpan"
+				];
 			}
+			echo json_encode($resp);
 		/* }else{
 			$this->session->set_flashdata('message',validation_errors('<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>','</div>'));
 		} */
-		redirect('receiving');
+		// redirect('receiving');
 
 	}
 
@@ -77,15 +84,22 @@ class Receiving extends MY_Generator {
 			$err = $this->db->error();
 			if ($err['message'] || $sukses === false) {
 				$this->db->trans_rollback();
-				$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
+				$resp = [
+					"code" 		=> "202",
+					"message"	=> $err['message']
+				];
 			}else{
 				$this->db->trans_commit();
-				$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
+				$resp = [
+					"code" 		=> "200",
+					"message"	=> "Data berhasil disimpan"
+				];
 			}
+			echo json_encode($resp);
 		/* }else{
 			$this->session->set_flashdata('message',validation_errors('<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>','</div>'));
 		} */
-		redirect('receiving');
+		// redirect('receiving');
 
 	}
 
@@ -128,6 +142,7 @@ class Receiving extends MY_Generator {
 			$stockku[$x]["stock_in"] = $detail[$x]['qty_unit'];
 			$stockku[$x]["stock_saldo"] = $detail[$x]['qty_unit'];
 			$stockku[$x]["total_price"] = $detail[$x]['price_total'];
+			$stockku[$x]["expired_date"] = $detail[$x]['expired_date'];
 			$this->db->insert("newfarmasi.stock_fifo",$stockku[$x]);
 			$sukses=true;
 		}
@@ -163,6 +178,7 @@ class Receiving extends MY_Generator {
 			$stockku[$x]["stock_in"] = $detail[$x]['qty_unit'];
 			$stockku[$x]["stock_saldo"] = $detail[$x]['qty_unit'];
 			$stockku[$x]["total_price"] = $detail[$x]['price_total'];
+			$stockku[$x]["expired_date"] = $detail[$x]['expired_date'];
 			$this->db->insert("newfarmasi.stock_fifo",$stockku[$x]);
 		
 			$sukses=true;
@@ -278,7 +294,7 @@ class Receiving extends MY_Generator {
 	{
 		$data['model'] = $this->m_receiving->rules();
 		$data['norec'] = generate_code_transaksi([
-			"text"	=> "R/PBF/NOMOR/".date("d.m.Y"),
+			"text"	=> "REC/PBF/NOMOR/".date("d.m.Y"),
 			"table"	=> "newfarmasi.receiving",
 			"column"	=> "receiver_num",
 			"delimiter" => "/",
@@ -293,7 +309,7 @@ class Receiving extends MY_Generator {
 	{
 		$data['model'] = $this->m_receiving->rules();
 		$data['norec'] = generate_code_transaksi([
-			"text"	=> "R/HIBAH/NOMOR/".date("d.m.Y"),
+			"text"	=> "REC/HIBAH/NOMOR/".date("d.m.Y"),
 			"table"	=> "newfarmasi.receiving",
 			"column"	=> "receiver_num",
 			"delimiter" => "/",

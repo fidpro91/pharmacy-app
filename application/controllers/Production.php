@@ -27,21 +27,24 @@ class Production extends MY_Generator {
 			$input['user_id'] 					= $this->session->user_id;
 			$input['production_status'] 		= '0';
 			$this->form_validation->set_data($input);
+			$this->db->trans_begin();
 			if ($this->m_production->validation()) {
 				
 			if ($data['production_id']) {
-				$this->db->where('production_id',$data['production_id'])->update('farmasi.production',$input);
+				$this->db->where('production_id',$data['production_id'])->update('newfarmasi.production',$input);
 			}else{
-				$this->db->insert('farmasi.production',$input);
-				$data['production_id'] = $this->db->insert_id();
+				$this->db->insert('newfarmasi.production',$input);
+				$data['production_id'] = $this->db->query("select currval('farmasi.production_production_id_seq') as id")->row('id');
 			}
-			//$produk=$this->insert_produk($data);
+			$produk=$this->insert_produk($data);
 			$hasil=$this->insert_hasil($data); 
 			
 			$err = $this->db->error();
 			if ($err['message'] && $produk==false && $hasil==false) {
+				$this->db->trans_rollback();//rolback membatalkan semua query
 				$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
 			}else{
+				$this->db->trans_commit();
 				$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
 			}
 		}else{
@@ -63,7 +66,7 @@ class Production extends MY_Generator {
 				$detail[$x][$r] = isset($value[$r])?$value[$r]:null; 
 			}
 			$detail[$x]['production_id'] 	= $data['production_id'];
-			$this->db->insert("farmasi.production_indetail",$detail[$x]);
+			$this->db->insert("newfarmasi.production_indetail",$detail[$x]);
 		$sukses=true;
 		}
 	}
@@ -79,7 +82,7 @@ class Production extends MY_Generator {
 				$detail[$x][$r] = isset($value[$r])?$value[$r]:null; 
 			}
 			$detail[$x]['production_id'] 	= $data['production_id'];
-			$this->db->insert("farmasi.production_outdetail",$detail[$x]);
+			$this->db->insert("newfarmasi.production_outdetail",$detail[$x]);
 		$sukses=true;
 		}
 	}
@@ -117,14 +120,24 @@ class Production extends MY_Generator {
 
 	public function find_one($id)
 	{
-		$data = $this->db->where('production_id',$id)->get("farmasi.production")->row();
+		$data = $this->db->where('production_id',$id)->get("newfarmasi.production")->row();
+		$data->produk = $this->db->join("admin.ms_item mi","mi.item_id=p.item_id")
+								  ->select('COALESCE(p.item_price::numeric,0) as item_price ,mi.item_id,mi.item_package AS unit_pack,mi.item_name AS label_item_id,
+								  mi.item_code,mi.item_unitofitem AS item_unit,qty_item')
+								  ->get_where("newfarmasi.production_indetail p",["p.production_id"=>$id])
+								  ->result();
+		$data->hasil = $this->db->join("admin.ms_item mi","mi.item_id=p.item_id")
+								->select("COALESCE(p.item_price::numeric,0) as item_price,mi.item_id,mi.item_package AS unit_pack,mi.item_name AS label_item_id,
+											mi.item_code,mi.item_unitofitem AS item_unit,qty_item")
+								->get_where("newfarmasi.production_outdetail p",["p.production_id"=>$id])
+								->result();
 
 		echo json_encode($data);
 	}
 
 	public function delete_row($id)
 	{
-		$this->db->where('production_id',$id)->delete("farmasi.production");
+		$this->db->where('production_id',$id)->delete("newfarmasi.production");
 		$resp = array();
 		if ($this->db->affected_rows()) {
 			$resp['message'] = 'Data berhasil dihapus';
@@ -139,7 +152,7 @@ class Production extends MY_Generator {
 	{
 		$resp = array();
 		foreach ($this->input->post('data') as $key => $value) {
-			$this->db->where('production_id',$value)->delete("farmasi.production");
+			$this->db->where('production_id',$value)->delete("newfarmasi.production");
 			$err = $this->db->error();
 			if ($err['message']) {
 				$resp['message'] .= $err['message']."\n";
@@ -164,6 +177,7 @@ class Production extends MY_Generator {
 					"type" => 'autocomplete',
 					"width" => '40%',
 				];
+			
 			}elseif($value == "stok"){
 				$row[] = [
 					"id" => $value,
@@ -190,9 +204,7 @@ class Production extends MY_Generator {
 					"label" => ucwords(str_replace('_', ' ', $value)),
 					"type" => 'text'
 				];
-			}
-			
-			
+			}			
 		}
 		echo json_encode($row);
 	}
@@ -210,24 +222,13 @@ class Production extends MY_Generator {
 					"type" => 'autocomplete',
 					"width" => '40%',
 				];			
-			}elseif($value == "item_price"){
-				$row[] = [
-					"id" => $value,
-					"label" => ucwords(str_replace('_', ' ', $value)),
-					"type" => 'text',
-					"width" => ($value=='item_price')?'18%':'14%',
-					"attr"=>[
-						"readonly"=>'readonly'
-					]
-				];
 			}else{
 				$row[] = [
 					"id" => $value,
 					"label" => ucwords(str_replace('_', ' ', $value)),
 					"type" => 'text'
 				];
-			}
-			
+			}	
 			
 		}
 		echo json_encode($row); //print_r($row);
@@ -237,18 +238,19 @@ class Production extends MY_Generator {
 	{
 		$term = $this->input->get('term',true); 
 		$this->load->model('m_stock_fifo');
-		$where = " AND lower(mi.item_name) like lower('%$term%') AND sf.stock_saldo > 0 
+		$where = " AND lower(mi.item_name) like lower('%$term%') AND sf.stock_summary > 0 
 				   AND sf.own_id = '$own_id' AND sf.unit_id='$unit_id'";
 		echo json_encode($this->m_stock_fifo->get_stock_item($where));
 	}
-
-	public function get_item_hasil($own_id,$unit_id)
+	public function get_item_hasil()
 	{
-		$term = $this->input->get('term',true);
-		$this->load->model('m_stock_fifo');
-		$where = " AND lower(mi.item_name) like lower('%$term%') AND sf.stock_saldo > 0 
-				   AND sf.own_id = '$own_id' AND sf.unit_id='$unit_id'";
-		echo json_encode($this->m_stock_fifo->get_stock_item($where));
+		$term = $this->input->get('term',true); 
+		
+		$where = " AND lower(mi.item_name) like lower('%$term%') and classification_id in (1,175,162)";
+		$data=$this->db->query("SELECT mi.item_id,mi.item_code,mi.item_name as value from farmasi.v_obat mi				
+				where 0=0 $where")->result();
+	
+		echo json_encode($data);
 	}
 
 	public function show_form()
@@ -256,7 +258,7 @@ class Production extends MY_Generator {
 		$data['model'] = $this->m_production->rules();
 		$data['norec'] = generate_code_transaksi([
 			"text"	=> "PRO/NOMOR/".date("d.m.Y"),
-			"table"	=> "farmasi.production",
+			"table"	=> "newfarmasi.production",
 			"column"	=> "production_no",
 			"delimiter" => "/",
 			"number"	=> "2",

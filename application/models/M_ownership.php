@@ -59,7 +59,7 @@ class M_ownership extends CI_Model {
 		return $this->form_validation->run();
 	}
 
-	public function get_ownership($where)
+	public function get_ownership($where=[0=>0])
 	{
 		return $this->db->get_where("farmasi.ownership",$where)->result();
 	}

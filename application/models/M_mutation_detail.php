@@ -36,10 +36,11 @@ class M_mutation_detail extends CI_Model {
 	{
 		$col = [
 				"item_id",
+				"qty_send",
 				"stock_unit",
+				"expired_date",
 				"unit_pack",
-				"item_unit",
-				"qty_send"
+				"item_unit"
 			];
 		return $col;
 	}
@@ -62,11 +63,11 @@ class M_mutation_detail extends CI_Model {
 	{
 		$col = [
 				"item_id",
+				"qty_send",
 				"stock_unit",
 				"unit_pack",
 				"item_unit",
 				"qty_request",
-				"qty_send"
 			];
 		return $col;
 	}
@@ -82,6 +83,7 @@ class M_mutation_detail extends CI_Model {
 					"stock_unit" => "trim|integer",
 					"is_approved" => "trim",
 					"is_usage" => "trim",
+					"expired_date" => "trim",
 
 				];
 		return $data;

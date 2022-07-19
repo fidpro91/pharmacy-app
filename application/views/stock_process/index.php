@@ -1,58 +1,11 @@
-<!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-      <h1>
-        <?=ucwords('Stock Process')?>
-      </h1>
-      <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li><a href="#">Layout</a></li>
-        <li class="active">Fixed</li>
-      </ol>
-    </section>
-    <!-- Main content -->
-    <section class="content">
-      <!-- Default box -->
-      <div class="box">
-        <?=$this->session->flashdata('message')?>
-        <div class="box-header with-border">
-          <h3 class="box-title">Form Stock Process</h3>
-          
-        </div>
+<div class="col-md-3">
+  <?=form_hidden("item_id")?>
+<?=create_inputDaterange("tgl_transaksi",["locale"=>["format"=>"YYYY-MM-DD","separator"=>"/"]],"required")?>
+</div>
+<div class="col-md-9">
+<?=create_table("tb_stock_process","M_stock_process",["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
+</div>
 
-        <div class="panel-body" id="data_ms_siswa">
-      <div class="row">
-      <div class="col-md-2" id="unit">
-          <?= create_select2([
-                  "attr" => ["name" => "filter_kelas=filter unit", "id" => "filter_kelas", "class" => "form-control", 'required' => true],
-                  "model" => [
-                          "m_ms_unit" => "get_ms_unit",
-                          "column" => ["unit_id", "unit_name"]
-                  ],
-          ]) ?>
-       </div>
-       <div class="col-md-2" id="tgl">
-       <?=create_inputDaterange("tgl_transaksi",["locale"=>["format"=>"YYYY-MM-DD","separator"=>"/"]],"required")?>
-       </div>
-                </div>
-              </div>
-        <div class="box-body" id="form_stock_process" style="display: none;">
-        </div>       
-        <div class="box-body" id="data_stock_process">
-          <?=create_table("tb_stock_process","M_stock_process",["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
-        </div>
-        <div class="box-footer">
-          <button class="btn btn-danger" id="btn-deleteChecked"><i class="fa fa-trash"></i> Delete</button>
-        </div>
-        <!-- /.box-footer-->
-      </div>
-      <!-- /.box -->
-
-    </section>
-    <!-- /.content -->
-  </div>
-  <!-- /.content-wrapper -->
 <script type="text/javascript">
     var table;
     $(document).ready(function() {
@@ -90,7 +43,9 @@
                 "url": "<?php echo site_url('stock_process/get_data')?>",
                 "type": "POST",
                 "data": function(f) {        
-                f.unit = $("#filter_kelas").val();
+                f.unit = $("#unit_id_depo").val();
+                f.own_id = $("#kempilikan_id").val();
+                f.item_id = $("#item_id").val();
                 f.tgl = $("#tgl_transaksi").val();
             }
             },
@@ -111,7 +66,7 @@
                }
             }], 
         });
-        $("#filter_kelas,#tgl_transaksi").change(() => {
+        $("#filter_kelas,#tgl_transaksi,#kempilikan_id").change(() => {
       table.draw();
     });
     });

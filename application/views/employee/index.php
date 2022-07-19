@@ -3,7 +3,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        <?=ucwords('Sale Return')?>
+        <?=ucwords('Employee')?>
       </h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -17,18 +17,16 @@
       <div class="box">
         <?=$this->session->flashdata('message')?>
         <div class="box-header with-border">
-          <div class="box-tools pull-left">
-            <?= form_dropdown("unit_id_depo", $unit, '', 'class="form-control select2" id="unit_id_depo"') ?>
-          </div>
+          <h3 class="box-title">Form Employee</h3>
           <div class="box-tools pull-right">
             <button type="button" id="btn-add" class="btn btn-primary">
-              <i class="fa fa-edit "></i> New</button>
+              <i class="fa fa-plus"></i> Add</button>
           </div>
         </div>
-        <div class="box-body" id="form_sale_return" style="display: none;">
+        <div class="box-body" id="form_employee" style="display: none;">
         </div>
-        <div class="box-body" id="data_sale_return">
-          <?=create_table("tb_sale_return","M_sale_return",["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
+        <div class="box-body" id="data_employee">
+          <?=create_table("tb_employee","M_employee",["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
         </div>
         <div class="box-footer">
           <button class="btn btn-danger" id="btn-deleteChecked"><i class="fa fa-trash"></i> Delete</button>
@@ -44,18 +42,14 @@
 <script type="text/javascript">
     var table;
     $(document).ready(function() {
-      $("#form_sale_return").load("sale_return/show_form");
-        table = $('#tb_sale_return').DataTable({ 
+        table = $('#tb_employee').DataTable({ 
             "processing": true, 
             "serverSide": true, 
             "order": [], 
             "scrollX": true,
             "ajax": {
-                "url": "<?php echo site_url('sale_return/get_data')?>",
-                "type": "POST",
-                "data" : function (f) {
-                    f.unit_id = $("#unit_id_depo").val();
-                  }
+                "url": "<?php echo site_url('employee/get_data')?>",
+                "type": "POST"
             },
             'columnDefs': [
             {
@@ -71,19 +65,15 @@
                }
             }], 
         });
-
-        $("#unit_id_depo").change(() => {
-          table.draw();
-        });
     });
     $("#btn-add").click(function() {
-      $("#form_sale_return").show();
-      $("#form_sale_return").load("sale_return/show_form");
+      $("#form_employee").show();
+      $("#form_employee").load("employee/show_form");
     });
     function set_val(id) {
-      $("#form_sale_return").show();
-      $.get('sale_return/find_one/'+id,(data)=>{
-          $("#form_sale_return").load("sale_return/show_form",()=>{
+      $("#form_employee").show();
+      $.get('employee/find_one/'+id,(data)=>{
+          $("#form_employee").load("employee/show_form",()=>{
             $.each(data,(ind,obj)=>{
                 $("#"+ind).val(obj);
             });
@@ -93,7 +83,7 @@
 
     function deleteRow(id) {
       if (confirm("Anda yakin akan menghapus data ini?")) {
-          $.get('sale_return/delete_row/'+id,(data)=>{
+          $.get('employee/delete_row/'+id,(data)=>{
             alert(data.message);
             location.reload();
         },'json');
@@ -102,15 +92,15 @@
 
     $("#checkAll").click(()=>{
       if ($("#checkAll").is(':checked')) {
-          $("#tb_sale_return input[type='checkbox']").attr("checked",true);
+          $("#tb_employee input[type='checkbox']").attr("checked",true);
       }else{
-          $("#tb_sale_return input[type='checkbox']").attr("checked",false);
+          $("#tb_employee input[type='checkbox']").attr("checked",false);
       }
     });
 
     $("#btn-deleteChecked").click(function(event){
         event.preventDefault();
-        var searchIDs = $("#tb_sale_return input:checkbox:checked").map(function(){
+        var searchIDs = $("#tb_employee input:checkbox:checked").map(function(){
               return $(this).val();
           }).toArray();
         if (searchIDs.length == 0) {
@@ -118,7 +108,7 @@
           return false;
         }
         if (confirm("Anda yakin akan menghapus data ini?")) {
-          $.post('sale_return/delete_multi',{data:searchIDs},(resp)=>{
+          $.post('employee/delete_multi',{data:searchIDs},(resp)=>{
             alert(resp.message);
             location.reload();
           },'json');

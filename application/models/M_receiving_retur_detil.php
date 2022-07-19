@@ -44,6 +44,7 @@ class M_receiving_retur_detil extends CI_Model {
 				"rrd_note",
 				"rrd_price",
 				"qty_terima",
+				"stock_saldo",
 				"supplier",
 				"id_penerimaan",
 			];

@@ -84,7 +84,7 @@
                 $("#"+ind).val(obj);
             });
           });
-          mutationDetail = data.detail;
+          mutationDetail = data.detail; 
         }
       });
     }
