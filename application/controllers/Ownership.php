@@ -11,7 +11,7 @@ class Ownership extends MY_Generator {
 
 	public function index()
 	{
-		$this->theme('ownership/index');
+		$this->theme('ownership/index','',get_class($this));
 	}
 
 	public function save()

@@ -30,7 +30,28 @@
       <div class="box-body" id="form_receiving" style="display: none;">
       </div>
       <div class="box-body" id="data_receiving">
-        <?= create_table("tb_receiving", "M_receiving", ["class" => "table table-bordered", "style" => "width:100% !important;"]) ?>
+        <div class="col-md-3">
+            <?=create_inputDate("filter_bulan=bulan penerimaan",[
+                "format"		=>"mm-yyyy",
+                "viewMode"		=> "year",
+                "minViewMode"	=> "year",
+                "autoclose"		=>true],[
+                  "value"     => date('m-Y'),
+                  "readonly"  => true
+                ])
+            ?>
+        </div>
+        <div class="col-md-3">
+           <?= create_select([
+              "attr" => ["name" => "kepemilikan_id=Kepemilikan", "id" => "kepemilikan_id", "class" => "form-control"],
+              "model"=>["m_ownership" => ["get_ownership",[0]],
+              "column"  => ["own_id","own_name"]
+            ],
+            ]) ?>
+        </div>
+        <div class="col-md-12">
+          <?= create_table("tb_receiving", "M_receiving", ["class" => "table table-bordered", "style" => "width:100% !important;"]) ?>
+        </div>
       </div>
       <div class="box-footer">
         <button class="btn btn-danger" id="btn-deleteChecked"><i class="fa fa-trash"></i> Delete</button>
@@ -43,6 +64,23 @@
   <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
+<?= modal_open("modal_edit", "Update Header") ?>
+<?= modal_close([
+  form_button([
+      "name"      => "save-update",
+      "id"        => "save-update",
+      "class"     => "btn btn-primary",
+      "type"      => "button",
+      "content"   => "Simpan"
+  ]),
+  form_button([
+    "name"      => "close-update",
+    "id"        => "close-update",
+    "class"     => "btn btn-danger",
+    "type"      => "button",
+    "content"   => "Cancel"
+])
+]) ?>
 <script type="text/javascript">
   var table;
   var dataHibah=null;
@@ -54,7 +92,11 @@
       "scrollX": true,
       "ajax": {
         "url": "<?php echo site_url('receiving/get_data') ?>",
-        "type": "POST"
+        "type": "POST",
+        "data": function(f) {        
+            f.bulan = $("#filter_bulan").val();
+            f.own_id = $("#kepemilikan_id").val();
+        }
       },
       'columnDefs': [{
           'targets': [0, 1, -1],
@@ -70,6 +112,10 @@
         }
       ],
     });
+
+    $("#filter_bulan, #kepemilikan_id").change(() => {
+			table.draw();
+		});
   });
 
   $("#btn-add-pembelian").click(function() {
@@ -84,13 +130,17 @@
 
   function set_val(id) {
     $("#form_receiving").show();
-    $.get('receiving/find_one/' + id, (data) => {
+    $.get('receiving/find_one/' + id+"/update", (data) => {
+      if (typeof(data.message) != "undefined" && data.message !== null) {
+          alert(data.message);
+          return false;
+      }
       if (data.rec_type == '0') {
         $("#form_receiving").load("receiving/show_form", () => {
           $.each(data, (ind, obj) => {
             $("#" + ind).val(obj);
           });
-          $(".select2").trigger("change");
+          $("select[class*='select2']").trigger("change");
           $.get("receiving/find_receiving_detail/html/" + id, function(resp) {
             $("#list_item").html(resp);
           }, "html");
@@ -100,7 +150,7 @@
           $.each(data, (ind, obj) => {
             $("#" + ind).val(obj);
           });
-          $(".select2").trigger("change");
+          $("select[class*='select2']").trigger("change");
           $.ajax({
               'async': false,
               'type': "GET",
@@ -114,6 +164,18 @@
         });
       }
     }, 'json');
+  }
+
+  function update_header(id) {
+    $("#modal_edit").modal('show');
+    $("#modal_edit").find(".modal-body").load("receiving/show_form_update/"+id,(a)=>{
+      $.get("receiving/find_one/" + id, function(resp) {
+        $.each(resp, (ind, obj) => {
+            $("#modal_edit").find("#" + ind).val(obj);
+        });
+        $(".select2").trigger("change");
+      }, "json");
+    });
   }
 
   function deleteRow(id) {
@@ -151,4 +213,5 @@
       }, 'json');
     }
   });
+  <?=$this->config->item('footerJS')?>
 </script>

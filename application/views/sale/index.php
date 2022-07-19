@@ -26,11 +26,34 @@
           </div>
             <div class="box-tools pull-right">
             <button type="button" id="btn-add" class="btn btn-primary">
-              <i class="fa fa-plus"></i> Add</button>
+              <i class="fa fa-plus"></i> Add[F1]</button>
           </div>
         </div>
 		  <div class="box-body">
+        <div class="col-md-3">
+              <?=create_inputDate("filter_bulan=bulan penjualan",[
+                  "format"		=>"mm-yyyy",
+                  "viewMode"		=> "year",
+                  "minViewMode"	=> "year",
+                  "autoclose"		=>true],[
+                    "value"     => date('m-Y'),
+                    "readonly"  => true
+                  ])
+              ?>
+          </div>
+          <div class="col-md-3">
+                <?= create_select([
+                    "attr"         => ["name" => "filter_pembayaran=Cara Bayar", "id" => "filter_pembayaran", "class" => "form-control"],
+                    "option"    => [
+                        ["id" => "0", "text" => "Tunai"], ["id" => "1", "text" => "Kredit"]
+                    ]
+                ]) ?>
+          </div>
+          <div>
+          <div class="col-md-12">
           <?=create_table("tb_sale","M_sale",["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
+          </div>
+          </div>
 		  </div>
         <div class="box-footer">
           <button class="btn btn-danger" id="btn-deleteChecked"><i class="fa fa-trash"></i> Delete</button>
@@ -45,10 +68,15 @@
   <!-- /.content-wrapper -->
 <?= modal_open("modal_pasien", "Biodata pasien","modal-lg") ?>
 <?= modal_close() ?>
+<script src="<?=base_url("assets/plugins/jquery.hotkeys-master")?>/jquery.hotkeys.js"></script>
 <script type="text/javascript">
     var table;
     $(document).ready(function() {
       // $("#form_sale").load("sale/show_form");
+      $(document).bind('keydown', 'f1', function assets() {
+          $("#btn-add").click();
+          return false;
+      });
         table = $('#tb_sale').DataTable({
             "processing": true,
             "serverSide": true,
@@ -59,6 +87,8 @@
                 "type": "POST",
                 "data" : function (f) {
                     f.unit_id = $("#unit_id_depo").val();
+                    f.bulan = $("#filter_bulan").val();
+                    f.sale_type = $("#filter_pembayaran").val();
                   }
             },
             'columnDefs': [
@@ -71,14 +101,20 @@
                'targets': 0,
                'className': 'dt-body-center',
                'render': function (data, type, full, meta){
-                   return '<input type="checkbox" name="id[]" value="' + $('<div/>').text(data).html() + '">';
+                    var mati = "";
+                    if (full[10] === '') {
+                        mati = "disabled";
+                    }
+                   return '<input '+mati+' type="checkbox" name="id[]" value="' + $('<div/>').text(data).html() + '">';
                }
             }],
         });
     });
-    $("#unit_id_depo").change(() => {
+
+    $("#unit_id_depo, #sale_type, #filter_pembayaran").change(() => {
 			table.draw();
 		});
+
     $("#btn-add").click(function() {
       $("#form_sale").show();
       $("#data_sale").hide();
@@ -128,4 +164,5 @@
           },'json');
         }
     });
+    <?= $this->config->item('footerJS') ?>
 </script>

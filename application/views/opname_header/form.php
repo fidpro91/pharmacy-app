@@ -5,8 +5,14 @@
 				<?=create_inputDate("opname_date",[
 					"format"=>"yyyy-mm-dd",
 					"autoclose"=>"true"
+				],[
+					"value" 	=> date('Y-m-d'),
+					"readonly"	=> true
 				])?>
-				<?=create_input("opname_no")?>
+				<?=create_input("opname_no",[
+					"value" => $noOpname,
+					"readonly"	=> true
+				])?>
 				<?=create_select2([
 					"attr" =>["name"=>"unit_id=Unit","id"=>"unit_id","class"=>"form-control"],
 					"model"=>["m_ms_unit" => ["get_ms_unit",["0"=>'0']],

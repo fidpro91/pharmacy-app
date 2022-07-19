@@ -11,7 +11,7 @@ class Employee extends MY_Generator {
 
 	public function index()
 	{
-		$this->theme('employee/index');
+		$this->theme('employee/index','',get_class($this));
 	}
 
 	public function save()

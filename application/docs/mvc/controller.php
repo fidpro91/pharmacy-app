@@ -11,7 +11,7 @@ class $classNameHeader extends MY_Generator {
 
 	public function index()
 	{
-		$this->theme('$className/index');
+		$this->theme('$className/index','',get_class($this));
 	}
 
 	public function save()

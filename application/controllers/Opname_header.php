@@ -15,7 +15,12 @@ class Opname_header extends MY_Generator {
 
 	public function index()
 	{
-		$this->theme('opname_header/index');
+		$this->load->model("m_ms_unit");
+		foreach ($this->m_ms_unit->get_ms_unit() as $key => $value) {
+			$kat[$value->unit_id] = $value->unit_name;
+		}
+		$data['unit'] = $kat;
+		$this->theme('opname_header/index',$data,get_class($this));
 	}
 
 	public function show_multiRows()
@@ -135,7 +140,8 @@ class Opname_header extends MY_Generator {
 		$this->load->library('datatable');
 		$attr 	= $this->input->post();
 		$fields = $this->m_opname_header->get_column();
-		$data 	= $this->datatable->get_data($fields,$filter = array(),'m_opname_header',$attr);
+		$filter["unit_id"] = $attr["unit_id"];
+		$data 	= $this->datatable->get_data($fields,$filter,'m_opname_header',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
         foreach ($data['dataku'] as $index=>$row) { 
@@ -208,9 +214,24 @@ class Opname_header extends MY_Generator {
 		echo json_encode($resp);
 	}
 
-	public function show_form()
+	public function show_form($unit_id=null)
 	{
 		$data['model'] = $this->m_opname_header->rules();
+		$data['noOpname'] = $this->get_no_opname($unit_id);
 		$this->load->view("opname_header/form",$data);
+	}
+
+	public function get_no_opname($id)
+	{
+		$nickName = $this->db->get_where("admin.ms_unit",["unit_id"=>$id])->row("unit_nickname");
+		return generate_code_transaksi([
+			"text"	=> "OPNAME/$nickName/NOMOR/".date("d.m.Y"),
+			"table"	=> "newfarmasi.opname_header",
+			"column"	=> "opname_no",
+			"delimiter" => "/",
+			"number"	=> "3",
+			"lpad"		=> "4",
+			"filter"	=> " And unit_id = '$id'"
+		]);
 	}
 }

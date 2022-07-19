@@ -10,7 +10,6 @@ class Stock_process extends MY_Generator {
 						 ->lib_datatableExt()
 					     ->lib_daterange();
 		$this->load->model('m_stock_process');
-		
 	}
 
 	public function index()

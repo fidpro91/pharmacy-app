@@ -5,7 +5,7 @@
 	</div>
 	<div class="col-md-12" style="text-align:center ;">
         <button class="btn btn-primary" id="btn-save-non_racikan" type="button">Save</button>
-        <button class="btn btn-danger" type="button" id="btn-close">Close</button>
+        <button class="btn btn-danger" type="button" id="btn-close" data-dismiss="modal" aria-label="Close">Close</button>
 	</div>
 </div>
 
@@ -38,6 +38,17 @@
 				$(this).find('.price_total').val(total_item);
 				$(this).find('.price_total').inputmask("IDR");
         	});
+			$(this).find("input").on('keyup', null, 'ctrl+a', function(e){
+				$(".btnplus_list_obat_nonracikan").click();
+				$(".autocom_item_id:last").focus();
+				e.stopImmediatePropagation();
+				return false;
+			}); 
+			/* $(this).find("input").on('keyup', null, 'Ctrl+Shift+s', function(e){
+				$("#btn-save-non_racikan").click();
+				e.stopImmediatePropagation();
+				return false;
+			}); */
 		});
 
 		$("#btn-save-non_racikan").click(()=>{
@@ -60,5 +71,6 @@
 		});
 
 	});
+	
 	<?=$this->config->item('footerJS')?>
 </script>

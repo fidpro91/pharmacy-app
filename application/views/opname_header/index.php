@@ -17,7 +17,9 @@
       <div class="box">
         <?=$this->session->flashdata('message')?>
         <div class="box-header with-border">
-          <h3 class="box-title">Form Opname Header</h3>
+          <div class="box-tools pull-left">
+            <?= form_dropdown("unit_id_depo", $unit, '', 'class="form-control select2" id="unit_id_depo"') ?>
+          </div>
           <div class="box-tools pull-right">
             <button type="button" id="btn-add" class="btn btn-primary">
               <i class="fa fa-plus"></i> Add</button>
@@ -50,7 +52,10 @@
             "scrollX": true,
             "ajax": {
                 "url": "<?php echo site_url('opname_header/get_data')?>",
-                "type": "POST"
+                "type": "POST",
+                "data" : function (f) {
+                    f.unit_id = $("#unit_id_depo").val();
+                  }
             },
             'columnDefs': [
             {
@@ -66,10 +71,14 @@
                }
             }], 
         });
+        $("#unit_id_depo").change(() => {
+          table.draw();
+        });
     });
+
     $("#btn-add").click(function() {
       $("#form_opname_header").show();
-      $("#form_opname_header").load("opname_header/show_form");
+      $("#form_opname_header").load("opname_header/show_form/"+$("#unit_id_depo").val());
     });
     function set_val(id) {
       $("#form_opname_header").show();

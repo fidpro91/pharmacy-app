@@ -26,7 +26,28 @@
         <div class="box-body" id="form_mutation" style="display: none;">
         </div>
         <div class="box-body" id="data_mutation">
-          <?=create_table("tb_mutation","M_mutation",["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
+          <div class="col-md-3">
+              <?=create_inputDate("filter_bulan=bulan mutasi",[
+                  "format"		=>"mm-yyyy",
+                  "viewMode"		=> "year",
+                  "minViewMode"	=> "year",
+                  "autoclose"		=>true],[
+                    "value"     => date('m-Y'),
+                    "readonly"  => true
+                  ])
+              ?>
+          </div>
+          <div class="col-md-3">
+            <?= create_select2([
+                "attr" => ["name" => "filter_unit=Unit Minta", "id" => "filter_unit", "class" => "form-control"],
+                "model"=>["m_ms_unit" => ["get_ms_unit_all",[0]],
+                "column"  => ["unit_id","unit_name"]
+              ],
+              ]) ?>
+          </div>
+          <div class="col-md-12">
+            <?=create_table("tb_mutation","M_mutation",["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
+          </div>
         </div>
         <div class="box-footer">
           <button class="btn btn-danger" id="btn-deleteChecked"><i class="fa fa-trash"></i> Delete</button>
@@ -50,7 +71,11 @@
             "scrollX": true,
             "ajax": {
                 "url": "<?php echo site_url('mutation/get_data')?>",
-                "type": "POST"
+                "type": "POST",
+                "data": function(f) {        
+                    f.unit = $("#filter_unit").val();
+                    f.bulan = $("#filter_bulan").val();
+                }
             },
             'columnDefs': [
             {
@@ -58,13 +83,25 @@
                'searchable': false,
                'orderable': false,
              },
+             {
+              'targets': [-2],
+               'visible': false,
+             },
             {
                'targets': 0,
                'className': 'dt-body-center',
                'render': function (data, type, full, meta){
-                   return '<input type="checkbox" name="id[]" value="' + $('<div/>').text(data).html() + '">';
+                    var mati = "";
+                    if (full[7] == '3') {
+                        mati = "disabled";
+                    }
+                   return '<input '+mati+' type="checkbox" name="id[]" value="' + $('<div/>').text(data).html() + '">';
                }
             }], 
+        });
+
+        $("#filter_bulan, #filter_unit").change(() => {
+          table.draw();
         });
     });
     $("#btn-add").click(function() {
@@ -122,4 +159,5 @@
           },'json');
         }
     });
+    <?= $this->config->item('footerJS') ?>
 </script>

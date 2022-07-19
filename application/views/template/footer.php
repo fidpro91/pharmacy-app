@@ -2,8 +2,7 @@
   <div class="pull-right hidden-xs">
     <b>Version</b> 1.0
   </div>
-  <strong>Copyright &copy; 2021 <a href="www.hosterweb.co.id">Hosterweb</a>.</strong> All rights
-  reserved.
+  <strong><?=FOOT_NOTE?>
 </footer>
 </div>
 <!-- ./wrapper -->
@@ -23,7 +22,6 @@
       currency: 'IDR',
     }).format(val);
   }
-
   
 function newexportaction(e, dt, button, config) {
     var self = this;

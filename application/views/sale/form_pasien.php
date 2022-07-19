@@ -30,14 +30,17 @@
                     "format" => "yyyy-mm-dd",
                     "autoclose" => "true"
                 ],[
-                    "readonly" => true,
+                    "readonly"  => true,
+                    "required"  => true,
                     "value"     => date('Y-m-d')
                 ]) ?>
-                <?= create_input("patient_norm") ?>
-                <?= create_input("patient_name") ?>
-                <!-- //<?= create_input("surety_id") ?> -->
+                <?= create_input("patient_norm",[
+                    "required"  => true,]) ?>
+                <?= create_input("patient_name",[
+                    "required"  => true,]) ?>
                 <?= create_select2([
-                    "attr" => ["name" => "surety_id=Penjamin", "id" => "surety_id", "class" => "form-control", "onchange" => "changeSurety()"],
+                    "attr" => ["name" => "surety_id=Penjamin", "id" => "surety_id", "class" => "form-control", "onchange" => "changeSurety()",
+                    "required"  => true],
                     "model" => [
                         "m_sale" => ["get_penjamin", ["0" => '0']],
                         "column"  => ["surety_id", "surety_name"]
@@ -86,12 +89,12 @@
                         "column" => ["unit_id", "unit_name"]
                     ],
                 ]) ?>
-                <?=create_textarea("alamat=Alamat Lengkap",["readonly" => true])?>
+                <?=create_textarea("alamat=Alamat Lengkap")?>
 
             </div>
             <div class="col-md-12" style="text-align:center ;">
-                <button class="btn btn-primary" id="btn-save-pasien" type="button">Save</button>
-                <button class="btn btn-danger" type="button" id="btn-close-pasien">Close</button>
+                <button class="btn btn-primary" id="btn-save-pasien" onclick="$('#form_pasien').submit()" type="button">Save</button>
+                <button class="btn btn-danger" type="button" id="btn-close-pasien" data-dismiss="modal" aria-label="Close">Close</button>
             </div>
         </div>
         <!-- /.box-footer-->
@@ -99,6 +102,19 @@
     <?= form_close() ?>
 </div>
 <script>
+    $(document).ready(()=>{
+        $(document).bind('keydown', 'f2', function assets() {
+            $("#btn-save-pasien").click();
+            return false;
+        });
+		let sess_px = JSON.parse('<?=$sess_px?>');
+        if (sess_px) {
+            $.each(sess_px.pasien,(ind,obj)=>{
+                $("#"+ind).val(obj).trigger('change');
+            });
+        }
+	});
+
     $("body").on("focus", "#patient_norm", function() {
         $(this).autocomplete({
             source: "<?php echo site_url('sale/get_no_rm/norm'); ?>/"+$("#tipe_patient").val(),
@@ -204,32 +220,32 @@
         }
 
     }
-    $("#btn-save-pasien").click(() => {
-        $.ajax({
-            'async': false,
-            'type': "post",
-            'data': $("#form_pasien").serialize(),
-            'url': "sale/set_data_pasien",
-            'dataType' : 'json',
-            'success': function(data) {
-                if (data.code !== '200') {
-                    alert(data.message);
-                    return false;
+    $('#form_pasien').on("submit",function(){
+		$(this).data("validator").settings.submitHandler = function (form) {
+            $.ajax({
+                'type': "post",
+                'data': $(form).serialize(),
+                'url': "sale/set_data_pasien",
+                'dataType' : 'json',
+                'success': function(data) {
+                    if (data.code !== '200') {
+                        alert(data.message);
+                        return false;
+                    }
+                    let profit = data.profit*100;
+                    $("#labelProfit").append('('+profit+'%)');
+                    $("#tno_rm").append(data.px_norm);
+                    $("#tpx_name").append(data.px_name+''); 
+                    $("#px_alamat").append(data.alamat); 
+                    $("#dokter_").append(data.dokter); 
+                    $("#surety_").append(data.surety);                
+                    $("#margin_profit").val(data.profit);
+                    $("#tno_rm").html($("#no_rm").val());
+                    $("#tpx_name").html($("#nama").val());
+                    $("#modal_pasien").modal('hide');
                 }
-                let profit = data.profit*100;
-                $("#labelProfit").append('('+profit+'%)');
-                $("#tno_rm").append(data.px_norm);
-                $("#tpx_name").append(data.px_name+''); 
-                $("#px_alamat").append(data.alamat); 
-                $("#dokter_").append(data.dokter); 
-                $("#surety_").append(data.surety);                
-                $("#margin_profit").val(data.profit);
-                $("#tno_rm").html($("#no_rm").val());
-                $("#tpx_name").html($("#nama").val());
-                $("#modal_pasien").modal('hide');
-            }
-        });
-    }
-    );
+            });
+        }
+    });
     <?= $this->config->item('footerJS') ?>
 </script>
