@@ -32,7 +32,7 @@
 
 		$("body").on("change", ".tb_list_obat_nonracikan", function() {
 			$('.tb_list_obat_nonracikan > tbody  > tr').each(function() {
-				const jumlah_barang = $(this).find(".sale_qty").val();
+				const jumlah_barang = $(this).find(".sale_qty").val();				
 				const harga_satuan = $(this).find(".sale_price").val();
 				const total_item = jumlah_barang * harga_satuan;
 				$(this).find('.price_total').val(total_item);

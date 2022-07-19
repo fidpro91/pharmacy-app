@@ -138,7 +138,7 @@ class Sale extends MY_Generator {
 
 	public function find_one($id)
 	{
-		$data = $this->db->where('sale_id',$id)->get("sale")->row();
+		$data = $this->db->where('sale_id',$id)->get("farmasi.sale")->row();
 
 		echo json_encode($data);
 	}
@@ -239,6 +239,7 @@ class Sale extends MY_Generator {
 					"width" => '35%',
 				];
 			}
+		
 			elseif($value == "sale_price"){
 				$row[] = [
 					"id" => $value,

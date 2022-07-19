@@ -54,7 +54,7 @@ class M_sale_detail extends CI_Model
 	{
 		$col = [
 			"item_id",
-			"sale_qty",
+			"sale_qty",			
 			"sale_price",
 			"dosis",
 			"price_total",
