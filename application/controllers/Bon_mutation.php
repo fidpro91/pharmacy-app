@@ -296,6 +296,30 @@ class Bon_mutation extends MY_Generator {
 	public function batal_terima()
 	{
 		$this->db->trans_begin();
+		$dataMutation = $this->db->join("newfarmasi.mutation_detail md","md.mutation_id=m.mutation_id")
+								->join("newfarmasi.stock_fifo sf","sf.mutation_detail_id=md.mutation_detil_id")
+								->get_where("newfarmasi.mutation m",[
+									"m.mutation_id" => $this->input->post("mutation_id")
+								]);
+		if ($dataMutation->num_rows()>0) {
+			$sukses=true;
+			foreach ($dataMutation->result() as $key => $value) {
+				if ($value->stock_saldo != $value->stock_in) {
+					$sukses=false;
+					break;
+				}
+			}
+			if (!$sukses) {
+				$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data Item Sudah Digunakan</div>');
+				redirect('bon_mutation');
+				exit();
+			}
+		}else{
+			$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data Item Belum Diterima</div>');
+			redirect('bon_mutation');
+			exit();
+		}
+
 		$this->db->where([
 			"mutation_id" => $this->input->post("mutation_id")
 		])->update("newfarmasi.mutation",[
@@ -322,7 +346,7 @@ class Bon_mutation extends MY_Generator {
 
 			$this->update_stock($dataku,$value->qty_send,"minus",["mutation_detail_id"=>$value->mutation_detil_id]);
 			$dataku["qty"] = $value->qty_send;
-			$dataku["trans_num"] = $value->mutation_no;
+			$dataku["trans_num"] = (!empty($value->mutation_no)?$value->mutation_no:$value->bon_no);
 			$dataku["trans_type"] = 3;
 			$this->insert_stock_process($dataku,"minus");
 		}

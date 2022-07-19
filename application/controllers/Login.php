@@ -5,7 +5,7 @@ class Login extends CI_Controller {
 
 	public function index()
 	{
-		$this->load->view('v_login');
+		$this->load->view('v_login_2');
 	}
 
 	public function cek_login()

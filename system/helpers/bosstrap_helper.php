@@ -113,14 +113,13 @@ function create_table($name,$modelName,$attr = array())
 					<th><input type="checkbox" name="select_all" value="1" id="checkAll"></th>
 					<th>NO</th>';
 	$CI =& get_instance();
-	if(is_array($modelName)){
-		foreach ($modelName as $key => $value) {
-			$CI->load->model($key,'modelku');
-			$header = $CI->modelku->{$value}();
-		}
+	if (is_array($modelName)) {
+		$CI->load->model($modelName['model']);
+		$model = $modelName['model'];
+		$header = $CI->$model->{$modelName['col']}();
 	}else{
-		$CI->load->model($modelName,'modelku');
-		$header = $CI->modelku->get_column();
+		$CI->load->model($modelName);
+		$header = $CI->$modelName->get_column();
 	}
 	foreach ($header as $key => $value) {
 		if (!is_array($value)) {
@@ -338,7 +337,7 @@ function create_select2($data)
 	}
 	$CI =& get_instance();
     $js = $CI->config->item('footerJS');
-    $js .= "\n$('#".$data['attr']['name']."').select2(".json_encode((isset($data['select2'])?$data['select2']:[])).")";
+    $js .= "\n$('#".$data['attr']['id']."').select2(".json_encode((isset($data['select2'])?$data['select2']:[])).")";
     $CI->config->set_item('footerJS',$js);
     return $txt;
 }

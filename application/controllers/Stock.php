@@ -28,32 +28,6 @@ class Stock extends MY_Generator {
 		$this->theme('stock/index',$data);
 	}
 
-	public function save()
-	{
-		$data = $this->input->post();
-		if ($this->m_stock->validation()) {
-			$input = [];
-			foreach ($this->m_stock->rules() as $key => $value) {
-				$input[$key] = $data[$key];
-			}
-			if ($data['id']) {
-				$this->db->where('id',$data['id'])->update('newfarmasi.stock',$input);
-			}else{
-				$this->db->insert('newfarmasi.stock',$input);
-			}
-			$err = $this->db->error();
-			if ($err['message']) {
-				$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
-			}else{
-				$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
-			}
-		}else{
-			$this->session->set_flashdata('message',validation_errors('<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>','</div>'));
-		}
-		redirect('stock');
-
-	}
-
 	public function get_data()
 	{
 		$this->load->library('datatable');
