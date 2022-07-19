@@ -57,6 +57,7 @@ class Sale extends MY_Generator {
 			$input['sale_total'] = $grandtotal+$embalase;
 			$input['embalase_item_sale'] = $embalase;
 			$input['sale_services'] = $totalService;
+			$input['sale_date'] = date('Y-m-d');
 
 			//insert into farmasi.sale
 			$this->db->insert("farmasi.sale",$input);
@@ -478,4 +479,3 @@ class Sale extends MY_Generator {
 		]);
 	}
 }
-?>
