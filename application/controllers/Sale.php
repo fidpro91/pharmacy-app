@@ -423,10 +423,11 @@ class Sale extends MY_Generator {
 	}
 
 	public function get_item($unit_id)
-	{
-		$term = $this->input->get('term');
+	{	
+		$term = $this->input->get('term'); 
 		$this->load->model('m_stock_fifo');
-		$where = " AND unit_id = '".$unit_id."' AND lower(mi.item_name) like lower('%$term%') AND sf.stock_summary > 0";
+		$where = " AND unit_id = '".$unit_id."' 
+				   AND lower(mi.item_name) like lower('%$term%') AND sf.stock_summary > 0";
 		echo json_encode($this->m_stock_fifo->get_stock_item($where));
 	}
 
