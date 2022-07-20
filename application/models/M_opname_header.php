@@ -5,7 +5,8 @@ class M_opname_header extends CI_Model {
 	public function get_data($sLimit,$sWhere,$sOrder,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).",opname_header_id as id_key  from newfarmasi.opname_header where 0=0 $sWhere $sOrder $sLimit
+				select ".implode(',', $aColumns).",opname_header_id as id_key  from newfarmasi.opname_header oh
+				join farmasi.ownership o on oh.own_id = o.own_id where 0=0 $sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
 	}
@@ -13,7 +14,8 @@ class M_opname_header extends CI_Model {
 	public function get_total($sWhere,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).",opname_header_id as id_key  from newfarmasi.opname_header where 0=0 $sWhere
+				select ".implode(',', $aColumns).",opname_header_id as id_key  from newfarmasi.opname_header oh
+				join farmasi.ownership o on oh.own_id = o.own_id where 0=0 $sWhere
 			")->num_rows();
 		return $data;
 	}
@@ -23,12 +25,10 @@ class M_opname_header extends CI_Model {
 		$col = [
 				//"opname_header_id",
 				"opname_no",
-				"opname_date",
-				"unit_id",
-				"own_id",
-				"user_id",
-				"opname_note",
-				"is_approved"
+				"opname_date",				
+				"own_name"=>["label"=>"Kepemilikan"],				
+				"opname_note"=>["label"=>"Keterangan"]
+				
 			];
 		return $col;
 	}

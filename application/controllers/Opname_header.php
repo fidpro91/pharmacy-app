@@ -142,6 +142,10 @@ class Opname_header extends MY_Generator {
 		$attr 	= $this->input->post();
 		$fields = $this->m_opname_header->get_column();
 		$filter["unit_id"] = $attr["unit_id"];
+		$filter['custom']="to_char(opname_date,'MM-YYYY') = '".$attr['bulan']."'";
+		if( $attr["own_id"] !=''){			
+			$filter = array_merge($filter, ["oh.own_id" => $attr['own_id']]);
+		}
 		$data 	= $this->datatable->get_data($fields,$filter,'m_opname_header',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 

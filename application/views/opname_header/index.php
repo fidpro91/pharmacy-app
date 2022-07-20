@@ -20,6 +20,7 @@
           <div class="box-tools pull-left">
             <?= form_dropdown("unit_id_depo", $unit, '', 'class="form-control select2" id="unit_id_depo"') ?>
           </div>
+          
           <div class="box-tools pull-right">
             <button type="button" id="btn-add" class="btn btn-primary">
               <i class="fa fa-plus"></i> Add</button>
@@ -27,9 +28,31 @@
         </div>
         <div class="box-body" id="form_opname_header" style="display: none;">
         </div>
-        <div class="box-body" id="data_opname_header">
+        <div class="box-body" id="filter_date">
+          <div class="col-md-3">
+              <?=create_inputDate("filter_bulan=Filter Bulan",[
+                  "format"		=>"mm-yyyy",
+                  "viewMode"		=> "year",
+                  "minViewMode"	=> "year",
+                  "autoclose"		=>true],[
+                    "value"     => date('m-Y'),
+                    "readonly"  => true
+                  ])
+              ?>
+          </div>
+          <div class="col-md-3">
+          <?= create_select([
+                  "attr" => ["name" => "Kepem_id= Kepemilikan", "id" => "Kepem_id", "class" => "form-control", 'required' => true],
+                  "model" => [
+                          "m_ownership" => "get_ownership",
+                          "column" => ["own_id", "own_name"]
+                  ],
+          ]) ?>
+        </div>
+        <div class="col-md-12" id="data_opname_header">
           <?=create_table("tb_opname_header","M_opname_header",["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
         </div>
+         </div>
         <div class="box-footer">
           <button class="btn btn-danger" id="btn-deleteChecked"><i class="fa fa-trash"></i> Delete</button>
         </div>
@@ -55,6 +78,8 @@
                 "type": "POST",
                 "data" : function (f) {
                     f.unit_id = $("#unit_id_depo").val();
+                    f.bulan = $("#filter_bulan").val();
+                    f.own_id = $("#Kepem_id").val();
                   }
             },
             'columnDefs': [
@@ -71,7 +96,7 @@
                }
             }], 
         });
-        $("#unit_id_depo").change(() => {
+        $("#unit_id_depo,#filter_bulan,#Kepem_id").change(() => {
           table.draw();
         });
     });
@@ -127,4 +152,5 @@
           },'json');
         }
     });
+    <?= $this->config->item('footerJS')?>
 </script>
