@@ -41,7 +41,11 @@
         <div class="box-body" id="form_mutation" style="display: none;">        
         </div>        
         <div class="box-body" id="data_mutation">
-          <?=create_table("tb_mutation",["M_mutation"=>"get_column_bon"],["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
+          <?=create_table("tb_mutation",
+          [
+            "model" => "M_mutation",
+            "col"   => "get_column_bon"
+          ],["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
         </div>
       </div>
       <!-- /.box -->
