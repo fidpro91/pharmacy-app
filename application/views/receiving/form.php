@@ -38,7 +38,7 @@
 					<div class="col-md-6">
 						<?=create_select2([
 							"attr" =>["name"=>"receiver_unit=Unit penerima","id"=>"receiver_unit","class"=>"form-control"],
-							"model"=>["m_ms_unit" => ["get_ms_unit",["unit_id"=>'55']],
+							"model"=>["m_ms_unit" => ["get_ms_unit",			["employee_id"=>$this->session->employee_id]],
 											"column"  => ["unit_id","unit_name"]
 										]
 						])?>

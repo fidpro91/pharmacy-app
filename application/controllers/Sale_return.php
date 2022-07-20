@@ -19,7 +19,7 @@ class Sale_return extends MY_Generator {
 			'itemReturn'
 		]);
 		$this->load->model("m_ms_unit");
-		foreach ($this->m_ms_unit->get_ms_unit() as $key => $value) {
+		foreach ($this->m_ms_unit->get_ms_unit(["employee_id"=>$this->session->employee_id]) as $key => $value) {
 			$kat[$value->unit_id] = $value->unit_name;
 		}
 		$data['unit'] = $kat;

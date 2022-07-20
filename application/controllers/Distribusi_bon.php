@@ -219,9 +219,7 @@ class Distribusi_bon extends MY_Generator {
 		list($tgl1,$tgl2) = explode('/', $attr['tgl']); 
         $filter = [];	
 		$filter["custom"]= "(date(mutation_date) between '$tgl1' and '$tgl2')";	
-		if ($attr['unit'] !='') {
-			$filter = array_merge($filter, ["unit_sender" => $attr['unit']]);
-		}	
+		$filter = array_merge($filter, ["unit_sender" => ''.(!empty($attr['unit'])?$attr['unit']:0).'']);
 		if($attr['sts'] != ' '){
 			$filter =array_merge($filter, ["mutation_status" => $attr['sts']]);
 		}

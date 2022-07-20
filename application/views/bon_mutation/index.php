@@ -24,12 +24,12 @@
           </div>
         </div>
         <div id="unit" class="col-md-4">
-        <?= create_select([
-              "attr" => ["name" => "filter_unit=Filter Unit", "id" => "filter_unit", "class" => "form-control"],
-              "model"=>["m_mutation" => ["get_user_in_unit",[0,"u.user_id"=>$this->session->user_id]],
-              "column"  => ["unit_id","unit_name"]
-            ],
-            ]) ?>
+            <?=create_select([
+                "attr" =>["name" => "filter_unit=Filter Unit", "id" => "filter_unit","class"=>"form-control"],
+                "model"=>["m_ms_unit" => ["get_ms_unit",["employee_id"=>$this->session->employee_id]],
+                                "column"  => ["unit_id","unit_name"]
+                            ]
+            ])?>
             </div>
             <div id="filstatus" class="col-md-4">
         <?= create_select([

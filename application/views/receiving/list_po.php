@@ -23,14 +23,14 @@
             echo "<tr>
                     <td><input $checked type=\"checkbox\" class=\"podet_id\" name=\"div_detail[$key][podet_id]\" value=\"".(isset($value->podet_id)?$value->podet_id:$value->recdet_id)."\"/></td>
                     <td>$value->item_name</td>
-                    <td><input type=\"text\" value=\"".(isset($value->expired_date)?$value->expired_date:null)."\"  class=\"form-control input-sm expired_date\" name=\"div_detail[$key][expired_date]\"/></td>
+                    <td><input readonly type=\"text\" value=\"".(isset($value->expired_date)?$value->expired_date:null)."\"  class=\"inputan form-control input-sm expired_date\" name=\"div_detail[$key][expired_date]\"/></td>
                     <td>$value->po_unititem</td>
                     <td>$value->po_qtyunit</td>
                     <td>".((isset($value->po_qtyreceived)?$value->po_qtyreceived:0))."</td>
-                    <td><input type=\"text\" data-inputmask=\"'alias': 'IDR'\" value=\"".(isset($value->qty_unit)?$value->qty_unit:0)."\"  class=\"form-control input-sm qty_unit\" name=\"div_detail[$key][qty_unit]\"/></td>
+                    <td><input readonly type=\"text\" data-inputmask=\"'alias': 'IDR'\" value=\"".(isset($value->qty_unit)?$value->qty_unit:0)."\"  class=\"inputan form-control input-sm qty_unit\" name=\"div_detail[$key][qty_unit]\"/></td>
                     <td><input type=\"text\" data-inputmask=\"'alias': 'IDR'\" value=\"$value->price_item\" readonly class=\"form-control input-sm price_item\" name=\"div_detail[$key][price_item]\"/></td>
-                    <td><input type=\"text\" value=\"".(isset($value->disc_percent)?$value->disc_percent:0)."\" class=\"form-control input-sm disc_percent\" name=\"div_detail[$key][disc_percent]\"/></td>
-                    <td><input type=\"text\" data-inputmask=\"'alias': 'IDR'\" value=\"".(isset($value->disc_value)?$value->disc_value:0)."\" class=\"form-control input-sm disc_value\" name=\"div_detail[$key][disc_value]\"/></td>
+                    <td><input readonly type=\"text\" value=\"".(isset($value->disc_percent)?$value->disc_percent:0)."\" class=\"inputan form-control input-sm disc_percent\" name=\"div_detail[$key][disc_percent]\"/></td>
+                    <td><input readonly type=\"text\" data-inputmask=\"'alias': 'IDR'\" value=\"".(isset($value->disc_value)?$value->disc_value:0)."\" class=\"inputan form-control input-sm disc_value\" name=\"div_detail[$key][disc_value]\"/></td>
                     <td><input type=\"text\" data-inputmask=\"'alias': 'IDR'\" value=\"".(isset($value->price_total)?$value->price_total:0)."\" readonly class=\"form-control input-sm price_total\" value=\"0\" name=\"div_detail[$key][price_total]\"/></td>
                     ";
             $num++;
@@ -53,6 +53,14 @@
 
     $("body").on("keyup", ".disc_value", function() {
 		hitungDiskon($(this));
+	});
+
+	$("body").on("click", ".podet_id", function() {
+		if ($(this).is(':checked')) {
+			$(this).closest('tr').find('.inputan').attr("readonly",false);
+		} else {
+			$(this).closest('tr').find('.inputan').attr("readonly",true);
+		}
 	});
 
     $("#ppn").change(()=>{
@@ -88,12 +96,6 @@
 			totalDiskon += parseFloat($.isNumeric($(this).closest('tr').find('.disc_value').val())?$(this).closest('tr').find('.disc_value').val():0);
 			grandtotal += total;
 		});
-
-		/* $(".cost_value").each(function(){
-			let totalcost = parseFloat(isNaN($(this).val())?0:$(this).val());
-			grandtotal += totalcost;
-		}); */
-		// alert(grandtotal);
 
 		let ppn = parseInt($("#ppn").val())*($.isNumeric($("#grand_total").val())?$("#grand_total").val():0)/100;
         grandtotal = grandtotal + ppn;

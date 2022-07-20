@@ -22,7 +22,7 @@
         <div class="col-md-3">     
           <?= create_select([
               "attr" => ["name" => "filter_unit=Filter Unit", "id" => "filter_unit", "class" => "form-control"],
-              "model"=>["m_ms_unit" => "get_ms_unit",
+              "model"=>["m_ms_unit" => ["get_ms_unit",["employee_id"=>$this->session->employee_id]],
               "column"  => ["unit_id","unit_name"]
             ],
             ]) ?>  
@@ -40,7 +40,11 @@
         </div>
         
         <div class="box-body" id="data_mutation">        
-          <?=create_table("tb_mutation",["M_mutation"=>"get_column_bon"],["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
+          <?=create_table("tb_mutation",
+          [
+            "model" => "M_mutation",
+            "col"   => "get_column_bon"
+          ],["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
         </div>
         <div class="box-footer">
           <button class="btn btn-danger" id="btn-deleteChecked"><i class="fa fa-trash"></i> Delete</button>

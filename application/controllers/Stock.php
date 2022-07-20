@@ -25,7 +25,7 @@ class Stock extends MY_Generator {
 		}
 		$data['unit'] = $kat;
 		$data['own'] = $own;
-		$this->theme('stock/index',$data);
+		$this->theme('stock/index',$data,get_class($this));
 	}
 
 	public function get_data()

@@ -28,23 +28,23 @@
                 <div class="row">
                     <div class="col-md-3 col-sm-6 col-xs-12" id="stok_awal">
                         <div class="info-box">
-                            <span class="info-box-icon bg-aqua"><i class="fa fa-envelope-o"></i></span>
+                            <span class="info-box-icon bg-aqua"><i class="fa fa-book"></i></span>
                             <div class="info-box-content">
                                 <span class="info-box-text">Stok Awal</span>
-                                <span class="info-box-number">1,410</span>
+                                <span class="info-box-number">__________</span>
                             </div>
                             <!-- /.info-box-content -->
                         </div>
                         <!-- /.info-box -->
                     </div>
                     <!-- /.col -->
-                    <div class="col-md-3 col-sm-6 col-xs-12">
+                    <div class="col-md-3 col-sm-6 col-xs-12" id="master_item">
                         <div class="info-box">
-                            <span class="info-box-icon bg-green"><i class="fa fa-flag-o"></i></span>
+                            <span class="info-box-icon bg-green"><i class="fa fa-cubes"></i></span>
 
                             <div class="info-box-content">
                                 <span class="info-box-text">Master Item</span>
-                                <span class="info-box-number">410</span>
+                                <span class="info-box-number">__________</span>
                             </div>
                             <!-- /.info-box-content -->
                         </div>
@@ -57,7 +57,7 @@
 
                             <div class="info-box-content">
                                 <span class="info-box-text">Uploads</span>
-                                <span class="info-box-number">13,648</span>
+                                <span class="info-box-number">__________</span>
                             </div>
                             <!-- /.info-box-content -->
                         </div>
@@ -70,7 +70,7 @@
 
                             <div class="info-box-content">
                                 <span class="info-box-text">Likes</span>
-                                <span class="info-box-number">93,139</span>
+                                <span class="info-box-number">__________</span>
                             </div>
                             <!-- /.info-box-content -->
                         </div>
@@ -93,5 +93,10 @@
 $("#stok_awal").click(()=>{
     $("#modal_import").modal("show");
     $("#modal_import").find(".modal-body").load("import_master/show_so_awal");
+})
+
+$("#master_item").click(()=>{
+    $("#modal_import").modal("show");
+    $("#modal_import").find(".modal-body").load("import_master/show_import_item");
 })
 </script>

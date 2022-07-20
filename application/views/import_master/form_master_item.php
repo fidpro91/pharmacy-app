@@ -1,5 +1,5 @@
 <div class="row">
-    <?= form_open("import_master/import_so", ["method" => "post", "id" => "form_import", "enctype" => "multipart/form-data"]) ?>
+    <?= form_open("import_master/import_master_item", ["method" => "post", "id" => "form_import", "enctype" => "multipart/form-data"]) ?>
     <div class="col-md-12">
         <?= create_inputDate("import_date", [
             "format" => "yyyy-mm-dd",
@@ -10,17 +10,9 @@
             "value"     => date('Y-m-d')
         ]) ?>
         <?= create_select([
-            "attr" => ["name" => "own_id=Kepemilikan", "id" => "own_id", "class" => "form-control"],
-            "model" => [
-                "m_surety_ownership" => ["get_kepemilikan", ["0" => '0']],
-                "column"  => ["own_id", "own_name"]
-            ]
-        ]) ?>
-        <?= create_select([
-            "attr" => ["name" => "unit_id=Unit Farmasi ", "id" => "unit_id", "class" => "form-control"],
-            "model" => [
-                "m_ms_unit" => "get_ms_unit",
-                "column" => ["unit_id", "unit_name"]
+            "attr"      => ["name" => "jns_import", "id" => "jns_import", "class" => "form-control"],
+            "option"    => [
+                ["id" => "t", "text" => "Replace"], ["id" => "f", "text" => "Insert"]
             ]
         ]) ?>
         <div class="form-group">
@@ -36,7 +28,7 @@
 </div>
 <script>
     $("#form_import").submit(()=>{
-        if (confirm("Data stok akan direset dan digantikan dengan stok yang baru, Anda yakin?")) {
+        if (confirm("Import Data Item?")) {
             return true;
         }
         return false;

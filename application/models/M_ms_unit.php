@@ -71,7 +71,8 @@ class M_ms_unit extends CI_Model {
 	{
 		return $this->db->where(["unit_active"=>'t'])
 						->where("unit_type in (34,32)")
-						->get_where("admin.ms_unit",$where)->result();
+						->join("hr.employee_on_unit eo","eo.unit_id=mu.unit_id")
+						->get_where("admin.ms_unit mu",$where)->result();
 	}
 
 	public function get_ms_unit_all($where=[0=>0])

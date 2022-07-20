@@ -215,7 +215,7 @@ class Bon_mutation extends MY_Generator {
 	{
 		$data['model'] = $this->m_mutation->rules();
 		$data['norec'] = generate_code_transaksi([
-			"text"	=> "M/PBF/NOMOR/".date("d.m.Y"),
+			"text"	=> "M/BON/NOMOR/".date("d.m.Y"),
 			"table"	=> "newfarmasi.mutation",
 			"column"	=> "bon_no",
 			"delimiter" => "/",

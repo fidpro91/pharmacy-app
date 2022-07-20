@@ -47,11 +47,12 @@ class Opname_header extends MY_Generator {
 		echo json_encode($row);
 	}
 
-	public function get_item()
+	public function get_item($unit_id,$own_id)
 	{
 		$term = $this->input->get('term');
 		$this->load->model('m_opname');
-		echo json_encode($this->m_opname->get_stock_item($term));
+		$where = " AND lower(mi.item_name) like lower('%$term%')";
+		echo json_encode($this->m_opname->get_stock_item($where,$unit_id,$own_id));
 	}
 
 	public function save()

@@ -6,7 +6,9 @@ class Ms_item extends MY_Generator {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->datascript->lib_inputmulti()->lib_select2();
+		$this->datascript->lib_inputmulti()
+						 ->lib_datatableExt()
+						 ->lib_select2();
 		$this->load->model('m_ms_item');
 	}
 
