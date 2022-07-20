@@ -153,12 +153,23 @@
 		$("#form_sale").hide();
 		table.draw();
 	});
+
+	function hitungTotal_terima(row) {
+			let stockunit = parseInt($(row).closest('tr').find(".stock").val());
+			let jml_terima = parseInt(($.isNumeric($(row).val())?$(row).val():0));
+			if (jml_terima>stockunit) {
+				alert("Jumlah item melebihi stock");
+				$(row).val(0);
+				return false;
+			}
+		}
 	
 	$("body").on("focus", ".autocom_item_id", function() {
 	    $(this).autocomplete({
             source: "<?php echo site_url('sale/get_item');?>/"+$("#unit_id_depo").val(),
             select: function (event, ui) {
                 $(this).closest('tr').find('.item_id').val(ui.item.item_id);
+				$(this).closest('tr').find('.stock').val(ui.item.total_stock);
                 $(this).closest('tr').find('.sale_price').val(ui.item.harga);
             }
         }).data("ui-autocomplete")._renderItem = function (ul, item) {
@@ -291,5 +302,7 @@
             return 'Are you sure you want to leave?';
         }
     });
+
+	
 	<?= $this->config->item('footerJS') ?>
 </script>

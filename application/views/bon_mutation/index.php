@@ -34,7 +34,7 @@
             <div id="filstatus" class="col-md-4">
         <?= create_select([
               "attr" => ["name" => "mutation_status=status mutasi", "id" => "mutation_status", "class" => "form-control"],
-              "option" => [["id" => ' ', "text" => 'Pilih'], ["id" => '1', "text" => "Meminta"], ["id" => '2', "text" => "diproses"],["id" => '3', "text" => "terima"]]
+              "option" => [["id" => ' ', "text" => 'Pilih'], ["id" => '1', "text" => "Meminta"], ["id" => '2', "text" => "diproses"],["id" => '3', "text" => "terima"],["id" => '4', "text" => "Batal"]]
             ]) ?>
             </div>
            

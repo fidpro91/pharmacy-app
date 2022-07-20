@@ -65,8 +65,10 @@ class M_mutation extends CI_Model {
 							$condition = ["class" => "label-danger", "text" => "Minta"];
 						} else if($a == '2') {
 							$condition = ["class" => "label-primary", "text" => "Sedang Diproses"];
-						}else {
+						}else if($a == '3'){
 							$condition = ["class" => "label-success", "text" => "Terima"];
+						}else {
+							$condition = ["class" => "label-danger", "text" => "Batal"];
 						}
 						return label_status($condition);
 					}
@@ -94,8 +96,10 @@ class M_mutation extends CI_Model {
 							$condition = ["class" => "label-primary", "text" => "Meminta"];
 						}else if ($a == '2') {
 							$condition = ["class" => "label-danger", "text" => "diproses"];
+						}else if($a == '3'){
+							$condition = ["class" => "label-success", "text" => "Terima"];
 						}else {
-							$condition = ["class" => "label-success", "text" => "terima"];
+							$condition = ["class" => "label-danger", "text" => "Batal"];
 						}
 						return label_status($condition);
 					}

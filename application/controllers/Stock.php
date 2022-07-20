@@ -25,16 +25,21 @@ class Stock extends MY_Generator {
 		}
 		$data['unit'] = $kat;
 		$data['own'] = $own;
-		$this->theme('stock/index',$data,get_class($this));
+		$this->theme('stock/index',$data);
 	}
 
 	public function get_data()
 	{
 		$this->load->library('datatable');
-		$attr 	= $this->input->post();
+		$attr 	= $this->input->post();		
 		$fields = $this->m_stock->get_column();
-		$filter['s.unit_id'] = $attr['unit_id'];
-		$filter['s.own_id'] = $attr['own_id'];
+		$filter = [];
+		if ($attr['unit_id'] !='') {
+			$filter = array_merge($filter, ["s.unit_id" => $attr['unit_id']]);
+		} 
+		if ($attr['own_id'] != ' ') {
+			$filter = array_merge($filter, ["s.own_id" => $attr['own_id']]);
+		}
 		$data 	= $this->datatable->get_data($fields,$filter,'m_stock',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
