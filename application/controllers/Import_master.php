@@ -18,4 +18,11 @@ class Import_master extends MY_Generator {
     {
         $this->load->view("import_master/form_so");
     }
+
+	public function show_item_import()
+    {
+        $this->load->view("import_master/form_item");
+    }
+
+	
 }

@@ -38,7 +38,7 @@
                         <!-- /.info-box -->
                     </div>
                     <!-- /.col -->
-                    <div class="col-md-3 col-sm-6 col-xs-12">
+                    <div class="col-md-3 col-sm-6 col-xs-12" id="item_ku">
                         <div class="info-box">
                             <span class="info-box-icon bg-green"><i class="fa fa-flag-o"></i></span>
 
@@ -93,5 +93,10 @@
 $("#stok_awal").click(()=>{
     $("#modal_import").modal("show");
     $("#modal_import").find(".modal-body").load("import_master/show_so_awal");
+})
+
+$("#item_ku").click(()=>{
+    $("#modal_import").modal("show");
+    $("#modal_import").find(".modal-body").load("import_master/show_item_import");
 })
 </script>

@@ -25,8 +25,30 @@
         </div>
         <div class="box-body" id="form_production" style="display: none;">
         </div>
-        <div class="box-body" id="data_production">
+        <div class="box-body" id="filter_date">
+          <div class="col-md-3">
+              <?=create_inputDate("filter_bulan=Filter Bulan",[
+                  "format"		=>"mm-yyyy",
+                  "viewMode"		=> "year",
+                  "minViewMode"	=> "year",
+                  "autoclose"		=>true],[
+                    "value"     => date('m-Y'),
+                    "readonly"  => true
+                  ])
+              ?>
+          </div>
+          <div class="col-md-3">
+          <?= create_select([
+                  "attr" => ["name" => "Kepem_id= Kepemilikan", "id" => "Kepem_id", "class" => "form-control", 'required' => true],
+                  "model" => [
+                          "m_ownership" => "get_ownership",
+                          "column" => ["own_id", "own_name"]
+                  ],
+          ]) ?>
+        </div>
+        <div class="col-md-12" id="data_production">
           <?=create_table("tb_production","M_production",["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
+        </div>
         </div>
         <div class="box-footer">
           <button class="btn btn-danger" id="btn-deleteChecked"><i class="fa fa-trash"></i> Delete</button>
@@ -51,7 +73,11 @@
             "scrollX": true,
             "ajax": {
                 "url": "<?php echo site_url('production/get_data')?>",
-                "type": "POST"
+                "type": "POST",
+                "data" : function(f){
+                      f.date = $("#filter_bulan").val();
+                      f.own = $("#Kepem_id").val();
+                }
             },
             'columnDefs': [
             {
@@ -66,6 +92,9 @@
                    return '<input type="checkbox" name="id[]" value="' + $('<div/>').text(data).html() + '">';
                }
             }], 
+        });
+        $("#filter_date,#Kepem_id").change(() => {
+          table.draw();
         });
     });
     $("#btn-add").click(function() {
@@ -127,4 +156,5 @@
           },'json');
         }
     });
+    <?= $this->config->item('footerJS')?>
 </script>

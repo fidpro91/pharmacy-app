@@ -93,9 +93,14 @@ class Production extends MY_Generator {
 	public function get_data()
 	{
 		$this->load->library('datatable');
-		$attr 	= $this->input->post();
+		$attr 	= $this->input->post(); 
 		$fields = $this->m_production->get_column();
-		$data 	= $this->datatable->get_data($fields,$filter = array(),'m_production',$attr);
+		$filter = [];
+		$filter['custom']="to_char(production_date,'MM-YYYY') = '".$attr['date']."'"; 
+	    if( $attr["own"] !=''){			
+			$filter = array_merge($filter, ["p.own_id" => $attr['own']]);
+		}		
+		$data 	= $this->datatable->get_data($fields,$filter,'m_production',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
         foreach ($data['dataku'] as $index=>$row) { 

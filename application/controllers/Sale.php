@@ -455,7 +455,7 @@ class Sale extends MY_Generator {
 	public function set_data_pasien()
 	{
 		$post = $this->input->post();
-		$dt['pasien'] = $post;
+		$dt['pasien'] = $post; 
 		$dt['surety']=$this->db->query("select surety_name from yanmed.ms_surety where surety_id = ".$post['surety_id']." ");
 		$dt['surety'] = $dt['surety']->row('surety_name');
 		$dt['dokter']= $this->db->query("select concat(employee_ft,employee_name,employee_bt) as nama_dokter from hr.employee where employee_id = ".$post['doctor_id']." "); 
@@ -480,8 +480,9 @@ class Sale extends MY_Generator {
 				"px_norm"   => $post['patient_norm'],
 				"alamat"    => $post['alamat'],
 				"surety"    => $dt['surety'],
-				"dokter"	=> $dt['dokter']
-			];
+				"dokter"	=> $dt['dokter'],
+				"sep"		=> $post['sep']
+			]; 
 			$this->session->set_userdata('penjualan',$dt);
 			
 		}		

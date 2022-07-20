@@ -89,6 +89,9 @@
                         "column" => ["unit_id", "unit_name"]
                     ],
                 ]) ?>
+                 <?=create_input("sep= No SEP",[
+									"readonly"	=> true
+				])?>
                 <?=create_textarea("alamat=Alamat Lengkap")?>
 
             </div>
@@ -128,7 +131,8 @@
                     $('#service_id').val(ui.item.srv_id);
                     $('#doctor_name').val(ui.item.par_name);
                     $('#unit_id_lay').val(ui.item.unit_id);
-                    $('#unit_id').val(ui.item.unit_id);                   
+                    $('#unit_id').val(ui.item.unit_id);  
+                    $('#sep').val(ui.item.sep_no);                   
                     if (ui.item.surety_id) {
                         $('#surety_id').val(ui.item.surety_id);
                     }
@@ -238,7 +242,7 @@
                     $("#tpx_name").append(data.px_name+''); 
                     $("#px_alamat").append(data.alamat); 
                     $("#dokter_").append(data.dokter); 
-                    $("#surety_").append(data.surety);                
+                    $("#surety_").append(data.surety+' ('+data.sep+')');                
                     $("#margin_profit").val(data.profit);
                     $("#tno_rm").html($("#no_rm").val());
                     $("#tpx_name").html($("#nama").val());

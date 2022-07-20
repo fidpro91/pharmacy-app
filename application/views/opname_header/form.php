@@ -21,8 +21,8 @@
 				])?>
 				<?=create_select([
 					"attr" =>["name"=>"own_id=Kepemilikan","id"=>"own_id","class"=>"form-control"],
-					"model"=>["m_ms_reff" => ["get_ms_reff",["refcat_id"=>'37']],
-									"column"  => ["reff_id","reff_name"]
+					"model"=>["m_ownership" => ["get_ownership",["0"=>'0']],
+									"column"  => ["own_id","own_name"]
 								],
 				])?>
 				<?=create_textarea("opname_note")?>
