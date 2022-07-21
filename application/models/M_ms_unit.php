@@ -81,6 +81,12 @@ class M_ms_unit extends CI_Model {
 						->get_where("admin.ms_unit",$where)->result();
 	}
 
+	public function get_farmasi_unit($where=[0=>0])
+	{
+		return $this->db->where(["unit_active"=>'t'])
+						->get_where("farmasi.v_unit_farmasi",$where)->result();
+	}
+
 	public function find_one($where)
 	{
 		return $this->db->get_where("admin.ms_unit",$where)->row();
