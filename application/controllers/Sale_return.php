@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+require FCPATH . 'vendor/autoload.php';
 class Sale_return extends MY_Generator {
 
 	public function __construct()
@@ -92,7 +92,20 @@ class Sale_return extends MY_Generator {
             	}
             }
 			
-	        $obj[] = create_btnAction(["delete"],$row['id_key']);           
+	        $obj[] = create_btnAction(["delete", 
+			"print" => [
+				"btn-act" => "cetak(". $row['id_key'].",1)",
+				"btn-icon" => "fa fa-print",
+				"btn-class" => "btn-info"
+			],
+			"pdf" => [
+				"btn-act" => "cetak(" . $row['id_key'] . ",2)",
+				"btn-icon" => "fa fa-file-pdf-o",
+				"btn-class" => "btn-warning"
+			],
+				
+			],
+			$row['id_key']);           
             $records["aaData"][] = $obj;
             $no++;
         }
@@ -233,5 +246,22 @@ class Sale_return extends MY_Generator {
 			"lpad"		=> "4",
 			"filter"	=> ""
 		]);
+	}
+
+	public function cetak($id, $type)
+	{
+		$respond = $this->m_sale_return->get_retur_by_id($id);
+		$respond->detail = $this->m_sale_return->find_retur_detail($respond->sr_id);
+		$data['respond'] = $respond;
+		$data['user'] = $this->session->user_name;
+		$data['data'] = $this->m_sale_return->get_data_profile();
+		if ($type == 1) {
+			return $this->load->view('sale_return/v_cetak_retur_penjualan', $data);
+		} else {
+			$html = $this->load->view('sale_return/v_cetak_retur_penjualan', $data, true);
+			$mpdf = new \Mpdf\Mpdf();
+			$mpdf->WriteHTML($html);
+			$mpdf->Output();
+		}
 	}
 }

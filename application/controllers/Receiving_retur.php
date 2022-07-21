@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+require FCPATH . 'vendor/autoload.php';
 class Receiving_retur extends MY_Generator {
 
 	public function __construct()
@@ -124,7 +124,23 @@ class Receiving_retur extends MY_Generator {
             		$obj[] = $row[$value];
             	}
             }
-            $obj[] = create_btnAction(["update","delete"],$row['id_key']);
+            $obj[] = create_btnAction(["update","delete",
+				"download pdf" => [
+					"btn-act" => "location.href='".base_url()."receiving_retur/cetak/". $row['id_key']."/1'",
+					"btn-icon" => "fa fa-file-pdf-o",
+					"btn-class" => "btn-warning"
+				],
+				"download excel" => [
+					"btn-act" => "location.href='" . base_url() . "receiving_retur/cetak/" . $row['id_key'] . "/2'",
+					"btn-icon" => "fa fa-file-pdf-o",
+					"btn-class" => "btn-success"
+				],
+				"print" => [
+					"btn-act" => "cetak(" . $row['id_key'] . ",3)",
+					"btn-icon" => "fa fa-print",
+					"btn-class" => "btn-info"
+				],
+			],$row['id_key']);
             $records["aaData"][] = $obj;
             $no++;
         }
@@ -197,5 +213,31 @@ class Receiving_retur extends MY_Generator {
 		where rd.rr_id = '$id'
 		")->result();
 		echo json_encode($retur);
+	}
+
+	public function cetak($id,$type)
+	{
+		$respond = new stdClass();
+		$respond = $this->m_receiving_retur->get_retur_by_id($id);
+		$respond->detail = $this->m_receiving_retur->find_retur_detail($respond->rr_id);
+		$data['isi'] = $respond;
+		$data['profil'] = $this->m_receiving_retur->get_data_profile();
+		$namafile = "Retur-Penerimaan.pdf";
+		if ($type == 1) {
+			$mpdf = new \Mpdf\Mpdf();
+			$html = $this->load->view('receiving_retur/cetak',$data,true);
+			$mpdf->WriteHTML($html);
+			// $mpdf->Output();
+			$mpdf->Output($namafile, 'D');
+		}elseif ($type == 2) {
+			header("Content-type: application/vnd-ms-excel");
+			header("Content-Disposition: attachment; filename=" . $namafile . ".xls");
+			return $this->load->view('receiving_retur/cetak', $data);
+		}else {
+			return $this->load->view('receiving_retur/cetak', $data);
+		}
+		
+		
+		
 	}
 }
