@@ -112,9 +112,8 @@
         'success': function(data) {
           $("#form_production").load("production/show_form",()=>{
             $.each(data,(ind,obj)=>{
-                $("#"+ind).val(obj);
-               
-            });             
+                $("#"+ind).val(obj);               
+            }); $("select[class*='select2']").trigger('change');             
           });
           item_hasil = data.hasil; //a
           item_produk = data.produk; 

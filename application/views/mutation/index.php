@@ -118,8 +118,8 @@
         'success': function(data) {
           $("#form_mutation").load("mutation/show_form",()=>{
             $.each(data,(ind,obj)=>{
-                $("#"+ind).val(obj);
-            });
+                $("#"+ind).val(obj);               
+            }); $("select[class*='select2']").trigger('change');
           });
           mutationDetail = data.detail; 
         }
