@@ -106,7 +106,7 @@
           $("#form_mutation").load("bon_mutation/show_form",()=>{
             $.each(data,(ind,obj)=>{
                 $("#"+ind).val(obj);
-            });
+            });$("select[class*='select2']").trigger('change');
           });
           mutationDetail = data.detail;
         }

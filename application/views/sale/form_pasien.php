@@ -3,6 +3,7 @@
         z-index: 2147483647;
     }
 </style>
+
 <div class="row">
     <?= form_open("", ["method" => "post", "id" => "form_pasien"]) ?>
     <div class="box" class="info-medis-pasien" style="display:none ;">
@@ -107,6 +108,7 @@
 </div>
 <script>
     $(document).ready(()=>{
+        $("select[class*='select2']").attr('style',"width:100% !important" );
         $(document).bind('keydown', 'f2', function assets() {
             $("#btn-save-pasien").click();
             return false;
