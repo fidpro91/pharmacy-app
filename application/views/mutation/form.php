@@ -4,18 +4,18 @@
     	<?= create_inputDate("mutation_date=Tgl Mutasi", [
 			"format" => "yyyy-mm-dd",
 			"autoclose" => "true"
-		],[
+		], [
 			"value" 	=> date('Y-m-d'),
 			"readonly"	=> true
 		]) ?>
-    	<?= create_input("mutation_no=No. Mutasi",[
-			"value"		=>$mutation_no,
+    	<?= create_input("mutation_no=No. Mutasi", [
+			"value"		=> $mutation_no,
 			"readonly"	=> true
 		]) ?>
     	<?= create_select([
 			"attr" => ["name" => "own_id=Kepemilikan", "id" => "own_id", "class" => "form-control"],
 			"model" => [
-				"m_ownership" => ["get_ownership", ["0"=>'0']],
+				"m_ownership" => ["get_ownership", ["0" => '0']],
 				"column"  => ["own_id", "own_name"]
 			]
 		]) ?>
@@ -47,7 +47,7 @@
     		$("#form_mutation").html('');
     	});
     	$(document).ready(() => {
-			console.log(mutationDetail);
+    		console.log(mutationDetail);
     		$(".list_item").inputMultiRow({
     			column: () => {
     				var dataku;
@@ -62,49 +62,51 @@
     				});
     				return dataku;
     			},
-				"data" : mutationDetail
+    			"data": mutationDetail
     		});
     	});
-    	
-		function hitungTotal_terima(row) {
-			let stock = parseInt($(row).closest('tr').find(".stock_unit").val());
-			let jml_terima = parseInt(($.isNumeric($(row).val())?$(row).val():0));
-			if (jml_terima>stock) {
-				alert("Jumlah item melebihi stock");
-				$(row).val(0);
-				return false;
-			}
-		}
 
-		$("#unit_sender, #own_id").on("change",function(){
-			if(confirm("Pilihan sudah sesuai?")){
-				$(".tb_list_item").find('tbody').find('tr').remove();
-			}else{
-				$(this).val($.data(this, 'current'));
-            	return false;
-			}
-			$.data(this, 'current', $(this).val());
-		});
+    	function hitungTotal_terima(row) {
+    		let stock = parseInt($(row).closest('tr').find(".stock_unit").val());
+    		let jml_terima = parseInt(($.isNumeric($(row).val()) ? $(row).val() : 0));
+    		if (jml_terima > stock) {
+    			alert("Jumlah item melebihi stock");
+    			$(row).val(0);
+    			return false;
+    		}
+    	}
 
-		$("body").on("focus", ".autocom_item_id", function() {
-			$(this).autocomplete({
-				source: "<?php echo site_url('mutation/get_item'); ?>/" + $("#own_id").val() + "/" + $("#unit_sender").val(),
-				select: function (event, ui) {
-					$(this).closest('tr').find('.item_id').val(ui.item.item_id);
+    	$("#unit_sender, #own_id").on("change", function() {
+    		if (confirm("Pilihan sudah sesuai?")) {
+    			$(".tb_list_item").find('tbody').find('tr').remove();
+    		} else {
+    			$(this).val($.data(this, 'current'));
+    			return false;
+    		}
+    		$.data(this, 'current', $(this).val());
+    	});
+
+    	$("body").on("focus", ".autocom_item_id", function() {
+    		$(this).autocomplete({
+    			source: "<?php echo site_url('mutation/get_item'); ?>/" + $("#own_id").val() + "/" + $("#unit_sender").val(),
+    			select: function(event, ui) {
+    				$(this).closest('tr').find('.item_id').val(ui.item.item_id);
     				$(this).closest('tr').find('.stock_unit').val(ui.item.total_stock);
     				$(this).closest('tr').find('.unit_pack').val(ui.item.item_package);
     				$(this).closest('tr').find('.unit_item').val(ui.item.item_unitofitem);
     				$(this).closest('tr').find('.expired_date').val(ui.item.expired_date);
-				}
-			}).data("ui-autocomplete")._renderItem = function (ul, item) {
-				return $("<li>")
-					.append("<div class='comment-text'><span class=\"username\"><b>"+
-						item.label+"|"+item.item_code+
-					"</b><span class=\"text-muted pull-right\">"+formatNumeric(item.expired_date)+"</span></span><p>"+
-					"<span>Stok terakhir : <span class=\"text-muted pull-right\">"+formatNumeric(item.total_stock)+"</span></span>"+
-					"</div>")
-					.appendTo(ul);
-			};
-		});
+    			}
+    		}).data("ui-autocomplete")._renderItem = function(ul, item) {
+    			return $("<li>")
+    				.append("<div class='comment-text'><span class=\"username\"><b>" +
+    					item.label + "|" + item.item_code +
+    					"</b><span class=\"text-muted pull-right\">" + formatNumeric(item.expired_date) + "</span></span><p>" +
+    					"<span>Stok terakhir : <span class=\"text-muted pull-right\">" + formatNumeric(item.total_stock) + "</span></span>" +
+    					"</div>")
+    				.appendTo(ul);
+    		};
+    	});
+
+    	
     	<?= $this->config->item('footerJS') ?>
     </script>

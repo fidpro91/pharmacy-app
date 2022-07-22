@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+require FCPATH . 'vendor/autoload.php';
 class Bon_mutation extends MY_Generator {
 
 	public function __construct()
@@ -155,11 +155,28 @@ class Bon_mutation extends MY_Generator {
 						"btn-act" => "konfirm_penerimaan(".$row['id_key'].")",
 						"btn-icon" => "fa fa-eye",
 						"btn-class" => "btn-info"
+					],
+					
+					"Permintaan" => [
+						"btn-act" => "location.href='".base_url(). "bon_mutation/cetak_permintaan/".$row['id_key']."/pdf'",
+						"btn-icon" => "fa fa-file-pdf-o",
+						"btn-class" => "btn-warning"
+					],
+					"excel" => [
+						"btn-act" => "location.href='" . base_url() . "bon_mutation/cetak_permintaan/" . $row['id_key'] . "/excel'",
+						"btn-icon" => "fa fa-file-excel-o",
+						"btn-class" => "btn-success"
+					],
+					"print" => [
+						"btn-act" => "javascript:window.open('" . base_url() . "bon_mutation/cetak_permintaan/" . $row['id_key'] . "/print','_blank')",
+						"btn-icon" => "fa fa-print",
+						"btn-class" => "btn-info"
 					]
 				]);
 			}
             $records["aaData"][] = $obj;
             $no++;
+			//bon_mutation/cetak_permintaan/" + id
         }
         $data = array_merge($data,$records);
         unset($data['dataku']);
@@ -430,5 +447,36 @@ class Bon_mutation extends MY_Generator {
 				"is_approved"	=> "true"
 			]);
 		}
+	}
+	public function cetak_permintaan($id,$act)
+	{
+		$data['username']  =  $this->session->user_name;
+		$this->load->model('m_profil');
+		$this->load->model('m_bon_permintaan');
+		$data['data'] = $this->m_profil->get_data();
+
+		$sLimit = "";
+		$sWhere = "AND m.mutation_id = '" . $id . "' ";
+		$sOrder = "";
+		$data['DataUnit'] = $this->m_bon_permintaan->get_data($sLimit, $sWhere, $sOrder);
+		$data['DataDetail'] = $this->m_bon_permintaan->get_permintaan_detail($id);
+		$namafile = "Laporan Permintaan Unit.pdf";
+		if ($act == 'pdf') {
+			$mpdf = new \Mpdf\Mpdf();
+			$html = $this->load->view('bon_mutation/v_print_permintaan', $data, true);
+			$mpdf->AddPage('P', '', '', '', '', 10, 10, 10, 10, 10, 10);
+			$mpdf->WriteHTML($html);
+			// $mpdf->Output();
+			$mpdf->Output($namafile, 'D');
+		}elseif ($act == "excel") {
+			header("Content-type: application/vnd-ms-excel");
+			header("Content-Disposition: attachment; filename=" . $namafile . ".xls");
+			$this->load->view('bon_mutation/v_print_permintaan', $data);
+		}else {
+			return $this->load->view('bon_mutation/v_print_permintaan', $data);
+		}
+	
+		
+
 	}
 }

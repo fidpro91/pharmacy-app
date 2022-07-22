@@ -182,4 +182,43 @@ class M_mutation extends CI_Model {
 						->where($where)
 						->get("admin.ms_user u")->result();
 	}
+	public function get_data_m($sLimit, $sWhere, $sOrder, $aColumns)
+	{
+		// $sql    = "	SELECT 
+		// 				distinct  " . implode(',',$aColumns) . "
+		// 			FROM 
+		// 				farmasi.bon b
+		// 			inner join farmasi.bon_detail bd
+		// 				on bd.bon_id = b.bon_id
+		// 			inner join farmasi.ownership o
+		// 				on o.own_id = b.own_id
+		// 			inner join admin.ms_unit v
+		// 				on v.unit_id = b.unit_id 
+		// 			inner join admin.ms_unit vt
+		// 				on vt.unit_id = b.unit_target
+		// 			WHERE 0=0 
+		// 			$sWhere 
+		// 			$sOrder $sLimit  ";
+		$sql = "SELECT mutation_id, mutation_date,mutation_no,u.unit_name as asal,u2.unit_name as tujuan,o.own_name, m.mutation_status
+FROM newfarmasi.mutation m
+INNER JOIN admin.ms_unit u on m.unit_require = u.unit_id 
+INNER JOIN admin.ms_unit u2 on m.unit_sender = u2.unit_id
+INNER JOIN farmasi.ownership o on m.own_id = o.own_id
+WHERE
+	0 = 0 $sWhere";
+		$result = $this->db->query($sql);
+		$result = $result->result();
+		return $result;
+	}
+	public function get_permintaan_detail($id, $unit = null)
+	{
+		$sql    = "	SELECT i.item_code,i.item_name, item_unitofitem, md.qty_request,md.qty_send
+FROM newfarmasi.mutation_detail md
+INNER JOIN admin.ms_item i on md.item_id = i.item_id
+WHERE md.mutation_id = $id
+GROUP BY i.item_code,i.item_name, item_unitofitem, md.qty_request,md.qty_send";
+		$result = $this->db->query($sql);
+		$result = $result->result();
+		return $result;
+	}
 }

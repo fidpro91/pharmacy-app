@@ -167,7 +167,16 @@ class Mutation extends MY_Generator {
             	}
             }
             if ($row['mutation_status']<=2) {
-				$obj[] = create_btnAction(["update","delete"],$row['id_key']);
+				$obj[] = create_btnAction(
+					[
+						"update",
+						"delete", 
+						"print" => [
+							"btn-act" => "cetak('". $row['id_key'] . "')",
+							"btn-icon" => "fa fa-print",
+							"btn-class" => "btn-info"
+						]
+					],$row['id_key']);
 			}else{
 				$obj[] = "";
 			}
@@ -366,5 +375,36 @@ class Mutation extends MY_Generator {
 			"lpad"		=> "4",
 			"filter"	=> ""
 		]);
+	}
+	public function cetak($id)
+	{
+		$session 	= $this->session->userdata('login');
+		$data['username']  =  $this->session->user_name;
+		$this->load->model('m_profil');
+		$data['data'] = $this->m_profil->get_data();
+
+		$sLimit = "";
+		$sWhere = "AND mutation_id = '" . $id . "' ";
+		$sOrder = "";
+
+		$aColumns 	= array(
+			"b.bon_id",
+			"to_char(b.bon_date, 'DD-MM-YYYY') bon_date",
+			"b.bon_no",
+			"v.unit_name as asal",
+			"vt.unit_name as tujuan",
+			"o.own_name",
+			"b.bon_status",
+			"b.unit_id",
+			"b.unit_target",
+			"b.own_id",
+			"b.user_id"
+		);
+		$profilrs = $this->m_profil->get_data();
+
+		$data['DataUnit'] = $this->m_mutation->get_data_m($sLimit, $sWhere, $sOrder, $aColumns);
+		$data['DataDetail'] = $this->m_mutation->get_permintaan_detail($id);
+
+		$this->load->view("mutation/cetak", $data);
 	}
 }

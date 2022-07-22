@@ -74,4 +74,76 @@ class M_receiving_retur extends CI_Model {
 			order by r.receiver_date desc
 		")->result();
 	}
+
+	public function get_retur_by_id($id)
+	{
+		$sql    = " SELECT DISTINCT
+			r.rr_id,
+			r.num_retur,
+			P.supplier_id,
+			rr_type,
+			r.unit_id,
+			( CASE WHEN rr_status THEN 'TRUE' ELSE'FALSE' END ) AS rr_status 
+			FROM
+			newfarmasi.receiving_retur r
+			INNER JOIN newfarmasi.receiving_retur_detil rd ON r.rr_id = rd.rr_id
+			INNER JOIN newfarmasi.receiving re ON re.rec_id = rd.rec_id
+			INNER JOIN farmasi.po P ON P.po_id = re.po_id 
+			WHERE r.rr_id = $id";
+		$result = $this->db->query($sql);
+		$result = $result->row();
+		return $result;
+	}
+
+	public function find_retur_detail($id)
+	{
+		$sql    = " select 
+						rd.*,
+						i.item_name,
+						r.own_id,
+						o.own_name,
+						r.rec_num faktur,
+						to_char(
+							r.rec_date,
+							'DD-MM-YYYY'
+						) AS tgl,
+						d.qty_unit,
+						cast(rd.rrd_price as numeric) harga  
+					from newfarmasi.receiving_retur_detil rd
+					inner join admin.ms_item i
+						ON i.item_id = rd.item_id
+					inner join newfarmasi.receiving r
+						on r.rec_id = rd.rec_id
+					inner join farmasi.ownership o
+						on o.own_id = r.own_id
+					inner join newfarmasi.receiving_detail d
+						on d.rec_id = rd.rec_id
+						and d.item_id = rd.item_id
+					where rd.rr_id = $id";
+		$result = $this->db->query($sql)->result();
+		return $result;
+	}
+
+	public function get_data_profile()
+	{
+		$query = $this->db->join('admin.ms_region b', 'b.reg_code=a.hsp_prov')
+		->get('admin.profil a')
+		->row();
+		$distrik = $this->db->where('reg_code', $query->hsp_district)->get('admin.ms_region')->row();
+		$city    = $this->db->where('reg_code', $query->hsp_city)->get('admin.ms_region')->row();
+
+		$data = array(
+			"hsp_city" => $city->reg_name,
+			"hsp_prov" => $query->reg_name,
+			"hsp_distrik" => $distrik->reg_name,
+			"hsp_name" => $query->hsp_name,
+			"hsp_website" => $query->hsp_website,
+			"hsp_phone" => $query->hsp_phone,
+			"hsp_address" => $query->hsp_address,
+			"hsp_email" => $query->hsp_email,
+			"hsp_code" => $query->hsp_code
+		);
+
+		return $data;
+	}
 }
