@@ -126,9 +126,7 @@ class Bon_mutation extends MY_Generator {
 		$attr 	= $this->input->post();  
 		$fields = $this->m_mutation->get_column_bon();
         $filter = [];
-		if ($attr['unit'] !='') {
-			$filter = array_merge($filter, ["unit_require" => $attr['unit']]);
-		} 
+		$filter = array_merge($filter, ["unit_require" => ''.(!empty($attr['unit'])?$attr['unit']:0).'']);
 		if ($attr['status'] != ' ') {
 			$filter = array_merge($filter, ["mutation_status" => $attr['status']]);
 		} 

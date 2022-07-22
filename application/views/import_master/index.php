@@ -38,11 +38,7 @@
                         <!-- /.info-box -->
                     </div>
                     <!-- /.col -->
-<<<<<<< HEAD
                     <div class="col-md-3 col-sm-6 col-xs-12" id="master_item">
-=======
-                    <div class="col-md-3 col-sm-6 col-xs-12" id="item_ku">
->>>>>>> 8610ac137cebef59f790f1fbfad506b71d35bfa9
                         <div class="info-box">
                             <span class="info-box-icon bg-green"><i class="fa fa-cubes"></i></span>
 

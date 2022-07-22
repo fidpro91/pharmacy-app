@@ -1,32 +1,31 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Ownership extends MY_Generator {
+class Setting_app extends MY_Generator {
 
 	public function __construct()
 	{
 		parent::__construct();
-		$this->datascript->lib_inputMask();
-		$this->load->model('m_ownership');
+		$this->load->model('m_setting_app');
 	}
 
 	public function index()
 	{
-		$this->theme('ownership/index','',get_class($this));
+		$this->theme('setting_app/index','',get_class($this));
 	}
 
 	public function save()
 	{
 		$data = $this->input->post();
-		if ($this->m_ownership->validation()) {
+		if ($this->m_setting_app->validation()) {
 			$input = [];
-			foreach ($this->m_ownership->rules() as $key => $value) {
+			foreach ($this->m_setting_app->rules() as $key => $value) {
 				$input[$key] = $data[$key];
 			}
-			if ($data['own_id']) {
-				$this->db->where('own_id',$data['own_id'])->update('farmasi.ownership',$input);
+			if ($data['setting_id']) {
+				$this->db->where('setting_id',$data['setting_id'])->update('newfarmasi.setting_app',$input);
 			}else{
-				$this->db->insert('farmasi.ownership',$input);
+				$this->db->insert('newfarmasi.setting_app',$input);
 			}
 			$err = $this->db->error();
 			if ($err['message']) {
@@ -37,7 +36,7 @@ class Ownership extends MY_Generator {
 		}else{
 			$this->session->set_flashdata('message',validation_errors('<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>','</div>'));
 		}
-		redirect('ownership');
+		redirect('setting_app');
 
 	}
 
@@ -45,8 +44,8 @@ class Ownership extends MY_Generator {
 	{
 		$this->load->library('datatable');
 		$attr 	= $this->input->post();
-		$fields = $this->m_ownership->get_column();
-		$data 	= $this->datatable->get_data($fields,$filter = array(),'m_ownership',$attr);
+		$fields = $this->m_setting_app->get_column();
+		$data 	= $this->datatable->get_data($fields,$filter = array(),'m_setting_app',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
         foreach ($data['dataku'] as $index=>$row) { 
@@ -73,14 +72,14 @@ class Ownership extends MY_Generator {
 
 	public function find_one($id)
 	{
-		$data = $this->db->where('own_id',$id)->get("farmasi.ownership")->row();
+		$data = $this->db->where('setting_id',$id)->get("newfarmasi.setting_app")->row();
 
 		echo json_encode($data);
 	}
 
 	public function delete_row($id)
 	{
-		$this->db->where('own_id',$id)->delete("farmasi.ownership");
+		$this->db->where('setting_id',$id)->delete("newfarmasi.setting_app");
 		$resp = array();
 		if ($this->db->affected_rows()) {
 			$resp['message'] = 'Data berhasil dihapus';
@@ -95,7 +94,7 @@ class Ownership extends MY_Generator {
 	{
 		$resp = array();
 		foreach ($this->input->post('data') as $key => $value) {
-			$this->db->where('own_id',$value)->delete("farmasi.ownership");
+			$this->db->where('setting_id',$value)->delete("newfarmasi.setting_app");
 			$err = $this->db->error();
 			if ($err['message']) {
 				$resp['message'] .= $err['message']."\n";
@@ -109,7 +108,7 @@ class Ownership extends MY_Generator {
 
 	public function show_form()
 	{
-		$data['model'] = $this->m_ownership->rules();
-		$this->load->view("ownership/form",$data);
+		$data['model'] = $this->m_setting_app->rules();
+		$this->load->view("setting_app/form",$data);
 	}
 }

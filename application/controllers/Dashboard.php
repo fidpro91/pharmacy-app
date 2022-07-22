@@ -29,6 +29,6 @@ class Dashboard extends MY_Generator {
         GROUP BY u.unit_id, unit_name
         limit 10")->result();
 
-        $this->theme('dashboard/index',$data);
+        $this->theme('dashboard/index',$data,get_class($this));
     }
 }

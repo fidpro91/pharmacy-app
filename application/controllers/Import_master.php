@@ -6,7 +6,6 @@ class Import_master extends MY_Generator {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('m_employee_on_unit');
 	}
 
 	public function index()

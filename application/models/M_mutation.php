@@ -93,11 +93,11 @@ class M_mutation extends CI_Model {
 					"label" => "Status",
 					"custom" => function ($a) {
 						if ($a == '1') {
-							$condition = ["class" => "label-primary", "text" => "Meminta"];
+							$condition = ["class" => "label-primary", "text" => "Request"];
 						}else if ($a == '2') {
-							$condition = ["class" => "label-danger", "text" => "diproses"];
+							$condition = ["class" => "label-danger", "text" => "Sending"];
 						}else if($a == '3'){
-							$condition = ["class" => "label-success", "text" => "Terima"];
+							$condition = ["class" => "label-success", "text" => "Received"];
 						}else {
 							$condition = ["class" => "label-danger", "text" => "Batal"];
 						}

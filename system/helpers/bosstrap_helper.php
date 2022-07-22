@@ -265,7 +265,7 @@ function create_select($data)
 
 	$txt = '<div class="form-group">
               <label for="'.$data['attr']['name'].'">'.ucwords(str_replace('_', ' ', $label)).'</label>';
-	$txt .= '<select '._attributes_to_string($data['attr']).'>';
+	$txt .= '<select style="width:100% !important" '._attributes_to_string($data['attr']).'>';
 	
 
 	if (isset($data['model'])) {

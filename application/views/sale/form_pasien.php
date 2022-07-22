@@ -71,12 +71,13 @@
                         ["id" => "t", "text" => "Ya"], ["id" => "f", "text" => "Tidak"]
                     ]
                 ]) ?>
-                <?= create_select2([
+                <?= create_select([
                     "attr" => ["name" => "own_id=Kepemilikan", "id" => "own_id", "class" => "form-control"],
                     "model" => [
                         "m_surety_ownership" => ["get_kepemilikan", ["0" => '0']],
                         "column"  => ["own_id", "own_name"]
-                    ]
+                    ],
+                    "selected" => "1"
                 ]) ?>
                 <?= create_select2([
                     "attr" => [
@@ -142,6 +143,7 @@
                     } else {
                         $('#sale_type option[value="1"]').attr('selected', true);
                     }
+                    $("select[class*='select2']").trigger("change");
                 }
             }
         }).data("ui-autocomplete")._renderItem = function(ul, item) {

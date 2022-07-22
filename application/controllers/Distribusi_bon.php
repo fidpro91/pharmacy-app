@@ -61,9 +61,11 @@ class Distribusi_bon extends MY_Generator {
 		$input = [
 			"user_sender" 		=> $this->session->user_id,
 			"mutation_status"	=> "2",
-			"unit_sender"		=> $this->input->post("unit_sender")
+			"unit_sender"		=> $this->input->post("unit_sender"),
+			"mutation_no"		=> $this->get_no_mutation()
 		];
 		$this->db->where('mutation_id',$data['mutation_id'])->update('newfarmasi.mutation',$input);
+		$data["mutation_no"] = $input["mutation_no"];
 		$detail=$this->update_mutation($data);
 		$err = $this->db->error();
 		if ($err['message'] && $detail==false) {
@@ -75,6 +77,19 @@ class Distribusi_bon extends MY_Generator {
 		}
 		redirect('Distribusi_bon');
 
+	}
+
+	public function get_no_mutation()
+	{
+		return generate_code_transaksi([
+			"text"	=> "M/NOMOR/".date("d.m.Y"),
+			"table"	=> "newfarmasi.mutation",
+			"column"	=> "mutation_no",
+			"delimiter" => "/",
+			"number"	=> "2",
+			"lpad"		=> "4",
+			"filter"	=> ""
+		]);
 	}
 
 	public function update_mutation($data)
@@ -242,7 +257,7 @@ class Distribusi_bon extends MY_Generator {
             $obj[] = create_btnAction([
 				"Konfirmasi"=>[
 					"btn-act" => "konfirm_distribusi(".$row['id_key'].")",
-					"btn-icon" => "fa fa-pencil",
+					"btn-icon" => "fa fa-send",
 					"btn-class" => "btn-info"
                 ],
                 "Cetak"=>[

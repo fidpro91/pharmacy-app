@@ -46,9 +46,6 @@
             "col"   => "get_column_bon"
           ],["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
         </div>
-        <div class="box-footer">
-          <button class="btn btn-danger" id="btn-deleteChecked"><i class="fa fa-trash"></i> Delete</button>
-        </div>
         <!-- /.box-footer-->
       </div>
       <!-- /.box -->
@@ -86,9 +83,7 @@
             {
                'targets': 0,
                'className': 'dt-body-center',
-               'render': function (data, type, full, meta){
-                   return '<input type="checkbox" name="id[]" value="' + $('<div/>').text(data).html() + '">';
-               }
+               'visible' : false
             }], 
         });
         $("#filter_unit,#tanggal,#status").change(()=>{

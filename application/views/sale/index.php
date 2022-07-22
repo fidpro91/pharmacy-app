@@ -120,6 +120,7 @@
       $("#data_sale").hide();
       $("#form_sale").load("sale/show_form");
     });
+    
     function set_val(id) {
       $("#form_sale").show();
       $.get('sale/find_one/'+id,(data)=>{
