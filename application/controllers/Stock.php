@@ -7,6 +7,7 @@ class Stock extends MY_Generator {
 	{
 		parent::__construct();
 		$this->datascript->lib_select2()
+						 ->lib_inputmask()
 						 ->lib_datatableExt()
 					     ->lib_daterange();
 		$this->load->model('m_stock');
@@ -27,39 +28,18 @@ class Stock extends MY_Generator {
 		$this->theme('stock/index',$data,get_class($this));
 	}
 
-	public function save()
-	{
-		$data = $this->input->post();
-		if ($this->m_stock->validation()) {
-			$input = [];
-			foreach ($this->m_stock->rules() as $key => $value) {
-				$input[$key] = $data[$key];
-			}
-			if ($data['id']) {
-				$this->db->where('id',$data['id'])->update('newfarmasi.stock',$input);
-			}else{
-				$this->db->insert('newfarmasi.stock',$input);
-			}
-			$err = $this->db->error();
-			if ($err['message']) {
-				$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
-			}else{
-				$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
-			}
-		}else{
-			$this->session->set_flashdata('message',validation_errors('<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>','</div>'));
-		}
-		redirect('stock');
-
-	}
-
 	public function get_data()
 	{
 		$this->load->library('datatable');
-		$attr 	= $this->input->post();
+		$attr 	= $this->input->post();		
 		$fields = $this->m_stock->get_column();
-		$filter['s.unit_id'] = $attr['unit_id'];
-		$filter['s.own_id'] = $attr['own_id'];
+		$filter = [];
+		if ($attr['unit_id'] !='') {
+			$filter = array_merge($filter, ["s.unit_id" => $attr['unit_id']]);
+		} 
+		if ($attr['own_id'] != ' ') {
+			$filter = array_merge($filter, ["s.own_id" => $attr['own_id']]);
+		}
 		$data 	= $this->datatable->get_data($fields,$filter,'m_stock',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
@@ -83,7 +63,7 @@ class Stock extends MY_Generator {
 					"btn-class" => "btn btn-sm btn-default",
 				],
 				"Penyesuaian Stok"=>[
-					"btn-act" => "penyesuaian_stok(".$row['item_id'].")",
+					"btn-act" => "penyesuaian_stok(this,".$row['item_id'].")",
 					"btn-icon" => "fa fa-random",
 					"btn-class" => "btn btn-sm btn-warning",
 				]

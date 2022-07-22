@@ -64,7 +64,7 @@ class M_surety_ownership extends CI_Model {
 
 	public function get_kepemilikan($where)
 	{
-		return $this->db->get_where("farmasi.ownership",$where)->result();
+		return $this->db->order_by("own_code")->get_where("farmasi.ownership",$where)->result();
 	}
 
 	public function find_one($where)

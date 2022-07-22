@@ -21,8 +21,8 @@
 				])?>
 				<?=create_select([
 					"attr" =>["name"=>"own_id=Kepemilikan","id"=>"own_id","class"=>"form-control"],
-					"model"=>["m_ms_reff" => ["get_ms_reff",["refcat_id"=>'37']],
-									"column"  => ["reff_id","reff_name"]
+					"model"=>["m_ownership" => "get_ownership",
+									"column"  => ["own_id","own_name"]
 								],
 				])?>
 				<?=create_textarea("opname_note")?>
@@ -140,9 +140,10 @@
 			}
 		});
 	}) */
+	
 	$("body").on("focus", ".autocom_item_id", function() {
 	    $(this).autocomplete({
-            source: "<?php echo site_url('opname_header/get_item');?>",
+            source: "<?php echo site_url('opname_header/get_item/');?>"+$("#unit_id").val()+"/"+$("#own_id").val(),
             select: function (event, ui) {
                 $(this).closest('tr').find('.item_id').val(ui.item.item_id);
                 $(this).closest('tr').find('.qty_data').val(ui.item.total_stock);

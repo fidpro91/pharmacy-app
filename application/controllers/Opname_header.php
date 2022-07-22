@@ -47,11 +47,12 @@ class Opname_header extends MY_Generator {
 		echo json_encode($row);
 	}
 
-	public function get_item()
+	public function get_item($unit_id,$own_id)
 	{
 		$term = $this->input->get('term');
 		$this->load->model('m_opname');
-		echo json_encode($this->m_opname->get_stock_item($term));
+		$where = " AND lower(mi.item_name) like lower('%$term%')";
+		echo json_encode($this->m_opname->get_stock_item($where,$unit_id,$own_id));
 	}
 
 	public function save()
@@ -141,6 +142,10 @@ class Opname_header extends MY_Generator {
 		$attr 	= $this->input->post();
 		$fields = $this->m_opname_header->get_column();
 		$filter["unit_id"] = $attr["unit_id"];
+		$filter['custom']="to_char(opname_date,'MM-YYYY') = '".$attr['bulan']."'";
+		if( $attr["own_id"] !=''){			
+			$filter = array_merge($filter, ["oh.own_id" => $attr['own_id']]);
+		}
 		$data 	= $this->datatable->get_data($fields,$filter,'m_opname_header',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 

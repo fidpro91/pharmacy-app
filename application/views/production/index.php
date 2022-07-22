@@ -25,8 +25,30 @@
         </div>
         <div class="box-body" id="form_production" style="display: none;">
         </div>
-        <div class="box-body" id="data_production">
+        <div class="box-body" id="filter_date">
+          <div class="col-md-3">
+              <?=create_inputDate("filter_bulan=Filter Bulan",[
+                  "format"		=>"mm-yyyy",
+                  "viewMode"		=> "year",
+                  "minViewMode"	=> "year",
+                  "autoclose"		=>true],[
+                    "value"     => date('m-Y'),
+                    "readonly"  => true
+                  ])
+              ?>
+          </div>
+          <div class="col-md-3">
+          <?= create_select([
+                  "attr" => ["name" => "Kepem_id= Kepemilikan", "id" => "Kepem_id", "class" => "form-control", 'required' => true],
+                  "model" => [
+                          "m_ownership" => "get_ownership",
+                          "column" => ["own_id", "own_name"]
+                  ],
+          ]) ?>
+        </div>
+        <div class="col-md-12" id="data_production">
           <?=create_table("tb_production","M_production",["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
+        </div>
         </div>
         <div class="box-footer">
           <button class="btn btn-danger" id="btn-deleteChecked"><i class="fa fa-trash"></i> Delete</button>
@@ -51,7 +73,11 @@
             "scrollX": true,
             "ajax": {
                 "url": "<?php echo site_url('production/get_data')?>",
-                "type": "POST"
+                "type": "POST",
+                "data" : function(f){
+                      f.date = $("#filter_bulan").val();
+                      f.own = $("#Kepem_id").val();
+                }
             },
             'columnDefs': [
             {
@@ -67,6 +93,9 @@
                }
             }], 
         });
+        $("#filter_date,#Kepem_id").change(() => {
+          table.draw();
+        });
     });
     $("#btn-add").click(function() {
       $("#form_production").show();
@@ -74,6 +103,7 @@
     });
     function set_val(id) {      
       $("#form_production").show();
+      $('.stock').hide();
       $.ajax({
         'async': false,
         'type': "GET",
@@ -82,10 +112,8 @@
         'success': function(data) {
           $("#form_production").load("production/show_form",()=>{
             $.each(data,(ind,obj)=>{
-                $("#"+ind).val(obj);
-               
-            }); 
-            
+                $("#"+ind).val(obj);               
+            }); $("select[class*='select2']").trigger('change');             
           });
           item_hasil = data.hasil; //a
           item_produk = data.produk; 
@@ -127,4 +155,5 @@
           },'json');
         }
     });
+    <?= $this->config->item('footerJS')?>
 </script>

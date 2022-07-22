@@ -32,13 +32,14 @@ class Datatable
             }
         }
         if ( isset($search) && $search != "" ) {
-            $sWhere = "AND (";
+            $sWhere .= " AND (";
             for ( $i = 0 ; $i < count($aColumns) ; $i++ ) {
                     $sWhere .= " LOWER(".$aColumns[$i]."::TEXT) LIKE LOWER('%".pg_escape_string($search)."%') OR ";
             }
             $sWhere = substr_replace( $sWhere, "", - 3 );
             $sWhere .= ')';
         }
+        
         $CI =& get_instance();
         if (is_array($model)) {
             $CI->load->model($model['name'],'modelku');

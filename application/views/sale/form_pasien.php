@@ -3,6 +3,7 @@
         z-index: 2147483647;
     }
 </style>
+
 <div class="row">
     <?= form_open("", ["method" => "post", "id" => "form_pasien"]) ?>
     <div class="box" class="info-medis-pasien" style="display:none ;">
@@ -42,7 +43,7 @@
                     "attr" => ["name" => "surety_id=Penjamin", "id" => "surety_id", "class" => "form-control", "onchange" => "changeSurety()",
                     "required"  => true],
                     "model" => [
-                        "m_sale" => ["get_penjamin", ["0" => '0']],
+                        "m_sale" => ["get_penjamin", ["surety_active" => 't']],
                         "column"  => ["surety_id", "surety_name"]
                     ]
                 ]) ?>
@@ -61,7 +62,7 @@
                         "name" => "doctor_id=Dokter", "id" => "doctor_id", "class" => "form-control"
                     ],
                     "model" => [
-                        "m_sale" => "get_dokter",
+                        "m_sale" => ["get_dokter", ["employee_active" => 't']],
                         "column" => ["employee_id", "nama_dokter"]
                     ],
                 ]) ?>
@@ -71,12 +72,13 @@
                         ["id" => "t", "text" => "Ya"], ["id" => "f", "text" => "Tidak"]
                     ]
                 ]) ?>
-                <?= create_select2([
+                <?= create_select([
                     "attr" => ["name" => "own_id=Kepemilikan", "id" => "own_id", "class" => "form-control"],
                     "model" => [
                         "m_surety_ownership" => ["get_kepemilikan", ["0" => '0']],
                         "column"  => ["own_id", "own_name"]
-                    ]
+                    ],
+                    "selected" => "1"
                 ]) ?>
                 <?= create_select2([
                     "attr" => [
@@ -89,6 +91,9 @@
                         "column" => ["unit_id", "unit_name"]
                     ],
                 ]) ?>
+                 <?=create_input("sep= No SEP",[
+									"readonly"	=> true
+				])?>
                 <?=create_textarea("alamat=Alamat Lengkap")?>
 
             </div>
@@ -103,6 +108,7 @@
 </div>
 <script>
     $(document).ready(()=>{
+        $("select[class*='select2']").attr('style',"width:100% !important" );
         $(document).bind('keydown', 'f2', function assets() {
             $("#btn-save-pasien").click();
             return false;
@@ -128,7 +134,8 @@
                     $('#service_id').val(ui.item.srv_id);
                     $('#doctor_name').val(ui.item.par_name);
                     $('#unit_id_lay').val(ui.item.unit_id);
-                    $('#unit_id').val(ui.item.unit_id);                   
+                    $('#unit_id').val(ui.item.unit_id);  
+                    $('#sep').val(ui.item.sep_no);                   
                     if (ui.item.surety_id) {
                         $('#surety_id').val(ui.item.surety_id);
                     }
@@ -138,6 +145,7 @@
                     } else {
                         $('#sale_type option[value="1"]').attr('selected', true);
                     }
+                    $("select[class*='select2']").trigger("change");
                 }
             }
         }).data("ui-autocomplete")._renderItem = function(ul, item) {
@@ -238,7 +246,7 @@
                     $("#tpx_name").append(data.px_name+''); 
                     $("#px_alamat").append(data.alamat); 
                     $("#dokter_").append(data.dokter); 
-                    $("#surety_").append(data.surety);                
+                    $("#surety_").append(data.surety+' ('+data.sep+')');                
                     $("#margin_profit").val(data.profit);
                     $("#tno_rm").html($("#no_rm").val());
                     $("#tpx_name").html($("#nama").val());

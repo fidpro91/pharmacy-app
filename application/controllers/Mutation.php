@@ -122,11 +122,15 @@ class Mutation extends MY_Generator {
 			$detail[$x]['qty_request'] 		= $value['qty_send'];
 			$detail[$x]['expired_date'] 	= $value['expired_date'];
 			$this->db->insert("newfarmasi.mutation_detail",$detail[$x]);
+			$mutationDetailId = $this->db->insert_id();
 			$this->update_stock([
 				"unit_id" 	=> $data['unit_sender'],
 				"own_id"	=> $data['own_id'],
 				"item_id"	=> $value['item_id'],
-			],$value["qty_send"],"minus");
+			],$value["qty_send"],"minus",[
+				"mutation_detail_id"	=> $mutationDetailId,
+				"mutation_id"			=> $data['mutation_id'],
+			]);
 			$dataku["item_id"] = $value['item_id'];
 			$dataku["own_id"] = $data['own_id'];
 			$dataku["unit_id"] = $data['unit_sender'];
@@ -224,7 +228,7 @@ class Mutation extends MY_Generator {
 	public function update_stock($param,$qty,$type="plus",$fk=null)
 	{
 		if ($type=='minus') {
-			$data = $this->db->get_where("newfarmasi.stock_fifo",$param)->result();
+			$data = $this->db->where("stock_saldo>0",null)->get_where("newfarmasi.stock_fifo",$param)->result();
 			$stock_saldo=0;
 			foreach ($data as $key => $value) {
 				if ($value->stock_saldo >= $qty) {
@@ -239,6 +243,15 @@ class Mutation extends MY_Generator {
 						"unit_id"	=> $value->unit_id,
 						"own_id"	=> $value->own_id,
 					])->update("newfarmasi.stock");
+
+					$this->db->insert("newfarmasi.mutation_fifo",[
+						"mutation_id"		=> $fk['mutation_id'],
+						"item_id"			=> $value->item_id,
+						"mutationdetail_id" => $fk['mutation_detail_id'],
+						"expired_date" 		=> $value->expired_date,
+						"qty_item" 			=> $qty,
+					]);
+
 					break;
 				}elseif ($value->stock_saldo < $qty) {
 					$stock_saldo=($qty-$value->stock_saldo);
@@ -253,21 +266,40 @@ class Mutation extends MY_Generator {
 						"unit_id"	=> $value->unit_id,
 						"own_id"	=> $value->own_id,
 					])->update("newfarmasi.stock");
+
+					$this->db->insert("newfarmasi.mutation_fifo",[
+						"mutation_id"		=> $fk['mutation_id'],
+						"item_id"			=> $value->item_id,
+						"mutationdetail_id" => $fk['mutation_detail_id'],
+						"expired_date" 		=> $value->expired_date,
+						"qty_item" 			=> $value->stock_saldo,
+					]);
 				}
 			}
 		}elseif ($type='plus') {
-			$baru = $param;
-			$baru = [
-				"stock_in" 		=> $qty,
-				"stock_saldo" 	=> $qty,
-				key($fk)		=> array_values($fk)[0]  
-			];
-			$this->db->insert("newfarmasi.stock_fifo",$baru);
+
+			$dataFifo = $this->db->get_where("newfarmasi.mutation_fifo",[
+								"mutation_id"	=> $fk["mutation_id"],
+								"mutationdetail_id"	=> $fk["mutation_detail_id"],
+								"item_id"		=> $param["item_id"]
+							])->result();
+
+			foreach ($dataFifo as $key => $value) {
+				$this->db->insert("newfarmasi.stock_fifo",[
+					"item_id"	=> $param['item_id'],
+					"unit_id"	=> $param['unit_id'],
+					"own_id"	=> $param['own_id'],
+					"stock_in"		=> $dataFifo->qty_item,
+					"stock_saldo"	=> $dataFifo->qty_item,
+					"expired_date"	=> $dataFifo->expired_date,
+				]);
+			}
+
 			$stock= $this->db->order_by("id","desc")
 							->get_where("newfarmasi.stock",$param);
 			if ($stock->num_rows()>0) {
 				$stock=$stock->row();
-				$this->db->set("stock_summary","(stock_summary-".$qty.")",false);
+				$this->db->set("stock_summary","(stock_summary+".$qty.")",false);
 				$this->db->where([
 					"item_id"	=> $stock->item_id,
 					"unit_id"	=> $stock->unit_id,
@@ -290,14 +322,17 @@ class Mutation extends MY_Generator {
 				"unit_id" => $value->unit_sender,
 				"own_id"  => $value->own_id,
 				"item_id" => $value->item_id
-			],$value->qty_send,"plus");
+			],$value->qty_send,"plus",[
+				"mutation_detail_id"	=> $value->mutation_detil_id,
+				"mutation_id"			=> $value->mutation_id,
+			]);
 		}
 		$this->db->where('mutation_id',$id)->delete("newfarmasi.mutation_detail");
 		$this->db->where('mutation_id',$id)->delete("newfarmasi.mutation");
 		$resp = array();
-		if ($this->db->trans_status() === false) {
+		$err = $this->db->error();
+		if (!empty($err['message'])) {
 			$this->db->trans_rollback();
-			$err = $this->db->error();
 			$resp['message'] = $err['message'];
 		}else{
 			$this->db->trans_commit();

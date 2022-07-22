@@ -22,14 +22,14 @@
     	<?= create_select2([
 			"attr" => ["name" => "unit_require=Unit Minta", "id" => "unit_require", "class" => "form-control"],
 			"model" => [
-				"m_ms_unit" => ["get_ms_unit", ["0" => '0']],
+				"m_ms_unit" => ["get_ms_unit_all", ["0" => '0']],
 				"column"  => ["unit_id", "unit_name"]
 			]
 		]) ?>
     	<?= create_select2([
 			"attr" => ["name" => "unit_sender=Unit Tujuan", "id" => "unit_sender", "class" => "form-control"],
 			"model" => [
-				"m_ms_unit" => ["get_ms_unit", ["0" => '0']],
+				"m_ms_unit" => ["get_ms_unit", ["employee_id"=>$this->session->employee_id]],
 				"column"  => ["unit_id", "unit_name"]
 			]
 		]) ?>

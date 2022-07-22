@@ -32,6 +32,8 @@ class Production extends MY_Generator {
 				
 			if ($data['production_id']) {
 				$this->db->where('production_id',$data['production_id'])->update('newfarmasi.production',$input);
+				$this->db->where('production_id',$data['production_id'])->delete("newfarmasi.production_indetail");
+				$this->db->where('production_id',$data['production_id'])->delete("newfarmasi.production_outdetail");
 			}else{
 				$this->db->insert('newfarmasi.production',$input);
 				$data['production_id'] = $this->db->query("select currval('farmasi.production_production_id_seq') as id")->row('id');
@@ -91,9 +93,14 @@ class Production extends MY_Generator {
 	public function get_data()
 	{
 		$this->load->library('datatable');
-		$attr 	= $this->input->post();
+		$attr 	= $this->input->post(); 
 		$fields = $this->m_production->get_column();
-		$data 	= $this->datatable->get_data($fields,$filter = array(),'m_production',$attr);
+		$filter = [];
+		$filter['custom']="to_char(production_date,'MM-YYYY') = '".$attr['date']."'"; 
+	    if( $attr["own"] !=''){			
+			$filter = array_merge($filter, ["p.own_id" => $attr['own']]);
+		}		
+		$data 	= $this->datatable->get_data($fields,$filter,'m_production',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
         foreach ($data['dataku'] as $index=>$row) { 
@@ -137,11 +144,16 @@ class Production extends MY_Generator {
 
 	public function delete_row($id)
 	{
-		$this->db->where('production_id',$id)->delete("newfarmasi.production");
+		$this->db->trans_begin();		
+		$this->db->where('production_id',$id)->delete("newfarmasi.production_indetail");
+		$this->db->where('production_id',$id)->delete("newfarmasi.production_outdetail");
+		$this->db->where('production_id',$id)->delete("newfarmasi.production");		
 		$resp = array();
 		if ($this->db->affected_rows()) {
+			$this->db->trans_commit();
 			$resp['message'] = 'Data berhasil dihapus';
 		}else{
+			$this->db->trans_rollback();
 			$err = $this->db->error();
 			$resp['message'] = $err['message'];
 		}
@@ -150,15 +162,20 @@ class Production extends MY_Generator {
 
 	public function delete_multi()
 	{
+		$this->db->trans_begin();
 		$resp = array();
 		foreach ($this->input->post('data') as $key => $value) {
+			$this->db->where('production_id',$id)->delete("newfarmasi.production_indetail");
+			$this->db->where('production_id',$id)->delete("newfarmasi.production_outdetail");
 			$this->db->where('production_id',$value)->delete("newfarmasi.production");
 			$err = $this->db->error();
 			if ($err['message']) {
+				$this->db->trans_rollback();
 				$resp['message'] .= $err['message']."\n";
 			}
 		}
 		if (empty($resp['message'])) {
+			$this->db->trans_commit();
 			$resp['message'] = 'Data berhasil dihapus';
 		}
 		echo json_encode($resp);

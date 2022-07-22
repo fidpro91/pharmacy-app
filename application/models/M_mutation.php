@@ -65,8 +65,10 @@ class M_mutation extends CI_Model {
 							$condition = ["class" => "label-danger", "text" => "Minta"];
 						} else if($a == '2') {
 							$condition = ["class" => "label-primary", "text" => "Sedang Diproses"];
-						}else {
+						}else if($a == '3'){
 							$condition = ["class" => "label-success", "text" => "Terima"];
+						}else {
+							$condition = ["class" => "label-danger", "text" => "Batal"];
 						}
 						return label_status($condition);
 					}
@@ -79,7 +81,11 @@ class M_mutation extends CI_Model {
 	public function get_column_bon()
 	{
 		$col = [
-				"bon_no"=>["label"=>"Nomor"],
+				"bon_no"=>
+				[
+					"label"	=>"Nomor",
+					"field"	=> "coalesce(bon_no,mutation_no) as bon_no"
+				],
 				//"mutation_id",
 				"mutation_date"=>["label"=>"Tgl. Mutasi"],
 				//"user_require",
@@ -87,11 +93,13 @@ class M_mutation extends CI_Model {
 					"label" => "Status",
 					"custom" => function ($a) {
 						if ($a == '1') {
-							$condition = ["class" => "label-primary", "text" => "Meminta"];
+							$condition = ["class" => "label-primary", "text" => "Request"];
 						}else if ($a == '2') {
-							$condition = ["class" => "label-danger", "text" => "diproses"];
+							$condition = ["class" => "label-danger", "text" => "Sending"];
+						}else if($a == '3'){
+							$condition = ["class" => "label-success", "text" => "Received"];
 						}else {
-							$condition = ["class" => "label-success", "text" => "terima"];
+							$condition = ["class" => "label-danger", "text" => "Batal"];
 						}
 						return label_status($condition);
 					}
@@ -144,9 +152,9 @@ class M_mutation extends CI_Model {
 	public function get_item_autocomplete($where)
 	{
 		return $this->db->query(
-			"SELECT  mi.item_id,sf.expired_date,mi.item_package,mi.item_name as value,mi.item_code,mi.item_unitofitem,
-			(sf.stock_saldo)as total_stock
-			FROM newfarmasi.stock_fifo sf
+			"SELECT  mi.item_id,mi.item_package,mi.item_name as value,mi.item_code,mi.item_unitofitem,
+			(sf.stock_summary) as total_stock
+			FROM newfarmasi.stock sf
 			JOIN admin.ms_item mi ON sf.item_id = mi.item_id
 			where 0=0 $where"
 		)->result();

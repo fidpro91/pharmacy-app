@@ -15,9 +15,9 @@
 </div>
 
 <script type="text/javascript">
-    var table;
+    var tableStockProsess;
     $(document).ready(function() {
-        table = $('#tb_stock_process').DataTable({ 
+      tableStockProsess  = $('#tb_stock_process').DataTable({ 
           dom: 'Bfrtip',
             buttons: [
                   {
@@ -52,7 +52,7 @@
                 "type": "POST",
                 "data": function(f) {        
                 f.unit = $("#unit_id_depo").val();
-                f.own_id = $("#kempilikan_id").val();
+                f.own_id = $("#kepemilikan_id").val();
                 f.item_id = $("#item_id").val();
                 f.tgl = $("#tgl_transaksi").val();
             }
@@ -74,15 +74,24 @@
                }
             }], 
         });
-        $("#filter_kelas,#tgl_transaksi,#kempilikan_id").change(() => {
-      table.draw();
-    });
+
+        $("#unit_id_depo, #tgl_transaksi, #kepemilikan_id").bind("change",(e) => {
+          tableStockProsess.draw();
+          e.preventDefault();
+        });
+
     });
 
     $("#btn-back").click(function() {
       $("#data_stock").show();
+      $("#unit_id_depo, #tgl_transaksi, #kepemilikan_id").unbind("change");
       $("#kartu_Stok").html("");
       $("#kartu_Stok").hide();
+      $("#unit_id_depo, #kepemilikan_id").bind("change",(e) => {
+          table.draw();
+          e.preventDefault();
+        });
+      // location.reload();
     });
     <?= $this->config->item('footerJS') ?>
 </script>

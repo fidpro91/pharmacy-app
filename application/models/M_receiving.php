@@ -19,6 +19,7 @@ class M_receiving extends CI_Model {
 	{
 		$data = $this->db->query("
 				select rec_id as id_key  from newfarmasi.receiving r 
+				LEFT JOIN farmasi.ownership mr ON r.own_id = mr.own_id
 				left join admin.ms_supplier sp on r.supplier_id = sp.supplier_id
 				where 0=0 $sWhere
 			")->num_rows();

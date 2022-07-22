@@ -75,16 +75,25 @@ class M_opname extends CI_Model {
 		return $this->db->get_where("newfarmasi.opname",$where)->row();
 	}
 
-	public function get_stock_item($where)
+	public function get_stock_item($where,$unit_id=null,$own_id=null)
 	{
-		$where = " AND lower(mi.item_name) like lower('%$where%')";
-		$data = $this->db->query("SELECT mi.item_code,mi.item_name as value,mc.classification_name,mi.item_id,mi.item_name,COALESCE(p.price_sell::numeric,0) as harga,sum(COALESCE(sf.stock_saldo,0))total_stock FROM farmasi.v_obat_alkes mi
+		$xWhere ="";
+		if ($unit_id) {
+			$xWhere .= " AND sf.unit_id = '$unit_id'";
+		}
+
+		if ($own_id) {
+			$xWhere .= " AND sf.own_id = '$own_id'";
+		}
+
+		$data = $this->db->query("
+		SELECT mi.item_code,mi.item_name as value,mc.classification_name,mi.item_id,mi.item_name,COALESCE(p.price_sell::numeric,0) as harga,sum(COALESCE(sf.stock_saldo,0))total_stock FROM farmasi.v_obat_alkes mi
 		LEFT JOIN farmasi.price p ON mi.item_id = p.item_id
 		LEFT JOIN admin.ms_classification mc ON mi.classification_id = mc.classification_id
-		LEFT JOIN newfarmasi.stock_fifo sf ON mi.item_id = sf.item_id
+		LEFT JOIN newfarmasi.stock_fifo sf ON mi.item_id = sf.item_id $xWhere
 		where 0=0 $where
-		GROUP BY mi.item_id,mi.item_name,p.price_sell,mi.item_code,mc.classification_name")->result();
-
+		GROUP BY mi.item_id,mi.item_name,p.price_sell,mi.item_code,mc.classification_name
+		")->result();
 		return $data;
 	}
 }

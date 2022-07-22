@@ -126,9 +126,7 @@ class Bon_mutation extends MY_Generator {
 		$attr 	= $this->input->post();  
 		$fields = $this->m_mutation->get_column_bon();
         $filter = [];
-		if ($attr['unit'] !='') {
-			$filter = array_merge($filter, ["unit_require" => $attr['unit']]);
-		} 
+		$filter = array_merge($filter, ["unit_require" => ''.(!empty($attr['unit'])?$attr['unit']:0).'']);
 		if ($attr['status'] != ' ') {
 			$filter = array_merge($filter, ["mutation_status" => $attr['status']]);
 		} 
@@ -232,7 +230,7 @@ class Bon_mutation extends MY_Generator {
 	{
 		$data['model'] = $this->m_mutation->rules();
 		$data['norec'] = generate_code_transaksi([
-			"text"	=> "M/PBF/NOMOR/".date("d.m.Y"),
+			"text"	=> "M/BON/NOMOR/".date("d.m.Y"),
 			"table"	=> "newfarmasi.mutation",
 			"column"	=> "bon_no",
 			"delimiter" => "/",
@@ -264,6 +262,14 @@ class Bon_mutation extends MY_Generator {
 	public function konfirm_terima()
 	{
 		$this->db->trans_begin();
+		$dataMutation = $this->db->get_where("newfarmasi.mutation",[
+			"mutation_id" => $this->input->post("mutation_id")
+		])->row();
+		if ($dataMutation->mutation_status == '3') {
+			$this->session->set_flashdata('message','<div class="alert alert-warning alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data sudah dikonfirmasi oleh user lain</div>');
+			redirect("bon_mutation");
+			exit;
+		}
 		$this->db->where([
 			"mutation_id" => $this->input->post("mutation_id")
 		])->update("newfarmasi.mutation",[
@@ -286,8 +292,7 @@ class Bon_mutation extends MY_Generator {
 				"item_id" => $value->item_id,
 				"expired_date" => $value->expired_date,
 			];
-
-			$this->update_stock($dataku,$value->qty_send,"plus",["mutation_detail_id"=>$value->mutation_detil_id]);
+			$this->update_stock($dataku,$value->qty_send,"plus",["mutation_detail_id"=>$value->mutation_detil_id],$value);
 			$dataku["qty"] = $value->qty_send;
 			$dataku["trans_num"] = $value->mutation_no;
 			$dataku["trans_type"] = 3;
@@ -306,6 +311,30 @@ class Bon_mutation extends MY_Generator {
 	public function batal_terima()
 	{
 		$this->db->trans_begin();
+		$dataMutation = $this->db->join("newfarmasi.mutation_detail md","md.mutation_id=m.mutation_id")
+								->join("newfarmasi.stock_fifo sf","sf.mutation_detail_id=md.mutation_detil_id")
+								->get_where("newfarmasi.mutation m",[
+									"m.mutation_id" => $this->input->post("mutation_id")
+								]);
+		if ($dataMutation->num_rows()>0) {
+			$sukses=true;
+			foreach ($dataMutation->result() as $key => $value) {
+				if ($value->stock_saldo != $value->stock_in) {
+					$sukses=false;
+					break;
+				}
+			}
+			if (!$sukses) {
+				$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data Item Sudah Digunakan</div>');
+				redirect('bon_mutation');
+				exit();
+			}
+		}else{
+			$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data Item Belum Diterima</div>');
+			redirect('bon_mutation');
+			exit();
+		}
+
 		$this->db->where([
 			"mutation_id" => $this->input->post("mutation_id")
 		])->update("newfarmasi.mutation",[
@@ -332,7 +361,7 @@ class Bon_mutation extends MY_Generator {
 
 			$this->update_stock($dataku,$value->qty_send,"minus",["mutation_detail_id"=>$value->mutation_detil_id]);
 			$dataku["qty"] = $value->qty_send;
-			$dataku["trans_num"] = $value->mutation_no;
+			$dataku["trans_num"] = (!empty($value->mutation_no)?$value->mutation_no:$value->bon_no);
 			$dataku["trans_type"] = 3;
 			$this->insert_stock_process($dataku,"minus");
 		}
@@ -368,7 +397,7 @@ class Bon_mutation extends MY_Generator {
 			$dataku["debet"] 		= $dataku["qty"];
 			$dataku["stock_after"] 	= $dataku["qty"]+$stockAwal;
 			$dataku["total_price"] 	= ($harga*$dataku["qty"]);
-			$dataku["description"] 	= "Mutasi masuk No : ".$dataku["trans_num"];
+			$dataku["description"] 	= "Mutasi masuk No : ".$dataku["mutation_no"];
 			unset($dataku["qty"]);
 		}else{
 			$this->load->model("m_stock_process");
@@ -389,7 +418,7 @@ class Bon_mutation extends MY_Generator {
 			$dataku["debet"] 		= 0;
 			$dataku["stock_after"] 	= $stockAwal-$dataku["qty"];
 			$dataku["total_price"] 	= ($harga*$dataku["qty"]);
-			$dataku["description"] 	= "Batal Terima Mutasi No : ".$dataku["trans_num"];
+			$dataku["description"] 	= "Batal Terima Mutasi No : ".$dataku["mutation_no"];
 			unset($dataku["qty"]);
 		}
 		$this->db->insert("newfarmasi.stock_process",$dataku);
@@ -399,32 +428,24 @@ class Bon_mutation extends MY_Generator {
 	{
 		if ($type=='minus') {
 			$this->db->where($fk)->delete('newfarmasi.stock_fifo');
-			$this->db->set("stock_summary","(stock_summary-$qty)",false)
-					 ->update("newfarmasi.stock");
-		}elseif ($type='plus') {
-			$baru = [
-				"stock_in" 		=> $qty,
-				"stock_saldo" 	=> $qty,
-				key($fk)		=> array_values($fk)[0]  
-			];
-			$baru = array_merge($param,$baru);
-			$this->db->insert("newfarmasi.stock_fifo",$baru);
 			unset($param['expired_date']);
-			$where=$param;
-			$stock= $this->db->order_by("id","desc")
-							->get_where("newfarmasi.stock",$where);
-			if ($stock->num_rows()>0) {
-				$stock=$stock->row();
-				$this->db->set("stock_summary","(stock_summary-".$qty.")",false);
-				$this->db->where([
-					"item_id"	=> $stock->item_id,
-					"unit_id"	=> $stock->unit_id,
-					"own_id"	=> $stock->own_id,
-				])->update("newfarmasi.stock");
-			}else{
-				$param["stock_summary"] = $qty;
-				$this->db->insert("newfarmasi.stock",$param);
-			}
+			$this->db->set("stock_summary","(stock_summary-$qty)",false)
+					 ->where($param)
+					 ->update("newfarmasi.stock");
+
+			$this->db->where([
+				"item_id" 			=> $param["item_id"],
+				"mutationdetail_id" => $fk["mutation_detail_id"]
+			])->update("newfarmasi.mutation_fifo",[
+				"is_approved"	=> "false"
+			]);
+		}elseif ($type='plus') {
+			$this->db->where([
+				"item_id" 			=> $param["item_id"],
+				"mutationdetail_id" => $fk["mutation_detail_id"]
+			])->update("newfarmasi.mutation_fifo",[
+				"is_approved"	=> "true"
+			]);
 		}
 	}
 	public function cetak_permintaan($id,$act)

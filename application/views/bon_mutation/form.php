@@ -4,6 +4,9 @@
     	<?= create_inputDate("mutation_date=Tgl.Mutasi", [
 			"format" => "yyyy-mm-dd",
 			"autoclose" => "true"
+		],[
+			"value" 	=> date('Y-m-d'),
+			"readonly"	=> true
 		]) ?>
     	<?= create_input("bon_no",[
 							"value"=>$norec,
@@ -15,15 +18,15 @@
 		]) ?>
     	<?= create_select2([
 			"attr" => ["name" => "unit_require=Unit Minta", "id" => "unit_require", "class" => "form-control"],
-			// "model"=>["m_mutation" => ["get_user_in_unit",[0,"u.user_id"=>$this->session->user_id]],
-			"model"=>["m_mutation" => ["get_user_in_unit",[0=>0]],
+			"model" => [
+				"m_ms_unit" => ["get_ms_unit",["employee_id"=>$this->session->employee_id]],
 				"column"  => ["unit_id", "unit_name"]
 			]
 		]) ?>
     	<?= create_select2([
 			"attr" => ["name" => "unit_sender=Unit Tujuan", "id" => "unit_sender", "class" => "form-control"],
 			"model" => [
-				"m_ms_unit" => "get_ms_unit",
+				"m_ms_unit" => ["get_ms_unit_all",["unit_type in (34,32) "=>null]],
 				"column"  => ["unit_id", "unit_name"]
 			]
 		]) ?>

@@ -21,7 +21,7 @@
             <?= form_dropdown("unit_id_depo", $unit, '', 'class="form-control select2" id="unit_id_depo"') ?>
           </div>
           <div class="box-tools pull-left col-md-3" >
-            <?= form_dropdown("kepemilikan", $own, '', 'class="form-control select2" id="kempilikan_id"') ?>
+            <?= form_dropdown("kepemilikan", $own, '', 'class="form-control select2" id="kepemilikan_id"') ?>
           </div>
         </div>
         <div class="box-body" id="kartu_Stok" style="display: none;">
@@ -36,6 +36,8 @@
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
+<?= modal_open("modal_penyesuaian", "Penyesuaian_stok","modal-lg") ?>
+<?= modal_close() ?>
 <script type="text/javascript">
     var table;
     $(document).ready(function() {
@@ -49,7 +51,7 @@
                 "type": "POST",
                 "data" : function (f) {
                     f.unit_id = $("#unit_id_depo").val();
-                    f.own_id = $("#kempilikan_id").val();
+                    f.own_id = $("#kepemilikan_id").val();
                   }
             },
             'columnDefs': [
@@ -67,7 +69,7 @@
         });
     });
     
-    $("#unit_id_depo,#kempilikan_id").change(() => {
+    $("#unit_id_depo,#kepemilikan_id").change(() => {
 			table.draw();
 		});
 
@@ -126,5 +128,21 @@
         $("#kartu_Stok").find('#item_id').val(item_id);
       });
       $("#data_stock").hide();
+    }
+
+    function penyesuaian_stok(a,item_id) {
+      $("#modal_penyesuaian").modal('show');
+      $("#modal_penyesuaian").find(".modal-body").load("adjusment_stok/show_form/"+item_id+"/"+$("#unit_id_depo").val()+"/"+$("#kepemilikan_id").val(),function(){
+        let stock_1 = parseInt($(a).closest('tr').find("td:eq(6)").text());
+        let stock_2 = parseInt($(a).closest('tr').find("td:eq(7)").text());
+        let stock_3 = stock_1-stock_2;
+        $(".modal-title").text("Penyesuaian Stok#"+$(a).closest('tr').find("td:eq(3)").text());
+        $("#modal_penyesuaian").find("#stock_old").val(stock_2);
+        $("#modal_penyesuaian").find("#stock_after").val(stock_1);
+        $("#modal_penyesuaian").find("#different_qty").val(stock_3);
+        $("#modal_penyesuaian").find("#item_id").val(item_id);
+        $("#modal_penyesuaian").find("#unit_id").val($("#unit_id_depo").val());
+        $("#modal_penyesuaian").find("#own_id").val($("#kepemilikan_id").val());
+      });
     }
 </script>

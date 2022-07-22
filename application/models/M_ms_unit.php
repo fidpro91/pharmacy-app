@@ -5,7 +5,7 @@ class M_ms_unit extends CI_Model {
 	public function get_data($sLimit,$sWhere,$sOrder,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).",unit_id as id_key  from admin.ms_unit where 0=0 $sWhere $sOrder $sLimit
+				select ".implode(',', $aColumns).",unit_id as id_key from admin.ms_unit where unit_type in (34,32) $sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
 	}
@@ -13,7 +13,7 @@ class M_ms_unit extends CI_Model {
 	public function get_total($sWhere,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).",unit_id as id_key  from admin.ms_unit where 0=0 $sWhere
+				select ".implode(',', $aColumns).",unit_id as id_key from admin.ms_unit where unit_type in (34,32) $sWhere
 			")->num_rows();
 		return $data;
 	}
@@ -71,13 +71,27 @@ class M_ms_unit extends CI_Model {
 	{
 		return $this->db->where(["unit_active"=>'t'])
 						->where("unit_type in (34,32)")
-						->get_where("admin.ms_unit",$where)->result();
+						->join("hr.employee_on_unit eo","eo.unit_id=mu.unit_id")
+						->get_where("admin.ms_unit mu",$where)->result();
+	}
+
+	public function get_ms_unit_farmasi($where=[0=>0])
+	{
+		return $this->db->where(["unit_active"=>'t'])
+						->where("unit_type in (34,32)")
+						->get_where("admin.ms_unit mu",$where)->result();
 	}
 
 	public function get_ms_unit_all($where=[0=>0])
 	{
 		return $this->db->where(["unit_active"=>'t'])
 						->get_where("admin.ms_unit",$where)->result();
+	}
+
+	public function get_farmasi_unit($where=[0=>0])
+	{
+		return $this->db->where(["unit_active"=>'t'])
+						->get_where("farmasi.v_unit_farmasi",$where)->result();
 	}
 
 	public function find_one($where)

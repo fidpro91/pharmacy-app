@@ -5,7 +5,8 @@ class M_ms_item extends CI_Model {
 	public function get_data($sLimit,$sWhere,$sOrder,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).",item_id as id_key  from admin.ms_item where 0=0 $sWhere $sOrder $sLimit
+				select ".implode(',', $aColumns).",item_id as id_key from admin.ms_item 
+				where comodity_id in (1,2,3,6) $sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
 	}
@@ -13,7 +14,8 @@ class M_ms_item extends CI_Model {
 	public function get_total($sWhere,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).",item_id as id_key  from admin.ms_item where 0=0 $sWhere
+				select ".implode(',', $aColumns).",item_id as id_key from admin.ms_item 
+				where comodity_id in (1,2,3,6) $sWhere
 			")->num_rows();
 		return $data;
 	}

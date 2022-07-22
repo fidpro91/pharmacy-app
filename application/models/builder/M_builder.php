@@ -23,7 +23,10 @@ class M_builder extends CI_Model {
 
 	public function get_menu($parent_id='0')
 	{
-   		$menu = $this->db->where('menu_parent_id',$parent_id)->get('admin.ms_menu')->result();
+   		$menu = $this->db->where([
+			'menu_parent_id' => $parent_id,
+			"modul_id"		 => 6 
+		])->get('admin.ms_menu')->result();
    		return $menu;
 	}
 

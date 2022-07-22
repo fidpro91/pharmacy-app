@@ -44,6 +44,30 @@
 	var dataprice=null;
     $(document).ready(function() {
         table = $('#tb_ms_item').DataTable({
+          dom: 'Bfrtip',
+            buttons: [
+                  {
+                  "extend": 'pdf',
+                  "text": '<i class="fa fa-file-pdf-o" style="color: green;"></i> PDF',
+                  "titleAttr": 'PDF',                               
+                  "action": newexportaction,
+                  "orientation" : 'landscape',
+                  "pageSize" : 'LEGAL',
+                  "download": 'open'
+                },
+                {
+                  "extend": 'excel',
+                  "text": '<i class="fa fa-file-excel-o" style="color: green;"></i> EXCEL',
+                  "titleAttr": 'Excel',                               
+                  "action": newexportaction
+                },
+                {
+                  "extend": 'print',
+                  "text": '<i class="fa fa-print" style="color: green;"></i> CETAK',
+                  "titleAttr": 'Print',                                
+                  "action": newexportaction
+                }
+            ], 
             "processing": true,
             "serverSide": true,
             "order": [],

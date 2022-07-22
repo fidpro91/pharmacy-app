@@ -38,7 +38,7 @@
 					<div class="col-md-6">
 						<?=create_select2([
 							"attr" =>["name"=>"receiver_unit=Unit penerima","id"=>"receiver_unit","class"=>"form-control"],
-							"model"=>["m_ms_unit" => ["get_ms_unit",["0"=>'0']],
+							"model"=>["m_ms_unit" => ["get_ms_unit",			["employee_id"=>$this->session->employee_id]],
 											"column"  => ["unit_id","unit_name"]
 										]
 						])?>
@@ -53,9 +53,11 @@
 							"attr"=>["name"=>"pay_type=Tipe pembayaran","id"=>"pay_type","class"=>"form-control"],
 							"option"=> [["id"=>'1',"text"=>"Tunai"],["id"=>'2',"text"=>"Kredit"]],
 						])?>
-						<?=create_select([
-							"attr"=>["name"=>"ppn","id"=>"ppn","class"=>"form-control"],
-							"option"=> [["id"=>'0',"text"=>"Harga Include PPN"],["id"=>'10',"text"=>"PPN 10%"]],
+						<?=create_select2([
+							"attr" =>["name"=>"ppn=PPN","id"=>"ppn","class"=>"form-control"],
+							"model"=>["m_setting_app" => ["get_setting_app",["setting_type"=>'1']],
+											"column"  => ["setting_id","setting_name"]
+										],
 						])?>
 					</div>
 				</div>

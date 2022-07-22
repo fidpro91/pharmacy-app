@@ -6,13 +6,13 @@ class M_stock extends CI_Model {
 	{
 		$data = $this->db->query("
 				select * from (
-					select ".implode(',', $aColumns).",id as id_key,sum(sf.stock_saldo)total_stock_fifo 
+					select ".implode(',', $aColumns).",id as id_key,sum(coalesce(sf.stock_saldo,0))total_stock_fifo 
 					from newfarmasi.stock s
-					join newfarmasi.stock_fifo sf on s.item_id = sf.item_id and s.own_id = sf.own_id and s.unit_id = sf.unit_id 
+					left join newfarmasi.stock_fifo sf on s.item_id = sf.item_id and s.own_id = sf.own_id and s.unit_id = sf.unit_id 
 					join admin.ms_unit mu on mu.unit_id = s.unit_id
 					join farmasi.ownership ow on ow.own_id = s.own_id
 					join admin.ms_item mi on mi.item_id = s.item_id
-					where 0=0 $sWhere 
+					where 0=0 $sWhere
 					group by ".implode(',', $aColumns).",id
 				)x
 				$sOrder $sLimit
@@ -24,7 +24,7 @@ class M_stock extends CI_Model {
 	{
 		$data = $this->db->query("
 				select distinct ".implode(',', $aColumns).",id as id_key from newfarmasi.stock s
-				join newfarmasi.stock_fifo sf on s.item_id = sf.item_id and s.own_id = sf.own_id and s.unit_id = sf.unit_id 
+				left join newfarmasi.stock_fifo sf on s.item_id = sf.item_id and s.own_id = sf.own_id and s.unit_id = sf.unit_id 
 				join admin.ms_unit mu on mu.unit_id = s.unit_id
 				join farmasi.ownership ow on ow.own_id = s.own_id
 				join admin.ms_item mi on mi.item_id = s.item_id
@@ -94,5 +94,18 @@ class M_stock extends CI_Model {
 	public function find_one($where)
 	{
 		return $this->db->get_where("newfarmasi.stock",$where)->row();
+	}
+
+	public function get_stock_all_unit()
+	{
+		$data = $this->db->query("
+			SELECT mi.item_id,mi.item_name,mi.item_unitofitem,
+			json_agg((so.unit_id,so.stock_summary))detail
+			FROM admin.ms_item mi
+			LEFT JOIN newfarmasi.stock so ON mi.item_id = so.item_id
+			WHERE comodity_id = 1 AND item_active = 't'
+			GROUP BY mi.item_id,mi.item_code,mi.item_unitofitem
+		")->result();
+		return $data;
 	}
 }

@@ -61,9 +61,11 @@ class Distribusi_bon extends MY_Generator {
 		$input = [
 			"user_sender" 		=> $this->session->user_id,
 			"mutation_status"	=> "2",
-			"unit_sender"		=> $this->input->post("unit_sender")
+			"unit_sender"		=> $this->input->post("unit_sender"),
+			"mutation_no"		=> $this->get_no_mutation()
 		];
 		$this->db->where('mutation_id',$data['mutation_id'])->update('newfarmasi.mutation',$input);
+		$data["mutation_no"] = $input["mutation_no"];
 		$detail=$this->update_mutation($data);
 		$err = $this->db->error();
 		if ($err['message'] && $detail==false) {
@@ -75,6 +77,19 @@ class Distribusi_bon extends MY_Generator {
 		}
 		redirect('Distribusi_bon');
 
+	}
+
+	public function get_no_mutation()
+	{
+		return generate_code_transaksi([
+			"text"	=> "M/NOMOR/".date("d.m.Y"),
+			"table"	=> "newfarmasi.mutation",
+			"column"	=> "mutation_no",
+			"delimiter" => "/",
+			"number"	=> "2",
+			"lpad"		=> "4",
+			"filter"	=> ""
+		]);
 	}
 
 	public function update_mutation($data)
@@ -97,7 +112,7 @@ class Distribusi_bon extends MY_Generator {
 				"unit_id" 	=> $data['unit_sender'],
 				"own_id"	=> $data['own_id'],
 				"item_id"	=> $mutationDetail->item_id,
-			],$mutationDetail->qty_send,"minus");
+			],$mutationDetail->qty_send,"minus",null,$mutationDetail);
 			$dataku["item_id"] = $mutationDetail->item_id;
 			$dataku["own_id"] = $data['own_id'];
 			$dataku["unit_id"] = $data['unit_sender'];
@@ -111,7 +126,7 @@ class Distribusi_bon extends MY_Generator {
         return $sukses;
 	}
 
-	public function update_stock($param,$qty,$type="plus",$fk=null)
+	public function update_stock($param,$qty,$type="plus",$fk=null,$mutation_detail)
 	{
 		if ($type=='minus') {
 			$data = $this->db->get_where("newfarmasi.stock_fifo",$param)->result();
@@ -129,6 +144,13 @@ class Distribusi_bon extends MY_Generator {
 						"unit_id"	=> $value->unit_id,
 						"own_id"	=> $value->own_id,
 					])->update("newfarmasi.stock");
+					$this->db->insert("newfarmasi.mutation_fifo",[
+						"mutation_id"		=> $mutation_detail->mutation_id,
+						"item_id"			=> $value->item_id,
+						"mutationdetail_id" => $mutation_detail->mutation_detil_id,
+						"expired_date" 		=> $value->expired_date,
+						"qty_item" 			=> $qty,
+					]);
 					break;
 				}elseif ($value->stock_saldo < $qty) {
 					$stock_saldo=($qty-$value->stock_saldo);
@@ -137,16 +159,25 @@ class Distribusi_bon extends MY_Generator {
 							->update("newfarmasi.stock_fifo",[
 								"stock_saldo" => 0
 							]);
+
 					$this->db->set("stock_summary","(stock_summary-".$value->stock_saldo.")",false);
 					$this->db->where([
 						"item_id"	=> $value->item_id,
 						"unit_id"	=> $value->unit_id,
 						"own_id"	=> $value->own_id,
 					])->update("newfarmasi.stock");
+
+					$this->db->insert("newfarmasi.mutation_fifo",[
+						"mutation_id"		=> $mutation_detail->mutation_id,
+						"item_id"			=> $value->item_id,
+						"mutationdetail_id" => $mutation_detail->mutation_detil_id,
+						"expired_date" 		=> $value->expired_date,
+						"qty_item" 			=> $value->stock_saldo,
+					]);
 				}
 			}
 		}elseif ($type='plus') {
-			$baru = $param;
+			/* $baru = $param;
 			$baru = [
 				"stock_in" 		=> $qty,
 				"stock_saldo" 	=> $qty,
@@ -166,7 +197,7 @@ class Distribusi_bon extends MY_Generator {
 			}else{
 				$param["stock_summary"] = $qty;
 				$this->db->insert("newfarmasi.stock",$param);
-			}
+			} */
 		}
 	}
 
@@ -190,7 +221,7 @@ class Distribusi_bon extends MY_Generator {
 		$dataku["debet"] 		= 0;
 		$dataku["stock_after"] 	= $stockAwal-$dataku["qty"];
 		$dataku["total_price"] 	= ($harga*$dataku["qty"]);
-		$dataku["description"] 	= "Mutasi Keluar No : ".$dataku["trans_num"];
+		$dataku["description"] 	= "Mutasi Keluar No : ".$dataku["mutation_no"];
 		unset($dataku["qty"]);
 		$this->db->insert("newfarmasi.stock_process",$dataku);
 	}
@@ -203,9 +234,7 @@ class Distribusi_bon extends MY_Generator {
 		list($tgl1,$tgl2) = explode('/', $attr['tgl']); 
         $filter = [];	
 		$filter["custom"]= "(date(mutation_date) between '$tgl1' and '$tgl2')";	
-		if ($attr['unit'] !='') {
-			$filter = array_merge($filter, ["unit_sender" => $attr['unit']]);
-		}	
+		$filter = array_merge($filter, ["unit_sender" => ''.(!empty($attr['unit'])?$attr['unit']:0).'']);
 		if($attr['sts'] != ' '){
 			$filter =array_merge($filter, ["mutation_status" => $attr['sts']]);
 		}
@@ -228,7 +257,7 @@ class Distribusi_bon extends MY_Generator {
             $obj[] = create_btnAction([
 				"Konfirmasi"=>[
 					"btn-act" => "konfirm_distribusi(".$row['id_key'].")",
-					"btn-icon" => "fa fa-pencil",
+					"btn-icon" => "fa fa-send",
 					"btn-class" => "btn-info"
                 ],
                 "Cetak"=>[

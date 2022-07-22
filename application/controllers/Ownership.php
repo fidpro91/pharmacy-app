@@ -6,6 +6,7 @@ class Ownership extends MY_Generator {
 	public function __construct()
 	{
 		parent::__construct();
+		$this->datascript->lib_inputMask();
 		$this->load->model('m_ownership');
 	}
 

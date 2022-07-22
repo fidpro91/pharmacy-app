@@ -6,6 +6,7 @@ class Employee extends MY_Generator {
 	public function __construct()
 	{
 		parent::__construct();
+		$this->datascript->lib_select2();
 		$this->load->model('m_employee');
 	}
 
@@ -91,6 +92,42 @@ class Employee extends MY_Generator {
             	}
             }
             $obj[] = create_btnAction(["update","delete"],$row['id_key']);
+            $records["aaData"][] = $obj;
+            $no++;
+        }
+        $data = array_merge($data,$records);
+        unset($data['dataku']);
+        echo json_encode($data);
+	}
+
+	public function get_data3()
+	{
+		$this->load->library('datatable');
+		$attr 	= $this->input->post();
+		$fields = $this->m_employee->get_column2();
+		$filter = [];
+		if ($attr['unit_id']>0) {
+			$filter = [
+				"custom" => "employee_id not in (select employee_id from hr.employee_on_unit where unit_id = '".$attr['unit_id']."')"
+			];
+		}
+		$data 	= $this->datatable->get_data($fields,$filter,'m_employee',$attr);
+		$records["aaData"] = array();
+		$no   	= 1 + $attr['start']; 
+        foreach ($data['dataku'] as $index=>$row) { 
+            $obj = array($row['id_key'],$no);
+            foreach ($fields as $key => $value) {
+            	if (is_array($value)) {
+            		if (isset($value['custom'])){
+            			$obj[] = call_user_func($value['custom'],$row[$key]);
+            		}else{
+            			$obj[] = $row[$key];
+            		}
+            	}else{
+            		$obj[] = $row[$value];
+            	}
+            }
+            $obj[] = "";
             $records["aaData"][] = $obj;
             $no++;
         }
