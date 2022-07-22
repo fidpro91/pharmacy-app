@@ -36,6 +36,15 @@ class Opname_header extends MY_Generator {
 					"type" => 'autocomplete',
 					"width" => '50%',
 				];
+			}elseif($value=='qty_data'){
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"attr" => [
+						"readonly"	=> true
+					]
+				];
 			}else{
 				$row[] = [
 					"id" => $value,
@@ -177,7 +186,9 @@ class Opname_header extends MY_Generator {
 		$data->detail = $this->db
 							 ->join("admin.ms_item mi","mi.item_id=op.item_id")
 							 ->select("mi.item_name as label_item_id,mi.item_id,op.*")
-							 ->get_where("newfarmasi.opname op")->result();
+							 ->get_where("newfarmasi.opname op",[
+								"opname_header_id" => $id
+							 ])->result();
 		echo json_encode($data);
 	}
 

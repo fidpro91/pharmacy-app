@@ -96,15 +96,16 @@ class M_stock extends CI_Model {
 		return $this->db->get_where("newfarmasi.stock",$where)->row();
 	}
 
-	public function get_stock_all_unit()
+	public function get_stock_all_unit($own_id)
 	{
 		$data = $this->db->query("
 			SELECT mi.item_id,mi.item_name,mi.item_unitofitem,
 			json_agg((so.unit_id,so.stock_summary))detail
 			FROM admin.ms_item mi
-			LEFT JOIN newfarmasi.stock so ON mi.item_id = so.item_id
-			WHERE comodity_id = 1 AND item_active = 't'
+			LEFT JOIN newfarmasi.stock so ON mi.item_id = so.item_id and so.own_id = '$own_id'
+			WHERE comodity_id = 1 AND item_active = 't' 
 			GROUP BY mi.item_id,mi.item_code,mi.item_unitofitem
+			ORDER BY mi.item_name
 		")->result();
 		return $data;
 	}

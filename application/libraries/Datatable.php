@@ -50,7 +50,7 @@ class Datatable
             $dataResource   = 'get_data';
             $CI->load->model($model,'modelku');
         }
-
+        
         $iTotalRecords  = $CI->modelku->{$countData}($sWhere,$aColumns);
         $length = intval($attr['length']);
         $length = $length < 0 ? $iTotalRecords : $length;
