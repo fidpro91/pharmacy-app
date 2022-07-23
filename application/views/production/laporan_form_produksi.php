@@ -22,7 +22,7 @@
 <br>
  </div> 
 <?=form_open("laporan_produksi/show_laporan",["method"=>"post","id"=>"formlaporan","target"=>"blank"])?>      
-        <div class="box-body" id="jaspel">        
+        <div class="box-body" id="produksi">        
           <div class="col-md-6" >
           <?=create_inputDaterange("tanggal",["locale"=>["format"=>"YYYY-MM-DD","separator"=>"/"]])?>          
           <?=create_select2(["attr"=>["name"=>"unit_name=UNIT","id"=>"unit_name","class"=>"form-control"],
