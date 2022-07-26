@@ -53,7 +53,7 @@
 						<th colspan="3" style="text-align: center;" id="tno_invoice"><?=$sale_num?></th>
 					</tr>
 					<tr>
-						<td style="width:30%;">NORM</td>
+						<td style="width:40%;">NORM</td>
 						<td style="width:5%;">:</td>
 						<td class="pull-right" style="width:100%;" id="tno_rm"></td>
 					</tr>
@@ -81,6 +81,11 @@
 						<td style="width:30%;">MARGIN OBAT</td>
 						<td style="width:5%;">:</td>
 						<td class="pull-right" style="width:100%;" id="labelProfit"></td>
+					</tr>
+					<tr>
+						<td style="width:30%;">Embalase Item (Non Racikan)</td>
+						<td style="width:5%;">:</td>
+						<td class="pull-right" style="width:100%;" id="labelEmbalase"></td>
 					</tr>
 				</table>
 			</div>
@@ -167,10 +172,12 @@
 	$("body").on("focus", ".autocom_item_id", function() {
 	    $(this).autocomplete({
             source: "<?php echo site_url('sale/get_item');?>/"+$("#unit_id_depo").val(),
+			autoFocus: true,
             select: function (event, ui) {
                 $(this).closest('tr').find('.item_id').val(ui.item.item_id);
 				$(this).closest('tr').find('.stock').val(ui.item.total_stock);
                 $(this).closest('tr').find('.sale_price').val(ui.item.harga);
+                $(this).closest('tr').find('.sale_qty').focus();
             }
         }).data("ui-autocomplete")._renderItem = function (ul, item) {
             return $("<li>")

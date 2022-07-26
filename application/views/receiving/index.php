@@ -77,6 +77,7 @@
     "name"      => "close-update",
     "id"        => "close-update",
     "class"     => "btn btn-danger",
+    "data-dismiss"     => "modal",
     "type"      => "button",
     "content"   => "Cancel"
 ])

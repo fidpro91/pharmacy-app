@@ -67,13 +67,20 @@ $("body").on("change", ".tb_list_item_racikan", function() {
         $(".autocom_item_id:last").focus();
         e.stopImmediatePropagation();
         return false;
-    }); 
-    /* $(this).find("input").on('keydown', null, 'Ctrl+Shift+s', function(e){
+    });
+    $(this).find("input").on('keydown', null, 'ctrl+s', function(e){
         $("#btn-save-racikan").click();
-        e.preventDefault();
         e.stopImmediatePropagation();
         return false;
-    });  */
+    });
+    $(this).find("input:not([class*='autocom_item_id'])").on("keydown",function(e) {
+        if (e.which == 13) {
+            $(".btnplus_list_item_racikan").click();
+            $(".autocom_item_id:last").focus();
+            e.stopImmediatePropagation();
+            return false;
+        }
+    });
 });
 
 $("#btn-save-racikan").click(()=>{
