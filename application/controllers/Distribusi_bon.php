@@ -258,7 +258,7 @@ class Distribusi_bon extends MY_Generator {
 				"Konfirmasi"=>[
 					"btn-act" => "konfirm_distribusi(".$row['id_key'].")",
 					"btn-icon" => "fa fa-send",
-					"btn-class" => "btn-info"
+					"btn-class" => "btn-success"
                 ],
                 "Cetak"=>[
 					"btn-act" => "cetak_struk(".$row['id_key'].")",

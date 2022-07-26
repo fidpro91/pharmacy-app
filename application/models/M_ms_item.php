@@ -36,6 +36,24 @@ class M_ms_item extends CI_Model {
 		return $col;
 	}
 
+	public function get_column_exp()
+	{
+		$col = [
+			"item_id",
+			"item_name"			=>["label"=>"Nama"],
+			"item_unitofitem"	=>["label"=>"satuan"],
+			"long_ed"			=>
+				[
+					"label"		=>"Jatuh Tempo",
+					"custom"	=> function($a){
+						return $a["long_ed"]." Hari";
+					}
+				],
+			"expired_date",
+		];
+		return $col;
+	}
+
 	public function rules()
 	{
 		$data = [
@@ -162,5 +180,37 @@ class M_ms_item extends CI_Model {
 		WHERE i.item_id =$id")->result();
 		return $data;
 
+	}
+
+	public function get_item_exp($sLimit,$sWhere,$sOrder,$aColumns)
+	{
+		$data = $this->db->query("
+				select ".implode(',', $aColumns).",item_id as id_key from (
+					SELECT mi.item_id,mi.item_name,mi.item_unitofitem,sf.unit_id,sf.own_id,expired_date,date_part('day',expired_date::TIMESTAMP - now()::TIMESTAMP) long_ed
+					FROM newfarmasi.stock_fifo sf
+					JOIN admin.ms_item mi ON sf.item_id = mi.item_id
+					WHERE expired_date IS NOT NULL AND expired_date != '1970-01-01' 
+					AND date_part('day',expired_date::TIMESTAMP - now()::TIMESTAMP) < 200
+				)x
+				where 0=0
+				$sWhere $sOrder $sLimit
+			")->result_array();
+		return $data;
+	}
+
+	public function get_total_exp($sWhere,$aColumns)
+	{
+		$data = $this->db->query("
+				select ".implode(',', $aColumns).",item_id as id_key from (
+					SELECT mi.item_id,mi.item_name,mi.item_unitofitem,sf.unit_id,sf.own_id,expired_date,date_part('day',expired_date::TIMESTAMP - now()::TIMESTAMP) long_ed
+					FROM newfarmasi.stock_fifo sf
+					JOIN admin.ms_item mi ON sf.item_id = mi.item_id
+					WHERE expired_date IS NOT NULL AND expired_date != '1970-01-01' 
+					AND date_part('day',expired_date::TIMESTAMP - now()::TIMESTAMP) < 200
+				)x
+				where 0=0
+				$sWhere
+			")->num_rows();
+		return $data;
 	}
 }

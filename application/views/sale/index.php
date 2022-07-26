@@ -97,6 +97,7 @@
           'searchable': false,
           'orderable': false,
         },
+        { "width": "10%", "targets": -1 },
         {
           'targets': 0,
           'className': 'dt-body-center',
@@ -119,13 +120,13 @@
   $("#btn-add").click(function() {
     $("#form_sale").show();
     $("#data_sale").hide();
-    $("#form_sale").load("sale/show_form");
+    $("#form_sale").load("sale/show_form/"+$("#unit_id_depo").val());
   });
 
   function set_val(id) {
     $("#form_sale").show();
     $.get('sale/find_one/' + id, (data) => {
-      $("#form_sale").load("sale/show_form", () => {
+      $("#form_sale").load("sale/show_form/"+$("#unit_id_depo").val(), () => {
         $.each(data, (ind, obj) => {
           $("#" + ind).val(obj);
         });

@@ -138,7 +138,7 @@ class Receiving_retur extends MY_Generator {
 				"print" => [
 					"btn-act" => "cetak(" . $row['id_key'] . ",3)",
 					"btn-icon" => "fa fa-print",
-					"btn-class" => "btn-info"
+					"btn-class" => "btn-default"
 				],
 			],$row['id_key']);
             $records["aaData"][] = $obj;

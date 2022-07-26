@@ -11,6 +11,20 @@
 			</div>
 		</div>
 	</div>
+	<div class="col-md-8">
+		<div class="box">
+			<div class="box-header with-border">
+				<h3 class="box-title">Obat NonRacikan</h3>
+				<div class="box-tools pull-right">
+					<button type="button" id="btn-nonracikan" class="btn btn-info">
+					<i class="fa fa-plus"></i> Tambah</button>
+				</div>
+			</div>
+			<div class="box-body" style="min-height: 300px !important;">
+				<div class="list_obat_nonracikan2"></div>
+			</div>
+		</div>
+	</div>
 	<div class="col-md-4">
 		<div class="box">
 			<div class="box-header with-border">
@@ -24,22 +38,7 @@
 				<div class="list_obat_racikan"></div>
 			</div>
 		</div>
-	</div>
-	<div class="col-md-4">
-		<div class="box">
-			<div class="box-header with-border">
-				<h3 class="box-title">Obat NonRacikan</h3>
-				<div class="box-tools pull-right">
-					<button type="button" id="btn-nonracikan" class="btn btn-info">
-					<i class="fa fa-plus"></i> Tambah</button>
-				</div>
-			</div>
-			<div class="box-body">
-				<div class="list_obat_nonracikan2"></div>
-			</div>
-		</div>
-	</div>
-	<div class="col-md-4">
+		
 		<div class="box">
 			<div class="box-header with-border">
 				<a href="#" class="text-muted" onclick="edit_px()"><i class="fa fa-gear"></i></a>
@@ -53,7 +52,7 @@
 						<th colspan="3" style="text-align: center;" id="tno_invoice"><?=$sale_num?></th>
 					</tr>
 					<tr>
-						<td style="width:30%;">NORM</td>
+						<td style="width:40%;">NORM</td>
 						<td style="width:5%;">:</td>
 						<td class="pull-right" style="width:100%;" id="tno_rm"></td>
 					</tr>
@@ -82,6 +81,11 @@
 						<td style="width:5%;">:</td>
 						<td class="pull-right" style="width:100%;" id="labelProfit"></td>
 					</tr>
+					<tr>
+						<td style="width:30%;">Embalase Item (Non Racikan)</td>
+						<td style="width:5%;">:</td>
+						<td class="pull-right" style="width:100%;" id="labelEmbalase"></td>
+					</tr>
 				</table>
 			</div>
 		</div>
@@ -94,6 +98,9 @@
 				</li>
 				<li class="list-group-item">
 					<b>Sub Total Racikan</b> <a class="pull-right" id="sub_total_racikan" isi="0">0</a>
+				</li>
+				<li class="list-group-item">
+					<b>Biaya Non Racikan</b> <a class="pull-right" id="total_biaya_nonracikan" isi="0">0</a>
 				</li>
 				<li class="list-group-item">
 					<b>Sub Total Non Racikan</b> <a class="pull-right" id="sub_total_nonracikan" isi="0">0</a>
@@ -120,9 +127,9 @@
 			<button class="btn btn-warning" type="button" id="btn-cancel">Cancel</button>
 		</div>
 	</div>
-<?= modal_open("modal_racikan", "List Item Racikan | [Ctrl+a]Add Item | [Ctrl+Shift+s]Save","modal-lg") ?>
+<?= modal_open("modal_racikan", "List Item Racikan | [Ctrl+a]Add Item | [Ctrl+s]Save","modal-lg") ?>
 <?= modal_close() ?>
-<?= modal_open("modal_nonracikan", "List Item Non Racikan | [Ctrl+a]Add Item | [Ctrl+Shift+s]Save","modal-lg") ?>
+<?= modal_open("modal_nonracikan", "List Item Non Racikan | [Ctrl+a]Add Item | [Ctrl+s]Save","modal-lg") ?>
 <?= modal_close() ?>
 </div>
 <script type="text/javascript">
@@ -155,22 +162,24 @@
 	});
 
 	function hitungTotal_terima(row) {
-			let stockunit = parseInt($(row).closest('tr').find(".stock").val());
-			let jml_terima = parseInt(($.isNumeric($(row).val())?$(row).val():0));
-			if (jml_terima>stockunit) {
-				alert("Jumlah item melebihi stock");
-				$(row).val(0);
-				return false;
-			}
+		let stockunit = parseInt($(row).closest('tr').find(".stock").val());
+		let jml_terima = parseInt(($.isNumeric($(row).val())?$(row).val():0));
+		if (jml_terima>stockunit) {
+			alert("Jumlah item melebihi stock");
+			$(row).val(0);
+			return false;
 		}
+	}
 	
 	$("body").on("focus", ".autocom_item_id", function() {
 	    $(this).autocomplete({
             source: "<?php echo site_url('sale/get_item');?>/"+$("#unit_id_depo").val(),
+			autoFocus: true,
             select: function (event, ui) {
                 $(this).closest('tr').find('.item_id').val(ui.item.item_id);
 				$(this).closest('tr').find('.stock').val(ui.item.total_stock);
                 $(this).closest('tr').find('.sale_price').val(ui.item.harga);
+                $(this).closest('tr').find('.sale_qty').focus();
             }
         }).data("ui-autocomplete")._renderItem = function (ul, item) {
             return $("<li>")
@@ -209,6 +218,8 @@
 				$(a).closest('div').remove();
 				$("#sub_total_nonracikan").text(formatNumeric(data.total));
 				$("#sub_total_nonracikan").attr("isi",(data.total));
+				$("#total_biaya_nonracikan").text(formatNumeric(data.embalase));
+				$("#total_biaya_nonracikan").attr("isi",(data.embalase));
 				grandTotal();
 			}
 		});
@@ -245,7 +256,7 @@
 			$.blockUI();
 			$.ajax({
 				'type': "post",
-				'data'	: $(this).serialize()+"&unit_id="+$("#unit_id_depo").val(),
+				'data'	: $(this).serialize()+"&unit_id="+$("#unit_id_depo").val()+"&embalase_item="+$("#total_biaya_nonracikan").attr('isi'),
 				'dataType': 'json',
 				'url': "sale/save",
 				'success': function (data) {
@@ -284,7 +295,9 @@
 	function grandTotal() {
 		let totalNonRacikan = parseFloat($.isNumeric($('#sub_total_nonracikan').attr('isi'))?$('#sub_total_nonracikan').attr('isi'):0);
 		let totalRacikan = parseFloat($.isNumeric($('#sub_total_racikan').attr('isi'))?$('#sub_total_racikan').attr('isi'):0);
-		let totalAll = totalNonRacikan+totalRacikan;
+		let BiayaRacikan = parseFloat($.isNumeric($('#total_biaya_racikan').attr('isi'))?$('#total_biaya_racikan').attr('isi'):0);
+		let BiayaNonRacikan = parseFloat($.isNumeric($('#total_biaya_nonracikan').attr('isi'))?$('#total_biaya_nonracikan').attr('isi'):0);
+		let totalAll = totalNonRacikan+totalRacikan+BiayaRacikan+BiayaNonRacikan;
 		let embalase = totalAll/100;
 		embalase = Math.abs(Math.ceil(embalase)-embalase)*100;
 		totalAll = totalAll+embalase;
@@ -303,6 +316,5 @@
         }
     });
 
-	
 	<?= $this->config->item('footerJS') ?>
 </script>

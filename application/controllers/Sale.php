@@ -41,25 +41,25 @@ class Sale extends MY_Generator
 		}
 		$input['unit_id'] = $data['unit_id'];
 		$input['user_id'] = ($this->session->user_id ? $this->session->user_id : 21);
-		$input['sale_num'] = $this->get_no_sale();
+		$input['sale_num'] = $this->get_no_sale($data['unit_id']);
 		$racikan = $this->session->userdata('itemRacik');
 		$nonRacikan = $this->session->userdata('itemNonRacik');
-
 		if (!empty($racikan)) {
-			$totalRacikan = array_sum(array_column($racikan, 'total'));
-			$totalService = array_sum(array_column($racikan, 'biaya_racikan'));
+			$totalRacikan = $racikan['total'];
+			$totalService = $racikan['biaya_racik'];
 		} else {
 			$totalRacikan = 0;
 			$totalService = 0;
 		}
-		$grandtotal = $totalRacikan + $nonRacikan['total'];
+		$grandtotal = $totalRacikan + $nonRacikan['total'] + $totalService;
 		$embalase = $grandtotal / 100;
 		$embalase = abs(ceil($embalase) - $embalase) * 100;
-		$input['sale_total'] = $grandtotal + $embalase;
-		$input['embalase_item_sale'] = $embalase;
+		$input['sale_total'] = $grandtotal + $embalase + $data["embalase_item"];
+		$input['sale_embalase'] 	 = $embalase;
+		$input['embalase_item_sale'] = $data["embalase_item"];
 		$input['sale_services'] = $totalService;
 		$input['sale_date'] = date('Y-m-d');
-
+		
 		//insert into farmasi.sale
 		$this->db->insert("farmasi.sale", $input);
 		$saleId = $this->db->query("select currval('public.sale_id_seq')")->row('currval');
@@ -128,20 +128,17 @@ class Sale extends MY_Generator
 			if (($row['sale_type'] == 0 && empty($row['cash_id'])) || ($row['sale_type'] == 1)) {
 				$obj[] = create_btnAction([
 					"update", "delete",
+					"Cetak Faktur" =>
 					[
 						"btn-act" => "cetak_resep('" . $row['id_key'] . "',2)",
 						"btn-icon" => "fa fa-print",
-						"btn-class" => "btn-info",
+						"btn-class" => "btn-default",
 					],
-					[
-						"btn-act" => "cetak_resep('" . $row['id_key'] . "',1)",
-						"btn-icon" => "fa fa-file-pdf-o",
-						"btn-class" => "btn-warning",
-					],
+					"Cetak E-Tiket" =>
 					[
 						"btn-act" => "cetak_etiket('" . $row['id_key'] . "')",
-						"btn-icon" => "fa fa-print",
-						"btn-class" => "btn-info",
+						"btn-icon" => "fa fa-bookmark",
+						"btn-class" => "btn-default",
 					]
 				], $row['id_key']);
 			} else {
@@ -192,13 +189,13 @@ class Sale extends MY_Generator
 		echo json_encode($resp);
 	}
 
-	public function show_form()
+	public function show_form($id)
 	{
 		$this->session->unset_userdata([
 			'penjualan', 'itemRacik', 'itemNonRacik'
 		]);
 		$data['model'] = $this->m_sale->rules();
-		$data['sale_num'] = $this->get_no_sale();
+		$data['sale_num'] = $this->get_no_sale($id);
 		$this->load->view("sale/form", $data);
 	}
 
@@ -254,7 +251,7 @@ class Sale extends MY_Generator
 					"type" => 'autocomplete',
 					"width" => '35%',
 				];
-			} elseif ($value == "sale_price") {
+			} elseif ($value == "sale_price" || $value == "stock") {
 				$row[] = [
 					"id" => $value,
 					"label" => ucwords(str_replace('_', ' ', $value)),
@@ -376,7 +373,8 @@ class Sale extends MY_Generator
 		$session['total'] = $session['total'] - $harga;
 		$this->session->set_userdata('itemNonRacik', $session);
 		$resp = [
-			'total' 		=> $session['total']
+			'total' 		=> $session['total'],
+			'embalase'		=> (count($session['detail'])*$this->session->penjualan["embalaseItem"]),
 		];
 		echo json_encode($resp);
 	}
@@ -390,6 +388,9 @@ class Sale extends MY_Generator
 		$item = "";
 		$header = $this->session->userdata('penjualan');
 		foreach ($post['list_obat_nonracikan'] as $x => $v) {
+			if (empty($v['item_id'])) {
+				continue;
+			}
 			foreach ($this->m_sale_detail->rules() as $key => $value) {
 				if ($key != 'sale_id') {
 					$itemNonRacikan[$x][$key] = (isset($v[$key]) ? $v[$key] : null);
@@ -405,7 +406,7 @@ class Sale extends MY_Generator
 			$total += $price_total;
 			$item = $v['autocom_item_id'] . "(" . $v['sale_qty'] . ")";
 			$html .= "
-			<div class='comment-text'>
+			<div class='comment-text itemNonracikan'>
 				<span class='comment-text'>
 					<b>" . $item . "</b>
 					<span class=\"text-muted pull-right\">
@@ -427,8 +428,9 @@ class Sale extends MY_Generator
 		}
 		$this->session->set_userdata('itemNonRacik', $nonRacikan);
 		$resp = [
-			'total' => $total,
-			'html'	=> $html
+			'total' 	=> $total,
+			'embalase' 	=> (count($itemNonRacikan)*$this->session->penjualan["embalaseItem"]),
+			'html'		=> $html
 		];
 		echo json_encode($resp);
 	}
@@ -445,47 +447,59 @@ class Sale extends MY_Generator
 	{
 		$post = $this->input->post();
 		$dt['pasien'] = $post;
-		$dt['surety'] = $this->db->query("select surety_name from yanmed.ms_surety where surety_id = " . $post['surety_id'] . " ");
+		$dt['surety'] = $this->db->query("
+		select surety_name from yanmed.ms_surety where surety_id = " . $post['surety_id'] . "");
 		$dt['surety'] = $dt['surety']->row('surety_name');
-		$dt['dokter'] = $this->db->query("select concat(employee_ft,employee_name,employee_bt) as nama_dokter from hr.employee where employee_id = " . $post['doctor_id'] . " ");
-		$dt['dokter'] = $dt['dokter']->row('nama_dokter');
 
-		$dt['profit'] = $this->db->get_where('farmasi.surety_ownership', [
-			"surety_id"	=> $post['surety_id'],
-			"own_id"	=> $post['own_id']
-		]);
-		if ($dt['profit']->num_rows() <= 0) {
+		if (!empty($post['doctor_id'])) {
+			$dt['dokter'] 		= $this->db->query("
+			select concat(employee_ft,employee_name,employee_bt) as nama_dokter
+			from hr.employee where employee_id = " . $post['doctor_id'] . " ");
+			$dt['doctor_name'] 	= $dt['dokter']->row('nama_dokter');
+		}
+
+		$suretyOwner = $this->db->join("farmasi.ownership ow","ow.own_id=so.own_id")
+								 ->get_where('farmasi.surety_ownership so', [
+									"so.surety_id"	=> $post['surety_id'],
+									"so.own_id"	=> $post['own_id']
+								 ]);
+
+		if ($suretyOwner->num_rows() <= 0) {
 			$resp = [
 				"code" 		=> "201",
 				"message"	=> "Margin keuntungan untuk penjamin ini belum disetting"
 			];
 		} else {
-			$dt['profit'] = $dt['profit']->row('percent_profit');
+			$dt['profit'] 		= $suretyOwner->row('percent_profit');
+			$dt['embalaseItem'] = $suretyOwner->row('profit_item');
 			$resp = [
 				"code" 		=> "200",
 				"message"	=> "OK",
 				"profit"	=> $dt['profit'],
+				"embalase_item"	=> $dt['embalaseItem'],
 				"px_name"   => $post['patient_name'],
 				"px_norm"   => $post['patient_norm'],
 				"alamat"    => $post['alamat'],
 				"surety"    => $dt['surety'],
-				"dokter"	=> $dt['dokter']
+				"dokter"	=> (!empty($dt['doctor_name'])?$dt['doctor_name']:null)
 			];
 			$this->session->set_userdata('penjualan', $dt);
 		}
 		echo json_encode($resp);
 	}
 
-	public function get_no_sale()
+	public function get_no_sale($id)
 	{
+		$nickName = $this->db->get_where("admin.ms_unit",["unit_id"=>$id])->row("unit_nickname");
 		return generate_code_transaksi([
-			"text"	=> "S/NOMOR/" . date("d.m.Y"),
+			// "text"	=> "S/$nickName/NOMOR/" . date("d.m.Y"),
+			"text"	=> "$nickName/NOMOR/" . date("m.Y"),
 			"table"	=> "farmasi.sale",
 			"column"	=> "sale_num",
 			"delimiter" => "/",
-			"number"	=> "2",
+			"number"	=> "3",
 			"lpad"		=> "4",
-			"filter"	=> ""
+			"filter"	=> " AND unit_id = '$id'"
 		]);
 	}
 

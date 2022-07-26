@@ -174,11 +174,18 @@ class Mutation extends MY_Generator {
 						"print" => [
 							"btn-act" => "cetak('". $row['id_key'] . "')",
 							"btn-icon" => "fa fa-print",
-							"btn-class" => "btn-info"
+							"btn-class" => "btn-default"
 						]
 					],$row['id_key']);
 			}else{
-				$obj[] = "";
+				$obj[] = create_btnAction(
+							[
+								"print" => [
+									"btn-act" => "cetak('". $row['id_key'] . "')",
+									"btn-icon" => "fa fa-print",
+									"btn-class" => "btn-default"
+								]
+							],$row['id_key']);
 			}
             $records["aaData"][] = $obj;
             $no++;

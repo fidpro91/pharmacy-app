@@ -45,7 +45,8 @@
                     "model" => [
                         "m_sale" => ["get_penjamin", ["surety_active" => 't']],
                         "column"  => ["surety_id", "surety_name"]
-                    ]
+                    ],
+                    "selected" => "1"
                 ]) ?>
 
                 <?= create_select([
@@ -242,6 +243,7 @@
                     }
                     let profit = data.profit*100;
                     $("#labelProfit").append('('+profit+'%)');
+                    $("#labelEmbalase").text(data.embalase_item);
                     $("#tno_rm").append(data.px_norm);
                     $("#tpx_name").append(data.px_name+''); 
                     $("#px_alamat").append(data.alamat); 
