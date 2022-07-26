@@ -98,7 +98,11 @@ $("#form_racikan").on("submit",()=>{
             'success': function (data) {
                 $(".list_obat_racikan").append(data.html);
                 let total = parseFloat($.isNumeric($('#sub_total_racikan').attr('isi'))?$('#sub_total_racikan').attr('isi'):0);
+                let totalBiayaRacik = parseFloat($.isNumeric($('#total_biaya_racikan').attr('isi'))?$('#total_biaya_racikan').attr('isi'):0);
                 total = total+data.total;
+                totalBiayaRacik = totalBiayaRacik+data.biaya_racik;
+                $("#total_biaya_racikan").text(formatMoney(totalBiayaRacik));
+                $("#total_biaya_racikan").attr("isi",totalBiayaRacik);
                 $("#sub_total_racikan").text(formatMoney(total));
                 $("#sub_total_racikan").attr("isi",total);
                 grandTotal();

@@ -44,22 +44,22 @@ class Sale extends MY_Generator
 		$input['sale_num'] = $this->get_no_sale($data['unit_id']);
 		$racikan = $this->session->userdata('itemRacik');
 		$nonRacikan = $this->session->userdata('itemNonRacik');
-
 		if (!empty($racikan)) {
-			$totalRacikan = array_sum(array_column($racikan, 'total'));
-			$totalService = array_sum(array_column($racikan, 'biaya_racikan'));
+			$totalRacikan = $racikan['total'];
+			$totalService = $racikan['biaya_racik'];
 		} else {
 			$totalRacikan = 0;
 			$totalService = 0;
 		}
-		$grandtotal = $totalRacikan + $nonRacikan['total'];
+		$grandtotal = $totalRacikan + $nonRacikan['total'] + $totalService;
 		$embalase = $grandtotal / 100;
 		$embalase = abs(ceil($embalase) - $embalase) * 100;
-		$input['sale_total'] = $grandtotal + $embalase;
-		$input['embalase_item_sale'] = $embalase;
+		$input['sale_total'] = $grandtotal + $embalase + $data["embalase_item"];
+		$input['sale_embalase'] 	 = $embalase;
+		$input['embalase_item_sale'] = $data["embalase_item"];
 		$input['sale_services'] = $totalService;
 		$input['sale_date'] = date('Y-m-d');
-
+		
 		//insert into farmasi.sale
 		$this->db->insert("farmasi.sale", $input);
 		$saleId = $this->db->query("select currval('public.sale_id_seq')")->row('currval');
@@ -251,7 +251,7 @@ class Sale extends MY_Generator
 					"type" => 'autocomplete',
 					"width" => '35%',
 				];
-			} elseif ($value == "sale_price") {
+			} elseif ($value == "sale_price" || $value == "stock") {
 				$row[] = [
 					"id" => $value,
 					"label" => ucwords(str_replace('_', ' ', $value)),
@@ -373,7 +373,8 @@ class Sale extends MY_Generator
 		$session['total'] = $session['total'] - $harga;
 		$this->session->set_userdata('itemNonRacik', $session);
 		$resp = [
-			'total' 		=> $session['total']
+			'total' 		=> $session['total'],
+			'embalase'		=> (count($session['detail'])*$this->session->penjualan["embalaseItem"]),
 		];
 		echo json_encode($resp);
 	}
@@ -387,6 +388,9 @@ class Sale extends MY_Generator
 		$item = "";
 		$header = $this->session->userdata('penjualan');
 		foreach ($post['list_obat_nonracikan'] as $x => $v) {
+			if (empty($v['item_id'])) {
+				continue;
+			}
 			foreach ($this->m_sale_detail->rules() as $key => $value) {
 				if ($key != 'sale_id') {
 					$itemNonRacikan[$x][$key] = (isset($v[$key]) ? $v[$key] : null);
@@ -424,8 +428,9 @@ class Sale extends MY_Generator
 		}
 		$this->session->set_userdata('itemNonRacik', $nonRacikan);
 		$resp = [
-			'total' => $total,
-			'html'	=> $html
+			'total' 	=> $total,
+			'embalase' 	=> (count($itemNonRacikan)*$this->session->penjualan["embalaseItem"]),
+			'html'		=> $html
 		];
 		echo json_encode($resp);
 	}
