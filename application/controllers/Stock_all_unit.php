@@ -21,6 +21,17 @@ class Stock_all_unit extends MY_Generator {
         $this->theme('informasi/stock_all_unit',$data,get_class($this));
 	}
 
+    public function show_stock()
+	{
+        $data["unit"]       = $this->m_ms_unit->get_farmasi_unit();
+        $this->load->model("m_ownership");
+        foreach ($this->m_ownership->get_ownership() as $key => $value) {
+			$own[$value->own_id] = $value->own_name;
+		}
+		$data['own'] = $own;
+        $this->load->view('informasi/stock_all_unit_html',$data);
+	}
+
     public function get_data($own_id)
     {
         $data = $this->m_stock->get_stock_all_unit($own_id);

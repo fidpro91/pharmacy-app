@@ -28,8 +28,9 @@
                     ]
                 ]) ?>
                 <?= create_inputDate("sale_date", [
-                    "format" => "yyyy-mm-dd",
-                    "autoclose" => "true"
+                    "format"        => "yyyy-mm-dd",
+                    "autoclose"     => "true",
+                    "endDate"       => "today"
                 ],[
                     "readonly"  => true,
                     "required"  => true,

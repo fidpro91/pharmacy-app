@@ -196,15 +196,15 @@ function create_tableData($attr = array())
 
 }
 
-function modal_open($id,$header,$size = "")
+function modal_open($id, $header, $size = "",$attr=array())
 {
-	$txt = '<div class="modal fade" id="'.$id.'">
-	        <div class="modal-dialog '.$size.'">
+	$txt = '<div class="modal fade" id="' . $id . '">
+	        <div class="modal-dialog ' . $size . '" '._attributes_to_string($attr).'>
 	          <div class="modal-content">
 	            <div class="modal-header">
 	            	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 	                  <span aria-hidden="true">×</span></button>
-	                <h4 class="modal-title">'.$header.' </h4></div>
+	                <h4 class="modal-title">' . $header . ' </h4></div>
 	            <div class="modal-body" id="modal-body">';
 	return $txt;
 }
