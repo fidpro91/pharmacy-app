@@ -25,6 +25,11 @@
         <div class="box-body" id="penjualan"> 
                  
           <div class="col-md-5" >
+            <?=form_hidden("item_id")?>
+            <?=form_hidden("px_id")?>
+            <?=form_hidden("visit_id")?>
+            <?=form_hidden("srv_id")?>
+            <?=form_hidden("px_norm")?>
           <?=create_inputDaterange("tanggal",["locale"=>["format"=>"YYYY-MM-DD","separator"=>"/"]])?>          
           <?=create_select(["attr"=>["name"=>"unit_name=UNIT","id"=>"unit_name","class"=>"form-control"],
 								"model"=>["m_ms_unit" => "get_farmasi_unit","column"=>["unit_id","unit_name"]]
@@ -55,11 +60,11 @@
 					"attr" => ["name" => "tipe=TIPE LAPORAN", "id" => "tipe", "class" => "form-control", 'required' => true],
 					"option" => [["id" => ' ', "text" => "SEMUA"], ["id" => '1', "text" => "Dokter"],
                                  ["id" => '2', "text" => "Summary Customer"],["id" => '3', "text" => "Pasien"],
-                                 ["id" => '4', "text" => "Obat"],["id" => '5', "text" => "Rekap Obat"]],
+                                 ["id" => '4', "text" => "Obat"]],
 			]) ?> 
       
-      <div id="item_name"><?= create_input("item_name=Nama Obat")?></div>
-      <div id="nama_px"><?= create_input("nama_px=Nama Pasien")?></div>
+      <div id="item_name"><?= create_input("item")?></div>
+      <div id="nama_px"><?= create_input("patient=Nama Pasien")?></div>
        </div>
        
          
@@ -81,6 +86,7 @@
     //$('.select2').select2({placeholder: '--Pilih--'});
      $('#nama_px').hide();
 		 $('#item_name').hide();
+     
     $('#jenis_px').change(function(){
 		$('#unit_layanan option[value != 0]').remove();
 		$('#unit_layanan').val(null).trigger('change'); 
@@ -105,6 +111,111 @@
 	})
           
     });
+
+    $('body').on("keyup", "#patient", function() {
+		if ($('#tipe').val() == 3) {
+			$(this).autocomplete({
+				source: function(request, response) {
+				    $.post(
+				    	"<?php echo base_url();?>laporan_penjualan/get_patient/",
+				    	$('#formlaporan').serialize()+'&term='+request.term,  
+				    	response, 'json'
+				    );
+				},
+				minLength:2,
+				autofocus:true,
+				select: function( event, ui ) {
+					// $("#px_id").val( ui.item.px_id);
+					$("#px_norm").val( ui.item.value);
+				}
+		    })
+		    .autocomplete().data("uiAutocomplete")._renderItem =  function( ul, item ){
+				return $( "<li>" )
+		        .append( "<a style='font-size:12px'>" +item.value+"</a>" )
+		        .appendTo( ul );
+			};
+		}else{
+			$(this).autocomplete({
+				source: function(request, response) {
+				    $.post(
+				    	"<?php echo base_url();?>laporan_penjualan/get_patient/",
+				    	$('#formlaporan').serialize()+'&term='+request.term,  
+				    	response, 'json'
+				    );
+				},
+				minLength:2,
+				autofocus:true,
+				select: function( event, ui ) {
+					$("#px_id").val( ui.item.px_id);
+					$("#visit_id").val( ui.item.visit_id);
+				}
+		    })
+		    .autocomplete().data("uiAutocomplete")._renderItem =  function( ul, item ){
+				return $( "<li>" )
+		        .append( "<a style='font-size:12px'>" +item.value+" ||( "+item.unit_layanan+" )|| "+item.tgl_visit+"</a>" )
+		        .appendTo( ul );
+			};
+		}
+	});
+
+    $(function() {
+    //Membuat Fungsi Tanda (,)
+    function split( val ) {
+    return val.split( /,\s*/ );
+    }
+    function extractLast( term ) {
+    return split( term ).pop();
+    }
+
+    $("#item" )
+    // don’t navigate away from the field on tab when selecting an item
+    .bind( "keydown", function( event ) {
+    if ( event.keyCode === $.ui.keyCode.TAB &&
+    $( this ).autocomplete( "instance" ).menu.active ) {
+    event.preventDefault();
+    }
+    })
+    .autocomplete({
+    minLength: 3,autoFocus: true,
+    source: function(request, response) {
+	    $.post(
+	    	"<?php echo base_url();?>laporan_penjualan/get_item/",
+	    	'term='+extractLast( request.term ),  
+	    	response, 'json'
+	    );
+	},
+       focus: function() {
+                  // Membatasi Nilai Fokus
+                  return false;
+                  },
+                  select: function( event, ui ) {
+                  var terms = split( this.value );
+                  var terms2 = split( $('#item_id').val());
+                  // Menghapus Inputan yang ada
+                  terms.pop();
+                  terms2.pop();
+                  // Menambahkan data yang di Select
+                  terms.push( ui.item.value );
+                  terms2.push( ui.item.item_id );
+                  // menambahkan  placeholder Untuk Medapatkan koma
+                  terms.push( "" );
+                  terms2.push( "" );
+                  this.value = terms.join( ", " );
+                  $('#item_id').val(terms2.join( ", " ));
+                  return false;
+                  }
+                  });
+        });
+   
+        $("#formlaporan").on("submit",()=>{
+        if ($("#unit_name").val() === '' ) {
+          alert("Mohon di isikan Depo");
+          return false;       
+        }else if($("#tipe").val() === ' '){
+        alert("Mohon di isikan Tipe Laporan");
+        return false;
+      }
+        }); 
     
     <?=$this->config->item('footerJS')?>
 </script>
