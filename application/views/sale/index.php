@@ -69,6 +69,10 @@
 <!-- /.content-wrapper -->
 <?= modal_open("modal_pasien", "Biodata pasien", "modal-lg") ?>
 <?= modal_close() ?>
+<?= modal_open("modal_update", "Form Update", "modal-lg",[
+  "style" => "width:90%"
+]) ?>
+<?= modal_close() ?>
 <script src="<?= base_url("assets/plugins/jquery.hotkeys-master") ?>/jquery.hotkeys.js"></script>
 <script type="text/javascript">
   var table;
@@ -124,14 +128,15 @@
   });
 
   function set_val(id) {
-    $("#form_sale").show();
-    $.get('sale/find_one/' + id, (data) => {
-      $("#form_sale").load("sale/show_form/"+$("#unit_id_depo").val(), () => {
-        $.each(data, (ind, obj) => {
-          $("#" + ind).val(obj);
+    $("#modal_update").modal('show');
+    $("#modal_update").find('.modal-body').load('sale/show_form_update/'+id,function(){
+      $.get('sale/find_one/'+id,(data)=>{
+        $.each(data,(ind,obj)=>{
+            $('.modal-body').find("#"+ind).val(obj);
         });
-      });
-    }, 'json');
+        $("select[class*='select2']").trigger("change");
+      },'json');
+    });
   }
 
   function deleteRow(id) {

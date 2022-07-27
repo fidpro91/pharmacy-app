@@ -58,8 +58,8 @@ class Sale extends MY_Generator
 		$input['sale_embalase'] 	 = $embalase;
 		$input['embalase_item_sale'] = $data["embalase_item"];
 		$input['sale_services'] = $totalService;
-		$input['sale_date'] = date('Y-m-d');
-		
+		$input['date_act'] 	= date('Y-m-d H:i:s');
+
 		//insert into farmasi.sale
 		$this->db->insert("farmasi.sale", $input);
 		$saleId = $this->db->query("select currval('public.sale_id_seq')")->row('currval');
@@ -154,8 +154,25 @@ class Sale extends MY_Generator
 
 	public function find_one($id)
 	{
-		$data = $this->db->where('sale_id', $id)->get("sale")->row();
+		$data = $this->db->where('sale_id', $id)->get("farmasi.sale")->row_array();
 
+		// $this->set_data_pasien($data);
+
+		/* $saleNonRacikan = $this->db->query(
+			"SELECT sd.*,mi.item_name as autocom_item_id FROM farmasi.sale_detail sd
+			JOIN admin.ms_item mi ON sd.item_id = mi.item_id
+			WHERE racikan = 'f' and sd.sale_id = '$id'" 
+		)->result_array();
+		$this->set_item_nonracikan($saleNonRacikan);
+
+		$saleRacikan['list_item_racikan'] = $this->db->query(
+			"SELECT sd.*,mi.item_name as autocom_item_id FROM farmasi.sale_detail sd
+			JOIN admin.ms_item mi ON sd.item_id = mi.item_id
+			WHERE racikan = 't' and sd.sale_id = '$id'" 
+		)->result_array();
+		$saleRacikan['biaya_racikan'] = $data->sale_services;
+
+		$this->set_item_racikan($saleRacikan); */
 		echo json_encode($data);
 	}
 
@@ -199,6 +216,15 @@ class Sale extends MY_Generator
 		$this->load->view("sale/form", $data);
 	}
 
+	public function show_form_update()
+	{
+		$this->session->unset_userdata([
+			'penjualan', 'itemRacik', 'itemNonRacik'
+		]);
+		$data['model'] = $this->m_sale->rules();
+		$this->load->view("sale/form_update", $data);
+	}
+
 	public function get_no_rm($tipe, $kunjungan = '1')
 	{
 		$respond = array();
@@ -238,10 +264,10 @@ class Sale extends MY_Generator
 		$this->load->view("sale/form_non_racikan", $data);
 	}
 
-	public function show_multiRows()
+	public function show_multiRows($update=false)
 	{
 		$this->load->model("m_sale_detail");
-		$data = $this->m_sale_detail->get_column_multiple();
+		$data = $this->m_sale_detail->get_column_multiple($update);
 		$colauto = ["item_id" => "Nama Barang"];
 		foreach ($data as $key => $value) {
 			if (array_key_exists($value, $colauto)) {
@@ -285,9 +311,11 @@ class Sale extends MY_Generator
 		echo json_encode($row);
 	}
 
-	public function set_item_racikan()
+	public function set_item_racikan($post=null)
 	{
-		$post = $this->input->post();
+		if (!$post) {
+			$post = $this->input->post();
+		}
 
 		$html = "";
 		$total = 0;
@@ -379,9 +407,11 @@ class Sale extends MY_Generator
 		echo json_encode($resp);
 	}
 
-	public function set_item_nonracikan()
+	public function set_item_nonracikan($post=null)
 	{
-		$post = $this->input->post();
+		if (!$post) {
+			$post = $this->input->post();
+		}
 		//		var_dump($post);die();
 		$html = "";
 		$total = 0;
@@ -443,9 +473,11 @@ class Sale extends MY_Generator
 		echo json_encode($this->m_stock_fifo->get_stock_item($where));
 	}
 
-	public function set_data_pasien()
+	public function set_data_pasien($post=null)
 	{
-		$post = $this->input->post();
+		if (!$post) {
+			$post = $this->input->post();
+		}
 		$dt['pasien'] = $post;
 		$dt['surety'] = $this->db->query("
 		select surety_name from yanmed.ms_surety where surety_id = " . $post['surety_id'] . "");
@@ -479,7 +511,7 @@ class Sale extends MY_Generator
 				"embalase_item"	=> $dt['embalaseItem'],
 				"px_name"   => $post['patient_name'],
 				"px_norm"   => $post['patient_norm'],
-				"alamat"    => $post['alamat'],
+				"alamat"    => (isset($post['alamat'])?$post['alamat']:null),
 				"surety"    => $dt['surety'],
 				"dokter"	=> (!empty($dt['doctor_name'])?$dt['doctor_name']:null)
 			];

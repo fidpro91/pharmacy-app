@@ -8,6 +8,10 @@
 		<div class="box">
 			<div class="box-header with-border">
 				<i class="box-title">[F3]Add Racikan | [F4]Add Non Racikan | [Ctrl+a]Add Item | [Ctrl+s] Save Transaction | [Ctrl+e] Edit Patient</i>
+				<div class="box-tools pull-right">
+					<button type="button" title="Informasi Stock Unit" id="btn-info-stock" class="btn btn-success">
+					<i class="fa fa-info"></i></button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -131,6 +135,8 @@
 <?= modal_close() ?>
 <?= modal_open("modal_nonracikan", "List Item Non Racikan | [Ctrl+a]Add Item | [Ctrl+s]Save","modal-lg") ?>
 <?= modal_close() ?>
+<?= modal_open("modal_info_stock", "List Item Non Racikan | [Ctrl+i]Informasi Stock","modal-lg") ?>
+<?= modal_close() ?>
 </div>
 <script type="text/javascript">
 	var leavePage=true;
@@ -139,16 +145,24 @@
             $("#btn-racikan").click();
             return false;
         });
+
 		$(document).bind('keydown', 'f4', function assets() {
             $("#btn-nonracikan").click();
             return false;
         });
+
 		$(document).bind('keydown', 'f5', function assets() {
             $('#fm_sale_h').submit();
             return false;
         });
+
 		$(document).bind('keydown', 'Ctrl+e', function assets() {
            	edit_px();
+            return false;
+        });
+
+		$(document).bind('keydown', 'Ctrl+i', function assets() {
+           	$("#btn-info-stock").click();
             return false;
         });
 		edit_px();
@@ -159,6 +173,11 @@
 		$("#form_sale").html('');
 		$("#form_sale").hide();
 		table.draw();
+	});
+
+	$("#btn-info-stock").click(()=>{
+		$("#modal_info_stock").modal('show');
+		$("#modal_info_stock").find(".modal-body").load("stock_all_unit/show_stock");
 	});
 
 	function hitungTotal_terima(row) {
