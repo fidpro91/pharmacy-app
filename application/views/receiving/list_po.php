@@ -121,13 +121,13 @@
     function hitungDiskon(row,type = null) {
 		if(type == 'persen'){
 			let diskon = parseFloat($.isNumeric(row.closest('tr').find('.disc_percent').val())?row.closest('tr').find('.disc_percent').val():0);
-			let hargaTotal = parseFloat($.isNumeric(row.closest('tr').find('.price_total').val())?row.closest('tr').find('.price_total').val():0);
+			let hargaTotal = parseFloat($.isNumeric(row.closest('tr').find('.total_bf_diskon').val())?row.closest('tr').find('.total_bf_diskon').val():0);
 			let total = diskon/100*hargaTotal;
 			row.closest('tr').find('.disc_value').val(total);
 			console.log(diskon+"-"+hargaTotal+"-"+total);
 		}else{
 			let diskon = parseFloat($.isNumeric(row.closest('tr').find('.disc_value').val())?row.closest('tr').find('.disc_value').val():0);
-			let hargaTotal = parseFloat($.isNumeric(row.closest('tr').find('.price_total').val())?row.closest('tr').find('.price_total').val():0);
+			let hargaTotal = parseFloat($.isNumeric(row.closest('tr').find('.total_bf_diskon').val())?row.closest('tr').find('.total_bf_diskon').val():0);
 			let total = diskon/hargaTotal*100;
 			row.closest('tr').find('.disc_percent').val(total);
 		}
