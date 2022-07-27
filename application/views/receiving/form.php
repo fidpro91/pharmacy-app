@@ -56,7 +56,7 @@
 						<?=create_select2([
 							"attr" =>["name"=>"ppn=PPN","id"=>"ppn","class"=>"form-control"],
 							"model"=>["m_setting_app" => ["get_setting_app",["setting_type"=>'1']],
-											"column"  => ["setting_id","setting_name"]
+											"column"  => ["setting_value","setting_name"]
 										],
 						])?>
 					</div>

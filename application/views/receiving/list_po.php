@@ -92,13 +92,17 @@
     function hitunggrandTotal(){
 		let grandtotal=0;
 		let totalDiskon=0;
+		let totalBeforeDisk=0;
+		let diskRp = 0;
 		$(".price_total").each(function(){
 			let total = parseFloat($.isNumeric($(this).val())?$(this).val():0);
-			totalDiskon += parseFloat($.isNumeric($(this).closest('tr').find('.disc_value').val())?$(this).closest('tr').find('.disc_value').val():0);
+			diskRp = parseFloat($.isNumeric($(this).closest('tr').find('.disc_value').val())?$(this).closest('tr').find('.disc_value').val():0);
+			totalDiskon += diskRp;
+			totalBeforeDisk += total+diskRp;
 			grandtotal += total;
 		});
 
-		let ppn = parseInt($("#ppn").val())*($.isNumeric($("#grand_total").val())?$("#grand_total").val():0)/100;
+		let ppn = parseInt($("#ppn").val())*totalBeforeDisk/100;
         grandtotal = grandtotal + ppn;
 		
 		$("#rec_taxes").val(ppn);
