@@ -44,17 +44,21 @@
 		$(this).inputmask("99-99-9999",{ "placeholder": "dd-mm-yyyy" });
 	});
 
-    $("body").on("keyup", ".qty_unit", function() {
+    $("body").on("change", ".qty_unit", function() {
 		hitungTotal_terima($(this));
-		hitungTotal($(this));
-	});
-
-    $("body").on("keyup", ".disc_percent", function() {
-		hitungDiskon($(this),'persen');
-	});
-
-    $("body").on("keyup", ".disc_value", function() {
 		hitungDiskon($(this));
+		hitungTotal($(this));
+		hitunggrandTotal();
+	});
+
+    $("body").on("change", ".disc_percent", function() {
+		hitungDiskon($(this),'persen');
+		hitunggrandTotal();
+	});
+
+    $("body").on("change", ".disc_value", function() {
+		hitungDiskon($(this));
+		hitunggrandTotal();
 	});
 
 	$("body").on("click", ".podet_id", function() {
@@ -62,7 +66,9 @@
 			$(this).closest('tr').find('.inputan').attr("readonly",false);
 		} else {
 			$(this).closest('tr').find('.inputan').attr("readonly",true);
+			$(this).closest('tr').find('.inputan').val(0).trigger("change");
 		}
+		hitunggrandTotal();
 	});
 
     $("#ppn").change(()=>{
@@ -127,13 +133,16 @@
 			let diskon = parseFloat($.isNumeric(row.closest('tr').find('.disc_percent').val())?row.closest('tr').find('.disc_percent').val():0);
 			let hargaTotal = parseFloat($.isNumeric(row.closest('tr').find('.total_bf_diskon').val())?row.closest('tr').find('.total_bf_diskon').val():0);
 			let total = diskon/100*hargaTotal;
+			total = (isNaN(total)?0:total);
 			row.closest('tr').find('.disc_value').val(total);
-			console.log(diskon+"-"+hargaTotal+"-"+total);
+			
 		}else{
 			let diskon = parseFloat($.isNumeric(row.closest('tr').find('.disc_value').val())?row.closest('tr').find('.disc_value').val():0);
 			let hargaTotal = parseFloat($.isNumeric(row.closest('tr').find('.total_bf_diskon').val())?row.closest('tr').find('.total_bf_diskon').val():0);
 			let total = diskon/hargaTotal*100;
+			total = (isNaN(total)?0:total);
 			row.closest('tr').find('.disc_percent').val(total);
+			// console.log(diskon+"-"+hargaTotal+"-"+total);
 		}
         hitungTotal(row);
 	}
