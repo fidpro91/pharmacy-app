@@ -254,18 +254,29 @@ class Distribusi_bon extends MY_Generator {
             		$obj[] = $row[$value];
             	}
             }
-            $obj[] = create_btnAction([
-				"Konfirmasi"=>[
-					"btn-act" => "konfirm_distribusi(".$row['id_key'].")",
-					"btn-icon" => "fa fa-send",
-					"btn-class" => "btn-success"
-                ],
-                "Cetak"=>[
-					"btn-act" => "cetak_struk(".$row['id_key'].")",
-					"btn-icon" => "fa fa-print",
-					"btn-class" => "btn-default"
-				]
-			]);
+			if ($row["mutation_status"] == 3) {
+				$obj[] = create_btnAction([
+					"Cetak"=>[
+						"btn-act" => "cetak_struk(".$row['id_key'].")",
+						"btn-icon" => "fa fa-print",
+						"btn-class" => "btn-default"
+					]
+				]);
+			}else{
+				$obj[] = create_btnAction([
+					"Konfirmasi"=>[
+						"btn-act" => "konfirm_distribusi(".$row['id_key'].")",
+						"btn-icon" => "fa fa-send",
+						"btn-class" => "btn-success"
+					],
+					"Cetak"=>[
+						"btn-act" => "cetak_struk(".$row['id_key'].")",
+						"btn-icon" => "fa fa-print",
+						"btn-class" => "btn-default"
+					]
+				]);
+			}
+            
             $records["aaData"][] = $obj;
             $no++;
         }

@@ -152,6 +152,13 @@ class Sale extends MY_Generator
 		echo json_encode($data);
 	}
 
+	public function update_data()
+	{
+		$post = $this->input->post();
+
+		print_r($post);
+	}
+
 	public function find_one($id)
 	{
 		$data = $this->db->where('sale_id', $id)->get("farmasi.sale")->row_array();
@@ -216,11 +223,18 @@ class Sale extends MY_Generator
 		$this->load->view("sale/form", $data);
 	}
 
-	public function show_form_update()
+	public function show_form_update($id)
 	{
 		$this->session->unset_userdata([
 			'penjualan', 'itemRacik', 'itemNonRacik'
 		]);
+		$data["item"]  = $this->db->query("
+			SELECT sd.*,sd.sale_price::numeric as harga,mi.item_name,st.stock_summary as stok FROM farmasi.sale_detail sd
+			JOIN admin.ms_item mi ON sd.item_id = mi.item_id
+			JOIN farmasi.sale s on sd.sale_id = s.sale_id
+			JOIN newfarmasi.stock st ON st.item_id = sd.item_id and st.own_id = sd.own_id and st.unit_id = s.unit_id
+			WHERE sd.sale_id = '$id'
+		")->result();
 		$data['model'] = $this->m_sale->rules();
 		$this->load->view("sale/form_update", $data);
 	}
@@ -443,8 +457,9 @@ class Sale extends MY_Generator
 						<a href=\"#\" onclick=\"removeNonRacikan(this,'" . $v['item_id'] . "','" . $price_total . "')\" class=\"btn btn-xs btn-danger\"><i class=\"fa fa-minus\"></i></a>
 					</span>
 					<span class=\"text-muted pull-right\">
-						" . convert_currency(($v['price_total'])) . "
+						" . convert_currency(($total)) . "
 					</span>
+					<p>".$v['dosis']."</p>
 				</span>
 			</div>
 			";

@@ -82,7 +82,7 @@
     <?= form_close() ?>
     <div class="box-footer">
         <button class="btn btn-primary" type="button" onclick="$('#fm_mutation').submit()">Save</button>
-        <button class="btn btn-warning" type="button" id="btn-cancel">Cancel</button>
+        <button class="btn btn-warning" type="button" id="btn-cancel" data-dismiss="modal">Cancel</button>
     </div>
 </div>
 <script type="text/javascript">
