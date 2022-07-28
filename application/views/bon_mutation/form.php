@@ -44,7 +44,6 @@
     		$("#form_mutation").html('');
     	});
     	$(document).ready(() => {
-			console.log(mutationDetail);
     		$(".list_item").inputMultiRow({
     			column: () => {
     				var dataku;
@@ -62,24 +61,35 @@
 				"data" : mutationDetail
     		});
     	});
+
     	$("body").on("focus", ".autocom_item_id", function() {
     		$(this).autocomplete({
     			source: "<?php echo site_url('bon_mutation/get_item'); ?>/" + $("#own_id").val() + "/" + $("#unit_sender").val(),
     			select: function(event, ui) {
+					$('tr[class*="list_item"]').each(function(i,a){
+						if($(this).find('.item_id').val() == ui.item.item_id ){
+							$(this).eq((i)).closest('tr').find('.qty_request').focus();
+							$(this).last().remove();
+							return false;
+						}
+					});
+    				$(this).closest('tr').find('.qty_request').focus();;
     				$(this).closest('tr').find('.item_id').val(ui.item.item_id);
     				$(this).closest('tr').find('.stock_unit').val(ui.item.total_stock);
     				$(this).closest('tr').find('.unit_pack').val(ui.item.item_package);
     				$(this).closest('tr').find('.unit_item').val(ui.item.item_unitofitem);
     			}
-    		}).data("ui-autocomplete")._renderItem = function(ul, item) {
-    			return $("<li>")
-    				.append('<a>' +
-    					'<table class="table"><tr>' +
-    					'<td style="width:150px">' + item.value + '</td>' +
-    					'<td style="width:40px">' + item.item_package + '</td>' +
-    					'</tr></table></a>')
-    				.appendTo(ul);
-    		};
+    		});
     	});
+		$("body").on("change", ".tb_list_item", function() {
+			$(this).find("input:not([class*='autocom_item_id'])").on("keydown",function(e) {
+				if (e.which == 13) {
+					$(".btnplus_list_item").click();
+					$(".autocom_item_id:last").focus();
+					e.stopImmediatePropagation();
+					return false;
+				}
+			});
+		});
     	<?= $this->config->item('footerJS') ?>
     </script>

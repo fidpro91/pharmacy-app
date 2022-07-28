@@ -35,6 +35,15 @@ class Bon_mutation extends MY_Generator {
 					"type" => 'autocomplete',
 					"width" => '40%',
 				];
+			}elseif($value=='stock_unit'){
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"attr" => [
+						"readonly"	=> true
+					]
+				];
 			}else{
 				$row[] = [
 					"id" => $value,

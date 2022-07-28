@@ -63,18 +63,9 @@ class Datatable
         }
 
         if ( isset($attr['order'][0]['column'])) {
-                $sOrder = "ORDER BY ".($aColumns[$attr['order']['0']['column']-1]).' '.$attr['order']['0']['dir'];
-                /*for ( $i = 0 ; $i < intval($attr['iSortingCols']) ; $i++ ) {
-                    if ( $attr['bSortable_'.intval($attr['iSortCol_'.$i])] == "true" ) {
-                        $sOrder .= "".$aColumns[ intval($this->input->post('iSortCol_'.$i)) ]." ".($attr['sSortDir_'.$i] === 'desc' ? 'asc' : 'desc') .", ";
-                    }
-                }
-
-                $sOrder = substr_replace( $sOrder, "", - 2 );
-                if ( $sOrder == "ORDER BY" ) {
-                        $sOrder = "";
-                }*/
+                $sOrder = "ORDER BY ".($aColumns[$attr['order']['0']['column']-2]).' '.$attr['order']['0']['dir'];
         }
+        
         $data = $CI->modelku->{$dataResource}($sLimit,$sWhere,$sOrder,$aColumns);
         $records        = array();
         $records["dataku"] = $data;
