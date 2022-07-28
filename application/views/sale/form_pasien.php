@@ -230,6 +230,7 @@
         }
 
     }
+    
     $('#form_pasien').on("submit",function(){
 		$(this).data("validator").settings.submitHandler = function (form) {
             $.ajax({
