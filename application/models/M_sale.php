@@ -189,7 +189,7 @@ class M_sale extends CI_Model
 	}
 	function get_detail_patient($sale_id)
 	{
-		$result = $this->db->query("select ul.unit_name as poli,yv.srv_type,u.unit_name,to_char(fs.date_act, 'dd-mm-YYYY HH24:MI:SS')tanggal,sr.surety_name,v.pxsurety_no,v.sep_no,fs.* 
+		$result = $this->db->query("select ul.unit_name as poli,yv.srv_type,u.unit_name,to_char(fs.sale_date, 'dd-mm-YYYY HH24:MI:SS')tanggal,sr.surety_name,v.pxsurety_no,v.sep_no,fs.* 
 						from farmasi.sale fs 
 						inner join admin.ms_unit u on fs.unit_id = u.unit_id
 						inner join yanmed.ms_surety sr on sr.surety_id = fs.surety_id

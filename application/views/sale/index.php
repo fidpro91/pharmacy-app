@@ -85,7 +85,7 @@
     table = $('#tb_sale').DataTable({
       "processing": true,
       "serverSide": true,
-      "order": [],
+      "order": [[3, 'desc']],
       "scrollX": true,
       "ajax": {
         "url": "<?php echo site_url('sale/get_data') ?>",

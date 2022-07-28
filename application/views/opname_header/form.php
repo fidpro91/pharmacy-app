@@ -67,84 +67,19 @@
 			"data":dataItemOpname,
 	    });
 	});
-	/* jQuery.widget('custom.mcautocomplete', jQuery.ui.autocomplete, {
-		_resizeMenu: function() {
-			var ul = this.menu.element;
-			ul.outerWidth( Math.max(
-				ul.width( this.options.width ).outerWidth() + 1,
-				this.element.outerWidth()
-				) );
-		},
-		_renderMenu: function(ul, items) {
-			var self = this, thead;
-			if (this.options.showHeader) {
-				table = jQuery('<div class="ui-widget-header" style="padding:0 2px; width:100%; border-bottom:1px solid #848484;"></div>');
-				jQuery.each(this.options.columns, function(index, item) {
-					table.append('<span style="margin-top:2px; margin-bottom:2px; padding:0 4px; font-size:11px; ' + 
-						'float:left; text-align:' + item.align + '; width:' + item.width + ';">' + 
-						item.name + 
-						'</span>');
-				});
-				table.append('<div style="clear: both;"></div>');
-				ul.append(table);
-			}
-			jQuery.each(items, function(index, item) {
-				self._renderItem(ul, item);
-			});
-		},
-		_renderItem: function(ul, item) {
-			var t = '',
-			result = '';
-
-			jQuery.each(this.options.columns, function(index, column) {
-				t += '<span style="margin-top:3px; padding:0 4px; float:left; font-size:11px; ' + 
-				'width:' + column.width + '; text-align:' + column.align + '; color: #000;">' + 
-				item[column.valueField ? column.valueField : index] + 
-				'</span>'
-			});
-			result = jQuery('<li></li>').addClass('li-autocomplete-border')
-			.data('ui-autocomplete-item', item)
-			.append('<a class="ui-corner-all">' + t + '<div style="clear: both;"></div></a>')
-			.appendTo(ul);
-			return result;
-		}
-	});
-
-	width 	= 650;
-	columns = [
-	{ name: 'Kode Obat',width: '100px',  align: 'left', valueField: 'item_code' },
-	{ name: 'Nama Obat',width: '250px', align: 'left', valueField: 'item_name' },
-	{ name: 'Kategori',width: '200px',  align: 'center', valueField: 'harga' },
-	{ name: 'Kemasan',width: '80px',  align: 'left', valueField: 'total_stock' },
-	];
-
-	$('body').on("focus", ".autocom_item_id", function() {
-		$(this).mcautocomplete({
-			showHeader: true,
-			minLength:3,
-			delay:800,
-			width: width,
-			autoFocus: true,
-			columns: columns,
-			source:function(request, response) {
-					$.getJSON(
-						"<?php echo site_url('opname_header/get_item');?>", 
-						{ 	
-							term : request.term
-						},  
-						response
-					);
-				},
-			select:function(event, ui){
-				
-			}
-		});
-	}) */
 	
 	$("body").on("focus", ".autocom_item_id", function() {
 	    $(this).autocomplete({
             source: "<?php echo site_url('opname_header/get_item/');?>"+$("#unit_id").val()+"/"+$("#own_id").val(),
             select: function (event, ui) {
+				$('tr[class*="list_item"]').each(function(i,a){
+					if($(this).find('.item_id').val() == ui.item.item_id ){
+						$(this).eq((i)).closest('tr').find('.qty_opname').focus();
+						$(this).last().remove();
+						return false;
+					}
+				});
+                $(this).closest('tr').find('.qty_opname').focus();
                 $(this).closest('tr').find('.item_id').val(ui.item.item_id);
                 $(this).closest('tr').find('.qty_data').val(ui.item.total_stock);
                 $(this).closest('tr').find('.item_price').val(ui.item.harga);
@@ -160,4 +95,16 @@
                 .appendTo(ul);
         };
 	});
+
+	$("body").on("change", ".tb_list_item", function() {
+		$(this).find("input:not([class*='autocom_item_id'])").on("keydown",function(e) {
+			if (e.which == 13) {
+				$(".btnplus_list_item").click();
+				$(".autocom_item_id:last").focus();
+				e.stopImmediatePropagation();
+				return false;
+			}
+		});
+	});
   <?=$this->config->item('footerJS')?>
+  </script>
