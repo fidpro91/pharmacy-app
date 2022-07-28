@@ -47,12 +47,12 @@
 
 	table th { text-align: center; }
 </style>
-<div id="div_tombol" align="left">
-	<button class="btn btn-default" id="btn-cetak">Cetak</button>
-	<a class="btn btn-default" href="#" id="btn-excel">Excel</a>
-</div>
+<!--<div id="div_tombol" align="left">-->
+<!--	<button class="btn btn-default" id="btn-cetak">Cetak</button>-->
+<!--	<a class="btn btn-default" href="#" id="btn-excel">Excel</a>-->
+<!--</div>-->
 <br />
-<table class="table table-bordered" width="100%" id="example">
+<table class="table table-bordered" width="100%" id="example" border="1" style="border-collapse: collapse">
 	<tr>
 		<th width="5%">NO</th>
 		<th width="10%">TANGGAL FAKTUR</th>

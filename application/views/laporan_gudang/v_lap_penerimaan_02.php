@@ -45,13 +45,13 @@
 		font-size : 10px;
 	}
 </style>
-<div id="div_tombol" align="left">
-	<button class="btn btn-default" id="btn-cetak">Cetak</button>
-	<a class="btn btn-default" href="#" id="btn-excel">Excel</a>
-</div>
+<!--<div id="div_tombol" align="left">-->
+<!--	<button class="btn btn-default" id="btn-cetak">Cetak</button>-->
+<!--	<a class="btn btn-default" href="#" id="btn-excel">Excel</a>-->
+<!--</div>-->
 <br />
 <div class="text-center" style="margin: 3px;">
-	<table  width="100%" id="example">
+	<table  width="100%" id="example" style="text-align: center">
 		<tr>
 			<td>
 				<div class="text-center">
@@ -65,17 +65,18 @@
 				$grand_total=0;
 				foreach($data as $res):
 					?>
-					<table class="table table-striped table-bordered table-hover">
+					<table class="table table-striped table-bordered table-hover" width="100%" style="border-collapse: collapse" border="1">
 						<tr>
 							<th class="text-center" style="font-size: 10px;" width="15%">Nama Supplier</th>
 						</tr>
 						<tr>
 							<td class="text-left"   style="font-size: 10px;"><?php echo strtoupper($res->supplier_name)?></td>
 						</tr>
+
 						<tr>
 							<td></td>
 							<td colspan="4">
-								<table class="table table-striped table-bordered table-hover">
+								<table class="table table-striped table-bordered table-hover" border="1" width="100%" style="border-collapse: collapse">
 									<tr>
 										<th class="text-center" style="font-size: 10px;">Tanggal Faktur</th>
 										<th class="text-center" style="font-size: 10px;">No. Faktur</th>
@@ -97,7 +98,7 @@
 										<tr>
 											<td></td>
 											<td colspan="4">
-												<table class="table table-striped table-bordered table-hover">
+												<table class="table table-striped table-bordered table-hover" border="1" width="100%" style="border-collapse: collapse">
 													<tr>
 														<th class="text-center" style="font-size: 10px;" rowspan="2">No</th>
 														<th class="text-center" style="font-size: 10px;" rowspan="2">Kode Produk</th>
@@ -171,11 +172,11 @@
 				<?php
 				endforeach;
 				?>
-				<table class="table table-striped table-bordered table-hover">
+				<table class="table table-striped table-bordered table-hover" width="100%" border="1" style="border-collapse: collapse">
 					<tr>
-						<td width="80%" class="text-right">Total Transaksi Pembelian</td>
+						<td width="80%" class="text-right" style="text-align: right">Total Transaksi Pembelian</td>
 						<td width="2%">:</td>
-						<td class="text-right"><b><?=number_format($grand_total,2,".",",")?></b></td>
+						<td class="text-right" style="text-align: right"><b><?=number_format($grand_total,2,".",",")?></b></td>
 					</tr>
 				</table>
 			</td>

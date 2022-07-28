@@ -21,12 +21,12 @@
 		font-size : 10px;
 	}
 </style>
-<div id="div_tombol" align="left">
-	<button class="btn btn-default" id="btn-cetak">Cetak</button>
-	<a class="btn btn-default" href="#" id="btn-excel">Excel</a>
-</div>
+<!--<div id="div_tombol" align="left">-->
+<!--	<button class="btn btn-default" id="btn-cetak">Cetak</button>-->
+<!--	<a class="btn btn-default" href="#" id="btn-excel">Excel</a>-->
+<!--</div>-->
 <div class="text-center" style="margin: 3px;">
-	<table width="100%" id="example">
+	<table width="100%" id="example" style="text-align: center">
 		<tr>
 			<td>
 				<span style="font-weight: bold; font-size: 12px;"><?php echo $profil['nama'] ?> </span> <br / >
@@ -44,25 +44,25 @@
 				$grand_total=0;
 				foreach($data as $res):
 					?>
-					<table class="table table-striped table-bordered table-hover" >
+					<table class="table table-striped table-bordered table-hover" border="1" width="100%" style="border-collapse: collapse">
 						<tr>
-							<th class="text-center" style="font-size: 10px;" width="10%">Nama Supplier</th>
-							<th class="text-center" style="font-size: 10px;" width="5%">Tanggal Faktur</th>
-							<th class="text-center" style="font-size: 10px;" width="20%">No. Faktur</th>
-							<th class="text-center" style="font-size: 10px;" width="20%">No. Penerimaan</th>
+							<th class="text-center" style="font-size: 10px; text-align: center" width="10%">Nama Supplier</th>
+							<th class="text-center" style="font-size: 10px; text-align: center" width="5%">Tanggal Faktur</th>
+							<th class="text-center" style="font-size: 10px; text-align: center" width="20%">No. Faktur</th>
+							<th class="text-center" style="font-size: 10px; text-align: center" width="20%">No. Penerimaan</th>
 						</tr>
 						<tr>
-							<td class="text-center"   style="font-size: 10px;" width="10%"><?php echo strtoupper($res->supplier_name)?></td>
-							<td class="text-center" 	style="font-size: 10px;" width="5%"><?php
+							<td class="text-center"   style="font-size: 10px; text-align: center" width="10%"><?php echo strtoupper($res->supplier_name)?></td>
+							<td class="text-center" 	style="font-size: 10px; text-align: center" width="5%"><?php
 								$tgl = ($res->rec_date)?date('d-m-Y',strtotime($res->rec_date)):'';
 								echo $tgl;?></td>
-							<td class="text-center" 	style="font-size: 10px;" width="20%"><?php echo $res->rec_num?></td>
-							<td class="text-center" 	style="font-size: 10px;" width="20%"><?php echo $res->receiver_num?></td>
+							<td class="text-center" 	style="font-size: 10px; text-align: center" width="20%"><?php echo $res->rec_num?></td>
+							<td class="text-center" 	style="font-size: 10px; text-align: center" width="20%"><?php echo $res->receiver_num?></td>
 						</tr>
 						<tr>
 							<td></td>
 							<td colspan="4">
-								<table class="table table-striped table-bordered table-hover">
+								<table class="table table-striped table-bordered table-hover" width="100%" border="1" style="border-collapse: collapse">
 									<tr>
 										<th class="text-center" style="font-size: 10px;" rowspan="2">No</th>
 										<th class="text-center" style="font-size: 10px;" rowspan="2">Kode Produk</th>
@@ -130,11 +130,11 @@
 				<?php
 				endforeach;
 				?>
-				<table class="table table-striped table-bordered table-hover">
+				<table class="table table-striped table-bordered table-hover" width="100%" border="1" style="border-collapse: collapse">
 					<tr>
-						<td width="80%" class="text-right">Total Transaksi Pembelian</td>
+						<td width="80%" class="text-right" style="text-align: right">Total Transaksi Pembelian</td>
 						<td width="2%">:</td>
-						<td class="text-right"><b>
+						<td class="text-right" style="text-align: right"><b>
 								<?=number_format($grand_total,2,",",".")?></b></td>
 					</tr>
 				</table>

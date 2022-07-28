@@ -26,12 +26,19 @@
 	}
 </style>
 <br />
-<div class="text-center">
-	<span style="font-weight: bold; font-size: 12px;"><?php echo $profil['nama'] ?> </span> <br / >
-	<span style="font-weight: bold; font-size: 12px;"><?php echo $profil['alamat'].", ".$profil['kota']?></span> <br / >
-	<span style="font-weight: bold; font-size: 12px;">Laporan Penerimaan Gudang </span> <br / >
-	<span style="font-weight: bold; font-size: 12px;"><?php echo $periode?></span>
-</div>
+<table width="100%" style="text-align: center">
+	<tr>
+		<td>
+			<div class="text-center">
+				<span style="font-weight: bold; font-size: 12px;"><?php echo $profil['nama'] ?> </span> <br / >
+				<span style="font-weight: bold; font-size: 12px;"><?php echo $profil['alamat'].", ".$profil['kota']?></span> <br / >
+				<span style="font-weight: bold; font-size: 12px;">Laporan Penerimaan Gudang </span> <br / >
+				<span style="font-weight: bold; font-size: 12px;"><?php echo $periode?></span>
+			</div>
+		</td>
+	</tr>
+</table>
+
 <br />
 <div class="text-center" style="margin: 3px;">
 
@@ -39,7 +46,7 @@
 	$grand_total=0;
 	foreach($data as $res):
 		?>
-		<table class="table table-striped table-bordered table-hover">
+		<table class="table table-striped table-bordered table-hover" border="1" width="100%" style="border-collapse: collapse">
 			<tr>
 				<th class="text-center" style="font-size: 10px;" width="15%">Nama Supplier</th>
 			</tr>
@@ -49,7 +56,7 @@
 			<tr>
 				<td></td>
 				<td colspan="4">
-					<table class="table table-striped table-bordered table-hover">
+					<table class="table table-striped table-bordered table-hover" border="1" width="100%" style="border-collapse: collapse">
 						<tr>
 							<th class="text-center" style="font-size: 10px;" >No</th>
 							<th class="text-center" style="font-size: 10px;" >Tanggal Faktur</th>
@@ -76,8 +83,8 @@
 						?>
 						<tr>
 							<td colspan="3"></td>
-							<td class="text-right">Total</td>
-							<td class="text-right"><?php $grand_total += $total; echo number_format($total,2,".",".")?></td>
+							<td class="text-right" style="text-align: right">Total</td>
+							<td class="text-right" style="text-align: right"><?php $grand_total += $total; echo number_format($total,2,".",".")?></td>
 						</tr>
 					</table>
 				</td>
@@ -86,11 +93,11 @@
 	<?php
 	endforeach;
 	?>
-	<table class="table table-striped table-bordered table-hover">
+	<table class="table table-striped table-bordered table-hover" width="100%" border="1" style="border-collapse: collapse">
 		<tr>
-			<td width="80%" class="text-right">Total Transaksi Pembelian</td>
+			<td width="80%" class="text-right" style="text-align: right">Total Transaksi Pembelian</td>
 			<td width="2%">:</td>
-			<td class="text-right"><b><?=number_format($grand_total,2,".",",")?></b></td>
+			<td class="text-right" style="text-align: right"><b><?=number_format($grand_total,2,".",",")?></b></td>
 		</tr>
 	</table>
 </div>

@@ -23,15 +23,20 @@
 </style>
 <body>
 <br />
-<div class="text-center">
-	<span style="font-weight: bold; font-size: 12px;"><?php echo $profil['nama'] ?> </span> <br / >
-	<span style="font-weight: bold; font-size: 12px;"><?php echo $profil['alamat'].", ".$profil['kota']?></span> <br / >
-	<span style="font-weight: bold; font-size: 12px;">Laporan Penerimaan Gudang </span> <br / >
-	<span style="font-weight: bold; font-size: 12px;">Periode <?php echo $periode?></span>
-</div>
+<table width="100%" style="text-align: center">
+	<tr>
+		<td>
+			<span style="font-weight: bold; font-size: 12px;"><?php echo $profil['nama'] ?> </span> <br / >
+			<span style="font-weight: bold; font-size: 12px;"><?php echo $profil['alamat'].", ".$profil['kota']?></span> <br / >
+			<span style="font-weight: bold; font-size: 12px;">Laporan Penerimaan Gudang </span> <br / >
+			<span style="font-weight: bold; font-size: 12px;">Periode <?php echo $periode?></span>
+		</td>
+	</tr>
+</table>
+
 <br />
-<div class="text-center" style="margin: 3px;">
-	<table class="table table-striped table-bordered table-hover">
+<div class="text-center" style="margin: 3px;text-align: center">
+	<table class="table table-striped table-bordered table-hover" style="border-collapse: collapse", width="100%" border="1">
 		<tr>
 			<th class="text-center" style="font-size: 12px;">No</th>
 			<th class="text-center" style="font-size: 12px;">Tanggal</th>

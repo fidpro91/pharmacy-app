@@ -26,15 +26,22 @@
 	}
 </style>
 <br />
-<div class="text-center">
-	<span style="font-weight: bold; font-size: 12px;"><?php echo $profil['nama'] ?> </span> <br / >
-	<span style="font-weight: bold; font-size: 12px;"><?php echo $profil['alamat'].", ".$profil['kota']?></span> <br / >
-	<span style="font-weight: bold; font-size: 12px;">Laporan Penerimaan Gudang </span> <br / >
-	<span style="font-weight: bold; font-size: 12px;"><?php echo $periode?></span>
-</div>
+<table border="1" width="100%" style="text-align: center">
+	<tr>
+		<td>
+			<div class="text-center">
+				<span style="font-weight: bold; font-size: 12px;"><?php echo $profil['nama'] ?> </span> <br / >
+				<span style="font-weight: bold; font-size: 12px;"><?php echo $profil['alamat'].", ".$profil['kota']?></span> <br / >
+				<span style="font-weight: bold; font-size: 12px;">Laporan Penerimaan Gudang </span> <br / >
+				<span style="font-weight: bold; font-size: 12px;"><?php echo $periode?></span>
+			</div>
+		</td>
+	</tr>
+</table>
+
 <br />
 <div class="text-center" style="margin: 3px;">
-	<table class="table table-striped table-bordered table-hover">
+	<table class="table table-striped table-bordered table-hover" width="100%" border="1" style="border-collapse: collapse">
 		<thead>
 		<tr>
 			<th class="text-center" style="font-size: 10px;" width="5%">No</th>
@@ -68,7 +75,7 @@
 		<tr>
 			<td></td>
 			<td colspan="2">Total</td>
-			<td class="text-right" 	style="font-size: 10px;"><?php echo number_format($grand_total,2,",",".")?></td>
+			<td class="text-right" 	style="font-size: 10px; text-align: right"><?php echo number_format($grand_total,2,",",".")?></td>
 		</tr>
 		</tfoot>
 	</table>

@@ -199,4 +199,250 @@ order by cb.supplier_name asc ")->result();
 		$result = $this->db->query($sql);
 		return $result->result();
 	}
+
+	public function get_unit( $where, $status=0 )
+	{
+		$this->db->select('vf.unit_id, vf.unit_name')
+			->from( "farmasi.v_unit_farmasi vf");
+
+		if(empty( $where['unit_id']) )
+			$this->db ->where("cat_unit_code in (".implode(',', $where).") and unit_active = 't'",null);
+		else
+			$this->db->where($where);
+
+		if( empty($status) )
+			return $this->db ->get()->result();
+		else
+			return $this->db ->get()->row();
+	}
+	public function get_data_stok( $input )
+	{
+
+		if( empty($input) ){
+			$input = 0;
+		}
+
+		$sql    = "	SELECT 
+						*,p.price_sell::numeric
+					FROM 
+					newfarmasi.stock vs
+					inner join admin.ms_item mi on vs.item_id = mi.item_id
+					inner join farmasi.ownership ow on vs.own_id = ow.own_id
+					inner join farmasi.price p on vs.item_id = p.item_id and vs.own_id = p.own_id
+					where vs.unit_id = '".$input."'
+					order by item_name asc";
+		$result = $this->db->query($sql);
+		return $result->result();
+	}
+
+	public function get_laporan_po($unit_id,$tanggal)
+	{
+		$tgl = explode('/', $tanggal);
+		$tanggal_awal = $tgl[0];
+		$tanggal_akhir = $tgl[1];
+
+		$this->db->query("select * FROM farmasi.po_detail p
+			     LEFT JOIN farmasi.po po ON p.po_id = po.po_id
+			     LEFT JOIN admin.ms_item i ON p.item_id = i.item_id
+			     LEFT JOIN admin.ms_supplier s ON po.supplier_id=s.supplier_id
+			     LEFT JOIN ( SELECT r.po_id,d.item_id,sum(d.qty_pack) AS qtyreceive
+			     FROM farmasi.receiving r 
+			     LEFT JOIN farmasi.receiving_detail d ON r.rec_id = d.rec_id
+			     GROUP BY r.po_id, d.item_id) rd ON p.po_id = rd.po_id AND p.item_id = rd.item_id
+				 where supplier_name='$unit_name' and po_date between '$awal' AND '$akhir'")->result();
+
+	}
+
+	public function get_obat_exp($unit_id,$tanggal)
+	{
+		$tgl = explode('/', $tanggal);
+		$tanggal_awal = $tgl[0];
+		$tanggal_akhir = $tgl[1];
+		$sql = "select expired_date, unit_name,item_code, item_name,own_name,qty_stock from newfarmasi.v_stock_fifo_unit
+				where unit_id='$unit_id' and expired_date between '$tanggal_awal' AND '$tanggal_akhir'";
+		$result = $this->db->query($sql)->result();
+		return $result;
+	}
+
+	public function get_unit_stok_min($input=0)
+	{
+		$where = ($input > 0)? "where vf.unit_id =".$input : '';
+		$sql = " SELECT 
+						vf.unit_id, vf.unit_name 
+					FROM 
+					farmasi.v_unit_farmasi vf
+					$where";
+		$result = $this->db->query($sql);
+		if($input > 0){
+			return $result->row();
+		} else {
+			return $result->result();
+		}
+	}
+	public function get_detail($input)
+	{
+		if( empty($input) )
+			$input = 0;
+
+		$sql = "SELECT mi.item_id,mi.item_code,mi.item_name,ow.own_name,s.own_id,s.unit_id,s.stock_summary,sum(COALESCE(x.stock_summary,0))stock_all_unit,sum(sp.keluar)jml_keluar,
+			(sum(sp.keluar)/EXTRACT('day' FROM CURRENT_DATE - date_trunc('day', current_date - interval '1' month)))rata2_keluar
+			FROM newfarmasi.stock s
+			INNER JOIN admin.ms_item mi ON mi.item_id = s.item_id
+			INNER JOIN farmasi.ownership ow ON ow.own_id = s.own_id
+			LEFT JOIN (
+				SELECT unit_id,own_id,item_id,sum(kredit)keluar FROM newfarmasi.stock_process WHERE trans_type = 2 AND (date_trans BETWEEN date_trunc('day', current_date - interval '1' month) AND CURRENT_DATE) 
+				GROUP BY unit_id,own_id,item_id
+			)sp ON sp.unit_id = s.unit_id AND s.item_id = sp.item_id AND s.own_id = sp.own_id
+			LEFT JOIN (
+				SELECT unit_id,own_id,item_id,stock_summary FROM newfarmasi.stock  
+			) x ON x.item_id = s.item_id AND s.own_id = x.own_id AND x.unit_id != s.unit_id
+			WHERE s.unit_id = '$input'
+			GROUP BY mi.item_id,mi.item_code,mi.item_name,s.own_id,s.unit_id,s.stock_summary,ow.own_name
+			ORDER BY mi.item_name";
+		$result = $this->db->query($sql);
+		return $result->result();
+	}
+
+	public function get_slowfast_bulanan($unit_id, $tanggal){
+		$tgl = explode('/', $tanggal);
+		$tanggal_awal = $tgl[0];
+		$tanggal_akhir = $tgl[1];
+
+		$sql = " SELECT 
+				  mi.item_code,
+				  mi.item_name,
+				  ow.own_name,
+				  SUM(sd.sale_qty) AS qty
+				FROM farmasi.sale s 
+				  INNER JOIN farmasi.sale_detail sd ON sd.sale_id = s.sale_id
+				  INNER JOIN admin.ms_item mi ON mi.item_id = sd.item_id
+				  INNER JOIN farmasi.ownership ow ON ow.own_id = s.own_id
+				WHERE s.unit_id = '{$unit_id}'
+					AND s.sale_date between '{$tanggal_awal}' AND '{$tanggal_akhir}'
+				GROUP BY mi.item_code, mi.item_name, ow.own_name
+				ORDER BY SUM(sd.sale_qty) DESC";
+		$result = $this->db->query($sql)->result();
+		return $result;
+	}
+
+	public function stok_opname($where)
+	{
+		$sql = "SELECT 
+	i.item_id,
+	i.item_name,
+	opr.opname_note,
+	opr.opname_header_id,
+	opr.opname_date,
+	o.qty_adj,
+	o.qty_data,
+	o.qty_opname,
+	op.item_price :: NUMERIC,
+	op.item_price :: NUMERIC * o.qty_adj AS nilai_adj,
+	op.item_price :: NUMERIC * o.qty_data AS nilai_sistem,
+	op.item_price :: NUMERIC * o.qty_opname AS nilai_opname 
+FROM
+	(
+	SELECT
+		item_id,
+		MAX ( A.opname_header_id ) AS opname_id 
+	FROM
+		(
+		SELECT
+			o.opname_header_id,
+			item_id,
+			opname_date,
+			opname_note 
+		FROM
+			newfarmasi.opname o
+			JOIN newfarmasi.opname_header oh on o.opname_header_id = oh.opname_header_id
+		WHERE
+			0 = 0 
+			$where
+		) a 
+	GROUP BY
+		item_id 
+	) b
+	INNER JOIN newfarmasi.opname_header opr ON opr.opname_header_id = b.opname_id
+	INNER JOIN newfarmasi.opname o on o.opname_header_id = opr.opname_header_id
+	INNER JOIN ( SELECT opname_header_id, MAX ( item_price ) item_price FROM newfarmasi.opname GROUP BY opname_header_id ) op ON op.opname_header_id = opr.opname_header_id
+	INNER JOIN ADMIN.ms_item i ON i.item_id = o.item_id";
+
+		$result = $this->db->query($sql);
+		$result = $result->result();
+		return $result;
+	}
+
+	public function get_supplier()
+	{
+		$sql = "select * from admin.ms_supplier";
+		$result = $this->db->query($sql)->result();
+		return $result;
+	
+	}
+
+	public function get_unit_retur()
+	{
+		$code_gudang 		= "'0502'";
+		$code_produksi		= "'0503'";
+		$data['data'] = [];
+		$codeUnit = array($code_gudang,$code_produksi);
+
+		$sql = "select
+		vf.unit_id,
+		vf.unit_name
+		from
+		newfarmasi.v_unit_farmasi vf
+		where cat_unit_code in (".implode(',', $codeUnit).") and vf.unit_active = 't' ";
+		$result = $this->db->query($sql)->result();
+		return $result;
+
+	}
+
+	public function get_item()
+	{
+		$data = $this->db->query("select *,item_name as value from admin.ms_item where item_active = 't'")->result();
+		return $data;
+	}
+
+	public function get_data_retur($where)
+	{
+		$data = $this->db->query("
+		SELECT
+	rr.num_retur,
+	to_char( rr.rr_date, 'DD-MM-YYYY HH24:MM:SS' ) AS tgl_retur,
+	s.supplier_name,
+	json_agg (
+		concat (
+			i.item_code,
+			'||',
+			i.item_name,
+			'||',
+			rrd.rrd_qty,
+			'||',
+			rrd.rrd_price :: NUMERIC,
+			'||',
+			( rrd.rrd_price :: NUMERIC * rrd.rrd_qty ) 
+		) 
+	) AS detail_retur
+FROM
+	newfarmasi.receiving_retur rr
+	INNER JOIN newfarmasi.receiving_retur_detil rrd ON rr.rr_id = rrd.rr_id
+	INNER JOIN ADMIN.ms_item i ON rrd.item_id = i.item_id
+	INNER JOIN ADMIN.ms_supplier s ON rrd.supplier_id = s.supplier_id 
+WHERE 0=0
+	$where
+GROUP BY
+	rr.num_retur,
+	s.supplier_name,
+	rr.rr_date 
+ORDER BY
+	rr.rr_date DESC
+			")->result();
+
+		if (count($data)>0) {
+			return $data;
+		}else{
+			return array();
+		}
+	}
 }
