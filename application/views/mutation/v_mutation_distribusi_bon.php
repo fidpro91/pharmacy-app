@@ -28,7 +28,7 @@
             ]) ?>  
           </div>  
           <div class="col-md-3">     
-          <?=create_inputDaterange("tanggal",["locale"=>["format"=>"YYYY-MM-DD","separator"=>"/"]])?>
+            <?=create_inputDaterange("tanggal",["locale"=>["format"=>"YYYY-MM-DD","separator"=>"/"]])?>
           </div>  
           <div class="col-md-3">     
           <?= create_select([
@@ -79,6 +79,10 @@
               'targets': [0,1,-1],
                'searchable': false,
                'orderable': false,
+             },
+             {
+              "width"     : "10%",
+              "targets"   : -1
              },
             {
                'targets': 0,

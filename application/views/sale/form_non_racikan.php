@@ -38,30 +38,43 @@
 				$(this).find('.price_total').val(total_item);
 				$(this).find('.price_total').inputmask("IDR");
         	});
+
 			$(this).find("input").on('keyup', null, 'ctrl+a', function(e){
 				$(".btnplus_list_obat_nonracikan").click();
 				$(".autocom_item_id:last").focus();
 				e.stopImmediatePropagation();
 				return false;
 			}); 
-			/* $(this).find("input").on('keyup', null, 'Ctrl+Shift+s', function(e){
+			$(this).find("input").on('keydown', null, 'ctrl+s', function(e){
 				$("#btn-save-non_racikan").click();
 				e.stopImmediatePropagation();
 				return false;
-			}); */
+			});
+			$(this).find("input:not([class*='autocom_item_id'])").on("keydown",function(e) {
+				if (e.which == 13) {
+					$(".btnplus_list_obat_nonracikan").click();
+					$(".autocom_item_id:last").focus();
+					e.stopImmediatePropagation();
+					return false;
+				}
+			});
 		});
 
 		$("#btn-save-non_racikan").click(()=>{
 			$.ajax({
 				'async': false,
 				'type': "post",
-				'data': $("#form_non_racikan").serialize(),
+				'data': $("#form_non_racikan").serialize()+"&embalase_item="+$("#labelEmbalase").text(),
 				'url': "sale/set_item_nonracikan",
 				'dataType':'json',
 				'success': function (data) {
 					$(".list_obat_nonracikan2").append(data.html);
 					let total = parseFloat($.isNumeric($('#sub_total_nonracikan').attr('isi'))?$('#sub_total_nonracikan').attr('isi'):0);
+					let biayaNonracik = parseFloat($.isNumeric($('#total_biaya_nonracikan').attr('isi'))?$('#total_biaya_nonracikan').attr('isi'):0);
             		total = total+data.total;
+            		biayaNonracik = biayaNonracik+data.embalase;
+					$("#total_biaya_nonracikan").text(formatMoney(biayaNonracik));
+            		$("#total_biaya_nonracikan").attr("isi",biayaNonracik);
 					$("#sub_total_nonracikan").text(formatMoney(total));
             		$("#sub_total_nonracikan").attr("isi",total);
 					grandTotal();

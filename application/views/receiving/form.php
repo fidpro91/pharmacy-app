@@ -43,8 +43,12 @@
 										]
 						])?>
 						<?=create_select2([
-							"attr" =>["name"=>"po_id=nomor po","id"=>"po_id","class"=>"form-control"],
-							"model"=>["m_po" => ["get_po",["0"=>'0']],
+							"attr" =>[
+								"name"		=>"po_id=nomor po",
+								"id"		=>"po_id",
+								"class"		=>"form-control",
+								"onchange"	=>"hitunggrandTotal()"
+							],"model"=>["m_po" => ["get_po",["0"=>'0']],
 											"column"  => ["po_id","detail_po"]
 										],
 						])?>
@@ -56,7 +60,7 @@
 						<?=create_select2([
 							"attr" =>["name"=>"ppn=PPN","id"=>"ppn","class"=>"form-control"],
 							"model"=>["m_setting_app" => ["get_setting_app",["setting_type"=>'1']],
-											"column"  => ["setting_id","setting_name"]
+											"column"  => ["setting_value","setting_name"]
 										],
 						])?>
 					</div>

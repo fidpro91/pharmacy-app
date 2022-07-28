@@ -90,7 +90,8 @@
       $("#unit_id_depo, #kepemilikan_id").bind("change",(e) => {
           table.draw();
           e.preventDefault();
-        });
+      });
+      table.draw();
       // location.reload();
     });
     <?= $this->config->item('footerJS') ?>

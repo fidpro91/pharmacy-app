@@ -50,16 +50,27 @@ class M_sale_detail extends CI_Model
 		return $col;
 	}
 
-	public function get_column_multiple()
+	public function get_column_multiple($updates)
 	{
-		$col = [
-			"item_id",
-			"sale_qty",
-			"stock",			
-			"sale_price",
-			"dosis",
-			"price_total",
-		];
+		if ($updates==true) {
+			$col = [
+				"item_id",
+				"sale_qty",
+				"stock",			
+				"sale_price",
+				"dosis",
+				"price_total",
+			];
+		}else{
+			$col = [
+				"item_id",
+				"sale_qty",
+				"stock",			
+				"sale_price",
+				"dosis",
+				"price_total",
+			];
+		}
 		return $col;
 	}
 

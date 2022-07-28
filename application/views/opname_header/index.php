@@ -102,13 +102,14 @@
     });
 
     $("#btn-add").click(function() {
+      dataItemOpname = null;
       $("#form_opname_header").show();
       $("#form_opname_header").load("opname_header/show_form/"+$("#unit_id_depo").val());
     });
     function set_val(id) {
       $("#form_opname_header").show();
       $.get('opname_header/find_one/'+id,(data)=>{
-          $("#form_opname_header").load("opname_header/show_form",()=>{
+          $("#form_opname_header").load("opname_header/show_form/"+$("#unit_id_depo").val(),()=>{
             $.each(data,(ind,obj)=>{
                 $("#"+ind).val(obj);
             });

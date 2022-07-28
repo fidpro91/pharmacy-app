@@ -67,13 +67,20 @@ $("body").on("change", ".tb_list_item_racikan", function() {
         $(".autocom_item_id:last").focus();
         e.stopImmediatePropagation();
         return false;
-    }); 
-    /* $(this).find("input").on('keydown', null, 'Ctrl+Shift+s', function(e){
+    });
+    $(this).find("input").on('keydown', null, 'ctrl+s', function(e){
         $("#btn-save-racikan").click();
-        e.preventDefault();
         e.stopImmediatePropagation();
         return false;
-    });  */
+    });
+    $(this).find("input:not([class*='autocom_item_id'])").on("keydown",function(e) {
+        if (e.which == 13) {
+            $(".btnplus_list_item_racikan").click();
+            $(".autocom_item_id:last").focus();
+            e.stopImmediatePropagation();
+            return false;
+        }
+    });
 });
 
 $("#btn-save-racikan").click(()=>{
@@ -91,7 +98,11 @@ $("#form_racikan").on("submit",()=>{
             'success': function (data) {
                 $(".list_obat_racikan").append(data.html);
                 let total = parseFloat($.isNumeric($('#sub_total_racikan').attr('isi'))?$('#sub_total_racikan').attr('isi'):0);
+                let totalBiayaRacik = parseFloat($.isNumeric($('#total_biaya_racikan').attr('isi'))?$('#total_biaya_racikan').attr('isi'):0);
                 total = total+data.total;
+                totalBiayaRacik = totalBiayaRacik+data.biaya_racik;
+                $("#total_biaya_racikan").text(formatMoney(totalBiayaRacik));
+                $("#total_biaya_racikan").attr("isi",totalBiayaRacik);
                 $("#sub_total_racikan").text(formatMoney(total));
                 $("#sub_total_racikan").attr("isi",total);
                 grandTotal();

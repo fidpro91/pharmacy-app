@@ -1,31 +1,31 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Setting_app extends MY_Generator {
+class Stock_maxmin_unit extends MY_Generator {
 
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->model('m_setting_app');
+		$this->load->model('m_stock_maxmin_unit');
 	}
 
 	public function index()
 	{
-		$this->theme('setting_app/index','',get_class($this));
+		$this->theme('stock_maxmin_unit/index','',get_class($this));
 	}
 
 	public function save()
 	{
 		$data = $this->input->post();
-		if ($this->m_setting_app->validation()) {
+		if ($this->m_stock_maxmin_unit->validation()) {
 			$input = [];
-			foreach ($this->m_setting_app->rules() as $key => $value) {
+			foreach ($this->m_stock_maxmin_unit->rules() as $key => $value) {
 				$input[$key] = $data[$key];
 			}
-			if ($data['setting_id']) {
-				$this->db->where('setting_id',$data['setting_id'])->update('newfarmasi.setting_app',$input);
+			if ($data['id']) {
+				$this->db->where('id',$data['id'])->update('farmasi.stock_maxmin_unit',$input);
 			}else{
-				$this->db->insert('newfarmasi.setting_app',$input);
+				$this->db->insert('farmasi.stock_maxmin_unit',$input);
 			}
 			$err = $this->db->error();
 			if ($err['message']) {
@@ -36,7 +36,7 @@ class Setting_app extends MY_Generator {
 		}else{
 			$this->session->set_flashdata('message',validation_errors('<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>','</div>'));
 		}
-		redirect('setting_app');
+		redirect('stock_maxmin_unit');
 
 	}
 
@@ -44,8 +44,8 @@ class Setting_app extends MY_Generator {
 	{
 		$this->load->library('datatable');
 		$attr 	= $this->input->post();
-		$fields = $this->m_setting_app->get_column();
-		$data 	= $this->datatable->get_data($fields,$filter = array(),'m_setting_app',$attr);
+		$fields = $this->m_stock_maxmin_unit->get_column();
+		$data 	= $this->datatable->get_data($fields,$filter = array(),'m_stock_maxmin_unit',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
         foreach ($data['dataku'] as $index=>$row) { 
@@ -61,7 +61,7 @@ class Setting_app extends MY_Generator {
             		$obj[] = $row[$value];
             	}
             }
-            $obj[] = create_btnAction(["update"],$row['id_key']);
+            $obj[] = create_btnAction(["update","delete"],$row['id_key']);
             $records["aaData"][] = $obj;
             $no++;
         }
@@ -72,14 +72,14 @@ class Setting_app extends MY_Generator {
 
 	public function find_one($id)
 	{
-		$data = $this->db->where('setting_id',$id)->get("newfarmasi.setting_app")->row();
+		$data = $this->db->where('id',$id)->get("farmasi.stock_maxmin_unit")->row();
 
 		echo json_encode($data);
 	}
 
 	public function delete_row($id)
 	{
-		$this->db->where('setting_id',$id)->delete("newfarmasi.setting_app");
+		$this->db->where('id',$id)->delete("farmasi.stock_maxmin_unit");
 		$resp = array();
 		if ($this->db->affected_rows()) {
 			$resp['message'] = 'Data berhasil dihapus';
@@ -94,7 +94,7 @@ class Setting_app extends MY_Generator {
 	{
 		$resp = array();
 		foreach ($this->input->post('data') as $key => $value) {
-			$this->db->where('setting_id',$value)->delete("newfarmasi.setting_app");
+			$this->db->where('id',$value)->delete("farmasi.stock_maxmin_unit");
 			$err = $this->db->error();
 			if ($err['message']) {
 				$resp['message'] .= $err['message']."\n";
@@ -108,7 +108,7 @@ class Setting_app extends MY_Generator {
 
 	public function show_form()
 	{
-		$data['model'] = $this->m_setting_app->rules();
-		$this->load->view("setting_app/form",$data);
+		$data['model'] = $this->m_stock_maxmin_unit->rules();
+		$this->load->view("stock_maxmin_unit/form",$data);
 	}
 }

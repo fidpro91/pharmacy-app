@@ -67,6 +67,13 @@ class M_surety_ownership extends CI_Model {
 		return $this->db->order_by("own_code")->get_where("farmasi.ownership",$where)->result();
 	}
 
+	public function get_ms_Surety($where=[0=>0])
+	{
+		return $this->db->order_by("surety_id")
+						->where(["surety_active"=>'t'])
+						->get_where("yanmed.ms_surety",$where)->result();
+	}
+
 	public function find_one($where)
 	{
 		return $this->db->get_where("farmasi.surety_ownership",$where)->row();

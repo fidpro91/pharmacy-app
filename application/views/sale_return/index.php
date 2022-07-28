@@ -78,6 +78,10 @@
           'orderable': false,
         },
         {
+          "width"   : "10%",
+          "targets" : -1
+        },
+        {
           'targets': 0,
           'className': 'dt-body-center',
           'render': function(data, type, full, meta) {

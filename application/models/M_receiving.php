@@ -64,6 +64,43 @@ class M_receiving extends CI_Model {
 		return $col;
 	}
 
+	public function get_data_harga($sLimit,$sWhere,$sOrder,$aColumns)
+	{
+		$data = $this->db->query("
+				SELECT ".implode(',', $aColumns).",r.rec_id as id_key FROM newfarmasi.receiving_detail rd
+				JOIN newfarmasi.receiving r ON rd.rec_id = r.rec_id
+				WHERE po_id IS NOT NULL
+				$sWhere $sOrder $sLimit
+			")->result_array();
+		return $data;
+	}
+
+	public function get_total_harga($sWhere,$aColumns)
+	{
+		$data = $this->db->query("
+				SELECT ".implode(',', $aColumns).",r.rec_id as id_key FROM newfarmasi.receiving_detail rd
+				JOIN newfarmasi.receiving r ON rd.rec_id = r.rec_id
+				WHERE po_id IS NOT NULL
+				$sWhere
+			")->num_rows();
+		return $data;
+	}
+
+	public function get_column_harga()
+	{
+		$col = [
+				"receiver_date"=>["label"=>"Tgl.Penerimaan"],
+				"rec_num"=>["label"=>"No.Faktur"],
+				"receiver_num"=>["label"=>"No.Penerimaan"],
+				"price_item" => [
+					"custom" => function($a){
+						return convert_currency($a);
+					}
+				],
+			];
+		return $col;
+	}
+
 	public function rules()
 	{
 		$data = [
