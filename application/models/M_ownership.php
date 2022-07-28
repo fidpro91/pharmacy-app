@@ -77,7 +77,8 @@ class M_ownership extends CI_Model
 
 	public function get_ownership($where = [0 => 0])
 	{
-		return $this->db->get_where("farmasi.ownership", $where)->result();
+		return $this->db->order_by("own_id","asc")
+						->get_where("farmasi.ownership", $where)->result();
 	}
 
 	public function find_one($where)

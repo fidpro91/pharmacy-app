@@ -41,16 +41,17 @@ class Stock_all_unit extends MY_Generator {
                     <td>".($key+1)."</td>
                     <td>$value->item_name</td>";
             foreach ($unit as $x => $v) {
-                $dt = json_decode($value->detail,true);
+                $dt = json_decode($value->detail,true); 
                 $i = array_search($v->unit_id, array_column($dt, 'f1'));
                 $stok = 0;
                 if ($i !== false) {
                     $stok = ($dt[$i]['f2']);
                 }
                 $row .= "<td>$stok</td>";
-            }
-            $row .= "</tr>";
+            } 
+            $row .= "</tr>";            
             echo $row;
         }
+      
     }
 }

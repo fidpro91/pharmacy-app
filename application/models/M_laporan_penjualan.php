@@ -211,7 +211,7 @@ class M_laporan_penjualan  extends CI_Model {
 			$where = "a.sale_type = '$sale_type'";
 		}
 		if (!empty($unit_layanan)) {			
-			$where = "a.unit_id = '$unit_layanan' ";
+			$where = "b.unit_id = '$unit_layanan' ";
         } 
 		$where .=$date;
 		$this->db->where($where,null);

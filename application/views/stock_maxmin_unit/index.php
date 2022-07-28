@@ -26,7 +26,25 @@
         <div class="box-body" id="form_stock_maxmin_unit" style="display: none;">
         </div>
         <div class="box-body" id="data_stock_maxmin_unit">
+        <div class="col-md-3">
+           <?= create_select([
+              "attr" => ["name" => "own_id=Kepemilikan", "id" => "own_id", "class" => "form-control"],
+              "model"=>["m_ownership" => ["get_ownership",[0]],
+              "column"  => ["own_id","own_name"]
+            ],
+            ]) ?>
+        </div>
+        <div class="col-md-3">
+           <?= create_select([
+              "attr" => ["name" => "unit=UNIT", "id" => "unit", "class" => "form-control"],
+              "model"=>["m_ms_unit" =>"get_farmasi_unit",
+              "column"  => ["unit_id","unit_name"]
+            ],
+            ]) ?>
+        </div>
+        <div class="col-md-12">
           <?=create_table("tb_stock_maxmin_unit","M_stock_maxmin_unit",["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
+          </div>
         </div>
         <div class="box-footer">
           <button class="btn btn-danger" id="btn-deleteChecked"><i class="fa fa-trash"></i> Delete</button>
@@ -49,7 +67,11 @@
             "scrollX": true,
             "ajax": {
                 "url": "<?php echo site_url('stock_maxmin_unit/get_data')?>",
-                "type": "POST"
+                "type": "POST",
+                "data": function(f) {        
+                       f.own = $("#own_id").val();
+                       f.unit_id = $("#unit").val();
+                }
             },
             'columnDefs': [
             {
@@ -65,6 +87,9 @@
                }
             }], 
         });
+        $("#own_id, #unit").change(() => {
+			table.draw();
+		});
     });
     $("#btn-add").click(function() {
       $("#form_stock_maxmin_unit").show();

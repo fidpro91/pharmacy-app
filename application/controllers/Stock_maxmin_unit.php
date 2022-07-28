@@ -45,7 +45,14 @@ class Stock_maxmin_unit extends MY_Generator {
 		$this->load->library('datatable');
 		$attr 	= $this->input->post();
 		$fields = $this->m_stock_maxmin_unit->get_column();
-		$data 	= $this->datatable->get_data($fields,$filter = array(),'m_stock_maxmin_unit',$attr);
+		$filter =[];
+		if (!empty($attr['own'])) {
+			$filter['sm.own_id'] = $attr['own'];
+		}
+		if (!empty($attr['unit_id'])) {
+			$filter['sm.unit_id'] = $attr['unit_id'];
+		}
+		$data 	= $this->datatable->get_data($fields,$filter,'m_stock_maxmin_unit',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
         foreach ($data['dataku'] as $index=>$row) { 
