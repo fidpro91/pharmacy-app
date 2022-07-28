@@ -359,4 +359,89 @@ class Laporan_permintaan_gudang extends MY_Generator
 		$this->load->view('laporan_gudang/retur_penerimaan_supplier/v_cetak_retur_supplier',$data);
 
 	}
+
+	public function stok_konsolidasoi()
+	{
+		$data['data'] = [];
+		$this->theme('laporan_gudang/stok_konsolidasi/v_laporan_mutasi_form',$data);
+	}
+
+	public function show_laporan_stok_konsolidasi($tgl_awal,$tgl_akhir,$unit_id,$own_id,$golongan,$tampilan,$act)
+	{
+		$data['tampilan']       = $tampilan;
+		$data['tampil']         = $tampilan;
+
+		$where = "";
+		if($unit_id !=null){
+			$where .= " AND sp.unit_id = $unit_id";
+		}
+		if($own_id !=null){
+			$where .= " AND sp.own_id = $own_id";
+		}
+		$unit = $this->db->query("select own_name from farmasi.ownership where own_id = $own_id")->row();
+		$data['own_name'] = $unit->own_name;
+//		if ($golongan=="0") {
+//			$gol= " ";
+//		}else{
+//			$where .= " and mi.gol='$golongan'";
+//		}
+		$data['golongan'] = $golongan;
+		$where2="";
+//		if($jenis_laporan == 'periodik'){
+//			$dateMonthYear= $this->input->post('tglPeriodikDari', true);
+//			list($date,$bulan1,$tahun) = explode('-', $dateMonthYear);
+//			switch ($bulan1) {
+//				case '01':$bulan1 = "Januari"; break;
+//				case '02':$bulan1= "Pebruari"; break;
+//				case '03':$bulan1 = "Maret"; break;
+//				case '04':$bulan1 = "April"; break;
+//				case '05':$bulan1 = "Mei"; break;
+//				case '06':$bulan1 = "Juni"; break;
+//				case '07':$bulan1 = "Juli"; break;
+//				case '08':$bulan1 = "Agustus"; break;
+//				case '09':$bulan1 = "September"; break;
+//				case '10':$bulan1 = "Oktober"; break;
+//				case '11':$bulan1 = "Nopember"; break;
+//				case '12':$bulan1 = "Desember"; break;
+//				default: $bulan1 =""; break;
+//			}
+//			$dateMonthYear2= $this->input->post('tglPeriodikSampai', true);
+
+//			list($date2,$bulan2,$tahun2) = explode('-', $dateMonthYear2);
+
+//			switch ($bulan2) {
+//				case '01':$bulan2 = "Januari"; break;
+//				case '02':$bulan2= "Pebruari"; break;
+//				case '03':$bulan2 = "Maret"; break;
+//				case '04':$bulan2 = "April"; break;
+//				case '05':$bulan2 = "Mei"; break;
+//				case '06':$bulan2 = "Juni"; break;
+//				case '07':$bulan2 = "Juli"; break;
+//				case '08':$bulan2 = "Agustus"; break;
+//				case '09':$bulan2 = "September"; break;
+//				case '10':$bulan2 = "Oktober"; break;
+//				case '11':$bulan2 = "Nopember"; break;
+//				case '12':$bulan2 = "Desember"; break;
+//				default: $bulan2 =""; break;
+//			}
+//			$tglPeriodikDari       = date("Y-m-d", strtotime($this->input->post('tglPeriodikDari', true)));
+//			$tglPeriodikSampai       = date("Y-m-d", strtotime($this->input->post('tglPeriodikSampai', true)));
+			$where .= " AND (date(sp.date_trans) between '$tgl_awal' AND '$tgl_akhir')";
+			$where2 .= " AND date(sp.date_trans) < '$tgl_awal'";
+			$data['waktu'] = $tgl_awal."sd".$tgl_akhir;
+//		}
+		$data['username'] = $this->session->user_name;
+		$data['rs']      = $this->m_laporan_gudang->get_profil_rs();
+		if ($unit_id==0) {
+			$data['unit_name'] = "";
+		}else{
+			$unit = $this->db->query("select unit_name from admin.ms_unit where unit_id = $unit_id")->row();
+			$data['unit_name'] = $unit->unit_name;
+		}
+		$data['data'] = $this->m_laporan_gudang->get_new_konsolidasi($where,$where2,$unit_id,$own_id);
+//		var_dump($data['data']);
+		$data['tombol'] = $act;
+		$this->load->view("laporan_gudang/stok_konsolidasi/v_laporan_mutasi2",$data);
+
+	}
 }
