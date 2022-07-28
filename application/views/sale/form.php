@@ -195,10 +195,17 @@
             source: "<?php echo site_url('sale/get_item');?>/"+$("#unit_id_depo").val(),
 			autoFocus: true,
             select: function (event, ui) {
+				$('tr[class*="list_obat"]').each(function(i,a){
+					if($(this).find('.item_id').val() == ui.item.item_id ){
+						$(this).eq((i)).closest('tr').find('.sale_qty').focus();
+						$(this).last().remove();
+						return false;
+					}
+				});
                 $(this).closest('tr').find('.item_id').val(ui.item.item_id);
 				$(this).closest('tr').find('.stock').val(ui.item.total_stock);
-                $(this).closest('tr').find('.sale_price').val(ui.item.harga);
-                $(this).closest('tr').find('.sale_qty').focus();
+				$(this).closest('tr').find('.sale_price').val(ui.item.harga);
+				$(this).closest('tr').find('.sale_qty').focus();
             }
         }).data("ui-autocomplete")._renderItem = function (ul, item) {
             return $("<li>")

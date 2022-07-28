@@ -144,7 +144,11 @@ class M_sale extends CI_Model
 				s.par_id,
 				concat ( emp.employee_ft, emp.employee_name, emp.employee_bt ) par_name,
 				v.sep_no,
-				s.srv_status 
+				case when s.srv_status = 30 then 'Dilayani' 
+				when s.srv_status = 35 then 'batal'
+				when s.srv_status = 20 then 'chekout'
+				when s.srv_status = 10 then 'Pulang'
+				 else 'Belum Dilayani' end as status_kunjungan
 			FROM
 				yanmed.patient
 				P JOIN yanmed.visit v ON v.px_id = P.px_id

@@ -43,8 +43,12 @@
 										]
 						])?>
 						<?=create_select2([
-							"attr" =>["name"=>"po_id=nomor po","id"=>"po_id","class"=>"form-control"],
-							"model"=>["m_po" => ["get_po",["0"=>'0']],
+							"attr" =>[
+								"name"		=>"po_id=nomor po",
+								"id"		=>"po_id",
+								"class"		=>"form-control",
+								"onchange"	=>"hitunggrandTotal()"
+							],"model"=>["m_po" => ["get_po",["0"=>'0']],
 											"column"  => ["po_id","detail_po"]
 										],
 						])?>

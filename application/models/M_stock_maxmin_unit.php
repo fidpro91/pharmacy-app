@@ -5,7 +5,10 @@ class M_stock_maxmin_unit extends CI_Model {
 	public function get_data($sLimit,$sWhere,$sOrder,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).",id as id_key  from farmasi.stock_maxmin_unit where 0=0 $sWhere $sOrder $sLimit
+				select ".implode(',', $aColumns).",id as id_key  from farmasi.stock_maxmin_unit sm
+				inner join admin.ms_unit u on sm.unit_id = u.unit_id
+				inner join admin.ms_item i on sm.item_id = i.item_id
+				inner join farmasi.ownership o on sm.own_id = o.own_id where 0=0 $sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
 	}
@@ -13,7 +16,10 @@ class M_stock_maxmin_unit extends CI_Model {
 	public function get_total($sWhere,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).",id as id_key  from farmasi.stock_maxmin_unit where 0=0 $sWhere
+				select ".implode(',', $aColumns).",id as id_key  from farmasi.stock_maxmin_unit sm
+				inner join admin.ms_unit u on sm.unit_id = u.unit_id
+				inner join admin.ms_item i on sm.item_id = i.item_id
+				inner join farmasi.ownership o on sm.own_id = o.own_id where 0=0 $sWhere
 			")->num_rows();
 		return $data;
 	}
@@ -21,10 +27,10 @@ class M_stock_maxmin_unit extends CI_Model {
 	public function get_column()
 	{
 		$col = [
-				"id",
-				"unit_id",
-				"own_id",
-				"item_id",
+				//"id",
+				"unit_name",
+				"own_name",
+				"item_name",
 				"stock_max",
 				"stock_min"];
 		return $col;
