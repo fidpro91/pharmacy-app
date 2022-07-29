@@ -17,7 +17,7 @@ class M_lap_konsolidasi  extends CI_Model {
             INNER JOIN farmasi.ownership ow ON s.own_id = ow.own_id
             INNER JOIN farmasi.price p on p.own_id = s.own_id AND p.item_id = s.item_id
             LEFT JOIN (
-                SELECT sp.stock_after as stock_awal,sp.item_id,sp.own_id,sp.unit_id,sp.item_price as harga_awal FROM farmasi.stock_process sp
+                SELECT sp.stock_after as stock_awal,sp.item_id,sp.own_id,sp.unit_id,sp.item_price as harga_awal FROM newfarmasi.stock_process sp
                 INNER JOIN (
                                 SELECT max(sp.stockprocess_id)idsp,sp.item_id,sp.own_id,sp.unit_id FROM farmasi.stock_process sp
                                 WHERE 0=0 $where2 
@@ -25,17 +25,17 @@ class M_lap_konsolidasi  extends CI_Model {
                 ) x ON sp.stockprocess_id = x.idsp
             ) y  ON s.item_id = y.item_id AND s.own_id = y.own_id AND s.unit_id = y.unit_id
             LEFT JOIN (
-                SELECT sum(kredit-debet) as stock_op,sp.item_id,sp.own_id,sp.unit_id,max(sp.item_price) as harga_so FROM farmasi.stock_process sp
+                SELECT sum(kredit-debet) as stock_op,sp.item_id,sp.own_id,sp.unit_id,max(sp.item_price) as harga_so FROM newfarmasi.stock_process sp
                 WHERE sp.trans_type = 5 $where
                 GROUP BY sp.item_id,sp.own_id,sp.unit_id
             )z ON s.item_id = z.item_id AND s.own_id = z.own_id AND s.unit_id = z.unit_id
             LEFT JOIN (
-                SELECT sum(coalesce(sp.debet,0))masuk,sum(coalesce(sp.kredit,0))keluar,sp.item_id,sp.own_id,sp.unit_id FROM farmasi.stock_process sp
+                SELECT sum(coalesce(sp.debet,0))masuk,sum(coalesce(sp.kredit,0))keluar,sp.item_id,sp.own_id,sp.unit_id FROM newfarmasi.stock_process sp
                 WHERE sp.trans_type != 5 $where
                 GROUP BY sp.item_id,sp.own_id,sp.unit_id
             )x ON s.item_id = x.item_id AND s.own_id = x.own_id AND s.unit_id = x.unit_id
             where s.unit_id = $unit AND s.own_id = $kepemilikan
-            order by vo.item_name limit 1")->result();
+            order by vo.item_name")->result();
        
         return $data;
     }

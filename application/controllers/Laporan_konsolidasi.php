@@ -22,8 +22,7 @@ class Laporan_konsolidasi extends MY_Generator {
         $tgl = $this->input->post(); 
 		list($tgl1,$tgl2) = explode('/', $tgl['tanggal']);
         $unit = $this->input->post('unit_name');
-        $kepemilikan = $this->input->post('kepemilikan');
-        $gol = $this->input->post('golongan');
+        $kepemilikan = $this->input->post('kepemilikan');       
         $tampilkan = $this->input->post('tampil');
         $where = "";
         $where2 = " ";
@@ -41,8 +40,8 @@ class Laporan_konsolidasi extends MY_Generator {
         //     $where .= " and mi.gol='$gol'";
         // }
        
-        $data['data']=$this->M_lap_konsolidasi->get_new_konsolidasi($where,$where2,$unit,$kepemilikan);  print_r($data);die; 
-        $this->load->view("laporan_penjualan/v_lap_penjualan_byDokter",$data);	      
+        $data['data']=$this->M_lap_konsolidasi->get_new_konsolidasi($where,$where2,$unit,$kepemilikan);  //print_r($data);die; 
+        $this->load->view("laporan_konsolidasi/v_laporan_konsolidasi",$data);	      
        
     }
 

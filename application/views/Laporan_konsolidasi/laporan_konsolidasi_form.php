@@ -31,10 +31,7 @@
            
          <?=create_select(["attr"=>["name"=>"kepemilikan=KEPEMILIKAN","id"=>"kepemilikan","class"=>"form-control"],
 								"model"=>["m_ownership" => "get_ownership","column"=>["own_id","own_name"]]
-							])?> 
-         <?=create_select(["attr"=>["name"=>"golongan","id"=>"golongan","class"=>"form-control"],
-								"model"=>["m_lap_konsolidasi" => "get_golongan","column"=>["gol","gol"]]
-							])?>  
+							])?>        
          
         <?= create_select([
 					"attr" => ["name" => "tampil=Tampilkan", "id" => "tampil", "class" => "form-control", 'required' => true],
