@@ -89,7 +89,7 @@
     table = $('#tb_receiving').DataTable({
       "processing": true,
       "serverSide": true,
-      "order": [],
+      "order": [[2,'desc']],
       "scrollX": true,
       "ajax": {
         "url": "<?php echo site_url('receiving/get_data') ?>",

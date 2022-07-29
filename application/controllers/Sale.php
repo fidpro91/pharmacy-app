@@ -155,31 +155,73 @@ class Sale extends MY_Generator
 	public function update_data()
 	{
 		$post = $this->input->post();
+		$input = [];
+		$this->db->trans_begin();
+		foreach ($this->m_sale->rules() as $key => $value) {
+			$input[$key] = (!empty($post[$key]) ? $post[$key] : null);
+		}
+		$input['user_id'] = ($this->session->user_id ? $this->session->user_id : 21);
+		$input['sale_id'] = $post["sale_id"];
+		$detail=[];
+		$input["embalase_item_sale"] = 0;
+		$totalAll=0;
+		foreach ($post['list_obat_edited'] as $x => $v) {
+			foreach ($this->m_sale_detail->rules() as $key => $value) {
+				if ($key != 'sale_id') {
+					$detail[$x][$key] = (isset($v[$key]) ? $v[$key] : null);
+				}
+			}
+			$detail[$x]['sale_id'] 	= $input['sale_id'];
+			$detail[$x]['kronis'] 	= $input['kronis'];
+			$detail[$x]['own_id'] 	= $input['own_id'];
+			$detail[$x]['percent_profit'] = $post['profit'];
+			$detail[$x]['racikan'] = 'f';
+			if ($v['racikan_id'] != 'null' && $v['racikan_id'] != '') {
+				$detail[$x]['racikan_id'] = $v['racikan_id'];
+				$detail[$x]['racikan_qty'] = $v['sale_qty'];
+				$detail[$x]['racikan_dosis'] = $v['dosis'];
+				$detail[$x]['racikan'] = 't';
+			}else{
+				$input["embalase_item_sale"] += $post["profit_item"];
+			}
+			$price_total = ($v['price_total'] * $post['profit']) + $v['price_total'];
+			$detail[$x]['subtotal'] = $price_total;
+			$totalAll += $price_total;
+		}
 
-		print_r($post);
+		$grandtotal = $totalAll + $input['sale_services'] + $input["embalase_item_sale"];
+		$embalase = $grandtotal / 100;
+		$embalase = abs(ceil($embalase) - $embalase) * 100;
+		$input['sale_total'] = $grandtotal + $embalase;
+		$input['sale_embalase'] 	 = $embalase;
+
+		$this->db->where(["sale_id"=>$input["sale_id"]])->update("farmasi.sale",$input);
+		$this->db->where(["sale_id"=>$input["sale_id"]])->delete("farmasi.sale_detail");
+		$this->db->insert_batch("farmasi.sale_detail",$detail);
+		$err = $this->db->error();
+		if ($this->db->trans_status() === false) {
+			$this->db->trans_rollback();
+			$resp = [
+				"code" 		=> "202",
+				"message"	=> $err['message']
+			];
+		}else{
+			$resp = [
+				"code" 		=> "200",
+				"message"	=> "Data berhasil disimpan"
+			];
+			$this->db->trans_commit();
+		}
+		echo json_encode($resp);
 	}
 
 	public function find_one($id)
 	{
-		$data = $this->db->where('sale_id', $id)->get("farmasi.sale")->row_array();
-
-		// $this->set_data_pasien($data);
-
-		/* $saleNonRacikan = $this->db->query(
-			"SELECT sd.*,mi.item_name as autocom_item_id FROM farmasi.sale_detail sd
-			JOIN admin.ms_item mi ON sd.item_id = mi.item_id
-			WHERE racikan = 'f' and sd.sale_id = '$id'" 
-		)->result_array();
-		$this->set_item_nonracikan($saleNonRacikan);
-
-		$saleRacikan['list_item_racikan'] = $this->db->query(
-			"SELECT sd.*,mi.item_name as autocom_item_id FROM farmasi.sale_detail sd
-			JOIN admin.ms_item mi ON sd.item_id = mi.item_id
-			WHERE racikan = 't' and sd.sale_id = '$id'" 
-		)->result_array();
-		$saleRacikan['biaya_racikan'] = $data->sale_services;
-
-		$this->set_item_racikan($saleRacikan); */
+		$data = $this->db->where('sale_id', $id)
+						 ->join("farmasi.surety_ownership so","so.own_id = s.own_id and so.surety_id = s.surety_id")
+						 ->join("farmasi.ownership ow","ow.own_id=s.own_id")
+						 ->select("s.*,so.percent_profit as profit,s.sale_services::numeric as sale_services,ow.profit_item",false)
+						 ->get("farmasi.sale s")->row_array();
 		echo json_encode($data);
 	}
 
@@ -229,13 +271,15 @@ class Sale extends MY_Generator
 			'penjualan', 'itemRacik', 'itemNonRacik'
 		]);
 		$data["item"]  = $this->db->query("
-			SELECT sd.*,sd.sale_price::numeric as harga,mi.item_name,st.stock_summary as stok FROM farmasi.sale_detail sd
+			SELECT sd.*,sd.sale_price::numeric as sale_price,mi.item_name as label_item_id,st.stock_summary as stock,
+			(sd.sale_qty*sd.sale_price+(sd.sale_qty*sd.sale_price*sd.percent_profit))::numeric as price_total FROM farmasi.sale_detail sd
 			JOIN admin.ms_item mi ON sd.item_id = mi.item_id
 			JOIN farmasi.sale s on sd.sale_id = s.sale_id
 			JOIN newfarmasi.stock st ON st.item_id = sd.item_id and st.own_id = sd.own_id and st.unit_id = s.unit_id
 			WHERE sd.sale_id = '$id'
 		")->result();
-		$data['model'] = $this->m_sale->rules();
+		$data['sale_id'] = $id;
+		$data['model'] 	 = $this->m_sale->rules();
 		$this->load->view("sale/form_update", $data);
 	}
 
@@ -278,7 +322,7 @@ class Sale extends MY_Generator
 		$this->load->view("sale/form_non_racikan", $data);
 	}
 
-	public function show_multiRows($update=false)
+	public function show_multiRows($update=false,$sale_id=0)
 	{
 		$this->load->model("m_sale_detail");
 		$data = $this->m_sale_detail->get_column_multiple($update);
@@ -289,14 +333,14 @@ class Sale extends MY_Generator
 					"id" => $value,
 					"label" => $colauto[$value],
 					"type" => 'autocomplete',
-					"width" => '35%',
+					"width" => '30%',
 				];
 			} elseif ($value == "sale_price" || $value == "stock") {
 				$row[] = [
 					"id" => $value,
 					"label" => ucwords(str_replace('_', ' ', $value)),
 					"type" => 'text',
-					"width" => ($value == 'price_total') ? '18%' : '14%',
+					"width" => '10%',
 					"attr" => [
 						"readonly" => 'readonly',
 						"data-inputmask" => "'alias': 'IDR'"
@@ -307,18 +351,29 @@ class Sale extends MY_Generator
 					"id" => $value,
 					"label" => ucwords(str_replace('_', ' ', $value)),
 					"type" => 'text',
-					"width" => ($value == 'price_total') ? '18%' : '14%',
+					"width" => "30%",
 					"attr" => [
 						"readonly" => "readonly",
 						"data-inputmask" => "'alias': 'IDR'"
 					]
+				];
+			} elseif ($value == "racikan_id") {
+				$racikan = $this->db->query(
+					"select distinct racikan_id as id,racikan_id as text from farmasi.sale_detail sd where sale_id = '$sale_id'"
+				)->result();
+				$row[] = [
+					"id" => $value,
+					"label" => "Racikan",
+					"type" => 'select',
+					"width" => '15%',
+					"data" => $racikan
 				];
 			} else {
 				$row[] = [
 					"id" => $value,
 					"label" => ucwords(str_replace('_', ' ', $value)),
 					"type" => 'text',
-					"width" => ($value == 'price_total') ? '18%' : '14%',
+					"width" => '10%',
 				];
 			}
 		}
@@ -480,11 +535,14 @@ class Sale extends MY_Generator
 		echo json_encode($resp);
 	}
 
-	public function get_item($unit_id)
+	public function get_item($unit_id,$own_id=1)
 	{
 		$term = $this->input->get('term');
 		$this->load->model('m_stock_fifo');
-		$where = " AND unit_id = '" . $unit_id . "' AND lower(mi.item_name) like lower('%$term%') AND sf.stock_summary > 0";
+		if (!empty($this->session->penjualan["pasien"]["own_id"])) {
+			$own_id = $this->session->penjualan["pasien"]["own_id"];
+		}
+		$where = " AND sf.own_id = '" . $own_id . "' AND unit_id = '" . $unit_id . "' AND lower(mi.item_name) like lower('%$term%') AND sf.stock_summary > 0";
 		echo json_encode($this->m_stock_fifo->get_stock_item($where));
 	}
 

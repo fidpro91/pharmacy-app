@@ -88,6 +88,8 @@
 						$.each(obj.data, function (a, b) {
 							if (b.id == objek[obj.id]) {
 								selected = "selected";
+							}else{
+								selected = "";
 							}
 							row +=
 								"<option " +

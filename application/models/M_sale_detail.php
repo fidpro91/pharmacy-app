@@ -52,9 +52,10 @@ class M_sale_detail extends CI_Model
 
 	public function get_column_multiple($updates)
 	{
-		if ($updates==true) {
+		if ($updates=="true") {
 			$col = [
 				"item_id",
+				"racikan_id",
 				"sale_qty",
 				"stock",			
 				"sale_price",
