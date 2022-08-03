@@ -65,7 +65,8 @@ class M_receiving_retur extends CI_Model {
 	public function get_item($where="")
 	{
 		return $this->db->query("
-			SELECT sf.own_id,sf.stock_saldo,r.rec_num,rd.rec_id,rd.recdet_id,rd.item_id,item_code,item_name,ms.supplier_id,ms.supplier_name,rd.qty_unit,rd.price_item,item_name as label FROM newfarmasi.receiving_detail rd
+			SELECT sf.own_id,sf.stock_saldo,r.rec_num,rd.rec_id,rd.recdet_id,rd.item_id,item_code,item_name,ms.supplier_id,ms.supplier_name,rd.qty_unit,rd.price_item,item_name as label,rd.hpp 
+			FROM newfarmasi.receiving_detail rd
 			JOIN newfarmasi.receiving r ON rd.rec_id = r.rec_id
 			JOIN admin.ms_item mi ON mi.item_id = rd.item_id
 			JOIN admin.ms_supplier ms ON r.supplier_id = ms.supplier_id

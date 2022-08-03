@@ -8,24 +8,24 @@
                 <p>Obat Stock Ready</p>
             </div>
             <div class="icon">
-                <i class="fa fa-medkit"></i>
+                <i class="fa fa-tags"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="<?=site_url("stock")?>" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
         </div>
     </div>
     <!-- ./col -->
     <div class="col-lg-3 col-xs-6">
         <!-- small box -->
-        <div class="small-box bg-green">
+        <div class="small-box bg-red">
             <div class="inner">
                 <h3><?=(empty($obat_exp->total)?0:$obat_exp->total)?></h3>
 
                 <p>obat expired</p>
             </div>
             <div class="icon">
-                <i class="ion ion-stats-bars"></i>
+                <i class="fa fa-times-circle"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="<?=site_url("item_expired")?>" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
         </div>
     </div>
     <!-- ./col -->
@@ -38,9 +38,9 @@
                 <p>Stock yang akan habis</p>
             </div>
             <div class="icon">
-                <i class="ion ion-person-add"></i>
+                <i class="fa fa-flash"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="<?=site_url("stock")?>" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
         </div>
     </div>
     <!-- ./col -->
@@ -53,9 +53,9 @@
                 <p>Item stock habis</p>
             </div>
             <div class="icon">
-                <i class="ion ion-pie-graph"></i>
+                <i class="fa fa-puzzle-piece"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="<?=site_url("stock")?>" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
         </div>
     </div>
     <!-- ./col -->
@@ -66,7 +66,7 @@
     <div class="col-md-6">
         <div class="box box-default">
             <div class="box-header with-border">
-                <h3 class="box-title">Browser Usage</h3>
+                <h3 class="box-title">Grafik Penjualan 1 Bulan Terakhir</h3>
 
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -143,7 +143,7 @@
                                                 type: 'pie'
                                             },
                                             title: {
-                                                text: 'penjualan obat, 2018'
+                                                text: 'Grafik Penjualan Item'
                                             },
                                             tooltip: {
                                                 // pointFormat: '{series.name}: <b>{point.percentage:.1f}</b>'
@@ -196,7 +196,7 @@
     <div class="col-md-6">
         <div class="box box-default">
             <div class="box-header with-border">
-                <h3 class="box-title"> 5 penjulan Obat Terbayak per unit 2018</h3>
+                <h3 class="box-title"> 10 Item Terlaris</h3>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                     </button>
@@ -206,13 +206,13 @@
                     <div class="row">
                         <div class="col-md-12">
                             <?php foreach ($tot_penjualan_terbayak_unit_item as $value) { ?>
-                                <div class="info-box bg-yellow">
+                                <div class="info-box bg-green">
                                     <span class="info-box-icon"><i class="ion ion-ios-pricetag-outline"></i></span>
 
                                     <div class="info-box-content">
                                         <span class="info-box-text"><?php echo $value->unit_name ?></span>
                                         <span class="info-box-text"><?php echo $value->item_name ?></span>
-                                        <span class="info-box-number"><?php echo $value->jumlah ?></span>
+                                        <span class="info-box-number"><?php echo "Total terjual : ".$value->jumlah." item" ?></span>
                                     </div>
                                     <!-- /.info-box-content -->
                                 </div>

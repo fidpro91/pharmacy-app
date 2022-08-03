@@ -117,8 +117,6 @@ class M_receiving extends CI_Model {
 					"rec_type" => "trim|integer|required",
 					"rec_taxes" => "trim|numeric",
 					"discount_total" => "trim|numeric",
-					"mutation_id" => "trim|integer",
-					"opname_id" => "trim|integer",
 					"sender_name" => "trim",
 					"recfromret_id" => "trim|integer",
 					"hibah_cat" => "trim|integer",
@@ -130,7 +128,6 @@ class M_receiving extends CI_Model {
 					"transfer_date" => "trim",
 					"transfer_by" => "trim|integer",
 					"no_transaksi" => "trim",
-					"production_id" => "trim|integer",
 					"grand_total" => "trim|numeric",
 				];
 		return $data;

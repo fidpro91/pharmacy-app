@@ -141,6 +141,7 @@
           $.each(data, (ind, obj) => {
             $("#" + ind).val(obj);
           });
+          $("#ppn").val(data.po_ppn);
           $("select[class*='select2']").trigger("change");
           $.get("receiving/find_receiving_detail/html/" + id, function(resp) {
             $("#list_item").html(resp);
