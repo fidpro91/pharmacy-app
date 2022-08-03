@@ -31,9 +31,9 @@
             <?=form_hidden("srv_id")?>
             <?=form_hidden("px_norm")?>
           <?=create_inputDaterange("tanggal",["locale"=>["format"=>"YYYY-MM-DD","separator"=>"/"]])?>          
-          <?=create_select(["attr"=>["name"=>"unit_name=UNIT","id"=>"unit_name","class"=>"form-control"],
+          <?=create_select2(["attr"=>["name"=>"unit_name[]=UNIT","id"=>"unit_name","class"=>"form-control","multiple"=>true],
 								"model"=>["m_ms_unit" => "get_farmasi_unit","column"=>["unit_id","unit_name"]]
-							])?>  
+							])?>     
           <?= create_select([
 					"attr" => ["name" => "tipe_bayar=PENJUALAN", "id" => "tipe_bayar", "class" => "form-control", 'required' => true],
 					"option" => [["id" => '0', "text" => "Tunai"], ["id" => '1', "text" => "Kredit"]],
@@ -50,7 +50,7 @@
 								"model"=>["m_laporan_penjualan" => "get_jenis_layanan","column"=>["catunit_id","nama"]]
 							])?> 
         <?= create_select2([
-					"attr" => ["name" => "unit_layanan=UNIT LAYANAN PASIEN", "id" => "unit_layanan","class" => "form-control"],
+					"attr" => ["name" => "unit_layanan[]=UNIT LAYANAN PASIEN", "id" => "unit_layanan","class" => "form-control","multiple"=>true],
 			]) ?>
          <?= create_select([
 					"attr" => ["name" => "status_bayar=STATUS BAYAR", "id" => "status_bayar", "class" => "form-control", 'required' => true],
@@ -58,9 +58,9 @@
 			]) ?> 
          <?= create_select([
 					"attr" => ["name" => "tipe=TIPE LAPORAN", "id" => "tipe", "class" => "form-control", 'required' => true],
-					"option" => [["id" => ' ', "text" => "SEMUA"], ["id" => '1', "text" => "Dokter"],
+					"option" => [["id" => '0', "text" => "SEMUA"], ["id" => '1', "text" => "Dokter"],
                                  ["id" => '2', "text" => "Summary Customer"],["id" => '3', "text" => "Pasien"],
-                                 ["id" => '4', "text" => "Obat"]],
+                                 ["id" => '4', "text" => "Obat"],["id" => '5', "text" => "Rekap Obat"]],
 			]) ?> 
       
       <div id="item_name"><?= create_input("item")?></div>
@@ -71,6 +71,8 @@
      </div>
      <div align="center">
      <button class="btn btn-primary" type="button" onclick="$('#formlaporan').submit()">Tampilkan</button>
+     <button class="btn btn-warning" type="reset" id="form_reset">
+      <i class="fa fa-paint-brush" aria-hidden="true"></i>Reset</button>
      </div>
 
 <?=form_close()?>
@@ -83,7 +85,7 @@
 
 <script type="text/javascript">
       $(document).ready(function() {
-    //$('.select2').select2({placeholder: '--Pilih--'});
+     
      $('#nama_px').hide();
 		 $('#item_name').hide();
      
@@ -211,11 +213,15 @@
         if ($("#unit_name").val() === '' ) {
           alert("Mohon di isikan Depo");
           return false;       
-        }else if($("#tipe").val() === ' '){
-        alert("Mohon di isikan Tipe Laporan");
-        return false;
-      }
+        }else if($("#tanggal").val() === ''){
+          alert("Mohon di isikan tanggal");
+          return false;   
+        }
         }); 
+
+        $('#form_reset').click(function(){
+      	$('#formlaporan').find("input[type='hidden']").val('');
+        })
     
     <?=$this->config->item('footerJS')?>
 </script>
