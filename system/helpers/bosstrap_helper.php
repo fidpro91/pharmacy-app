@@ -209,7 +209,7 @@ function modal_open($id, $header, $size = "",$attr=array())
 	return $txt;
 }
 
-function modal_close($footer = null) {
+function modal_close($footer = null,$autohide=true) {
 	$txt = '</div>
 	            <div class="modal-footer">';
 	if ($footer) {
@@ -220,12 +220,15 @@ function modal_close($footer = null) {
 	$txt .='</div>
 	          </div>
 	        </div>
-	        </div>
-			<script>
-			$(".modal").on(\'hidden.bs.modal\',function(){
-				$(this).find(\'.modal-body\').html("");
-			  });
-			</script>';
+	        </div>';
+	if ($autohide != false) {
+		$txt .= '
+		<script>
+		$(".modal").on(\'hidden.bs.modal\',function(){
+			$(this).find(\'.modal-body\').html("");
+		  });
+		</script>';
+	}
 	return $txt;
 }
 
