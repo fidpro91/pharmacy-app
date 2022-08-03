@@ -207,7 +207,7 @@
                         <div class="col-md-12">
                             <?php foreach ($tot_penjualan_terbayak_unit_item as $value) { ?>
                                 <div class="info-box bg-green">
-                                    <span class="info-box-icon"><i class="ion ion-ios-pricetag-outline"></i></span>
+                                    <span class="info-box-icon"><i class="fa fa-gg"></i></span>
 
                                     <div class="info-box-content">
                                         <span class="info-box-text"><?php echo $value->unit_name ?></span>

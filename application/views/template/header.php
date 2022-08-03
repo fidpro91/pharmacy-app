@@ -27,7 +27,7 @@
 
   <header class="main-header">
     <!-- Logo -->
-    <a href="<?=base_url()?>assets/index2.html" class="logo">
+    <a href="#" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
       <span class="logo-mini"><b>P</b>A</span>
       <!-- logo for regular state and mobile devices -->
@@ -59,7 +59,7 @@
                   <li><!-- start message -->
                     <a href="#">
                       <div class="pull-left">
-                        <img src="<?=base_url()?>assets/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                        <img src="<?=base_url()?>assets/images/img/user2-160x160.jpg" class="img-circle" alt="User Image">
                       </div>
                       <h4>
                         Support Team
@@ -130,13 +130,13 @@
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <img src="<?=base_url()?>assets/dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
+              <img src="<?=base_url()?>assets/images/logors.png" class="user-image" alt="User Image">
               <span class="hidden-xs"><?=$this->session->person_name?></span>
             </a>
             <ul class="dropdown-menu">
               <!-- User image -->
               <li class="user-header">
-                <img src="<?=base_url()?>assets/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                <img src="<?=base_url()?>assets/images/logors.png" class="img-circle" alt="User Image">
 
                 <p>
                   <?=$this->session->person_name?>
