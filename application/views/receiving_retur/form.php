@@ -42,7 +42,7 @@
 					$(this).closest('tr').find('.item_id').val(ui.item.item_id);
 					$(this).closest('tr').find('.supplier').val(ui.item.supplier_name);
 					$(this).closest('tr').find('.id_penerimaan').val(ui.item.rec_id+'|'+ui.item.recdet_id+'|'+ui.item.supplier_id+'|'+ui.item.own_id);
-					$(this).closest('tr').find('.rrd_price').val(ui.item.price_item);
+					$(this).closest('tr').find('.rrd_price').val(ui.item.hpp);
 					$(this).closest('tr').find('.qty_terima').val(ui.item.qty_unit);
 					$(this).closest('tr').find('.stock_saldo').val(ui.item.stock_saldo);
 				}

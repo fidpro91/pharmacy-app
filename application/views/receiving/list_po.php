@@ -108,7 +108,7 @@
 			grandtotal += total;
 		});
 
-		let ppn = parseInt($("#ppn").val())*totalBeforeDisk/100;
+		let ppn = parseInt($("#ppn").val())*grandtotal/100;
         grandtotal = grandtotal + ppn;
 		
 		$("#rec_taxes").val(ppn);

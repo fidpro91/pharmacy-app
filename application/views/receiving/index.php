@@ -44,7 +44,7 @@
         <div class="col-md-3">
            <?= create_select([
               "attr" => ["name" => "kepemilikan_id=Kepemilikan", "id" => "kepemilikan_id", "class" => "form-control"],
-              "model"=>["m_ms_unit" => ["get_ownership",[0]],
+              "model"=>["m_ownership" => ["get_ownership",[0]],
               "column"  => ["own_id","own_name"]
             ],
             ]) ?>
@@ -141,6 +141,7 @@
           $.each(data, (ind, obj) => {
             $("#" + ind).val(obj);
           });
+          $("#ppn").val(data.po_ppn);
           $("select[class*='select2']").trigger("change");
           $.get("receiving/find_receiving_detail/html/" + id, function(resp) {
             $("#list_item").html(resp);
