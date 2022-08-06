@@ -28,8 +28,9 @@ class Receiving extends MY_Generator {
 			}
 			$dataPo = $this->db->get_where("farmasi.po",["po_id"=>$input['po_id']])->row();
 			$input['supplier_id'] = $dataPo->supplier_id; 
-			$input['rec_type'] = 0;
-			$input['own_id'] = $dataPo->own_id;
+			$input['rec_type'] 	= 0;
+			$input['po_ppn'] 	= $data['ppn'];
+			$input['own_id'] 	= $dataPo->own_id;
 			$this->db->trans_begin();
 			if ($data['rec_id']) {
 				$this->remove_data_recdet($data['rec_id']);
@@ -160,9 +161,10 @@ class Receiving extends MY_Generator {
 			$detail[$x]['item_pack'] = $dataPo->po_pack;
 			$detail[$x]['item_unit'] = $dataPo->po_unititem;
 			$detail[$x]['price_pack'] = $dataPo->po_pricepack;
-			$detail[$x]['price_total'] = $dataPo->po_pricepack;
-			$detail[$x]['qty_pack'] = $dataPo->po_qtypack;
-			$detail[$x]['podet_id'] = $dataPo->podet_id;
+			// $detail[$x]['price_total'] = $dataPo->po_pricepack;
+			$detail[$x]['qty_pack'] 	= $value['qty_unit']/$dataPo->po_qtyunit*$dataPo->po_qtypack;
+			$detail[$x]['podet_id'] 	= $dataPo->podet_id;
+			$detail[$x]['hpp'] 			= $value['price_item']+($value['price_item']*($data['ppn']/100));
 			$detail[$x]['rec_id'] 		= $data['rec_id'];
 			$detail[$x]['expired_date'] = date('Y-m-d',strtotime($value['expired_date']));
 			$this->db->insert("newfarmasi.receiving_detail",$detail[$x]);
@@ -185,6 +187,18 @@ class Receiving extends MY_Generator {
 			$sukses=true;
 		}
 
+		//update po header komplete
+		$totalItem = $this->db->get_where("farmasi.po_detail",[
+			"po_qtyunit < coalesce(po_qtyreceived,0)"	=> null,
+			"po_id"		=> $data["po_id"]
+		])->num_rows();
+		
+		if ($totalItem === 0) {
+			$this->db->where(["po_id" => $data["po_id"]])->update("farmasi.po",[
+				"po_status"	=> "1"
+			]);
+		}
+		
 		return $sukses;
 	}
 
@@ -425,7 +439,10 @@ class Receiving extends MY_Generator {
 	public function find_po_detail($id)
 	{
 		$this->load->model("m_po_detail");
-		$data['data'] = $this->m_po_detail->get_po_detail(["po_id"=>$id]);
+		$data['data'] = $this->m_po_detail->get_po_detail([
+			"po_id"=>$id,
+			"coalesce(po_qtyreceived,0)<po_qtyunit" => null
+		]);
 		echo $this->load->view("receiving/list_po",$data,true);
 	}
 }

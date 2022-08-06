@@ -58,6 +58,7 @@
       </div>
       <div class="box-footer">
         <button class="btn btn-danger" id="btn-deleteChecked"><i class="fa fa-trash"></i> Delete</button>
+        <button class="btn btn-success" id="btn-checkout"><i class="fa fa-sign-out"></i> Checkout Resep</button>
       </div>
       <!-- /.box-footer-->
     </div>
@@ -69,10 +70,23 @@
 <!-- /.content-wrapper -->
 <?= modal_open("modal_pasien", "Biodata pasien", "modal-lg") ?>
 <?= modal_close() ?>
-<?= modal_open("modal_update", "Form Update", "modal-lg",[
+<?= modal_open("modal_update", "Form Update", "modal-lg", [
   "style" => "width:90%"
 ]) ?>
 <?= modal_close() ?>
+<?= modal_open("modal_checkout", "Checkout Resep") ?>
+<div class="input-group input-group-sm">
+  <input id="nomor_resep_co" name="nomor_resep_co" required="true" class="form-control input-sm" type="text" placeholder="isikan nomor rekam medis pasien / scan barcode">
+  <span class="input-group-btn">
+    <button class="btn btn-danger" type="button" onclick="checkout_pasien($('#nomor_resep_co').val())" id="go-checkout" tabindex="-1">
+      Checkout Pasien
+    </button>
+  </span>
+</div>
+<div class="overlay loading-checkout" style="display: none;">
+  <i class="fa fa-refresh fa-spin"></i>
+</div>
+<?= modal_close(null,false) ?>
 <script src="<?= base_url("assets/plugins/jquery.hotkeys-master") ?>/jquery.hotkeys.js"></script>
 <script type="text/javascript">
   var table;
@@ -85,7 +99,9 @@
     table = $('#tb_sale').DataTable({
       "processing": true,
       "serverSide": true,
-      "order": [[3, 'desc']],
+      "order": [
+        [3, 'desc']
+      ],
       "scrollX": true,
       "ajax": {
         "url": "<?php echo site_url('sale/get_data') ?>",
@@ -101,7 +117,10 @@
           'searchable': false,
           'orderable': false,
         },
-        { "width": "10%", "targets": -1 },
+        {
+          "width": "10%",
+          "targets": -1
+        },
         {
           'targets': 0,
           'className': 'dt-body-center',
@@ -115,6 +134,12 @@
         }
       ],
     });
+
+    $("#nomor_resep_co").bind('keyup', function(e) {
+      if (e.keyCode == 13) {
+        checkout_pasien(this.value);
+      }
+    });
   });
 
   $("#unit_id_depo, #sale_type, #filter_pembayaran").change(() => {
@@ -124,19 +149,31 @@
   $("#btn-add").click(function() {
     $("#form_sale").show();
     $("#data_sale").hide();
-    $("#form_sale").load("sale/show_form/"+$("#unit_id_depo").val());
+    $("#form_sale").load("sale/show_form/" + $("#unit_id_depo").val());
   });
 
   function set_val(id) {
     $("#modal_update").modal('show');
-    $("#modal_update").find('.modal-body').load('sale/show_form_update/'+id,function(){
-      $.get('sale/find_one/'+id,(data)=>{
-        $.each(data,(ind,obj)=>{
-            $('.modal-body').find("#"+ind).val(obj);
+    $("#modal_update").find('.modal-body').load('sale/show_form_update/' + id, function() {
+      $.get('sale/find_one/' + id, (data) => {
+        $.each(data, (ind, obj) => {
+          $('.modal-body').find("#" + ind).val(obj);
         });
         $("select[class*='select2']").trigger("change");
-      },'json');
+      }, 'json');
     });
+  }
+
+  function checkout_pasien(noresep) {
+    $(".loading-checkout").show();
+    $.post('<?php echo base_url() ?>sale/checkout_pasien', {
+      noresep: noresep
+    }, function(data) {
+      alert(data.message);
+      $(".loading-checkout").hide();
+      $('#nomor_resep_co').val('');
+      table.draw();
+    }, 'json');
   }
 
   function deleteRow(id) {
@@ -154,6 +191,10 @@
     } else {
       $("#tb_sale input[type='checkbox']").attr("checked", false);
     }
+  });
+
+  $("#btn-checkout").click(function(event) {
+    $("#modal_checkout").modal("show");
   });
 
   $("#btn-deleteChecked").click(function(event) {

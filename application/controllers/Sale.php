@@ -101,6 +101,31 @@ class Sale extends MY_Generator
 
 	}
 
+	public function checkout_pasien()
+	{
+		$nomorRm = $this->input->post('noresep');
+		$user = $this->session->user_id;
+		$this->db->set('finish_time','now()',false);
+		$this->db->where([
+			"unit_id"			=> $this->input->post('unit_id'),
+			"date(sale_date)>= '".date("Y-m-d",strtotime("- 3 days"))."' and finish_time is null" => null
+		]);
+    	$this->db->where("lower(patient_norm) = lower('$nomorRm')",null)
+    			 ->update('farmasi.sale',array( 
+					'finish_user_id' => $user,
+					'sale_status' 	 => 2,
+				));
+    	$respon = array();
+    	if ($this->db->affected_rows()) {
+    		$respon['message'] = 'Resep berhasil dicheckout';
+    		$respon['kode']	   = '001';
+    	}else{
+    		$respon['message'] = 'Resep tidak ditemukan';
+    		$respon['kode']	   = '002';
+    	}
+		echo json_encode($respon);
+	}
+
 	public function get_data()
 	{
 		$this->load->library('datatable');

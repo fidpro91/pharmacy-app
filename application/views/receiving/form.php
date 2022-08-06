@@ -48,7 +48,7 @@
 								"id"		=>"po_id",
 								"class"		=>"form-control",
 								// "onchange"	=>"hitunggrandTotal()"
-							],"model"=>["m_po" => ["get_po",["0"=>'0']],
+							],"model"=>["m_po" => ["get_po",["po.po_status is null"=>null]],
 											"column"  => ["po_id","detail_po"]
 										],
 						])?>

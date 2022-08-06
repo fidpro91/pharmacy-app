@@ -157,7 +157,7 @@ class M_sale extends CI_Model
 				LEFT JOIN hr.employee emp ON s.par_id = emp.employee_id 
 			WHERE
 				s.unit_id NOT IN ( 45, 105, 12 ) 
-				AND EXTRACT ( 'year' FROM v.visit_date ) >= ( EXTRACT ( 'YEAR' FROM now()) - 1 ) 
+				AND (date(v.visit_end_date)>='".date('Y-m-d',strtotime("- 3 days"))."' OR v.visit_end_date is null) 
 				AND v.visit_status NOT IN (35,60,70) $where
 			order by s.srv_date desc
 		")->result();

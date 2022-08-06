@@ -22,6 +22,24 @@ class M_laporan_penjualan  extends CI_Model {
 		return $data;
 	}
 
+	public function get_unit($idEmpl){
+		$sql = "select
+		vf.unit_id,
+		vf.unit_name
+		from
+		farmasi.v_unit_farmasi vf
+		/*inner join hr.employee e
+		on e.employee_id = u.employee_id
+		inner join hr.employee_on_unit eu
+		on eu.employee_id = e.employee_id
+		inner join farmasi.v_unit_farmasi vf
+		on vf.unit_id = eu.unit_id*/
+		where /*e.employee_id = $idEmpl
+		and*/ cat_unit_code = '0504' and unit_active = 't' ";
+		$result = $this->db->query($sql);
+		return $result;
+	}
+
     public function get_item($term)
 	{
 		$data = $this->db->query("select *,item_name as value from admin.ms_item where lower(item_name) like '%".strtolower($term)."%'")->result();
@@ -58,11 +76,94 @@ class M_laporan_penjualan  extends CI_Model {
 		return $data;
 	}
 
-    public function get_sale_by_doctor($unit_penjualan,$surety,$sale_type,$unit_layanan,$date)
-	{var_dump($unit_penjualan);die;
+	public function get_sale_all($unit_penjualan,$sale_type,$kepemilikan,$surety,$bayar,$date,$unit_layanan){
+
+		if($unit_penjualan !=null){
+			$all_unit = "";
+			foreach ($unit_penjualan as $key => $value) {
+				$all_unit .= $value.",";
+			}
+			$unit = rtrim($all_unit,','); 
+		 }
+
+		 if($unit_layanan !=null){
+			$all_layanan = "";
+			foreach ($unit_layanan as $key => $value) {
+				$all_layanan .= $value.",";
+			}
+			$layanan = rtrim($all_layanan,','); 
+		 }
+		
 		$where = "";
-		if ($unit_penjualan) {
-			$where .= "AND x.unit_id in ($unit_penjualan)";
+
+		if (!empty($unit)) {
+			$where .= "AND sale.unit_id in ($unit)";
+		}
+		if($sale_type){
+			$where .= " AND sale.sale_type = '$sale_type'";
+		}
+		if($kepemilikan){
+			$where .= "and sale.own_id = $kepemilikan";
+		}		
+		if ($surety) {
+			$where .= " AND sale.surety_id = '$surety'";
+		}
+		if ($bayar == '1') {
+                $where .= " AND (sale.sale_total_payment > 0 or sale.sale_is_paid = 't')"; 
+            }elseif ($bayar == '2') {
+                $where .= " AND (sale.sale_total_payment <= 0 AND sale.sale_is_paid = 'f')";
+            }else{
+                $where .= "";
+        }
+
+		if (!empty($layanan)) {
+			
+			$where .= " AND srv.unit_id in ($layanan)";
+		}
+		$sql = "
+					select sale.sale_id,sale_date, sale_num,sale_type, rcp_id, px_norm, patient_name, surety_name, unit2.unit_name,unit2.unit_id,sale_shift,sale_total,(sale.sale_total - COALESCE(sale.sale_total_returned,0)) as sale_fix, unit2.unit_type,sale.sale_total_returned as sr_total,resep.jml_nonracik,resep.jml_racikan,sale.date_act
+					from farmasi.sale sale
+					INNER JOIN (
+						SELECT sale_id,SUM(non_racikan)jml_nonRacik,SUM(racikan) jml_racikan FROM (
+							SELECT sale_id,racikan_id, sum(CASE WHEN racikan = 'f' then 1 ELSE 0 END) as non_racikan,
+							CASE WHEN racikan = 't' then 1 ELSE 0 END as racikan FROM farmasi.sale_detail
+							GROUP BY sale_id,racikan_id,racikan
+						) x
+						GROUP BY sale_id
+					) resep ON sale.sale_id = resep.sale_id
+					left join yanmed.visit vis on sale.visit_id=vis.visit_id
+					left join admin.ms_unit unit on sale.unit_id=unit.unit_id
+					left join yanmed.services srv on sale.service_id=srv.srv_id
+					left join yanmed.ms_surety sur on sale.surety_id=sur.surety_id
+					left join yanmed.patient pat on vis.px_id=pat.px_id
+					left join admin.ms_unit unit2 on srv.unit_id=unit2.unit_id
+					where 0=0 $date $where  order by sale_date asc
+				";
+		$result = $this->db->query($sql);
+		return $result;
+	}
+
+    public function get_sale_by_doctor($unit_penjualan,$surety,$sale_type,$unit_layanan,$date)
+	{
+		if($unit_penjualan !=null){
+			$all_unit = "";
+			foreach ($unit_penjualan as $key => $value) {
+				$all_unit .= $value.",";
+			}
+			$unit = rtrim($all_unit,','); 
+		 }
+
+		 if($unit_layanan !=null){
+			$all_layanan = "";
+			foreach ($unit_layanan as $key => $value) {
+				$all_layanan .= $value.",";
+			}
+			$layanan = rtrim($all_layanan,','); 
+		 }
+
+		$where = "";
+		if (!empty($unit)) {
+			$where .= "AND x.unit_id in ($unit)";
 		}
 
 		if ($surety) {
@@ -73,9 +174,9 @@ class M_laporan_penjualan  extends CI_Model {
 			$where .= " AND x.sale_type = '$sale_type'";
 		}
 
-		if (!empty($unit_layanan)) {
+		if (!empty($layanan)) {
 			
-			$where .= " AND srv.unit_id = '$unit_layanan' ";
+			$where .= " AND srv.unit_id = '$layanan' ";
         }
 
 		$data = $this->db->query("
@@ -102,9 +203,24 @@ class M_laporan_penjualan  extends CI_Model {
 
     public function get_sale_by_visit($unit_penjualan,$surety,$sale_type,$unit_layanan,$date,$visit_id)
 	{
+		if($unit_penjualan !=null){
+			$all_unit = "";
+			foreach ($unit_penjualan as $key => $value) {
+				$all_unit .= $value.",";
+			}
+			$unit = rtrim($all_unit,','); 
+		 }
+		 if($unit_layanan !=null){
+			$all_layanan = "";
+			foreach ($unit_layanan as $key => $value) {
+				$all_layanan .= $value.",";
+			}
+			$layanan = rtrim($all_layanan,','); 
+		 }
+
 		$where = "";
-		if ($unit_penjualan) {
-			$where .= "AND s.unit_id in ($unit_penjualan)";
+		if (!empty($unit)) {
+			$where .= "AND s.unit_id in ($unit)";
 		}
 
 		if ($surety) {
@@ -119,9 +235,9 @@ class M_laporan_penjualan  extends CI_Model {
 			$where .= " AND s.sale_type = '$sale_type'";
 		}
 
-		if (!empty($unit_layanan)) {
+		if (!empty($layanan)) {
 			
-			$where .= " AND vs.unit_id = '$unit_layanan' ";
+			$where .= " AND vs.unit_id = '$layanan' ";
         }
 		
 
@@ -144,7 +260,22 @@ class M_laporan_penjualan  extends CI_Model {
 
     public function get_sale_by_item($kepemilikan,$unit_penjualan,$surety,$sale_type,$catunit_id,$unit_layanan,$date,$item_id)
 	{
-		
+		if($unit_penjualan !=null){
+			$all_unit = "";
+			foreach ($unit_penjualan as $key => $value) {
+				$all_unit .= $value.",";
+			}
+			$unit = rtrim($all_unit,','); 
+		 }
+
+		 if($unit_layanan !=null){
+			$all_layanan = "";
+			foreach ($unit_layanan as $key => $value) {
+				$all_layanan .= $value.",";
+			}
+			$layanan = rtrim($all_layanan,','); 
+		 }
+
 		$where = "";	
         if ($kepemilikan) {
 			$this->db->where('s.surety_id',$kepemilikan);
@@ -153,8 +284,8 @@ class M_laporan_penjualan  extends CI_Model {
             $item_id = substr_replace( $item_id, "", - 2 );
             $where .= " AND sd.item_id in ($item_id)";
         }
-		if ($unit_penjualan) {
-			$where .= "AND s.unit_id in ($unit_penjualan)";
+		if (!empty($unit)) {
+			$where .= "AND s.unit_id in ($unit)";
 		}
 		if ($surety) {
 			$where .= " AND s.surety_id = '$surety'";
@@ -165,8 +296,8 @@ class M_laporan_penjualan  extends CI_Model {
 		if ($catunit_id) {
 			$where .= " AND mu.unit_type = '$catunit_id'";
 		}
-		if (!empty($unit_layanan)) {			
-			$where .= " AND vs.unit_id = '$unit_layanan' ";
+		if (!empty($layanan)) {			
+			$where .= " AND vs.unit_id = '$layanan' ";
         }
 		$data = $this->db->query("SELECT i.item_code,i.item_name,
 				json_agg(
@@ -198,8 +329,27 @@ class M_laporan_penjualan  extends CI_Model {
 
 	public function get_sale_by_patient($unit_penjualan,$kepemilikan,$surety,$sale_type,$unit_layanan,$pasien,$date)
 	{
-		if ($unit_penjualan) {
-			$this->db->where('a.unit_id in ('.$unit_penjualan.')',null);
+
+		if($unit_penjualan !=null){
+			$all_unit = "";
+			foreach ($unit_penjualan as $key => $value) {
+				$all_unit .= $value.",";
+			}
+			$unit = rtrim($all_unit,','); 
+		 }
+
+		 if($unit_layanan !=null){
+			$all_layanan = "";
+			foreach ($unit_layanan as $key => $value) {
+				$all_layanan .= $value.",";
+			}
+			$layanan = rtrim($all_layanan,','); 
+		 }
+
+		 $where = " ";
+		if (!empty($unit)) {
+			//$this->db->where("a.unit_id in ('$unit')");
+			$where = " a.unit_id in ($unit)";
 		}
 		if ($kepemilikan) {
 			$this->db->where('a.own_id',$kepemilikan);
@@ -210,9 +360,10 @@ class M_laporan_penjualan  extends CI_Model {
 		if (($sale_type)) {
 			$where = "a.sale_type = '$sale_type'";
 		}
-		if (!empty($unit_layanan)) {			
-			$where = "b.unit_id = '$unit_layanan' ";
+		if (!empty($layanan)) {			
+			$where = "b.unit_id = '$layanan' ";
         } 
+		
 		$where .=$date;
 		$this->db->where($where,null);
 		$norm=$px_name="";
@@ -248,6 +399,72 @@ class M_laporan_penjualan  extends CI_Model {
 						 ->select("c.item_code,c.item_name,c.item_unitofitem as satuan,b.sale_qty,b.sale_price::numeric as harga, (b.sale_price::numeric * b.sale_qty) as subtotal,d.qty_return,d.total_return::numeric,b.racikan_id",false)
 						 ->get('farmasi.sale a')
 						 ->result();
+		if (count($data) > 0) {
+			return $data;
+		}else{
+			return array();
+		}
+	}
+
+	public function get_sale_by_rekapItem($kepemilikan,$item_id,$unit_penjualan,$surety,$sale_type,$catunit_id,$unit_layanan,$date)
+	{
+		if($unit_penjualan !=null){
+			$all_unit = "";
+			foreach ($unit_penjualan as $key => $value) {
+				$all_unit .= $value.",";
+			}
+			$unit = rtrim($all_unit,','); 
+		 }
+
+		 if($unit_layanan !=null){
+			$all_layanan = "";
+			foreach ($unit_layanan as $key => $value) {
+				$all_layanan .= $value.",";
+			}
+			$layanan = rtrim($all_layanan,','); 
+		 }
+
+		$where = "";
+		if ($kepemilikan) {
+			$this->db->where('s.own_id',$kepemilikan);
+		}
+
+		if ($item_id) {
+            $item_id = substr_replace( $item_id, "", - 2 );
+            $where .= " AND sd.item_id in ($item_id)";
+        }
+		if (!empty($unit)) {
+			$where .= "AND s.unit_id in ($unit)";
+		}	
+
+		if ($surety) {
+			$where .= " AND s.surety_id = '$surety'";
+		}
+
+		if ($sale_type) {
+			$where .= " AND s.sale_type = '$sale_type'";
+		}
+
+		if ($catunit_id) {
+			$where .= " AND mu.unit_type = '$catunit_id'";
+		}
+		if (!empty($layanan)) {
+			
+			$where .= " AND sv.unit_id in ($layanan)";
+		}
+		$data = $this->db->query("
+			SELECT mi.item_id,mi.item_code,mi.item_name,mi.item_package,sum(sd.sale_qty)sale_qty,
+			round(sum((sd.sale_price*sd.sale_qty)::NUMERIC),0)total_harga_obat
+			from farmasi.sale s
+			INNER JOIN farmasi.sale_detail sd ON s.sale_id = sd.sale_id
+			INNER JOIN admin.ms_item mi ON sd.item_id = mi.item_id
+			left JOIN yanmed.services sv on sv.srv_id = s.service_id
+			LEFT JOIN admin.ms_unit mu on sv.unit_id = mu.unit_id
+			WHERE 0=0 $date $where
+			group by mi.item_id,mi.item_code,mi.item_name,mi.item_package
+			ORDER BY mi.item_name
+			")->result();
+
 		if (count($data) > 0) {
 			return $data;
 		}else{

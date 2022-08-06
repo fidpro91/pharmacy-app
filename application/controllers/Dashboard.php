@@ -32,23 +32,27 @@ class Dashboard extends MY_Generator {
         and s.unit_id = su.unit_id 
         where s.stock_summary <= su.stock_min and s.unit_id = '$unit'
         ")->row();
-
+        $tanggalAwal = date("Y-m-d", strtotime("-1 months"));
         $data['tot_penjualan_terbayak_unit_item'] = $this->db->query("
-        SELECT count(*) JUMLAH, i.item_id, item_name,u.unit_id, unit_name
-        from farmasi.sale s
-        join farmasi.sale_detail sd on s.sale_id = sd.sale_id
-        join admin.ms_unit u on s.unit_id = u.unit_id
-        join admin.ms_item i on sd.item_id = i.item_id
-        WHERE to_char(sale_date,'YYYY-MM') = '2018-07' -- to_char(now(), 'YYYY')
-        GROUP BY i.item_id, item_name,u.unit_id, unit_name
-        limit 5")->result();
-
-        $data['tot_perjualan_unit'] = $this->db->query("SELECT SUM(s.sale_total) JUMLAH, u.unit_id, unit_name
-        from farmasi.sale s
-        join admin.ms_unit u on s.unit_id = u.unit_id
-        WHERE to_char(sale_date,'YYYY-MM') = '2018-07' -- to_char(now(), 'YYYY')
-        GROUP BY u.unit_id, unit_name
+        select * from (
+            SELECT sum(sd.sale_qty)JUMLAH, i.item_id, item_name,u.unit_id, unit_name
+            from farmasi.sale s
+            join farmasi.sale_detail sd on s.sale_id = sd.sale_id
+            join admin.ms_unit u on s.unit_id = u.unit_id
+            join admin.ms_item i on sd.item_id = i.item_id
+            WHERE to_char(sale_date,'YYYY-MM-DD') >=  '".$tanggalAwal."' and s.unit_id = '$unit'
+            GROUP BY i.item_id, item_name,u.unit_id, unit_name
+        )x
+        order by x.JUMLAH desc
         limit 10
+        ")->result();
+
+        $data['tot_perjualan_unit'] = $this->db->query("SELECT 
+        SUM(s.sale_total) JUMLAH, u.unit_id, unit_name
+        from farmasi.sale s
+        join admin.ms_unit u on s.unit_id = u.unit_id
+        WHERE to_char(sale_date,'YYYY-MM-DD') >=  '".$tanggalAwal."'
+        GROUP BY u.unit_id, unit_name
         ")->result();
 
         $this->load->view("dashboard/dashbord_by_unit",$data);
