@@ -230,28 +230,20 @@ class M_sale extends CI_Model
 		//$data	=	array();
 		$query_racik = $this->db->query("SELECT
 			c.racikan_id,
-			SUM(c.sale_qty) sale_qty,
-			c.sale_price,
+			sale_qty,
+			(c.sale_price+(c.sale_price*C.percent_profit))sale_price,
 			c.dosis,
 			mt.item_name,
 			a.sale_services,
 			a.embalase_item_sale,
 			a.sale_embalase,
-			SUM(C .sale_qty * C .sale_price) AS subtotal
+			c.subtotal
 			FROM
 			farmasi.sale a
 			JOIN farmasi.sale_detail C ON a.sale_id = c.sale_id
 			JOIN admin.ms_item mt ON mt.item_id = c.item_id
 			WHERE
-			a.sale_id = $sale_id
-			GROUP BY
-			a.embalase_item_sale,
-			c.racikan_id,
-			c.sale_price,
-			c.dosis,
-			mt.item_name,
-			a.sale_services,
-			a.sale_embalase")
+			a.sale_id = $sale_id")
 		->result();
 		if (count($query_racik) < 1) {
 			$query_racik = array();

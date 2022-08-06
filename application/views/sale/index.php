@@ -138,7 +138,9 @@
     $("#nomor_resep_co").bind('keyup', function(e) {
       if (e.keyCode == 13) {
         checkout_pasien(this.value);
+        // e.stopImmediatePropagation();
       }
+      e.preventDefault();
     });
   });
 
@@ -173,6 +175,7 @@
       $(".loading-checkout").hide();
       $('#nomor_resep_co').val('');
       table.draw();
+      return false;
     }, 'json');
   }
 

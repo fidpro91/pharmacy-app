@@ -145,10 +145,10 @@
                 <td colspan="5" align="right" style="padding:2px;">Embalase Item</td>
                 <td align="right"><?= number_format($embalase_all, 2, ".", ",") ?></td>
             </tr>
-            <!-- <tr>
-            <td colspan="5" align="right">Biaya Pembulatan</td>
-            <td align="right"><?= number_format($sale_embalase, 2, ".", ",") ?></td>
-          </tr> -->
+            <tr>
+                <td colspan="5" align="right">Biaya Pembulatan</td>
+                <td align="right"><?= number_format($sale_embalase, 2, ".", ",") ?></td>
+            </tr>
             <tr>
                 <td colspan="5" align="right" style="padding:2px;border-bottom: 1px solid #000;">Grand Total</td>
                 <!--<td align="right" style="border-bottom: 1px solid #000;"><?= number_format($sale_embalase + $sale_service + $total_obat + $embalase_all, 2, ".", ",") ?></td>-->
