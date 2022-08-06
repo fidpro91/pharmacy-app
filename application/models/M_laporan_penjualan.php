@@ -59,7 +59,7 @@ class M_laporan_penjualan  extends CI_Model {
 	}
 
     public function get_sale_by_doctor($unit_penjualan,$surety,$sale_type,$unit_layanan,$date)
-	{
+	{var_dump($unit_penjualan);die;
 		$where = "";
 		if ($unit_penjualan) {
 			$where .= "AND x.unit_id in ($unit_penjualan)";

@@ -31,13 +31,13 @@
             <?=form_hidden("srv_id")?>
             <?=form_hidden("px_norm")?>
           <?=create_inputDaterange("tanggal",["locale"=>["format"=>"YYYY-MM-DD","separator"=>"/"]])?>          
-          <?=create_select(["attr"=>["name"=>"unit_name=UNIT","id"=>"unit_name","class"=>"form-control"],
+          <?=create_select2(["attr"=>["name"=>"unit_name[]=UNIT","id"=>"unit_name","class"=>"form-control","multiple"=>true],
 								"model"=>["m_ms_unit" => "get_farmasi_unit","column"=>["unit_id","unit_name"]]
 							])?>  
           <?= create_select([
 					"attr" => ["name" => "tipe_bayar=PENJUALAN", "id" => "tipe_bayar", "class" => "form-control", 'required' => true],
 					"option" => [["id" => '0', "text" => "Tunai"], ["id" => '1', "text" => "Kredit"]],
-			]) ?>  
+			]) ?>
          <?=create_select(["attr"=>["name"=>"kepemilikan=KEPEMILIKAN","id"=>"kepemilikan","class"=>"form-control"],
 								"model"=>["m_ownership" => "get_ownership","column"=>["own_id","own_name"]]
 							])?>  
@@ -84,7 +84,7 @@
 <script type="text/javascript">
       $(document).ready(function() {
     //$('.select2').select2({placeholder: '--Pilih--'});
-     $('#nama_px').hide();
+     	$('#nama_px').hide();
 		 $('#item_name').hide();
      
     $('#jenis_px').change(function(){

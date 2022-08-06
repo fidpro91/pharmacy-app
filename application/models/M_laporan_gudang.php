@@ -484,4 +484,243 @@ ORDER BY
 		$result= $this->db->query($sql)->result();
 		return $result;
 	}
+
+	public function get_unit_asal( )
+	{
+		$code_gudang 		= "'0502'";
+		$code_produksi		= "'0503'";
+		$codeUnit = array($code_gudang);
+
+		$sql = "select
+		vf.unit_id,
+		vf.unit_name
+		from
+		newfarmasi.v_unit_farmasi vf
+		where cat_unit_code in (".implode(',', $codeUnit).") and vf.unit_active = 't' ";
+		$result = $this->db->query($sql)->result();
+		return $result;
+	}
+	public function get_unit_peminta( )
+	{
+		$sql = "select 
+					* 
+				from admin.ms_unit
+				order by unit_name";
+		return  $this->db->query($sql)->result();
+	}
+
+	public function get_data_pobat( $unit_id, $unit_peminta, $tgl_awal, $tgl_akhir, $own_id)
+	{
+		$where = "";
+		if ($unit_peminta) {
+			$where .= " and b.unit_id = '$unit_peminta'";
+		}
+
+//		$sql    = "	SELECT
+//						m.mutation_date as tgl,
+//						b.bon_no no_minta,
+//						m.mutation_id,
+//						m.mutation_no no_mutasi,
+//						b.unit_id as unit_minta,
+//						v.unit_name unit_minta,
+//						b.unit_target as unit_kirim,
+//						vt.unit_name unit_kirim,
+//						vo.item_name,
+//						vo.item_code,
+//						vo.item_unitofitem as satuan,
+//						p.price_sell::numeric as harga,
+//						o.own_name,
+//						rd.qty_unit
+//					From
+//						newfarmasi.mutation m
+//					inner join farmasi.bon b
+//						on m.bon_id = b.bon_id
+//					inner join newfarmasi.receiving r
+//						on m.mutation_id = r.mutation_id
+//					inner join newfarmasi.receiving_detail rd
+//						on r.rec_id = rd.rec_id
+//					inner join farmasi.v_obat vo
+//					on vo.item_id = rd.item_id
+//					inner join farmasi.ownership o
+//						on o.own_id =  b.own_id
+//					inner join farmasi.price p
+//						on p.item_id = vo.item_id and p.own_id = b.own_id
+//					inner join(
+//						select * from newfarmasi.v_unit_farmasi
+//							union
+//						select * from farmasi.v_unit_pelayanan
+//					) v
+//						on v.unit_id  =  b.unit_id
+//					inner join (
+//						select * from newfarmasi.v_unit_farmasi
+//							union
+//						select * from farmasi.v_unit_pelayanan
+//					) vt
+//						on vt.unit_id  =  b.unit_target
+//					where /*mutation_status = 1
+//					and */r.rec_type = 1 $where
+//					and b.unit_target = '$unit_id'
+//					and date(m.mutation_date) between  '$tgl_awal' and '$tgl_akhir'
+//					order by vo.item_name";
+
+		$sql    = "	SELECT 
+	    m.mutation_date as tgl,
+	    m.bon_no as no_minta,
+m.mutation_id,m.mutation_no no_mutasi,
+m.unit_require as unit_minta,
+v.unit_name as unit_minta,
+m.unit_sender as unit_kirim,
+
+	vo.item_name,
+	vo.item_code,
+	vo.item_unitofitem AS satuan,
+	P.price_sell :: NUMERIC AS harga,
+	
+	o.own_name,
+	md.qty_send as qty_unit
+	
+	FROM newfarmasi.mutation m
+	JOIN newfarmasi.mutation_detail md on m.mutation_id = md.mutation_id
+	JOIN farmasi.v_obat vo on md.item_id = vo.item_id
+	JOIN farmasi.ownership o ON m.own_id = o.own_id
+	JOIN farmasi.price p ON vo.item_id = p.item_id
+	join(select * from newfarmasi.v_unit_farmasi 
+			union
+		select * from farmasi.v_unit_pelayanan  	
+	) v on v.unit_id  =  m.unit_require
+	join (select * from newfarmasi.v_unit_farmasi 
+			union
+		select * from farmasi.v_unit_pelayanan  
+	) vt on vt.unit_id  =  m.unit_sender
+	WHERE M.mutation_date BETWEEN '$tgl_awal'
+	AND '$tgl_akhir' AND M.mutation_status = '2'
+	AND m.unit_sender = '$unit_id' $where
+
+GROUP BY m.mutation_date,m.mutation_id,m.unit_require,v.unit_name,m.unit_sender,o.own_name,md.qty_send,m.bon_no,m.mutation_no,
+	vo.item_name,
+	vo.item_code,
+	vo.item_unitofitem,
+	P.price_sell 
+ORDER BY
+	vo.item_name";
+		return $this->db->query($sql)->result();
+	}
+
+	public function get_data_byItem($unit_id, $unit_peminta, $tgl_awal, $tgl_akhir, $own_id)
+	{
+		$where = "";
+		if ($unit_peminta) {
+			$where .= " and m.unit_require = '$unit_peminta'";
+		}
+
+		if ($own_id != "semua") {
+			$where .= " and m.own_id = '$own_id'";
+		}
+//		$sql    = "	SELECT
+//						vo.item_name,
+//						vo.item_code,
+//						vo.item_unitofitem as satuan,
+//						p.price_sell::numeric as harga,
+//						sum(rd.qty_unit) jml_qty
+//					From
+//						newfarmasi.mutation m
+//					inner join farmasi.bon b
+//						on m.bon_id = b.bon_id
+//					inner join newfarmasi.receiving r
+//						on m.mutation_id = r.mutation_id
+//					inner join newfarmasi.receiving_detail rd
+//						on r.rec_id = rd.rec_id
+//					inner join farmasi.v_obat vo
+//					on vo.item_id = rd.item_id
+//					inner join farmasi.ownership o
+//						on o.own_id =  b.own_id
+//					inner join famrasi.price p
+//						on p.item_id = vo.item_id and p.own_id = b.own_id
+//					inner join(
+//						select * from newfarmasi.v_unit_farmasi
+//							union
+//						select * from farmasi.v_unit_pelayanan
+//					) v
+//						on v.unit_id  =  b.unit_id
+//					inner join (
+//						select * from newfamrasi.v_unit_farmasi
+//							union
+//						select * from farmasi.v_unit_pelayanan
+//					) vt
+//						on vt.unit_id  =  b.unit_target
+//					where /*mutation_status = 1
+//					and */r.rec_type = 1 $where
+//					and b.unit_target = '$unit_id'
+//					and m.mutation_date between  '$tgl_awal' and '$tgl_akhir'
+//					group by vo.item_name,
+//						vo.item_code,
+//						vo.item_unitofitem,
+//						p.price_sell
+//					order by vo.item_name";
+		$sql    = "	SELECT 
+	vo.item_name,
+	vo.item_code,
+	vo.item_unitofitem AS satuan,
+	P.price_sell :: NUMERIC AS harga,
+	SUM ( md.qty_send ) jml_qty
+	FROM newfarmasi.mutation m
+	JOIN newfarmasi.mutation_detail md on m.mutation_id = md.mutation_id
+	JOIN farmasi.v_obat vo on md.item_id = vo.item_id
+	JOIN farmasi.ownership o ON m.own_id = o.own_id
+	JOIN farmasi.price p ON vo.item_id = p.item_id
+	WHERE M.mutation_date BETWEEN '$tgl_awal' 
+	AND '$tgl_akhir'
+	AND m.unit_sender = '$unit_id' $where
+
+GROUP BY
+	vo.item_name,
+	vo.item_code,
+	vo.item_unitofitem,
+	P.price_sell 
+ORDER BY
+	vo.item_name";
+		return $this->db->query($sql)->result();
+	}
+
+	public function get_rekapData($unit_id,$unit_peminta,$own_id,$jns_laporan,$tgl_awal,$tgl_akhir)
+	{
+		if( empty($tgl_awal) ) {
+			$tgl_awal = date("d-m-Y");
+		}
+
+		if( empty($tgl_akhir) ) {
+			$tgl_akhir = date("d-m-Y");
+		}
+
+		if( empty($unit_peminta) ) {
+			$unit_peminta = 0;
+		}
+
+		if( empty($unit_id) ) {
+			$unit_id = 0;
+		}
+		$where = " AND r.receiver_unit != '$unit_id' AND r.sender_unit = '$unit_id' AND r.receiver_date between '$tgl_awal' AND '$tgl_akhir'";
+		if ($own_id) {
+			$where .= " AND r.own_id = '$own_id'";
+		}
+		$data = $this->db->query("
+        SELECT mu.unit_id,mu.unit_name,rec.detail FROM admin.ms_unit mu
+LEFT JOIN (
+  SELECT x.receiver_unit,json_agg((x.bulan,x.total) ORDER BY x.bulan)detail FROM (
+    SELECT r.receiver_unit,EXTRACT('month' FROM r.rec_date)bulan,sum(COALESCE(rd.price_total,0))total FROM newfarmasi.receiving r
+    INNER JOIN newfarmasi.receiving_detail rd ON r.rec_id = rd.rec_id
+    where 0=0 $where
+    GROUP BY r.receiver_unit,EXTRACT('month' FROM r.rec_date)
+  )x
+  GROUP BY x.receiver_unit
+) rec ON mu.unit_id = rec.receiver_unit
+WHERE mu.unit_active = 't'
+ORDER BY mu.unit_type,mu.unit_name ASC")->result();
+
+		if (count($data)>0) {
+			return $data;
+		}else{
+			return array();
+		}
+	}
 }
