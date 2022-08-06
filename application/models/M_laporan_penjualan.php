@@ -76,12 +76,28 @@ class M_laporan_penjualan  extends CI_Model {
 		return $data;
 	}
 
-	public function get_sale_all($unit_penjualan,$sale_type,$kepemilikan,$surety,$bayar,$date){
+	public function get_sale_all($unit_penjualan,$sale_type,$kepemilikan,$surety,$bayar,$date,$unit_layanan){
+
+		if($unit_penjualan !=null){
+			$all_unit = "";
+			foreach ($unit_penjualan as $key => $value) {
+				$all_unit .= $value.",";
+			}
+			$unit = rtrim($all_unit,','); 
+		 }
+
+		 if($unit_layanan !=null){
+			$all_layanan = "";
+			foreach ($unit_layanan as $key => $value) {
+				$all_layanan .= $value.",";
+			}
+			$layanan = rtrim($all_layanan,','); 
+		 }
 		
 		$where = "";
 
-		if ($unit_penjualan) {
-			$where .= "AND sale.unit_id in ($unit_penjualan)";
+		if (!empty($unit)) {
+			$where .= "AND sale.unit_id in ($unit)";
 		}
 		if($sale_type){
 			$where .= " AND sale.sale_type = '$sale_type'";
@@ -100,9 +116,9 @@ class M_laporan_penjualan  extends CI_Model {
                 $where .= "";
         }
 
-		if (!empty($unit_layanan)) {
+		if (!empty($layanan)) {
 			
-			$where .= " AND srv.unit_id = any(ARRAY[".implode($unit_layanan, ',')."])";
+			$where .= " AND srv.unit_id in ($layanan)";
 		}
 		$sql = "
 					select sale.sale_id,sale_date, sale_num,sale_type, rcp_id, px_norm, patient_name, surety_name, unit2.unit_name,unit2.unit_id,sale_shift,sale_total,(sale.sale_total - COALESCE(sale.sale_total_returned,0)) as sale_fix, unit2.unit_type,sale.sale_total_returned as sr_total,resep.jml_nonracik,resep.jml_racikan,sale.date_act
@@ -129,9 +145,25 @@ class M_laporan_penjualan  extends CI_Model {
 
     public function get_sale_by_doctor($unit_penjualan,$surety,$sale_type,$unit_layanan,$date)
 	{
+		if($unit_penjualan !=null){
+			$all_unit = "";
+			foreach ($unit_penjualan as $key => $value) {
+				$all_unit .= $value.",";
+			}
+			$unit = rtrim($all_unit,','); 
+		 }
+
+		 if($unit_layanan !=null){
+			$all_layanan = "";
+			foreach ($unit_layanan as $key => $value) {
+				$all_layanan .= $value.",";
+			}
+			$layanan = rtrim($all_layanan,','); 
+		 }
+
 		$where = "";
-		if ($unit_penjualan) {
-			$where .= "AND x.unit_id in ($unit_penjualan)";
+		if (!empty($unit)) {
+			$where .= "AND x.unit_id in ($unit)";
 		}
 
 		if ($surety) {
@@ -142,9 +174,9 @@ class M_laporan_penjualan  extends CI_Model {
 			$where .= " AND x.sale_type = '$sale_type'";
 		}
 
-		if (!empty($unit_layanan)) {
+		if (!empty($layanan)) {
 			
-			$where .= " AND srv.unit_id = '$unit_layanan' ";
+			$where .= " AND srv.unit_id = '$layanan' ";
         }
 
 		$data = $this->db->query("
@@ -171,9 +203,24 @@ class M_laporan_penjualan  extends CI_Model {
 
     public function get_sale_by_visit($unit_penjualan,$surety,$sale_type,$unit_layanan,$date,$visit_id)
 	{
+		if($unit_penjualan !=null){
+			$all_unit = "";
+			foreach ($unit_penjualan as $key => $value) {
+				$all_unit .= $value.",";
+			}
+			$unit = rtrim($all_unit,','); 
+		 }
+		 if($unit_layanan !=null){
+			$all_layanan = "";
+			foreach ($unit_layanan as $key => $value) {
+				$all_layanan .= $value.",";
+			}
+			$layanan = rtrim($all_layanan,','); 
+		 }
+
 		$where = "";
-		if ($unit_penjualan) {
-			$where .= "AND s.unit_id in ($unit_penjualan)";
+		if (!empty($unit)) {
+			$where .= "AND s.unit_id in ($unit)";
 		}
 
 		if ($surety) {
@@ -188,9 +235,9 @@ class M_laporan_penjualan  extends CI_Model {
 			$where .= " AND s.sale_type = '$sale_type'";
 		}
 
-		if (!empty($unit_layanan)) {
+		if (!empty($layanan)) {
 			
-			$where .= " AND vs.unit_id = '$unit_layanan' ";
+			$where .= " AND vs.unit_id = '$layanan' ";
         }
 		
 
@@ -213,7 +260,22 @@ class M_laporan_penjualan  extends CI_Model {
 
     public function get_sale_by_item($kepemilikan,$unit_penjualan,$surety,$sale_type,$catunit_id,$unit_layanan,$date,$item_id)
 	{
-		
+		if($unit_penjualan !=null){
+			$all_unit = "";
+			foreach ($unit_penjualan as $key => $value) {
+				$all_unit .= $value.",";
+			}
+			$unit = rtrim($all_unit,','); 
+		 }
+
+		 if($unit_layanan !=null){
+			$all_layanan = "";
+			foreach ($unit_layanan as $key => $value) {
+				$all_layanan .= $value.",";
+			}
+			$layanan = rtrim($all_layanan,','); 
+		 }
+
 		$where = "";	
         if ($kepemilikan) {
 			$this->db->where('s.surety_id',$kepemilikan);
@@ -222,8 +284,8 @@ class M_laporan_penjualan  extends CI_Model {
             $item_id = substr_replace( $item_id, "", - 2 );
             $where .= " AND sd.item_id in ($item_id)";
         }
-		if ($unit_penjualan) {
-			$where .= "AND s.unit_id in ($unit_penjualan)";
+		if (!empty($unit)) {
+			$where .= "AND s.unit_id in ($unit)";
 		}
 		if ($surety) {
 			$where .= " AND s.surety_id = '$surety'";
@@ -234,8 +296,8 @@ class M_laporan_penjualan  extends CI_Model {
 		if ($catunit_id) {
 			$where .= " AND mu.unit_type = '$catunit_id'";
 		}
-		if (!empty($unit_layanan)) {			
-			$where .= " AND vs.unit_id = '$unit_layanan' ";
+		if (!empty($layanan)) {			
+			$where .= " AND vs.unit_id = '$layanan' ";
         }
 		$data = $this->db->query("SELECT i.item_code,i.item_name,
 				json_agg(
@@ -267,8 +329,27 @@ class M_laporan_penjualan  extends CI_Model {
 
 	public function get_sale_by_patient($unit_penjualan,$kepemilikan,$surety,$sale_type,$unit_layanan,$pasien,$date)
 	{
-		if ($unit_penjualan) {
-			$this->db->where('a.unit_id in ('.$unit_penjualan.')',null);
+
+		if($unit_penjualan !=null){
+			$all_unit = "";
+			foreach ($unit_penjualan as $key => $value) {
+				$all_unit .= $value.",";
+			}
+			$unit = rtrim($all_unit,','); 
+		 }
+
+		 if($unit_layanan !=null){
+			$all_layanan = "";
+			foreach ($unit_layanan as $key => $value) {
+				$all_layanan .= $value.",";
+			}
+			$layanan = rtrim($all_layanan,','); 
+		 }
+
+		 $where = " ";
+		if (!empty($unit)) {
+			//$this->db->where("a.unit_id in ('$unit')");
+			$where = " a.unit_id in ($unit)";
 		}
 		if ($kepemilikan) {
 			$this->db->where('a.own_id',$kepemilikan);
@@ -279,9 +360,10 @@ class M_laporan_penjualan  extends CI_Model {
 		if (($sale_type)) {
 			$where = "a.sale_type = '$sale_type'";
 		}
-		if (!empty($unit_layanan)) {			
-			$where = "b.unit_id = '$unit_layanan' ";
+		if (!empty($layanan)) {			
+			$where = "b.unit_id = '$layanan' ";
         } 
+		
 		$where .=$date;
 		$this->db->where($where,null);
 		$norm=$px_name="";
@@ -326,7 +408,22 @@ class M_laporan_penjualan  extends CI_Model {
 
 	public function get_sale_by_rekapItem($kepemilikan,$item_id,$unit_penjualan,$surety,$sale_type,$catunit_id,$unit_layanan,$date)
 	{
-		
+		if($unit_penjualan !=null){
+			$all_unit = "";
+			foreach ($unit_penjualan as $key => $value) {
+				$all_unit .= $value.",";
+			}
+			$unit = rtrim($all_unit,','); 
+		 }
+
+		 if($unit_layanan !=null){
+			$all_layanan = "";
+			foreach ($unit_layanan as $key => $value) {
+				$all_layanan .= $value.",";
+			}
+			$layanan = rtrim($all_layanan,','); 
+		 }
+
 		$where = "";
 		if ($kepemilikan) {
 			$this->db->where('s.own_id',$kepemilikan);
@@ -336,8 +433,8 @@ class M_laporan_penjualan  extends CI_Model {
             $item_id = substr_replace( $item_id, "", - 2 );
             $where .= " AND sd.item_id in ($item_id)";
         }
-		if ($unit_penjualan) {
-			$where .= "AND s.unit_id in ($unit_penjualan)";
+		if (!empty($unit)) {
+			$where .= "AND s.unit_id in ($unit)";
 		}	
 
 		if ($surety) {
@@ -351,9 +448,9 @@ class M_laporan_penjualan  extends CI_Model {
 		if ($catunit_id) {
 			$where .= " AND mu.unit_type = '$catunit_id'";
 		}
-		if (!empty($unit_layanan)) {
+		if (!empty($layanan)) {
 			
-			$where .= " AND sv.unit_id in ($unit_layanan)";
+			$where .= " AND sv.unit_id in ($layanan)";
 		}
 		$data = $this->db->query("
 			SELECT mi.item_id,mi.item_code,mi.item_name,mi.item_package,sum(sd.sale_qty)sale_qty,

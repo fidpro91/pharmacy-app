@@ -387,45 +387,6 @@ class Laporan_permintaan_gudang extends MY_Generator
 //		}
 		$data['golongan'] = $golongan;
 		$where2="";
-//		if($jenis_laporan == 'periodik'){
-//			$dateMonthYear= $this->input->post('tglPeriodikDari', true);
-//			list($date,$bulan1,$tahun) = explode('-', $dateMonthYear);
-//			switch ($bulan1) {
-//				case '01':$bulan1 = "Januari"; break;
-//				case '02':$bulan1= "Pebruari"; break;
-//				case '03':$bulan1 = "Maret"; break;
-//				case '04':$bulan1 = "April"; break;
-//				case '05':$bulan1 = "Mei"; break;
-//				case '06':$bulan1 = "Juni"; break;
-//				case '07':$bulan1 = "Juli"; break;
-//				case '08':$bulan1 = "Agustus"; break;
-//				case '09':$bulan1 = "September"; break;
-//				case '10':$bulan1 = "Oktober"; break;
-//				case '11':$bulan1 = "Nopember"; break;
-//				case '12':$bulan1 = "Desember"; break;
-//				default: $bulan1 =""; break;
-//			}
-//			$dateMonthYear2= $this->input->post('tglPeriodikSampai', true);
-
-//			list($date2,$bulan2,$tahun2) = explode('-', $dateMonthYear2);
-
-//			switch ($bulan2) {
-//				case '01':$bulan2 = "Januari"; break;
-//				case '02':$bulan2= "Pebruari"; break;
-//				case '03':$bulan2 = "Maret"; break;
-//				case '04':$bulan2 = "April"; break;
-//				case '05':$bulan2 = "Mei"; break;
-//				case '06':$bulan2 = "Juni"; break;
-//				case '07':$bulan2 = "Juli"; break;
-//				case '08':$bulan2 = "Agustus"; break;
-//				case '09':$bulan2 = "September"; break;
-//				case '10':$bulan2 = "Oktober"; break;
-//				case '11':$bulan2 = "Nopember"; break;
-//				case '12':$bulan2 = "Desember"; break;
-//				default: $bulan2 =""; break;
-//			}
-//			$tglPeriodikDari       = date("Y-m-d", strtotime($this->input->post('tglPeriodikDari', true)));
-//			$tglPeriodikSampai       = date("Y-m-d", strtotime($this->input->post('tglPeriodikSampai', true)));
 			$where .= " AND (date(sp.date_trans) between '$tgl_awal' AND '$tgl_akhir')";
 			$where2 .= " AND date(sp.date_trans) < '$tgl_awal'";
 			$data['waktu'] = $tgl_awal."sd".$tgl_akhir;
@@ -444,4 +405,58 @@ class Laporan_permintaan_gudang extends MY_Generator
 		$this->load->view("laporan_gudang/stok_konsolidasi/v_laporan_mutasi2",$data);
 
 	}
+
+	public function laporan_pengeluaran_obat()
+	{
+		$data['data'] = [];
+		$this->theme('laporan_gudang/laporan_pengeluaran_obat/v_pengeluaran_obat',$data);
+	}
+
+	public function show_pengeluaran_obat($unit_id,$unit_peminta,$own_id,$jns_laporan,$tgl_awal,$tgl_akhir,$act)
+	{
+//		var_dump($unit_id,$unit_peminta,$own_id,$jns_laporan,$tgl_awal,$tgl_akhir,$act);die();
+		$data = array();
+
+		$data['periode']	= $tgl_awal." s/d ".$tgl_akhir;
+
+		if ($jns_laporan == 2) {
+			$data['datas']		= $this->m_laporan_gudang->get_data_pobat($unit_id, $unit_peminta, $tgl_awal, $tgl_akhir, $own_id);
+		}else{
+			$data['datas']		= $this->m_laporan_gudang->get_data_byItem($unit_id, $unit_peminta, $tgl_awal, $tgl_akhir, $own_id);
+		}
+//		var_dump($data['datas']);die;
+
+		$data['username'] 	= $this->session->user_name;
+		$data['rs'] 	= $this->m_laporan_gudang->get_profil_rs();
+
+		$data['unit_asal']	= $this->m_laporan_gudang->get_unit(
+			array( 'unit_id' => $unit_id ),
+			1
+		);
+		$data = array_merge(
+			$data, $data['datas']
+		);
+
+		if ($jns_laporan == 1) {
+			if ($act == 2){
+				header("Content-type: application/vnd-ms-excel");
+				header("Content-Disposition: attachment; filename=" . $namafile . ".xls");
+			}
+			$this->load->view('laporan_gudang/laporan_pengeluaran_obat/v_pengeluaran_obat_html_byItem', $data);
+		}elseif($jns_laporan == 2){
+			if ($act == 2){
+				header("Content-type: application/vnd-ms-excel");
+				header("Content-Disposition: attachment; filename=" . $namafile . ".xls");
+			}
+			$this->load->view('laporan_gudang/laporan_pengeluaran_obat/v_pengeluaran_obat_html', $data);
+		}else{
+			if ($act == 2){
+				header("Content-type: application/vnd-ms-excel");
+				header("Content-Disposition: attachment; filename=" . $namafile . ".xls");
+			}
+			$data['data'] = $this->m_laporan_gudang->get_rekapData($unit_id,$unit_peminta,$own_id,$jns_laporan,$tgl_awal,$tgl_akhir);
+			$this->load->view('laporan_gudang/laporan_pengeluaran_obat/v_lap_rekap_mutasi', $data);
+		}
+	}
+
 }

@@ -56,18 +56,19 @@ class Laporan_penjualan extends MY_Generator {
         $tgl = $this->input->post(); 
 		list($tgl1,$tgl2) = explode('/', $tgl['tanggal']);		
         $kepemilikan         = $this->input->post('kepemilikan',true);
-        $catunit_id          = $this->input->post('catunit_id', true); 
-        $unit_penjualan      = $this->input->post('unit_name',true);
+        $catunit_id          = $this->input->post('jenis_px', true); 
+        $unit_penjualan      = $this->input->post('unit_name',true); 
         $karakteristik       = $this->input->post('tipe',true);   
-        $sale_type           = $this->input->post('tipe_bayar',true);       
+        $sale_type           = $this->input->post('tipe_bayar',true); 
+             
         $unit_layanan        = $this->input->post('unit_layanan',true);           
         $surety              = $this->input->post('surety',true);
         $bayar               = $this->input->post('status_bayar',true);
         $visit_id            = $this->input->post('visit_id',true);
-        $date = " AND date(sale_date) between '".$tgl1."' and '".$tgl2."'";
-        
+        $date = " AND date(sale_date) between '".$tgl1."' and '".$tgl2."'"; 
+               
         if($karakteristik==0){
-            $query=$this->m_laporan_penjualan->get_sale_all($unit_penjualan,$sale_type,$kepemilikan,$surety,$bayar,$date); 
+            $query=$this->m_laporan_penjualan->get_sale_all($unit_penjualan,$sale_type,$kepemilikan,$surety,$bayar,$date,$unit_layanan); 
             $data['sale'] = $query->result();
             $data['total'] = $query->num_rows();           
             $this->load->view("laporan_penjualan/v_laporan_all",$data);
