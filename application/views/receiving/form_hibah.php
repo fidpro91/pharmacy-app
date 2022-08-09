@@ -23,7 +23,12 @@
                             ])?>
                             <?=create_input("rec_num")?>
                             <?=create_select2([
-                                "attr" =>["name"=>"receiver_unit=Unit penerima","id"=>"receiver_unit","class"=>"form-control"],
+                                "attr" =>[
+                                    "name"      =>"receiver_unit=Unit penerima",
+                                    "id"        =>"receiver_unit",
+                                    "class"     =>"form-control",
+                                    "required"  =>"true",
+                                ],
                                 "model"=>["m_ms_unit" => ["get_ms_unit",["employee_id"=>$this->session->employee_id]],
                                                 "column"  => ["unit_id","unit_name"]
                                             ]
@@ -38,7 +43,12 @@
                         </div>
                         <div class="col-md-6">
                             <?=create_select([
-                                "attr" =>["name"=>"own_id=Kepemilikan","id"=>"own_id","class"=>"form-control"],
+                                "attr" =>[
+                                    "name"=>"own_id=Kepemilikan",
+                                    "id"=>"own_id",
+                                    "class"=>"form-control",
+                                    "required"  =>"true",
+                                ],
                                 "model"=>["m_receiving" => ["get_owner",["0"=>'0']],
                                                 "column"  => ["own_id","own_name"]
                                             ],
