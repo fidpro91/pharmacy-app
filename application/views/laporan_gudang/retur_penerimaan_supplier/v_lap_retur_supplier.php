@@ -27,7 +27,7 @@
 					<?=create_inputDaterange("tanggal",["locale"=>["format"=>"YYYY-MM-DD","separator"=>"/"]])?>
 
 					<?= create_select([
-						"attr" => ["name" => "unit_id=unit", "id" => "unit_id", "class" => "form-control"],
+						"attr" => ["name" => "unit_id=unit", "id" => "unit_id", "class" => "form-control","required"=>true],
 						"model" => [
 							"m_laporan_gudang" => "get_unit_retur",
 							"column" => ["unit_id", "unit_name"]
@@ -60,14 +60,5 @@
 	</section>
 </div>
 <script>
-	$("#print").click(function() {
-		let value = $("#unit_id").val();
-		window.open("<?php echo base_url() ?>laporan_permintaan_gudang/show_laporan_stok_perunit/" + value +"/p", "", "width=500, height=300");
-	})
-
-	$("#excel").click(function () {
-		let value = $("#unit_id").val();
-		window.open("<?php echo base_url() ?>laporan_permintaan_gudang/show_laporan_stok_perunit/" + value +"/exc", "", "width=500, height=300");
-	})
 	<?= $this->config->item('footerJS') ?>
 </script>

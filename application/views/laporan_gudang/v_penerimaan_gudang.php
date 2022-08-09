@@ -55,7 +55,7 @@
 						])?>
 					</div>
 					<div class="col-md-6">
-						<?=create_select2(["attr"=>["name"=>"own_id","id"=>"own_id","class"=>"form-control"],
+						<?=create_select2(["attr"=>["name"=>"own_id","id"=>"own_id","class"=>"form-control","required"=>true],
 								"model"=>[
 										"m_ownership" =>"get_ownership",
 										"column"=>["own_id","own_name"]
