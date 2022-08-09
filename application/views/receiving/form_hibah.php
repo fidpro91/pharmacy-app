@@ -128,11 +128,11 @@
             }
         }).data("ui-autocomplete")._renderItem = function (ul, item) {
             return $("<li>")
-                .append('<a>'
-                    + '<table class="table"><tr>'
-                    + '<td style="width:150px">' + item.value + '</td>'
-                    + '<td style="width:40px">' + item.item_package + '</td>'
-                    + '</tr></table></a>')
+                .append("<div class='comment-text'><span class=\"username\"><b>"+
+					item.item_name+"|"+item.item_code+
+				"</b><span class=\"text-muted pull-right\">"+formatNumeric(item.item_package)+"</span></span><p>"+
+				"<span>Kategori Item : <span class=\"text-muted pull-right\">"+(item.classification_name)+"</span></span><br>"+
+				"</div>")
                 .appendTo(ul);
         };
 	});
@@ -169,20 +169,22 @@
 
     $('#fm_receiving').on("submit",function(){
         $(this).data("validator").settings.submitHandler = function (form) { 
-            $.blockUI();
-            $.ajax({
-                'type': "post",
-                'data'	: $(form).serialize(),
-                'dataType': 'json',
-                'url': "receiving/save_non_po",
-                'success': function (data) {
-                    $.unblockUI();
-                    alert(data.message);
-                    if (data.code == '200') {
-                        location.reload(true);
+            if (confirm("Simpan data hibah?")) {
+                $.blockUI();
+                $.ajax({
+                    'type': "post",
+                    'data'	: $(form).serialize(),
+                    'dataType': 'json',
+                    'url': "receiving/save_non_po",
+                    'success': function (data) {
+                        $.unblockUI();
+                        alert(data.message);
+                        if (data.code == '200') {
+                            location.reload(true);
+                        }
                     }
-                }
-            });
+                });
+            }
             return false;
         };
 	});

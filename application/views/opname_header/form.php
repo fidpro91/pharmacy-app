@@ -106,5 +106,12 @@
 			}
 		});
 	});
+	$("#fm_opname_header").on("submit",function(){
+		if (confirm("Simpan data opname?")) {
+			return true;
+		}else{
+			return false;
+		}
+	});
   <?=$this->config->item('footerJS')?>
   </script>

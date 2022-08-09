@@ -90,8 +90,12 @@
         $("#form_mutation").hide();
         $("#form_mutation").html('');
     });
-    $(document).ready(() => {
-        
+    $("#fm_mutation").on("submit",function(){
+        if (confirm("Simpan data permintaan?")) {
+            return true;
+        }else{
+            return false;
+        }
     });
     <?= $this->config->item('footerJS') ?>
 </script>
