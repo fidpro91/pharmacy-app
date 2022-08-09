@@ -129,8 +129,8 @@
         }).data("ui-autocomplete")._renderItem = function (ul, item) {
             return $("<li>")
                 .append("<div class='comment-text'><span class=\"username\"><b>"+
-					item.item_name+"|"+item.item_code+
-				"</b><span class=\"text-muted pull-right\">"+formatNumeric(item.item_package)+"</span></span><p>"+
+					item.value+"|"+item.item_code+
+				"</b><span class=\"text-muted pull-right\">"+formatNumeric(item.kemasan)+"</span></span><p>"+
 				"<span>Kategori Item : <span class=\"text-muted pull-right\">"+(item.classification_name)+"</span></span><br>"+
 				"</div>")
                 .appendTo(ul);

@@ -158,7 +158,6 @@
     		};
 
     	});
-
 		$("#fm_production").on("submit",function(){
 			if (confirm("Simpan data produksi?")) {
 				return true;
@@ -166,7 +165,6 @@
 				return false;
 			}
 		});
-
 
     	<?= $this->config->item('footerJS') ?>
     </script>
