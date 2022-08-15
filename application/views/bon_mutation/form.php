@@ -81,6 +81,7 @@
     			}
     		});
     	});
+		
 		$("body").on("change", ".tb_list_item", function() {
 			$(this).find("input:not([class*='autocom_item_id'])").on("keydown",function(e) {
 				if (e.which == 13) {
@@ -90,6 +91,14 @@
 					return false;
 				}
 			});
+		});
+
+		$("#fm_mutation").on("submit",function(){
+			if (confirm("Simpan data permintaan?")) {
+				return true;
+			}else{
+				return false;
+			}
 		});
     	<?= $this->config->item('footerJS') ?>
     </script>

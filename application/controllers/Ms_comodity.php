@@ -11,7 +11,7 @@ class Ms_comodity extends MY_Generator {
 
 	public function index()
 	{
-		$this->theme('ms_comodity/index');
+		$this->theme('ms_comodity/index','',get_class($this));
 	}
 
 	public function save()
@@ -22,8 +22,8 @@ class Ms_comodity extends MY_Generator {
 			foreach ($this->m_ms_comodity->rules() as $key => $value) {
 				$input[$key] = $data[$key];
 			}
-			if ($data['$pkey']) {
-				$this->db->where('$pkey',$data['$pkey'])->update('admin.ms_comodity',$input);
+			if ($data['comodity_id']) {
+				$this->db->where('comodity_id',$data['comodity_id'])->update('admin.ms_comodity',$input);
 			}else{
 				$this->db->insert('admin.ms_comodity',$input);
 			}
@@ -72,14 +72,14 @@ class Ms_comodity extends MY_Generator {
 
 	public function find_one($id)
 	{
-		$data = $this->db->where('$pkey',$id)->get("admin.ms_comodity")->row();
+		$data = $this->db->where('comodity_id',$id)->get("admin.ms_comodity")->row();
 
 		echo json_encode($data);
 	}
 
 	public function delete_row($id)
 	{
-		$this->db->where('$pkey',$id)->delete("admin.ms_comodity");
+		$this->db->where('comodity_id',$id)->delete("admin.ms_comodity");
 		$resp = array();
 		if ($this->db->affected_rows()) {
 			$resp['message'] = 'Data berhasil dihapus';

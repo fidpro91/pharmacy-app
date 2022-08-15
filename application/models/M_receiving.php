@@ -93,6 +93,12 @@ class M_receiving extends CI_Model {
 				"rec_num"=>["label"=>"No.Faktur"],
 				"receiver_num"=>["label"=>"No.Penerimaan"],
 				"price_item" => [
+					"label"	 => "HNA", 
+					"custom" => function($a){
+						return convert_currency($a);
+					}
+				],
+				"hpp" => [
 					"custom" => function($a){
 						return convert_currency($a);
 					}

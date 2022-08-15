@@ -129,7 +129,7 @@ class Distribusi_bon extends MY_Generator {
 	public function update_stock($param,$qty,$type="plus",$fk=null,$mutation_detail)
 	{
 		if ($type=='minus') {
-			$data = $this->db->get_where("newfarmasi.stock_fifo",$param)->result();
+			$data = $this->db->where("stock_saldo > 0",null)->get_where("newfarmasi.stock_fifo",$param)->result();
 			$stock_saldo=0;
 			foreach ($data as $key => $value) {
 				if ($value->stock_saldo >= $qty) {

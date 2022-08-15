@@ -12,7 +12,12 @@
         <?= create_input("qty_racikan") ?>
     </div>
     <div class="col-md-3">
-        <?= create_inputMask("biaya_racikan","IDR") ?>
+        <?php
+            $biayaRacik = $this->db->get_where("newfarmasi.setting_app",[
+                "setting_id"   => 3
+            ])->row("setting_value");
+        ?>
+        <?=create_inputMask("biaya_racikan","IDR",["value"=>$biayaRacik])?>
     </div>
     <div class="col-md-12">
         <div class="list_item_racikan"></div>

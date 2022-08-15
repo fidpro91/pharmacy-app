@@ -627,7 +627,7 @@ class Sale extends MY_Generator
 			"table"	=> "farmasi.sale",
 			"column"	=> "sale_num",
 			"delimiter" => "/",
-			"number"	=> "3",
+			"number"	=> "2",
 			"lpad"		=> "4",
 			"filter"	=> " AND unit_id = '$id'"
 		]);

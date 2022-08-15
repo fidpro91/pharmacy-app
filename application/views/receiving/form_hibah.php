@@ -23,7 +23,12 @@
                             ])?>
                             <?=create_input("rec_num")?>
                             <?=create_select2([
-                                "attr" =>["name"=>"receiver_unit=Unit penerima","id"=>"receiver_unit","class"=>"form-control"],
+                                "attr" =>[
+                                    "name"      =>"receiver_unit=Unit penerima",
+                                    "id"        =>"receiver_unit",
+                                    "class"     =>"form-control",
+                                    "required"  =>"true",
+                                ],
                                 "model"=>["m_ms_unit" => ["get_ms_unit",["employee_id"=>$this->session->employee_id]],
                                                 "column"  => ["unit_id","unit_name"]
                                             ]
@@ -38,7 +43,12 @@
                         </div>
                         <div class="col-md-6">
                             <?=create_select([
-                                "attr" =>["name"=>"own_id=Kepemilikan","id"=>"own_id","class"=>"form-control"],
+                                "attr" =>[
+                                    "name"=>"own_id=Kepemilikan",
+                                    "id"=>"own_id",
+                                    "class"=>"form-control",
+                                    "required"  =>"true",
+                                ],
                                 "model"=>["m_receiving" => ["get_owner",["0"=>'0']],
                                                 "column"  => ["own_id","own_name"]
                                             ],
@@ -118,11 +128,11 @@
             }
         }).data("ui-autocomplete")._renderItem = function (ul, item) {
             return $("<li>")
-                .append('<a>'
-                    + '<table class="table"><tr>'
-                    + '<td style="width:150px">' + item.value + '</td>'
-                    + '<td style="width:40px">' + item.item_package + '</td>'
-                    + '</tr></table></a>')
+                .append("<div class='comment-text'><span class=\"username\"><b>"+
+					item.value+"|"+item.item_code+
+				"</b><span class=\"text-muted pull-right\">"+formatNumeric(item.kemasan)+"</span></span><p>"+
+				"<span>Kategori Item : <span class=\"text-muted pull-right\">"+(item.classification_name)+"</span></span><br>"+
+				"</div>")
                 .appendTo(ul);
         };
 	});
@@ -159,20 +169,22 @@
 
     $('#fm_receiving').on("submit",function(){
         $(this).data("validator").settings.submitHandler = function (form) { 
-            $.blockUI();
-            $.ajax({
-                'type': "post",
-                'data'	: $(form).serialize(),
-                'dataType': 'json',
-                'url': "receiving/save_non_po",
-                'success': function (data) {
-                    $.unblockUI();
-                    alert(data.message);
-                    if (data.code == '200') {
-                        location.reload(true);
+            if (confirm("Simpan data hibah?")) {
+                $.blockUI();
+                $.ajax({
+                    'type': "post",
+                    'data'	: $(form).serialize(),
+                    'dataType': 'json',
+                    'url': "receiving/save_non_po",
+                    'success': function (data) {
+                        $.unblockUI();
+                        alert(data.message);
+                        if (data.code == '200') {
+                            location.reload(true);
+                        }
                     }
-                }
-            });
+                });
+            }
             return false;
         };
 	});
