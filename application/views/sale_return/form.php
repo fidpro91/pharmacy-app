@@ -72,6 +72,8 @@
 	$("body").on("focus", "#patient_norm", function() {
         $(this).autocomplete({
             source: "<?php echo site_url('sale_return/get_no_rm/norm'); ?>",
+			autoFocus: true,
+			minLength:4,
             select: function(event, ui) {
                 $('#patient_norm').val(ui.item.px_norm);
                 $('#patient_name').val(ui.item.px_name);
