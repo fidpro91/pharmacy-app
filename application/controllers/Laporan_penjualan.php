@@ -80,7 +80,7 @@ class Laporan_penjualan extends MY_Generator {
             $this->load->view("laporan_penjualan/v_lap_penjualan_sum_customer",$data);
         }else if($karakteristik == 3){
             $pasien = $this->input->post('px_norm');           
-            $datasale = $this->m_laporan_penjualan->get_sale_by_patient($unit_penjualan,$kepemilikan,$surety,$sale_type,$unit_layanan,$pasien,$date);
+            $datasale = $this->m_laporan_penjualan->get_sale_by_patient($tgl1,$tgl2,$unit_penjualan,$kepemilikan,$surety,$sale_type,$unit_layanan,$pasien,$date);
             $array_data = array();
             foreach ($datasale as $rs) {
                  $array_data[] = array(

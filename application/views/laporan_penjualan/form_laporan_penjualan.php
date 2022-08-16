@@ -110,7 +110,7 @@
 			$('#nama_px').hide();
 			$('#item_name').hide();
 		}
-	})
+	})  
           
     });
 
@@ -217,11 +217,20 @@
           alert("Mohon di isikan tanggal");
           return false;   
         }
+        else if ($('#tipe').val() == 3) {
+		      if ($('#patient').val() == '') {
+            alert('Nama pasien tidak ditemukan');
+            return false;	
+          }  
+			 
+        }
         }); 
 
         $('#form_reset').click(function(){
       	$('#formlaporan').find("input[type='hidden']").val('');
         })
+
+        
     
     <?=$this->config->item('footerJS')?>
 </script>

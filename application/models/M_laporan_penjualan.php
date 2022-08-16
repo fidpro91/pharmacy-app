@@ -327,7 +327,7 @@ class M_laporan_penjualan  extends CI_Model {
                 return $data;
 	}
 
-	public function get_sale_by_patient($unit_penjualan,$kepemilikan,$surety,$sale_type,$unit_layanan,$pasien,$date)
+	public function get_sale_by_patient($tgl1,$tgl2,$unit_penjualan,$kepemilikan,$surety,$sale_type,$unit_layanan,$pasien,$date)
 	{
 
 		if($unit_penjualan !=null){
@@ -346,7 +346,7 @@ class M_laporan_penjualan  extends CI_Model {
 			$layanan = rtrim($all_layanan,','); 
 		 }
 
-		 $where = " ";
+		 $where = "";
 		if (!empty($unit)) {
 			//$this->db->where("a.unit_id in ('$unit')");
 			$where = " a.unit_id in ($unit)";
@@ -363,16 +363,18 @@ class M_laporan_penjualan  extends CI_Model {
 		if (!empty($layanan)) {			
 			$where = "b.unit_id = '$layanan' ";
         } 
+		if($tgl1){
+			$where = "date(sale_date) between '".$tgl1."' and '".$tgl2."'";  
+		}
 		
-		$where .=$date;
+		//$where .=$date;
 		$this->db->where($where,null);
 		$norm=$px_name="";
 		list($norm,$px_name) = explode('-', $pasien); 
 		$data = $this->db->where("a.patient_norm = '$norm' OR lower(a.patient_name) like '%$px_name%'",null)
 						 ->select("to_char(a.date_act,'DD-MM-YYYY HH24:MM:SS') as tgl_sale,(sale_total - COALESCE(sale_total_returned,0))::numeric as grand_total,sale_services::numeric as biaya_racik,a.*,sr.sr_total",false)
 						 ->join('yanmed.services b','a.visit_id = b.visit_id and a.service_id = b.srv_id','left')
-						 ->join("(
-									select sr.sale_id,sum(srd.total_return+sr.sr_embalase+sr.sr_services)::numeric as sr_total
+						 ->join("(  select sr.sale_id,sum(srd.total_return+sr.sr_embalase+sr.sr_services)::numeric as sr_total
 									from farmasi.sale_return sr
 									inner join farmasi.sale_return_detail srd on sr.sr_id = srd.sr_id
 									group by sr.sale_id
