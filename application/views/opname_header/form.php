@@ -71,6 +71,8 @@
 	$("body").on("focus", ".autocom_item_id", function() {
 	    $(this).autocomplete({
             source: "<?php echo site_url('opname_header/get_item/');?>"+$("#unit_id").val()+"/"+$("#own_id").val(),
+			autoFocus: true,
+			minLength:3,
             select: function (event, ui) {
 				$('tr[class*="list_item"]').each(function(i,a){
 					if($(this).find('.item_id').val() == ui.item.item_id ){

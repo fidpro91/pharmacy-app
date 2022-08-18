@@ -22,7 +22,7 @@ class Sale extends MY_Generator
 			'penjualan', 'itemRacik', 'itemNonRacik'
 		]);
 		$this->load->model("m_ms_unit");
-		foreach ($this->m_ms_unit->get_ms_unit() as $key => $value) {
+		foreach ($this->m_ms_unit->get_ms_unit(["employee_id"=>$this->session->employee_id]) as $key => $value) {
 			$kat[$value->unit_id] = $value->unit_name;
 		}
 		$data['unit'] = $kat;
@@ -63,21 +63,33 @@ class Sale extends MY_Generator
 		//insert into farmasi.sale
 		$this->db->insert("farmasi.sale", $input);
 		$saleId = $this->db->query("select currval('public.sale_id_seq')")->row('currval');
+		$saleDetail = [];
 		//nonracikan
-		$nonRacikan['detail'] = array_map(function ($arr) use ($saleId) {
-			return $arr + ['sale_id' => $saleId];
-		}, $nonRacikan['detail']);
-		$saleDetail = $nonRacikan['detail'];
+		if (!empty($nonRacikan)) {
+			$nonRacikan['detail'] = array_map(function ($arr) use ($saleId) {
+				return $arr + ['sale_id' => $saleId];
+			}, $nonRacikan['detail']);
+			$saleDetail = $nonRacikan['detail'];
+		}
 
 		//racikan
 		if (!empty($racikan)) {
 			$racikan['detail'] = array_map(function ($arr) use ($saleId) {
 				return $arr + ['sale_id' => $saleId];
 			}, $racikan['detail']);
-			$saleDetail = array_merge_recursive($nonRacikan['detail'], $racikan['detail']);
+			$saleDetail = array_merge_recursive($saleDetail, $racikan['detail']);
 		}
 
 		//insert sale detail
+		if (empty($saleDetail)) {
+			$resp = [
+				"code" 		=> "203",
+				"message"	=> "Data item tidak ada, mohon melengkapi data item racikan/non racikan"
+			];
+			echo json_encode($resp);
+			exit;
+		}
+
 		$this->db->insert_batch("farmasi.sale_detail", $saleDetail);
 		$err = $this->db->error();
 		if ($this->db->trans_status() === false) {
@@ -416,6 +428,9 @@ class Sale extends MY_Generator
 		$item = "";
 		$header = $this->session->userdata('penjualan');
 		foreach ($post['list_item_racikan'] as $x => $v) {
+			if (empty($v["item_id"])) {
+				continue;
+			}
 			foreach ($this->m_sale_detail->rules() as $key => $value) {
 				if ($key != 'sale_id') {
 					$itemRacik[$x][$key] = (isset($v[$key]) ? $v[$key] : null);

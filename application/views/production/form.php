@@ -16,7 +16,7 @@
     			<?= create_select2([
 					"attr" => ["name" => "unit_id=Unit Farmasi", "id" => "unit_id", "class" => "form-control"],
 					"model" => [
-						"m_ms_unit" => ["get_ms_unit", ["0" => '0']],
+						"m_ms_unit" => ["get_ms_unit", ["employee_id" => $this->session->employee_id]],
 						"column"  => ["unit_id", "unit_name"]
 					]
 				]) ?>
@@ -30,13 +30,6 @@
 					]
 				]) ?>
     			<?= create_textarea("production_note=Keterangan") ?>
-    			<?= create_select2([
-					"attr" => ["name" => "rec_unit_pro=Unit Tujuan", "id" => "rec_unit_pro", "class" => "form-control"],
-					"model" => [
-						"m_ms_unit" => ["get_ms_unit", ["0" => '0']],
-						"column"  => ["unit_id", "unit_name"]
-					]
-				]) ?>
     		</div>
     		<?= form_fieldset_close(); ?>
     		<?= form_fieldset(''); ?>
@@ -125,6 +118,8 @@
     	$(".item_bahan").on("focus", ".autocom_item_id", function() {
     		$(this).autocomplete({
     			source: "<?php echo site_url('Production/get_item'); ?>/" + $("#own_id").val() + "/" + $("#unit_id").val(),
+				autoFocus: true,
+				minLength:3,
     			select: function(event, ui) {
     				$(this).closest('tr').find('.item_id').val(ui.item.item_id);
     				$(this).closest('tr').find('.stok').val(ui.item.total_stock);
@@ -145,9 +140,12 @@
 
     	$(".item_hasil").on("focus", ".autocom_item_id", function() {
     		$(this).autocomplete({
-    			source: "<?php echo site_url('Production/get_item_hasil'); ?>/",
+    			source: "<?php echo site_url('Production/get_item_hasil'); ?>/"+$("#own_id").val(),
+				autoFocus: true,
+				minLength:3,
     			select: function(event, ui) {
     				$(this).closest('tr').find('.item_id').val(ui.item.item_id);
+    				$(this).closest('tr').find('.item_price').val(ui.item.price_sell);
     			}
     		}).data("ui-autocomplete")._renderItem = function(ul, item) {
     			return $("<li>")

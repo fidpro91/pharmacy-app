@@ -89,6 +89,8 @@
     	$("body").on("focus", ".autocom_item_id", function() {
     		$(this).autocomplete({
     			source: "<?php echo site_url('mutation/get_item'); ?>/" + $("#own_id").val() + "/" + $("#unit_sender").val(),
+				autoFocus: true,
+				minLength:3,
     			select: function(event, ui) {
     				$(this).closest('tr').find('.item_id').val(ui.item.item_id);
     				$(this).closest('tr').find('.stock_unit').val(ui.item.total_stock);

@@ -194,6 +194,7 @@
 	    $(this).autocomplete({
             source: "<?php echo site_url('sale/get_item');?>/"+$("#unit_id_depo").val(),
 			autoFocus: true,
+			minLength:3,
             select: function (event, ui) {
 				$('tr[class*="list_obat"]').each(function(i,a){
 					if($(this).find('.item_id').val() == ui.item.item_id ){

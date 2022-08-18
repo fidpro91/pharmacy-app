@@ -25,7 +25,8 @@
                     "attr"         => ["name" => "tipe_patient=Tipe Penjualan", "id" => "tipe_patient", "class" => "form-control"],
                     "option"    => [
                         ["id" => "0", "text" => "APS"], ["id" => "1", "text" => "NON APS"]
-                    ]
+                    ],
+                    "selected" => "1"
                 ]) ?>
                 <?= create_inputDate("sale_date", [
                     "format"        => "yyyy-mm-dd",
@@ -121,11 +122,14 @@
                 $("#"+ind).val(obj).trigger('change');
             });
         }
+        $("#px_norm").focus();
 	});
 
     $("body").on("focus", "#patient_norm", function() {
         $(this).autocomplete({
             source: "<?php echo site_url('sale/get_no_rm/norm'); ?>/"+$("#tipe_patient").val(),
+            autoFocus: true,
+            minLength:4,
             select: function(event, ui) {
                 $('#patient_norm').val(ui.item.px_norm); 
                 $('#patient_name').val(ui.item.px_name);
@@ -180,6 +184,8 @@
     $("body").on("focus", "#patient_name", function() {
         $(this).autocomplete({
             source: "<?php echo site_url('sale/get_no_rm/name'); ?>",
+            autoFocus: true,
+            minLength:4,
             select: function(event, ui) {
                 $('#patient_norm').val(ui.item.px_norm);
                 $('#patient_name').val(ui.item.px_name);

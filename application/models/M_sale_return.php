@@ -89,7 +89,7 @@ class M_sale_return extends CI_Model
 			SELECT mi.item_code,mi.item_name,sd.sale_price::numeric as harga,sd.* FROM farmasi.sale_detail sd
 			JOIN farmasi.sale s on sd.sale_id = s.sale_id
 			JOIN admin.ms_item mi ON sd.item_id = mi.item_id
-			WHERE s.service_id = '$where'
+			WHERE s.service_id = '$where' and coalesce(sd.sale_return,0) < sd.sale_qty
 		")->result();
 	}
 

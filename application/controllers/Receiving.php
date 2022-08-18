@@ -174,6 +174,7 @@ class Receiving extends MY_Generator {
 			$this->db->where("podet_id",$dataPo->podet_id)->update("farmasi.po_detail",[
 				"po_qtyreceived"=>($detail[$x]['qty_unit']+$dataPo->po_qtyreceived)
 			]);
+			
 			//insert stock
 			$stockku[$x]["recdet_id"] = $recdetid;
 			$stockku[$x]["unit_id"] = $data['receiver_unit'];
