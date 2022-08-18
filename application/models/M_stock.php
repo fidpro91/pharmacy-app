@@ -103,7 +103,7 @@ class M_stock extends CI_Model {
 			json_agg((so.unit_id,so.stock_summary))detail
 			FROM admin.ms_item mi
 			LEFT JOIN newfarmasi.stock so ON mi.item_id = so.item_id and so.own_id = '$own_id'
-			WHERE comodity_id = 1 AND item_active = 't' 
+			WHERE comodity_id in (1,2)
 			GROUP BY mi.item_id,mi.item_code,mi.item_unitofitem
 			ORDER BY mi.item_name
 		")->result();

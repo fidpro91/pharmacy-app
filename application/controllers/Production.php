@@ -259,13 +259,15 @@ class Production extends MY_Generator {
 				   AND sf.own_id = '$own_id' AND sf.unit_id='$unit_id'";
 		echo json_encode($this->m_stock_fifo->get_stock_item($where));
 	}
-	public function get_item_hasil()
+	public function get_item_hasil($own_id=0)
 	{
 		$term = $this->input->get('term',true); 
 		
 		$where = " AND lower(mi.item_name) like lower('%$term%') and classification_id in (1,175,162)";
-		$data=$this->db->query("SELECT mi.item_id,mi.item_code,mi.item_name as value from farmasi.v_obat mi				
-				where 0=0 $where")->result();
+		$data=$this->db->query("
+				SELECT mi.item_id,mi.item_code,mi.item_name as value,p.price_sell::numeric from farmasi.v_obat mi	
+				left join farmasi.price p on mi.item_id = p.item_id and p.own_id = '$own_id'	
+		where 0=0 $where")->result();
 	
 		echo json_encode($data);
 	}

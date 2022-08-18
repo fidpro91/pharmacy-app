@@ -6,21 +6,21 @@ class M_mutation extends CI_Model {
 	{
 		$data = $this->db->query("
 		select ".implode(',', $aColumns)." ,
-		id_key from (SELECT
-		mutation_date,
-		mutation_no,
-		mutation_status,
-		u1.unit_name AS unit_minta,
-		u2.unit_name AS unit_tujuan,
-		own_name ,bon_no,
-		mutation_id as id_key
-	FROM
-		newfarmasi.mutation M
-	left join admin.ms_unit u1 on m.unit_require = u1.unit_id
-	left join admin.ms_unit u2 on m.unit_sender = u2.unit_id
-	left join farmasi.ownership o on m.own_id = o.own_id
-	 where 0=0  $sWhere $sOrder $sLimit ) x
-			")->result_array();
+			id_key from (SELECT
+			mutation_date,
+			mutation_no,
+			mutation_status,
+			u1.unit_name AS unit_minta,
+			u2.unit_name AS unit_tujuan,
+			own_name ,bon_no,
+			mutation_id as id_key
+		FROM
+			newfarmasi.mutation M
+		left join admin.ms_unit u1 on m.unit_require = u1.unit_id
+		left join admin.ms_unit u2 on m.unit_sender = u2.unit_id
+		left join farmasi.ownership o on m.own_id = o.own_id
+		where m.mutation_status != 1  $sWhere $sOrder $sLimit ) x
+		")->result_array();
 		return $data;
 	}
 
@@ -28,20 +28,20 @@ class M_mutation extends CI_Model {
 	{
 		$data = $this->db->query("
 		select ".implode(',', $aColumns)." ,
-		id_key from (SELECT
-		mutation_date,
-		mutation_no,
-		mutation_status,
-		u1.unit_name AS unit_minta,
-		u2.unit_name AS unit_tujuan,
-		own_name ,bon_no,
-		mutation_id as id_key
-	FROM
-		newfarmasi.mutation M
-	left join admin.ms_unit u1 on m.unit_require = u1.unit_id
-	left join admin.ms_unit u2 on m.unit_sender = u2.unit_id
-	left join farmasi.ownership o on m.own_id = o.own_id
-	 where 0=0 $sWhere) x
+			id_key from (SELECT
+			mutation_date,
+			mutation_no,
+			mutation_status,
+			u1.unit_name AS unit_minta,
+			u2.unit_name AS unit_tujuan,
+			own_name ,bon_no,
+			mutation_id as id_key
+		FROM
+			newfarmasi.mutation M
+		left join admin.ms_unit u1 on m.unit_require = u1.unit_id
+		left join admin.ms_unit u2 on m.unit_sender = u2.unit_id
+		left join farmasi.ownership o on m.own_id = o.own_id
+		where m.mutation_status != 1 $sWhere) x
 			")->num_rows();
 		return $data;
 	}

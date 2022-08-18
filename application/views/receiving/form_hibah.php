@@ -127,6 +127,7 @@
                 $(this).closest('tr').find('.item_id').val(ui.item.item_id);
                 $(this).closest('tr').find('.item_pack').val(ui.item.item_package);
                 $(this).closest('tr').find('.item_unit').val(ui.item.item_unitofitem);
+                $(this).closest('tr').find('.price_item').val(ui.item.price_sell);
             }
         }).data("ui-autocomplete")._renderItem = function (ul, item) {
             return $("<li>")
