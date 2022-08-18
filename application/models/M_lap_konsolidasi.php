@@ -12,6 +12,13 @@ class M_lap_konsolidasi  extends CI_Model {
 	}
     public function get_new_konsolidasi($where,$where2,$unit,$kepemilikan)
     {
+        if(!empty($unit)){
+            $unit = "AND s.unit_id = $unit";
+
+        }
+        if(!empty($kepemilikan)){
+            $kepemilikan = "AND s.own_id = $kepemilikan";
+        }
        $data =  $this->db->query("SELECT vo.item_code,vo.item_name,ow.own_name,coalesce(y.stock_awal,0)stock_awal,coalesce(y.harga_awal,0)harga_awal,s.item_id,s.own_id,s.unit_id,(p.price_buy)::numeric harga,(coalesce(x.masuk,0))masuk,(coalesce(x.keluar,0))keluar,coalesce(z.stock_op,0)stock_op,coalesce(z.harga_so,0)harga_so FROM farmasi.stock s
             INNER JOIN farmasi.v_obat vo on vo.item_id = s.item_id
             INNER JOIN farmasi.ownership ow ON s.own_id = ow.own_id
@@ -34,8 +41,8 @@ class M_lap_konsolidasi  extends CI_Model {
                 WHERE sp.trans_type != 5 $where
                 GROUP BY sp.item_id,sp.own_id,sp.unit_id
             )x ON s.item_id = x.item_id AND s.own_id = x.own_id AND s.unit_id = x.unit_id
-            where s.unit_id = $unit AND s.own_id = $kepemilikan
-            order by vo.item_name")->result();
+            where 0=0 $unit $kepemilikan
+            order by vo.item_name asc")->result();
        
         return $data;
     }
