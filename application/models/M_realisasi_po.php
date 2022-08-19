@@ -2,6 +2,7 @@
 class M_realisasi_po extends CI_Model {
 
 	public static $schemaFarmasi= "farmasi.";
+    public static $schemaNewFarmasi= "newfarmasi.";
 	public static $schemaAdmin 	= "admin.";
 
 	public function get_profil_rs()
@@ -57,7 +58,7 @@ class M_realisasi_po extends CI_Model {
         $sql    = "SELECT 
                         *
                     FROM 
-                    ".self::$schemaFarmasi."v_po_receiving vpr
+                    ".self::$schemaNewFarmasi."v_po_receiving_new vpr
                     where vpr.po_id     = $id";
         $result = $this->db->query($sql)->result();
 
