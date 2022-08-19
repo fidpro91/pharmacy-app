@@ -53,7 +53,7 @@ class M_ms_supplier extends CI_Model {
 		return $this->form_validation->run();
 	}
 
-	public function get_ms_supplier($where)
+	public function get_ms_supplier($where=[0=>0])
 	{
 		return $this->db->get_where("admin.ms_supplier",$where)->result();
 	}
