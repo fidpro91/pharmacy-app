@@ -14,7 +14,7 @@ class Laporan_konsolidasi extends MY_Generator {
 	{
 		
 	    $data['data'] = [];		
-		$this->theme('Laporan_konsolidasi/laporan_konsolidasi_form',$data);
+		$this->theme('laporan_konsolidasi/laporan_konsolidasi_form',$data);
 	} 
 
     public function show_laporan()

@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class laporan_produksi extends MY_Generator {
+class Laporan_produksi extends MY_Generator {
 
 	public function __construct()
 	{
