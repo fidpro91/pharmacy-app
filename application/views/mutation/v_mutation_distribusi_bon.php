@@ -104,9 +104,9 @@
       $("#modal_distribusi").find(".modal-body").load("distribusi_bon/show_form/"+id);
     }
 
-    function deleteRow(id) {
-      if (confirm("Anda yakin akan menghapus data ini?")) {
-          $.get('Distribusi_bon/delete_row/'+id,(data)=>{
+    function batal_mutasi(id) {
+      if (confirm("Batalkan pengiriman item?")) {
+          $.get('Distribusi_bon/batal_mutation/'+id,(data)=>{
             alert(data.message);
             location.reload();
         },'json');

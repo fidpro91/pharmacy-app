@@ -17,7 +17,7 @@
     <div class="box">
       <?= $this->session->flashdata('message') ?>
       <div class="box-header with-border">
-        <h3 class="box-title">Form Mutation</h3>
+        <h3 class="box-title">Form Retur</h3>
         <div class="box-tools pull-right">
           <button type="button" id="btn-add" class="btn btn-primary">
             <i class="fa fa-plus"></i> Add</button>
@@ -42,7 +42,7 @@
           <?= create_select2([
             "attr" => ["name" => "filter_unit=Unit Pengirim", "id" => "filter_unit", "class" => "form-control"],
             "model" => [
-              "m_ms_unit" => ["get_ms_unit_all", [0]],
+              "m_ms_unit" => ["get_ms_unit", ["employee_id"=>$this->session->employee_id]],
               "column"  => ["unit_id", "unit_name"]
             ],
           ]) ?>
@@ -75,7 +75,8 @@
         "url": "<?php echo site_url('mutation/get_data') ?>",
         "type": "POST",
         "data": function(f) {
-          f.unit = $("#filter_unit").val();
+          f.unit_sender = $("#filter_unit").val();
+          f.unit = 55;
           f.bulan = $("#filter_bulan").val();
         }
       },
@@ -108,7 +109,7 @@
   });
   $("#btn-add").click(function() {
     $("#form_mutation").show();
-    $("#form_mutation").load("mutation/show_form");
+    $("#form_mutation").load("<?=site_url()?>mutation/show_form_retur");
   });
 
   function set_val(id) {
@@ -117,9 +118,9 @@
       'async': false,
       'type': "GET",
       'dataType': 'json',
-      'url': 'mutation/find_one/' + id,
+      'url': '<?=site_url()?>mutation/find_one/' + id,
       'success': function(data) {
-        $("#form_mutation").load("mutation/show_form", () => {
+        $("#form_mutation").load("<?=site_url()?>mutation/show_form_retur", () => {
           $.each(data, (ind, obj) => {
             $("#" + ind).val(obj);
           });
@@ -131,7 +132,7 @@
 
   function deleteRow(id) {
     if (confirm("Anda yakin akan menghapus data ini?")) {
-      $.get('mutation/delete_row/' + id, (data) => {
+      $.get('<?=site_url()?>mutation/delete_row/' + id, (data) => {
         alert(data.message);
         location.reload();
       }, 'json');
@@ -156,7 +157,7 @@
       return false;
     }
     if (confirm("Anda yakin akan menghapus data ini?")) {
-      $.post('mutation/delete_multi', {
+      $.post('<?=site_url()?>mutation/delete_multi', {
         data: searchIDs
       }, (resp) => {
         alert(resp.message);

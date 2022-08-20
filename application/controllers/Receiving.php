@@ -32,6 +32,7 @@ class Receiving extends MY_Generator {
 			$input['po_ppn'] 	= $data['ppn'];
 			$input['own_id'] 	= $dataPo->own_id;
 			$this->db->trans_begin();
+			
 			if ($data['rec_id']) {
 				$this->remove_data_recdet($data['rec_id']);
 				$this->db->where('rec_id',$data['rec_id'])->update('newfarmasi.receiving',$input);
@@ -39,8 +40,20 @@ class Receiving extends MY_Generator {
 				$this->db->insert('newfarmasi.receiving',$input);
 				$data['rec_id'] = $this->db->insert_id();
 			}
+
 			$data['own_id'] = $dataPo->own_id;
-			$sukses=$this->insert_recdet($data);		
+			$sukses=$this->insert_recdet($data);
+			$poComplete=$this->db->where("(po_qtyreceived != po_qty_unit)",null)
+								 ->get_where("farmasi.po",[
+									"po_id" => $dataPo->po_id
+								 ])->num_rows();
+
+			if ($poComplete === 0) {
+				$this->db->where("po_id",$dataPo->po_id)->update("farmasi.po",[
+					"po_status"	=> 1
+				]);
+			}
+
 			$err = $this->db->error();
 			if ($err['message'] || $sukses === false) {
 				$this->db->trans_rollback();
