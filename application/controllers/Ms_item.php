@@ -61,19 +61,28 @@ class Ms_item extends MY_Generator {
 	{
 		$this->load->model("m_ms_item");
 		$data = $this->m_ms_item->get_column_multiple();
-		foreach ($data as $key => $value) {
-			if ($value=='own_id') {
+		$colauto=["own_id"=>"Kepemilikan"];
+		$labelprice=["price_buy"=>"Harga Beli"];
+		$labelsell=["price_sell"=>"Harga Jual"];
+		foreach ($data as $key => $value) { 
+			if (array_key_exists($value, $colauto)) {
 				$row[] = [
 					"id" => $value,
-					"label" => $value,
+					"label" => $colauto[$value],
 					"type" => 'select',
 					"width" => '40%',
 					"data" => $this->m_ms_item->get_own("own_id as id,own_name as text")
 				];
-			}else{
+			}else if(array_key_exists($value, $labelprice)){
 				$row[] = [
 					"id" => $value,
-					"label" => ucwords(str_replace('_', ' ', $value)),
+					"label" => ucwords(str_replace('_', ' ', $labelprice[$value])),
+					"type" => 'text'
+				];
+			}else if(array_key_exists($value, $labelsell)){
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $labelsell[$value])),
 					"type" => 'text'
 				];
 			}

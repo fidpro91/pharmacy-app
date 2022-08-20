@@ -26,7 +26,7 @@
 			</div>
 			<div class="col-md-3">
 
-				<?=create_input("qty_packtounit")?>
+				<?=create_input("qty_packtounit=satuan pack ke unit")?>
 			<?= create_select([
 					"attr" => ["name" => "is_generic=Jenis Obat", "id" => "is_generic", "class" => "form-control", 'required' => true],
 					"option" => [["id" => 't', "text" => "Generik"], ["id" => 'f', "text" => "Paten(Nama Dagang)"]],

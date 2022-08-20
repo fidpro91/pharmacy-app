@@ -22,16 +22,16 @@ class Laporan_konsolidasi extends MY_Generator {
         $tgl = $this->input->post(); 
 		list($tgl1,$tgl2) = explode('/', $tgl['tanggal']);
         $unit = $this->input->post('unit_name');
-        $kepemilikan = $this->input->post('kepemilikan');       
+        $kepemilikan = $this->input->post('kepemilikan');      
         $tampilkan = $this->input->post('tampil');
         $where = "";
         $where2 = " ";
         $where2 .= " AND (date(sp.date_trans) between '".$tgl1."' and '".$tgl2."')";
         
-        if($unit !==null){
+        if(!empty($unit)){
             $where .= " AND sp.unit_id = $unit";
         }
-        if($kepemilikan !=null){            
+        if(!empty($kepemilikan)){            
             $where .= " AND sp.own_id = $kepemilikan";
         }
         // if ($gol=="0") {
