@@ -78,6 +78,7 @@ class Receiving_retur extends MY_Generator {
 		$data = $this->m_receiving_retur_detil->get_column_multiple();
 		$colauto = ["item_id"=>"Nama Barang"];
 		$readOnly = ["rrd_price","qty_terima","stock_saldo","supplier","id_penerimaan"];
+		
 		foreach ($data as $key => $value) {
 			if (array_key_exists($value, $colauto)) {
 				$row[] = [
