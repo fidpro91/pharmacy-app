@@ -44,45 +44,56 @@
       </a>
 
       <div class="navbar-custom-menu">
+        
+        <script>
+            $(document).ready(()=>{
+              $.get("<?=site_url("dashboard/get_notif_permintaan")?>",function(resp){
+                $(".num_permintaan").text(resp.jumlah);
+                $(".notif_permintaan").text(resp.pesan);
+                $(".notif_list_permintaan").html(resp.list_data);
+              },"json");
+
+              $.get("<?=site_url("dashboard/get_notif_penerimaan")?>",function(resp){
+                $(".num_penerimaan").text(resp.jumlah);
+                $(".notif_penerimaan").text(resp.pesan);
+                $(".notif_list_penerimaan").html(resp.list_data);
+              },"json");
+            })
+          </script>
         <ul class="nav navbar-nav">
           <!-- Messages: style can be found in dropdown.less-->
-          <li class="dropdown messages-menu">
+          <li class="dropdown tasks-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-envelope-o"></i>
-              <span class="label label-success">4</span>
+              <i class="fa fa-upload"></i>
+              <span class="label label-warning num_permintaan">4</span>
             </a>
             <ul class="dropdown-menu">
-              <li class="header">You have 4 messages</li>
-              <li>
+              <li class="header notif_permintaan">You have 4 messages</li>
+              <li class="notif_list_permintaan">
                 <!-- inner menu: contains the actual data -->
                 <ul class="menu">
-                  <li><!-- start message -->
+                  <li>
                     <a href="#">
-                      <div class="pull-left">
-                        <img src="<?=base_url()?>assets/images/img/user2-160x160.jpg" class="img-circle" alt="User Image">
-                      </div>
-                      <h4>
-                        Support Team
-                        <small><i class="fa fa-clock-o"></i> 5 mins</small>
-                      </h4>
-                      <p>Why not buy a new awesome theme?</p>
+                      <h3>
+                        Design some buttons
+                        <small class="pull-right">20%</small>
+                      </h3>
                     </a>
                   </li>
-                  <!-- end message -->
                 </ul>
               </li>
-              <li class="footer"><a href="#">See All Messages</a></li>
+              <li class="footer"><a href="<?=site_url("distribusi_bon")?>">See All Messages</a></li>
             </ul>
           </li>
           <!-- Notifications: style can be found in dropdown.less -->
-          <li class="dropdown notifications-menu">
+          <li class="dropdown tasks-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-bell-o"></i>
-              <span class="label label-warning">10</span>
+              <i class="fa fa-download"></i>
+              <span class="label label-success num_penerimaan">10</span>
             </a>
             <ul class="dropdown-menu">
-              <li class="header">You have 10 notifications</li>
-              <li>
+              <li class="header notif_penerimaan">You have 10 notifications</li>
+              <li class="notif_list_penerimaan">
                 <!-- inner menu: contains the actual data -->
                 <ul class="menu">
                   <li>
@@ -92,14 +103,14 @@
                   </li>
                 </ul>
               </li>
-              <li class="footer"><a href="#">View all</a></li>
+              <li class="footer"><a href="<?=site_url("distribusi_bon")?>">View all</a></li>
             </ul>
           </li>
           <!-- Tasks: style can be found in dropdown.less -->
           <li class="dropdown tasks-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <i class="fa fa-flag-o"></i>
-              <span class="label label-danger">9</span>
+              <!-- <span class="label label-danger">9</span> -->
             </a>
             <ul class="dropdown-menu">
               <li class="header">You have 9 tasks</li>

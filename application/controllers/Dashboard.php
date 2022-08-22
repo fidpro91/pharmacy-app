@@ -57,4 +57,60 @@ class Dashboard extends MY_Generator {
 
         $this->load->view("dashboard/dashbord_by_unit",$data);
     }
+
+    public function get_notif_permintaan()
+    {
+        $data = $this->db->join("admin.ms_unit mu","mu.unit_id = m.unit_require")
+                         ->get_where("newfarmasi.mutation m",[
+                            "mutation_status"   => 1,
+                         ]);
+        $list = "<ul class=\"menu\">";
+        foreach ($data->result() as $key => $value) {
+            $list .= '<li>
+                <a href="'.site_url("distribusi_bon").'">
+                <h3>
+                    '.$value->unit_name.'
+                    <small class="pull-right">'.$value->bon_no.'</small>
+                </h3>
+                </a>
+            </li>';
+        }
+        $list .= "</ul>";
+        $num = $data->num_rows();
+        $resp = [
+            "jumlah"        => $num,
+            "pesan"         => "Anda memilik $num permintaan",
+            "list_data"     => $list,
+        ];
+        echo json_encode($resp);
+    }
+
+    public function get_notif_penerimaan()
+    {
+        $data = $this->db->join("admin.ms_unit mu","mu.unit_id = m.unit_require")
+                         ->get_where("newfarmasi.mutation m",[
+                            "mutation_status"   => 2,
+                         ]);
+        $list = "<ul class=\"menu\">";
+        foreach ($data->result() as $key => $value) {
+            $list .= '<li>
+                <a href="'.site_url("bon_mutation").'">
+                <h3>
+                    '.$value->unit_name.'
+                    <small class="pull-right">'.$value->mutation_no.'</small>
+                </h3>
+                </a>
+            </li>';
+        }
+
+        $list .= "</ul>";
+        $num = $data->num_rows();
+        $resp = [
+            "jumlah"        => $num,
+            "pesan"         => "Anda memilik $num item dikirim",
+            "list_data"     => $list,
+        ];
+
+        echo json_encode($resp);
+    }
 }
