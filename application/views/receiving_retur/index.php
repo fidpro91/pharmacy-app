@@ -26,7 +26,20 @@
       <div class="box-body" id="form_receiving_retur" style="display: none;">
       </div>
       <div class="box-body" id="data_receiving_retur">
+      <div class="col-md-3">
+            <?=create_inputDate("filter_bulan=Filter Retur",[
+                "format"		=>"mm-yyyy",
+                "viewMode"		=> "year",
+                "minViewMode"	=> "year",
+                "autoclose"		=>true],[
+                  "value"     => date('m-Y'),
+                  "readonly"  => true
+                ])
+            ?>
+        </div>
+        <div class = "col-md-12">
         <?= create_table("tb_receiving_retur", "M_receiving_retur", ["class" => "table table-bordered", "style" => "width:100% !important;"]) ?>
+                </div>
       </div>
       <div class="box-footer">
         <button class="btn btn-danger" id="btn-deleteChecked"><i class="fa fa-trash"></i> Delete</button>
@@ -50,7 +63,10 @@
       "scrollX": true,
       "ajax": {
         "url": "<?php echo site_url('receiving_retur/get_data') ?>",
-        "type": "POST"
+        "type": "POST",
+        "data": function(f) {        
+            f.bulan = $("#filter_bulan").val();           
+        }
       },
       'columnDefs': [{
           'targets': [0, 1, -1],
@@ -66,6 +82,9 @@
         }
       ],
     });
+    $("#filter_bulan").change(() => {
+			table.draw();
+		});
   });
   $("#btn-add").click(function() {
     dataRetur = null;
@@ -141,4 +160,5 @@
   //   var top = ($(window).height() / 2) - (400 / 2);
   //   window.open(url, "", "width=1000,height=500,scrollbars=yes");
   // }
+  <?=$this->config->item('footerJS')?>
 </script>
