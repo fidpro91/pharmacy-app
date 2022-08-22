@@ -77,6 +77,7 @@ class Receiving_retur extends MY_Generator {
 		$this->load->model("m_receiving_retur_detil");
 		$data = $this->m_receiving_retur_detil->get_column_multiple();
 		$colauto = ["item_id"=>"Nama Barang"];
+		$retur = ["rrd_qty"=>"Jml Retur"];
 		$readOnly = ["rrd_price","qty_terima","stock_saldo","supplier","id_penerimaan"];
 		foreach ($data as $key => $value) {
 			if (array_key_exists($value, $colauto)) {
@@ -85,6 +86,13 @@ class Receiving_retur extends MY_Generator {
 					"label" => $colauto[$value],
 					"type" => 'autocomplete',
 					"width" => '25%',
+				];
+			}elseif(array_key_exists($value, $retur)) {
+				$row[] = [
+					"id" => $value,
+					"label" => $retur[$value],
+					"type" => 'autocomplete',
+					"width" => '10%',
 				];
 			}elseif(in_array($value,$readOnly)){
 				$row[] = [
@@ -118,7 +126,8 @@ class Receiving_retur extends MY_Generator {
 		$this->load->library('datatable');
 		$attr 	= $this->input->post();
 		$fields = $this->m_receiving_retur->get_column();
-		$data 	= $this->datatable->get_data($fields,$filter = array(),'m_receiving_retur',$attr);
+		$filter['custom'] = "to_char(rr_date,'MM-YYYY') = '".$attr['bulan']."'";
+		$data 	= $this->datatable->get_data($fields,$filter,'m_receiving_retur',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
         foreach ($data['dataku'] as $index=>$row) { 

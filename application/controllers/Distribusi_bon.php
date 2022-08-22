@@ -414,4 +414,35 @@ class Distribusi_bon extends MY_Generator {
 		$data['dataBon'] 	= $this->m_mutation->get_databon(["mutation_id"=>$id]);
 		$this->load->view("mutation/form_distribusi_bon",$data);
 	}
+
+	public function cetak_struk($id)
+	{
+		$session 	= $this->session->userdata('login');
+		$data['username']  =  $this->session->user_name;
+		$this->load->model('m_profil');
+		$data['data'] = $this->m_profil->get_data();
+
+		$sLimit = "";
+		$sWhere = "AND mutation_id = '" . $id . "' ";
+		$sOrder = "";
+
+		$aColumns 	= array(
+			"b.bon_id",
+			"to_char(b.bon_date, 'DD-MM-YYYY') bon_date",
+			"b.bon_no",
+			"v.unit_name as asal",
+			"vt.unit_name as tujuan",
+			"o.own_name",
+			"b.bon_status",
+			"b.unit_id",
+			"b.unit_target",
+			"b.own_id",
+			"b.user_id"
+		);
+		$profilrs = $this->m_profil->get_data();
+
+		$data['DataUnit'] = $this->m_mutation->get_data_m($sLimit, $sWhere, $sOrder, $aColumns);
+		$data['DataDetail'] = $this->m_mutation->get_permintaan_detail($id);
+		$this->load->view("mutation/cetakdistribusibon", $data);
+	}
 }

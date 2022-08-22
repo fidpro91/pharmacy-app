@@ -5,7 +5,9 @@ class M_receiving_retur extends CI_Model {
 	public function get_data($sLimit,$sWhere,$sOrder,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).",rr_id as id_key  from newfarmasi.receiving_retur where 0=0 $sWhere $sOrder $sLimit
+				select ".implode(',', $aColumns).",rr_id as id_key  from newfarmasi.receiving_retur rr
+				LEFT JOIN ADMIN.ms_unit u ON rr.unit_id = u.unit_id
+				where 0=0 $sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
 	}
@@ -13,7 +15,9 @@ class M_receiving_retur extends CI_Model {
 	public function get_total($sWhere,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).",rr_id as id_key  from newfarmasi.receiving_retur where 0=0 $sWhere
+				select ".implode(',', $aColumns).",rr_id as id_key  from newfarmasi.receiving_retur rr
+				LEFT JOIN ADMIN.ms_unit u ON rr.unit_id = u.unit_id
+				where 0=0 $sWhere
 			")->num_rows();
 		return $data;
 	}
@@ -21,12 +25,31 @@ class M_receiving_retur extends CI_Model {
 	public function get_column()
 	{
 		$col = [
-				"rr_date",
-				"num_retur",
+				"rr_date"=>["label"=>"Tanggal Retur"],
+				"num_retur"=>["label"=>"No.Retur"],
 				// "rr_id",
-				"rr_status",
-				"rr_type",
-				"user_id",
+				"rr_status"=>["label"=>"status",
+							  "custom"=> function ($s){
+								if($s == 't'){
+								$tampil = ["class"=>"label-success","text"=>"Selesai"];
+								}else{
+								$tampil = ["class"=>"label-danger","text"=>"Belum"];
+								}
+								return label_status($tampil);
+							  }
+							],
+				"rr_type"=>["label"=>"Tipe Retur",
+							"custom"=> function ($s){
+							if($s == '1'){
+							$tampil = ["class"=>"label-primary","text"=>"Kembali Uang"];
+							}else{
+							$tampil = ["class"=>"label-warning","text"=>"Kembali Barang"];
+							}
+							return label_status($tampil);
+							}
+						],
+				"unit_name"=>["label"=>"Unit"],
+				//"user_id",
 			];
 		return $col;
 	}
