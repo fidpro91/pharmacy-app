@@ -110,7 +110,12 @@ class Mutation extends MY_Generator {
 		}else{
 			$this->session->set_flashdata('message',validation_errors('<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>','</div>'));
 		}
-		redirect('mutation');
+		
+		if ($input["unit_require"] == 55) {
+			redirect('mutation/retur_item');
+		}else{
+			redirect('mutation');
+		}
 
 	}
 
