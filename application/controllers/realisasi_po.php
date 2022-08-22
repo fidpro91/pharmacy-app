@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class realisasi_po extends MY_Generator {
+class Realisasi_po extends MY_Generator {
 
 	public function __construct()
 	{
