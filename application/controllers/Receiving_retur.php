@@ -77,7 +77,6 @@ class Receiving_retur extends MY_Generator {
 		$this->load->model("m_receiving_retur_detil");
 		$data = $this->m_receiving_retur_detil->get_column_multiple();
 		$colauto = ["item_id"=>"Nama Barang"];
-		$retur = ["rrd_qty"=>"Jml Retur"];
 		$readOnly = ["rrd_price","qty_terima","stock_saldo","supplier","id_penerimaan"];
 		foreach ($data as $key => $value) {
 			if (array_key_exists($value, $colauto)) {
@@ -86,13 +85,6 @@ class Receiving_retur extends MY_Generator {
 					"label" => $colauto[$value],
 					"type" => 'autocomplete',
 					"width" => '25%',
-				];
-			}elseif(array_key_exists($value, $retur)) {
-				$row[] = [
-					"id" => $value,
-					"label" => $retur[$value],
-					"type" => 'autocomplete',
-					"width" => '10%',
 				];
 			}elseif(in_array($value,$readOnly)){
 				$row[] = [
