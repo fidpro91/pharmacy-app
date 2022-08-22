@@ -5,21 +5,14 @@ class M_mutation extends CI_Model {
 	public function get_data($sLimit,$sWhere,$sOrder,$aColumns)
 	{
 		$data = $this->db->query("
-		select ".implode(',', $aColumns)." ,
-			id_key from (SELECT
-			mutation_date,
-			mutation_no,
-			mutation_status,
-			u1.unit_name AS unit_minta,
-			u2.unit_name AS unit_tujuan,
-			own_name ,bon_no,
-			mutation_id as id_key
+		SELECT
+		".implode(',', $aColumns)." ,mutation_id as id_key
 		FROM
 			newfarmasi.mutation M
 		left join admin.ms_unit u1 on m.unit_require = u1.unit_id
 		left join admin.ms_unit u2 on m.unit_sender = u2.unit_id
 		left join farmasi.ownership o on m.own_id = o.own_id
-		where m.mutation_status != 1  $sWhere $sOrder $sLimit ) x
+		where 0=0 $sWhere $sOrder $sLimit
 		")->result_array();
 		return $data;
 	}
@@ -27,22 +20,15 @@ class M_mutation extends CI_Model {
 	public function get_total($sWhere,$aColumns)
 	{
 		$data = $this->db->query("
-		select ".implode(',', $aColumns)." ,
-			id_key from (SELECT
-			mutation_date,
-			mutation_no,
-			mutation_status,
-			u1.unit_name AS unit_minta,
-			u2.unit_name AS unit_tujuan,
-			own_name ,bon_no,
-			mutation_id as id_key
+		SELECT
+		".implode(',', $aColumns)." ,mutation_id as id_key
 		FROM
 			newfarmasi.mutation M
 		left join admin.ms_unit u1 on m.unit_require = u1.unit_id
 		left join admin.ms_unit u2 on m.unit_sender = u2.unit_id
 		left join farmasi.ownership o on m.own_id = o.own_id
-		where m.mutation_status != 1 $sWhere) x
-			")->num_rows();
+		where 0=0 $sWhere
+		")->num_rows();
 		return $data;
 	}
 
@@ -50,14 +36,22 @@ class M_mutation extends CI_Model {
 	{
 		$col = [
 				//"mutation_id",
-				"mutation_date"=>["label"=>"Tgl.Mutasi"],
+				"mutation_date"=>["label"=>"Tgl. Mutasi"],
 				//"mutation_date_act",
 				//"user_require",				
 				"mutation_no"=>["label"=>"No.Mutasi"],
 				//"user_sender",
 				//"user_receiver",				
-				"unit_minta",
-				"unit_tujuan",
+				"unit_require" => [
+					"label" 	=> "unit minta",
+					"initial" 	=> "u1",
+					"field" 	=> "unit_name",
+				],
+				"unit_sender" => [
+					"label" 	=> "unit pengirim",
+					"initial" 	=> "u2",
+					"field" 	=> "unit_name",
+				],
 				"mutation_status"=>[
 					"label" => "Status",
 					"custom" => function ($a) {
@@ -84,7 +78,7 @@ class M_mutation extends CI_Model {
 				"bon_no"=>
 				[
 					"label"	=>"Nomor",
-					"field"	=> "coalesce(bon_no,mutation_no) as bon_no"
+					"field"	=> "coalesce(bon_no,mutation_no)"
 				],
 				//"mutation_id",
 				"mutation_date"=>["label"=>"Tgl. Mutasi"],
@@ -106,8 +100,16 @@ class M_mutation extends CI_Model {
 				] ,
 				// "user_sender",
 				// "user_receiver",
-				"unit_minta",
-				"unit_tujuan"
+				"unit_require" => [
+					"label" 	=> "unit minta",
+					"initial" 	=> "u1",
+					"field" 	=> "unit_name",
+				],
+				"unit_sender" => [
+					"label" 	=> "unit pengirim",
+					"initial" 	=> "u2",
+					"field" 	=> "unit_name",
+				]
 			];
 		return $col;
 	}

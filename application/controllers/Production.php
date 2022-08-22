@@ -71,6 +71,7 @@ class Production extends MY_Generator {
 			$this->db->insert("newfarmasi.production_indetail",$detail[$x]);
 		$sukses=true;
 		}
+		return $sukses;
 	}
 	public function insert_hasil($data)
 	{
@@ -85,8 +86,16 @@ class Production extends MY_Generator {
 			}
 			$detail[$x]['production_id'] 	= $data['production_id'];
 			$this->db->insert("newfarmasi.production_outdetail",$detail[$x]);
-		$sukses=true;
+			$this->db->where([
+				"item_id"	=> $value["item_id"],
+				"own_id"	=> $data["own_id"],
+			])->update("farmasi.price",[
+				"price_sell"	=> $value["item_price"],
+				"price_buy"		=> $value["item_price"],
+			]);
+			$sukses=true;
 		}
+		return $sukses;
 	}
 
 
@@ -165,8 +174,8 @@ class Production extends MY_Generator {
 		$this->db->trans_begin();
 		$resp = array();
 		foreach ($this->input->post('data') as $key => $value) {
-			$this->db->where('production_id',$id)->delete("newfarmasi.production_indetail");
-			$this->db->where('production_id',$id)->delete("newfarmasi.production_outdetail");
+			$this->db->where('production_id',$value)->delete("newfarmasi.production_indetail");
+			$this->db->where('production_id',$value)->delete("newfarmasi.production_outdetail");
 			$this->db->where('production_id',$value)->delete("newfarmasi.production");
 			$err = $this->db->error();
 			if ($err['message']) {

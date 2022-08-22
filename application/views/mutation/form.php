@@ -33,6 +33,7 @@
 				"column"  => ["unit_id", "unit_name"]
 			]
 		]) ?>
+		<?=create_textarea("mutation_note=keterangan")?>
     	<div class="list_item">
     	</div>
     	<?= form_close() ?>

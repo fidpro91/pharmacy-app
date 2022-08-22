@@ -406,7 +406,7 @@ class Bon_mutation extends MY_Generator {
 			$dataku["debet"] 		= $dataku["qty"];
 			$dataku["stock_after"] 	= $dataku["qty"]+$stockAwal;
 			$dataku["total_price"] 	= ($harga*$dataku["qty"]);
-			$dataku["description"] 	= "Mutasi masuk No : ".$dataku["mutation_no"];
+			$dataku["description"] 	= "Mutasi masuk No : ".$dataku["trans_num"];
 			unset($dataku["qty"]);
 		}else{
 			$this->load->model("m_stock_process");
@@ -427,7 +427,7 @@ class Bon_mutation extends MY_Generator {
 			$dataku["debet"] 		= 0;
 			$dataku["stock_after"] 	= $stockAwal-$dataku["qty"];
 			$dataku["total_price"] 	= ($harga*$dataku["qty"]);
-			$dataku["description"] 	= "Batal Terima Mutasi No : ".$dataku["mutation_no"];
+			$dataku["description"] 	= "Batal Terima Mutasi No : ".$dataku["trans_num"];
 			unset($dataku["qty"]);
 		}
 		$this->db->insert("newfarmasi.stock_process",$dataku);

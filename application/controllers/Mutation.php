@@ -17,6 +17,12 @@ class Mutation extends MY_Generator {
 	{
 		$this->theme('mutation/index','',get_class($this));
 	}
+
+	public function retur_item()
+	{
+		$this->theme('mutation/index_retur','',"Retur Ke Gudang");
+	}
+
 	public function show_multiRows()
 	{
 		$this->load->model("m_mutation_detail");
@@ -104,7 +110,12 @@ class Mutation extends MY_Generator {
 		}else{
 			$this->session->set_flashdata('message',validation_errors('<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>','</div>'));
 		}
-		redirect('mutation');
+		
+		if ($input["unit_require"] == 55) {
+			redirect('mutation/retur_item');
+		}else{
+			redirect('mutation');
+		}
 
 	}
 
@@ -137,7 +148,7 @@ class Mutation extends MY_Generator {
 			$dataku["qty"] = $value['qty_send'];
 			$dataku["trans_num"] = $data['mutation_no'];
 			$dataku["trans_type"] = 3;
-			$this->insert_stock_process($dataku);
+			$this->insert_stock_process($dataku,"Mutasi Keluar","minus");
 		}
 	}
 
@@ -146,9 +157,12 @@ class Mutation extends MY_Generator {
 		$this->load->library('datatable');
 		$attr 	= $this->input->post();
 		$fields = $this->m_mutation->get_column();
-		$filter['custom'] = "to_char(m.mutation_date,'MM-YYYY') = '".$attr['bulan']."'";
+		$filter['custom'] = "to_char(m.mutation_date,'MM-YYYY') = '".$attr['bulan']."' and m.mutation_status != 1";
 		if (!empty($attr['unit'])) {
 			$filter['m.unit_require'] = $attr['unit'];
+		}
+		if (isset($attr['unit_sender'])) {
+			$filter['m.unit_sender'] = (empty($attr['unit_sender'])?0:$attr['unit_sender']);
 		}
 		$data 	= $this->datatable->get_data($fields,$filter,'m_mutation',$attr);
 		$records["aaData"] = array();
@@ -207,7 +221,7 @@ class Mutation extends MY_Generator {
 		echo json_encode($data);
 	}
 
-	public function insert_stock_process($dataku)
+	public function insert_stock_process($dataku,$desc,$ket="plus")
 	{
 		$this->load->model("m_stock_process");
         foreach ($this->m_stock_process->rules() as $key => $value) {
@@ -223,11 +237,17 @@ class Mutation extends MY_Generator {
 		$harga = (isset($oldStock->item_price)?$oldStock->item_price:0);
 		$dataku["stock_before"] = $stockAwal;
 		$dataku["item_price"] 	= $harga;
-		$dataku["kredit"] 		= $dataku["qty"];
-		$dataku["debet"] 		= 0;
-		$dataku["stock_after"] 	= $stockAwal-$dataku["qty"];
+		if ($ket=="plus") {
+			$dataku["kredit"] 		= 0;
+			$dataku["debet"] 		= $dataku["qty"];
+			$dataku["stock_after"] 	= $stockAwal+$dataku["qty"];
+		}else{
+			$dataku["kredit"] 		= $dataku["qty"];
+			$dataku["debet"] 		= 0;
+			$dataku["stock_after"] 	= $stockAwal-$dataku["qty"];
+		}
 		$dataku["total_price"] 	= ($harga*$dataku["qty"]);
-		$dataku["description"] 	= "Mutasi Keluar No : ".$dataku["trans_num"];
+		$dataku["description"] 	= $desc." No : ".$dataku["trans_num"];
 		unset($dataku["qty"]);
 		$this->db->insert("newfarmasi.stock_process",$dataku);
 	}
@@ -296,9 +316,9 @@ class Mutation extends MY_Generator {
 					"item_id"	=> $param['item_id'],
 					"unit_id"	=> $param['unit_id'],
 					"own_id"	=> $param['own_id'],
-					"stock_in"		=> $dataFifo->qty_item,
-					"stock_saldo"	=> $dataFifo->qty_item,
-					"expired_date"	=> $dataFifo->expired_date,
+					"stock_in"		=> $value->qty_item,
+					"stock_saldo"	=> $value->qty_item,
+					"expired_date"	=> $value->expired_date,
 				]);
 			}
 
@@ -333,6 +353,13 @@ class Mutation extends MY_Generator {
 				"mutation_detail_id"	=> $value->mutation_detil_id,
 				"mutation_id"			=> $value->mutation_id,
 			]);
+			$dataku["item_id"] = $value->item_id;
+			$dataku["own_id"] = $value->own_id;
+			$dataku["unit_id"] = $value->unit_sender;
+			$dataku["qty"] = $value->qty_send;
+			$dataku["trans_num"] = $value->mutation_no;
+			$dataku["trans_type"] = 3;
+			$this->insert_stock_process($dataku,"Hapus Mutasi","plus");
 		}
 		$this->db->where('mutation_id',$id)->delete("newfarmasi.mutation_detail");
 		$this->db->where('mutation_id',$id)->delete("newfarmasi.mutation");
@@ -369,6 +396,13 @@ class Mutation extends MY_Generator {
 		$data['model'] = $this->m_mutation->rules();
 		$data['mutation_no'] = $this->get_no_mutation();
 		$this->load->view("mutation/form",$data);
+	}
+
+	public function show_form_retur()
+	{
+		$data['model'] = $this->m_mutation->rules();
+		$data['mutation_no'] = $this->get_no_mutation();
+		$this->load->view("mutation/form_retur",$data);
 	}
 
 	public function get_no_mutation()

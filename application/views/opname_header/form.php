@@ -15,7 +15,7 @@
 				])?>
 				<?=create_select2([
 					"attr" =>["name"=>"unit_id=Unit","id"=>"unit_id","class"=>"form-control"],
-					"model"=>["m_ms_unit" => ["get_ms_unit",["0"=>'0']],
+					"model"=>["m_ms_unit" => ["get_ms_unit",["employee_id"=>$this->session->employee_id]],
 									"column"  => ["unit_id","unit_name"]
 								]
 				])?>

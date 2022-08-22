@@ -12,7 +12,7 @@ class Stock_all_unit extends MY_Generator {
 
 	public function index()
 	{
-        $data["unit"]       = $this->m_ms_unit->get_farmasi_unit();
+        $data["unit"]       = $this->m_ms_unit->get_ms_unit_farmasi();
         $this->load->model("m_ownership");
         foreach ($this->m_ownership->get_ownership() as $key => $value) {
 			$own[$value->own_id] = $value->own_name;
@@ -23,7 +23,7 @@ class Stock_all_unit extends MY_Generator {
 
     public function show_stock()
 	{
-        $data["unit"]       = $this->m_ms_unit->get_farmasi_unit();
+        $data["unit"]       = $this->m_ms_unit->get_ms_unit_farmasi();
         $this->load->model("m_ownership");
         foreach ($this->m_ownership->get_ownership() as $key => $value) {
 			$own[$value->own_id] = $value->own_name;
@@ -35,7 +35,7 @@ class Stock_all_unit extends MY_Generator {
     public function get_data($own_id)
     {
         $data = $this->m_stock->get_stock_all_unit($own_id);
-        $unit = $this->m_ms_unit->get_farmasi_unit();
+        $unit = $this->m_ms_unit->get_ms_unit_farmasi();
         foreach ($data as $key => $value) {
             $row = "<tr>
                     <td>".($key+1)."</td>

@@ -57,6 +57,7 @@
         $("#table_stock > tbody").load("stock_all_unit/get_data/"+$(this).val(),function(){
             $("#table_stock").DataTable({ 
                 dom: 'Bfrtip',
+                "pageLength":100,
                 buttons: [
                     {
                     "extend": 'pdf',

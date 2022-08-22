@@ -16,25 +16,27 @@ class Datatable
                 }
             }
         }
-        $aColumns   = [];
+        $aColumns   = $aSearch   = [];
         foreach ($kolom as $key => $value) {
             if (!is_array($value)) {
-                $aColumns[] = $value;
+                $aColumns[] = $aSearch[] = $value;
             }else{
                 if (isset($value['field'])){
-                    $key = $value['field'];
+                    $key = $value['field']." AS ".$key;
                 }
                 if (isset($value['initial'])) {
-                    $aColumns[] = $value['initial'].'.'.$key;
-                }else {
-                    $aColumns[] = $key;
+                    $key = $value['initial'].'.'.$key;
+                    $aSearch[] = (isset($value['field'])?$value['initial'].".".$value['field']:$key);
+                }else{
+                    $aSearch[] = (isset($value['field'])?$value['field']:$key);
                 }
+                $aColumns[] = $key;
             }
         }
         if ( isset($search) && $search != "" ) {
             $sWhere .= " AND (";
-            for ( $i = 0 ; $i < count($aColumns) ; $i++ ) {
-                    $sWhere .= " LOWER(".$aColumns[$i]."::TEXT) LIKE LOWER('%".pg_escape_string($search)."%') OR ";
+            for ( $i = 0 ; $i < count($aSearch) ; $i++ ) {
+                    $sWhere .= " LOWER(".$aSearch[$i]."::TEXT) LIKE LOWER('%".pg_escape_string($search)."%') OR ";
             }
             $sWhere = substr_replace( $sWhere, "", - 3 );
             $sWhere .= ')';

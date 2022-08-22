@@ -119,11 +119,58 @@ class Distribusi_bon extends MY_Generator {
 			$dataku["qty"] = $mutationDetail->qty_send;
 			$dataku["trans_num"] = $data['mutation_no'];
 			$dataku["trans_type"] = 3;
-			$this->insert_stock_process($dataku);
+			$this->insert_stock_process($dataku,"Mutasi Keluar","minus");
             $sukses = true;
 		}
 
         return $sukses;
+	}
+
+	public function batal_mutation($id)
+	{
+		$this->db->trans_begin();
+		$header = $this->db->get_where("newfarmasi.mutation",[
+			"mutation_id"	=> $id
+		])->row_array();
+		$detail = $this->db->get_where("newfarmasi.mutation_detail",[
+						"mutation_id"	=> $id
+					])->result();
+		foreach ($detail as $x => $value) {
+			$this->db->where(["mutation_detil_id"=>$value->mutation_detil_id])
+					 ->update("newfarmasi.mutation_detail",
+					 [
+						"qty_send" => 0
+					 ]);
+			$this->update_stock([
+				"unit_id" 	=> $header['unit_sender'],
+				"own_id"	=> $header['own_id'],
+				"item_id"	=> $value->item_id,
+			],$value->qty_send,"plus",null,$value);
+			$dataku["item_id"] 	= $value->item_id;
+			$dataku["own_id"] 	= $header['own_id'];
+			$dataku["unit_id"] 	= $header['unit_sender'];
+			$dataku["qty"] 		= $value->qty_send;
+			$dataku["trans_num"] = $header['mutation_no'];
+			$dataku["trans_type"] = 3;
+			$this->insert_stock_process($dataku,"Batal Mutasi","plus");
+		}
+		
+		$this->db->where(["mutation_id"=>$id])->update("newfarmasi.mutation",[
+			"mutation_status"	=> 1
+		]);
+
+		$resp = array();
+		if ($this->db->trans_status() !== false) {
+			$this->db->trans_commit();
+			$resp['message'] 	= 'Data berhasil dibatalkan';
+			$resp['code'] 		= '200';
+		}else{
+			$err = $this->db->error();
+			$resp['message'] 	= $err['message'];
+			$resp['code'] 		= '201';
+			$this->db->trans_rollback();
+		}
+		echo json_encode($resp);
 	}
 
 	public function update_stock($param,$qty,$type="plus",$fk=null,$mutation_detail)
@@ -177,18 +224,28 @@ class Distribusi_bon extends MY_Generator {
 				}
 			}
 		}elseif ($type='plus') {
-			/* $baru = $param;
-			$baru = [
-				"stock_in" 		=> $qty,
-				"stock_saldo" 	=> $qty,
-				key($fk)		=> array_values($fk)[0]  
-			];
-			$this->db->insert("newfarmasi.stock_fifo",$baru);
+			$dataFifo = $this->db->get_where("newfarmasi.mutation_fifo",[
+										"mutation_id"	=> $mutation_detail->mutation_id,
+										"mutationdetail_id"	=> $mutation_detail->mutation_detil_id,
+										"item_id"		=> $param["item_id"]
+									])->result();
+			
+			foreach ($dataFifo as $key => $value) {
+				$this->db->insert("newfarmasi.stock_fifo",[
+					"item_id"	=> $param['item_id'],
+					"unit_id"	=> $param['unit_id'],
+					"own_id"	=> $param['own_id'],
+					"stock_in"		=> $value->qty_item,
+					"stock_saldo"	=> $value->qty_item,
+					"expired_date"	=> $value->expired_date,
+				]);
+			}
 			$stock= $this->db->order_by("id","desc")
-							->get_where("newfarmasi.stock",$param);
+							 ->get_where("newfarmasi.stock",$param);
+
 			if ($stock->num_rows()>0) {
 				$stock=$stock->row();
-				$this->db->set("stock_summary","(stock_summary-".$qty.")",false);
+				$this->db->set("stock_summary","(stock_summary+".$qty.")",false);
 				$this->db->where([
 					"item_id"	=> $stock->item_id,
 					"unit_id"	=> $stock->unit_id,
@@ -197,11 +254,17 @@ class Distribusi_bon extends MY_Generator {
 			}else{
 				$param["stock_summary"] = $qty;
 				$this->db->insert("newfarmasi.stock",$param);
-			} */
+			}
+
+			$this->db->where([
+				"mutation_id"	=> $mutation_detail->mutation_id,
+				"mutationdetail_id"	=> $mutation_detail->mutation_detil_id,
+				"item_id"		=> $param["item_id"]
+			])->delete("newfarmasi.mutation_fifo");
 		}
 	}
 
-	public function insert_stock_process($dataku)
+	public function insert_stock_process($dataku,$desc,$ket="plus")
 	{
 		$this->load->model("m_stock_process");
         foreach ($this->m_stock_process->rules() as $key => $value) {
@@ -217,11 +280,17 @@ class Distribusi_bon extends MY_Generator {
 		$harga = (isset($oldStock->item_price)?$oldStock->item_price:0);
 		$dataku["stock_before"] = $stockAwal;
 		$dataku["item_price"] 	= $harga;
-		$dataku["kredit"] 		= $dataku["qty"];
-		$dataku["debet"] 		= 0;
-		$dataku["stock_after"] 	= $stockAwal-$dataku["qty"];
+		if ($ket=="plus") {
+			$dataku["kredit"] 		= 0;
+			$dataku["debet"] 		= $dataku["qty"];
+			$dataku["stock_after"] 	= $stockAwal+$dataku["qty"];
+		}else{
+			$dataku["kredit"] 		= $dataku["qty"];
+			$dataku["debet"] 		= 0;
+			$dataku["stock_after"] 	= $stockAwal-$dataku["qty"];
+		}
 		$dataku["total_price"] 	= ($harga*$dataku["qty"]);
-		$dataku["description"] 	= "Mutasi Keluar No : ".$dataku["mutation_no"];
+		$dataku["description"] 	= $desc." No : ".$dataku["trans_num"];
 		unset($dataku["qty"]);
 		$this->db->insert("newfarmasi.stock_process",$dataku);
 	}
@@ -256,6 +325,19 @@ class Distribusi_bon extends MY_Generator {
             }
 			if ($row["mutation_status"] == 3) {
 				$obj[] = create_btnAction([
+					"Cetak"=>[
+						"btn-act" => "cetak_struk(".$row['id_key'].")",
+						"btn-icon" => "fa fa-print",
+						"btn-class" => "btn-default"
+					]
+				]);
+			}elseif($row["mutation_status"] == 2){
+				$obj[] = create_btnAction([
+					"Batal Kirim"=>[
+						"btn-act" => "batal_mutasi(".$row['id_key'].")",
+						"btn-icon" => "fa fa-close",
+						"btn-class" => "btn-danger"
+					],
 					"Cetak"=>[
 						"btn-act" => "cetak_struk(".$row['id_key'].")",
 						"btn-icon" => "fa fa-print",
@@ -331,5 +413,36 @@ class Distribusi_bon extends MY_Generator {
 		$data['model'] 		= $this->m_mutation->rules();
 		$data['dataBon'] 	= $this->m_mutation->get_databon(["mutation_id"=>$id]);
 		$this->load->view("mutation/form_distribusi_bon",$data);
+	}
+
+	public function cetak_struk($id)
+	{
+		$session 	= $this->session->userdata('login');
+		$data['username']  =  $this->session->user_name;
+		$this->load->model('m_profil');
+		$data['data'] = $this->m_profil->get_data();
+
+		$sLimit = "";
+		$sWhere = "AND mutation_id = '" . $id . "' ";
+		$sOrder = "";
+
+		$aColumns 	= array(
+			"b.bon_id",
+			"to_char(b.bon_date, 'DD-MM-YYYY') bon_date",
+			"b.bon_no",
+			"v.unit_name as asal",
+			"vt.unit_name as tujuan",
+			"o.own_name",
+			"b.bon_status",
+			"b.unit_id",
+			"b.unit_target",
+			"b.own_id",
+			"b.user_id"
+		);
+		$profilrs = $this->m_profil->get_data();
+
+		$data['DataUnit'] = $this->m_mutation->get_data_m($sLimit, $sWhere, $sOrder, $aColumns);
+		$data['DataDetail'] = $this->m_mutation->get_permintaan_detail($id);
+		$this->load->view("mutation/cetakdistribusibon", $data);
 	}
 }
