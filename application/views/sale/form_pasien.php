@@ -2,6 +2,9 @@
     .ui-autocomplete {
         z-index: 2147483647;
     }
+    .ui-menu-item div.ui-state-active {
+        background-color: #46fadc !important;
+    }
 </style>
 
 <div class="row">

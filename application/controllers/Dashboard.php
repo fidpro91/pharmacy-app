@@ -87,7 +87,7 @@ class Dashboard extends MY_Generator {
 
     public function get_notif_penerimaan()
     {
-        $data = $this->db->join("admin.ms_unit mu","mu.unit_id = m.unit_require")
+        $data = $this->db->join("admin.ms_unit mu","mu.unit_id = m.unit_sender")
                          ->get_where("newfarmasi.mutation m",[
                             "mutation_status"   => 2,
                          ]);
