@@ -109,7 +109,6 @@
     				.appendTo(ul);
     		};
     	});
-
     	
     	<?= $this->config->item('footerJS') ?>
     </script>

@@ -79,12 +79,14 @@
 										<th class="text-center" style="font-size: 10px;">Item</th>
 									</tr>
 									<?php
+
 									$detail_item = json_decode($res->detail_item); $num=1;$total=0;$total_disk=0;
+
 									foreach ($detail_item as $metu):
 										$data_detail = explode('|', $metu);
-										// echo $metu;
+//										 echo $metu;
 										$total += $data_detail[8];
-										$total_disk += $data_detail[7];
+										$total_disk += !empty($data_detail[7])?$data_detail[7]:0;
 										?>
 										<tr>
 											<td><?=$num?></td>

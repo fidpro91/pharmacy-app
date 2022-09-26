@@ -62,6 +62,7 @@ class Laporan_permintaan_gudang extends MY_Generator
 		$tanggal_akhir = $tgl[1];
 		$data['periode']	= "Periode ".$tanggal_awal." s/d ".$tanggal_akhir."";
 		if ($input['jenis_laporan'] == 1){
+
 			$where = "AND rec.receiver_date between  '$tanggal_awal' and '$tanggal_akhir' AND rec.own_id = '".$input['own_id']."' AND rec.rec_type = '".$input['jenis_permintaan']."'";
 			if ($input['supplier_id']){
 				$where .= "AND rec.supplier_id = '".$input['supplier_id']."'";
@@ -72,9 +73,12 @@ class Laporan_permintaan_gudang extends MY_Generator
 			if ($input['sumber_anggaran']){
 				$where .= "AND lower(rec.estimate_resource) = '".strtolower($input['sumber_anggaran'])."'";
 			}
-			if ($input['pembayaran']){
-				$where .= "AND lower(rec.pay_type) = '".strtolower($input['pembayaran'])."'";
+			if ($input['jenis_permintaan'] != 1){
+				if ($input['pembayaran']){
+					$where .= "AND lower(rec.pay_type) = '".strtolower($input['pembayaran'])."'";
+				}
 			}
+
 			$data['data']		= $this->m_laporan_gudang->get_lap_penerimaan($where);
 
 			$this->load->view('laporan_gudang/v_lap_penerimaan_01',$data);
@@ -94,9 +98,12 @@ class Laporan_permintaan_gudang extends MY_Generator
 				$where .= "AND lower(estimate_resource) = '".strtolower($input['sumber_anggaran'])."'";
 			}
 
-			if ($input['pembayaran']) {
-				$where .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
+			if ($input['jenis_permintaan'] != 1){
+				if ($input['pembayaran']) {
+					$where .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
+				}
 			}
+
 
 			$data['data']		= $this->m_laporan_gudang->get_lap_penerimaan_05($where);
 			$this->load->view('laporan_gudang/v_lap_penerimaan_05',$data);
@@ -119,10 +126,14 @@ class Laporan_permintaan_gudang extends MY_Generator
 				$where2 .= "AND lower(estimate_resource) = '".strtolower($input['sumber_anggaran'])."'";
 			}
 
-			if ($input['pembayaran']) {
-				$where1 .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
-				$where2 .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
+			if ($input['jenis_permintaan'] != 1){
+				if ($input['pembayaran']) {
+					$where1 .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
+					$where2 .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
+				}
 			}
+
+
 
 			$data['data']		= $this->m_laporan_gudang->get_lap_penerimaan_04($where1,$where2);
 			$this->load->view('laporan_gudang/v_lap_penerimaan_04',$data);
@@ -145,10 +156,13 @@ class Laporan_permintaan_gudang extends MY_Generator
 				$where2 .= "AND lower(estimate_resource) = '".strtolower($input['sumber_anggaran'])."'";
 			}
 
-			if ($input['pembayaran']) {
-				$where1 .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
-				$where2 .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
+			if ($input['jenis_permintaan'] != 1){
+				if ($input['pembayaran']) {
+					$where1 .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
+					$where2 .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
+				}
 			}
+
 
 			$data['data']		= $this->m_laporan_gudang->get_lap_penerimaan_02($where1,$where2);
 			$this->load->view('laporan_gudang/v_lap_penerimaan_02',$data);
@@ -171,10 +185,13 @@ class Laporan_permintaan_gudang extends MY_Generator
 				$where2 .= "AND lower(estimate_resource) = '".strtolower($input['sumber_anggaran'])."'";
 			}
 
-			if ($input['pembayaran']) {
-				$where1 .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
-				$where2 .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
+			if ($input['jenis_permintaan'] != 1){
+				if ($input['pembayaran']) {
+					$where1 .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
+					$where2 .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
+				}
 			}
+
 
 			$data['data']		= $this->m_laporan_gudang->get_lap_penerimaan_06($where1,$where2);
 			$this->load->view('laporan_gudang/v_lap_penerimaan_06',$data);
@@ -424,7 +441,6 @@ class Laporan_permintaan_gudang extends MY_Generator
 		}else{
 			$data['datas']		= $this->m_laporan_gudang->get_data_byItem($unit_id, $unit_peminta, $tgl_awal, $tgl_akhir, $own_id);
 		}
-//		var_dump($data['datas']);die;
 
 		$data['username'] 	= $this->session->user_name;
 		$data['rs'] 	= $this->m_laporan_gudang->get_profil_rs();

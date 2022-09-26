@@ -59,7 +59,7 @@
 						foreach ($detail_retur as $metu):
 							$data_detail = explode('||', $metu);
 							// echo $metu;
-							$total += $data_detail[4];
+							$total += !empty($data_detail[4])?$data_detail[4]:0;
 							?>
 							<tr>
 								<td><?=$num?></td>
@@ -67,7 +67,7 @@
 								<td class="text-left"><?=$data_detail[1]?></td>
 								<td><?=$data_detail[2]?></td>
 								<td><?=number_format($data_detail[3],2,".",',')?></td>
-								<td><?=number_format($data_detail[4],2,'.',',')?></td>
+								<td><?=number_format(!empty($data_detail[4])?$data_detail[4]:0,2,'.',',')?></td>
 							</tr>
 							<?php
 							$num++;
