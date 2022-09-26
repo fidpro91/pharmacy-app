@@ -8,9 +8,10 @@ class Sale extends MY_Generator
 	{
 		parent::__construct();
 		$this->datascript->lib_datepicker()
-			->lib_inputmulti()
-			->lib_select2()
-			->lib_inputmask();
+						->lib_inputmulti()
+						->lib_select2()
+						->lib_daterange()
+						->lib_inputmask();
 		$this->load->model('m_sale');
 		$this->load->model('m_sale_detail');
 	}
@@ -318,6 +319,59 @@ class Sale extends MY_Generator
 		$data['sale_id'] = $id;
 		$data['model'] 	 = $this->m_sale->rules();
 		$this->load->view("sale/form_update", $data);
+	}
+
+	public function show_history_px()
+	{
+		$this->load->view("sale/v_history_patient");
+	}
+
+	public function get_history_px()
+	{
+		$input = $this->input->post();
+		list($tanggal1,$tanggal2) = explode('/',$input['tanggal']);
+		/* $date1		= date_create($tanggal1);
+		$date2		= date_create($tanggal2);
+		$diff		= date_diff($date1, $date2); */
+		$data['dataHistory'] = $this->db->query("
+			SELECT * from (
+				select v.visit_id,v.visit_date,s.srv_id,mu.unit_name,string_agg(DISTINCT concat(mi.icd_code,'-',mi.icd_name), '<br>')diagnosa,string_agg(DISTINCT mb.bill_name, '<br>') tindakan,string_agg(DISTINCT vo.item_name, '<br>') obat
+				from yanmed.visit v
+				join yanmed.services s on s.visit_id = v.visit_id
+				join yanmed.patient p on v.px_id = p.px_id
+				join admin.ms_unit mu on s.unit_id = mu.unit_id
+				LEFT JOIN yanmed.diagnosa d ON d.srv_id = s.srv_id
+				LEFT JOIN yanmed.ms_icd mi ON d.icd_id = mi.icd_id
+				LEFT JOIN yanmed.billing b ON b.srv_id = s.srv_id
+				LEFT JOIN yanmed.ms_tarif mt ON mt.tarif_id = b.tarif_id
+				LEFT JOIN yanmed.ms_bill mb ON mb.bill_id = mt.bill_id
+				left join farmasi.sale sl ON sl.visit_id = v.visit_id and sl.service_id = s.srv_id
+				left join farmasi.sale_detail sd on sl.sale_id = sd.sale_id
+				left join farmasi.v_obat vo on sd.item_id = vo.item_id
+				where p.px_id = '".$input['px_id']."' AND (date(v.visit_date) between '$tanggal1' AND '$tanggal2') AND unit_support_status != 1
+				GROUP BY v.visit_id,s.srv_id,mu.unit_name,v.visit_date
+			)x
+		")->result();
+		$this->load->view("sale/v_list_history_px",$data);
+	}
+
+	public function get_hasil_penunjang($visit_id,$type)
+	{
+		if ($type==1) {
+			$data = $this->db->query("SELECT string_agg(concat(ol.testname,'(',ol.\"result\",')'), '<br>')hasil FROM yanmed.orderlis_result ol
+			JOIN yanmed.services s ON ol.hisregno = s.srv_id::VARCHAR
+			WHERE s.visit_id = $visit_id")->row();
+		}else{
+			$data = $this->db->query("SELECT string_agg(concat('<b>',mc.namecheck,'</b>','<br>',cu.\"result\"), '<br>')hasil FROM yanmed.checkup cu
+			JOIN yanmed.services s ON cu.service_id = s.srv_id
+			JOIN yanmed.ms_check mc ON cu.ms_check_id = mc.idcheck
+			WHERE s.visit_id = $visit_id")->row();
+		}
+		$resp = [
+			"code"		=> "200",
+			"response"	=> $data
+		]; 
+		echo json_encode($resp);
 	}
 
 	public function get_no_rm($tipe, $kunjungan = '1')
