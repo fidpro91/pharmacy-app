@@ -607,7 +607,7 @@ ORDER BY
 	}
 
 	public function get_data_byItem($unit_id, $unit_peminta, $tgl_awal, $tgl_akhir, $own_id)
-	{
+	{//var_dump($unit_id);die;
 		$where = "";
 		if ($unit_peminta) {
 			$where .= " and m.unit_require = '$unit_peminta'";
@@ -616,6 +616,7 @@ ORDER BY
 		if ($own_id != "semua") {
 			$where .= " and m.own_id = '$own_id'";
 		}
+
 //		$sql    = "	SELECT
 //						vo.item_name,
 //						vo.item_code,
@@ -700,7 +701,7 @@ ORDER BY
 			$unit_id = 0;
 		}
 		$where = " AND r.receiver_unit != '$unit_id' AND r.sender_unit = '$unit_id' AND r.receiver_date between '$tgl_awal' AND '$tgl_akhir'";
-		if ($own_id) {
+		if ($own_id != "semua") {
 			$where .= " AND r.own_id = '$own_id'";
 		}
 		$data = $this->db->query("

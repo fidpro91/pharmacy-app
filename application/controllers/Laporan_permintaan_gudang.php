@@ -441,7 +441,6 @@ class Laporan_permintaan_gudang extends MY_Generator
 		}else{
 			$data['datas']		= $this->m_laporan_gudang->get_data_byItem($unit_id, $unit_peminta, $tgl_awal, $tgl_akhir, $own_id);
 		}
-//		var_dump($data['datas']);die;
 
 		$data['username'] 	= $this->session->user_name;
 		$data['rs'] 	= $this->m_laporan_gudang->get_profil_rs();
