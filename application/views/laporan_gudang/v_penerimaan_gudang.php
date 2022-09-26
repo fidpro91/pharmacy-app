@@ -37,7 +37,7 @@
 						<?=create_select2(["attr"=>["name"=>"jenis_permintaan","id"=>"jenis_permintaan","class"=>"form-control"],
 								"option" => [
 										["id" => '0', "text" => "Pembelian PBF"],
-										["id" => '1', "text" => "hibah"]
+										["id" => '5', "text" => "hibah"]
 								],
 						])?>
 						<?=create_select2(["attr"=>["name"=>"supplier_id=nama supplier","id"=>"supplier_id","class"=>"form-control"],
@@ -67,13 +67,14 @@
 										"column"=>["estimate_resource","estimate_resource"]
 								]
 						])?>
-						<?=create_select2(["attr"=>["name"=>"pembayaran","id"=>"pembayaran","class"=>"form-control"],
-								"option" => [
-										["id" => '1', "text" => "tunai"],
-										["id" => '2', "text" => "kredit"],
-										["id" => '', "text" => "hibah"]
-								],
-						])?>
+						<div id="form_pembayaran">
+							<?=create_select2(["attr"=>["name"=>"pembayaran","id"=>"pembayaran","class"=>"form-control"],
+									"option" => [
+											["id" => '1', "text" => "tunai"],
+											["id" => '2', "text" => "kredit"]
+									],
+							])?>
+						</div>
 						<?=create_inputDaterange("tanggal",["locale"=>["format"=>"YYYY-MM-DD","separator"=>"/"]])?>
 					</div>
 				</div>
@@ -85,5 +86,14 @@
     </section>
 </div>
 <script>
+	$("#jenis_permintaan").on("select2:select", function (e) {
+		var select_val = $(e.currentTarget).val();
+		if (select_val == 5){
+			$('#form_pembayaran').hide()
+		}else {
+			$('#form_pembayaran').show()
+		}
+	});
+
 	<?=$this->config->item('footerJS')?>
 </script>
