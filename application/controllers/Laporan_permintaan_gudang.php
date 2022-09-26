@@ -73,7 +73,7 @@ class Laporan_permintaan_gudang extends MY_Generator
 			if ($input['sumber_anggaran']){
 				$where .= "AND lower(rec.estimate_resource) = '".strtolower($input['sumber_anggaran'])."'";
 			}
-			if ($input['jenis_permintaan'] != 5){
+			if ($input['jenis_permintaan'] != 1){
 				if ($input['pembayaran']){
 					$where .= "AND lower(rec.pay_type) = '".strtolower($input['pembayaran'])."'";
 				}
@@ -98,7 +98,7 @@ class Laporan_permintaan_gudang extends MY_Generator
 				$where .= "AND lower(estimate_resource) = '".strtolower($input['sumber_anggaran'])."'";
 			}
 
-			if ($input['jenis_permintaan'] != 5){
+			if ($input['jenis_permintaan'] != 1){
 				if ($input['pembayaran']) {
 					$where .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
 				}
@@ -126,7 +126,7 @@ class Laporan_permintaan_gudang extends MY_Generator
 				$where2 .= "AND lower(estimate_resource) = '".strtolower($input['sumber_anggaran'])."'";
 			}
 
-			if ($input['jenis_permintaan'] != 5){
+			if ($input['jenis_permintaan'] != 1){
 				if ($input['pembayaran']) {
 					$where1 .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
 					$where2 .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
@@ -156,7 +156,7 @@ class Laporan_permintaan_gudang extends MY_Generator
 				$where2 .= "AND lower(estimate_resource) = '".strtolower($input['sumber_anggaran'])."'";
 			}
 
-			if ($input['jenis_permintaan'] != 5){
+			if ($input['jenis_permintaan'] != 1){
 				if ($input['pembayaran']) {
 					$where1 .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
 					$where2 .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
@@ -185,7 +185,7 @@ class Laporan_permintaan_gudang extends MY_Generator
 				$where2 .= "AND lower(estimate_resource) = '".strtolower($input['sumber_anggaran'])."'";
 			}
 
-			if ($input['jenis_permintaan'] != 5){
+			if ($input['jenis_permintaan'] != 1){
 				if ($input['pembayaran']) {
 					$where1 .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
 					$where2 .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
