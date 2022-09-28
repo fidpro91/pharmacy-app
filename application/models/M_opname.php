@@ -90,7 +90,7 @@ class M_opname extends CI_Model {
 		SELECT mi.item_code,mi.item_name as value,mc.classification_name,mi.item_id,mi.item_name,COALESCE(p.price_sell::numeric,0) as harga,sum(COALESCE(sf.stock_saldo,0))total_stock FROM farmasi.v_obat_alkes mi
 		LEFT JOIN admin.ms_classification mc ON mi.classification_id = mc.classification_id
 		LEFT JOIN newfarmasi.stock_fifo sf ON mi.item_id = sf.item_id $xWhere
-		LEFT JOIN farmasi.price P ON mi.item_id = P.item_id AND sf.own_id = p.own_id AND p.own_id = '$own_id'
+		LEFT JOIN farmasi.price P ON mi.item_id = P.item_id AND p.own_id = '$own_id'
 		where 0=0 $where
 		GROUP BY mi.item_id,mi.item_name,p.price_sell,mi.item_code,mc.classification_name
 		")->result();

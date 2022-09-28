@@ -20,6 +20,8 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
-		$this->load->view('welcome_message');
+		$this->session->set_flashdata('contoh','contoh session');
+		print_r($this->session->flashdata('contoh'));
+		// $this->load->view('welcome_message');
 	}
 }
