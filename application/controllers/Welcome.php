@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Welcome extends CI_Controller {
+class Welcome extends MY_Generator {
 
 	/**
 	 * Index Page for this controller.
@@ -20,8 +20,9 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
-		$this->session->set_flashdata('contoh','contoh session');
-		print_r($this->session->flashdata('contoh'));
+		// $this->session->set_flashdata('contoh','contoh session');
+		$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
+		print_r($this->session->flashdata('message'));
 		// $this->load->view('welcome_message');
 	}
 }
