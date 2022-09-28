@@ -22,7 +22,6 @@ class Welcome extends MY_Generator {
 	{
 		// $this->session->set_flashdata('contoh','contoh session');
 		$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
-		print_r($this->session->flashdata('message'));
-		// $this->load->view('welcome_message');
+		$this->load->view('welcome_message');
 	}
 }
