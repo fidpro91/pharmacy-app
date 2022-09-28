@@ -5,7 +5,7 @@ class Get_db extends CI_Model {
     public function get_menu($id=0)
     {
       $datam = $this->db->query("
-        SELECT mm.* FROM admin.ms_group_user_access ma
+        SELECT distinct mm.* FROM admin.ms_group_user_access ma
         JOIN admin.ms_group_user mg ON ma.group_id = mg.group_id
         JOIN admin.ms_menu mm ON ma.menu_id = mm.menu_id
         WHERE mm.menu_parent_id = '$id' AND mg.user_id = '".$this->session->user_id."' and mm.modul_id = '6' and mm.menu_status = 't'
