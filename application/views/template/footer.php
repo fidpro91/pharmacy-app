@@ -16,9 +16,9 @@
     index_type: 'index.html'
   });
   
-setTimeout(function(){
+/* setTimeout(function(){
   $(".alert").hide("slow");
-},3000);
+},3000); */
 
 function newexportaction(e, dt, button, config) {
     var self = this;

@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Welcome extends CI_Controller {
+class Welcome extends MY_Generator {
 
 	/**
 	 * Index Page for this controller.
@@ -19,6 +19,13 @@ class Welcome extends CI_Controller {
 	 * @see https://codeigniter.com/user_guide/general/urls.html
 	 */
 	public function index()
+	{
+		// $this->session->set_flashdata('contoh','contoh session');
+		$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
+		redirect("welcome/cek_ses");
+	}
+
+	public function cek_ses()
 	{
 		$this->load->view('welcome_message');
 	}

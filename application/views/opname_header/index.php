@@ -1,3 +1,7 @@
+<?php
+print_r($this->session->flashdata('message'));
+die;
+?>
 <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
