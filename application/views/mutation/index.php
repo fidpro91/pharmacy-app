@@ -111,7 +111,7 @@
 	  let unit_id = $("#unit_sender").val()
 	  if (own_id == '' || unit_id == ''){
 		  alert('kepemilikan / unit tujuan tidak boleh kosong');
-		  $().
+
 	  }
   }
   $("#btn-add").click(function() {
