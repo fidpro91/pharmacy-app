@@ -47,6 +47,7 @@
                           "m_ownership" => "get_ownership",
                           "column" => ["own_id", "own_name"]
                   ],
+                  "selected" => "1"
           ]) ?>
         </div>
         <div class="col-md-12" id="data_opname_header">
