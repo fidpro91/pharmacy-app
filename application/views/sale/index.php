@@ -68,8 +68,6 @@
   <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
-<?= modal_open("modal_pasien", "Biodata pasien", "modal-lg") ?>
-<?= modal_close() ?>
 <?= modal_open("modal_update", "Form Update", "modal-lg", [
   "style" => "width:90%"
 ]) ?>

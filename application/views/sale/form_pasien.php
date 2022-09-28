@@ -2,6 +2,9 @@
     .ui-autocomplete {
         z-index: 2147483647;
     }
+    .ui-menu-item div.ui-state-active {
+        background-color: #46fadc !important;
+    }
 </style>
 
 <div class="row">
@@ -12,14 +15,14 @@
         <div class="box-header with-border">
             <h3 class="box-title">Data Pasien</h3>
             <div class="box-tools pull-right">
-                <button type="button" id="btn-history" class="btn btn-default">
-                    <i class="fa fa-clock-o"></i> History Pelayanan</button>
+                <button type="button" id="btn-history" disabled class="btn" data-toggle="modal" href="#modal_history"><i class="fa fa-clock-o"></i> History Pelayanan</button>
             </div>
         </div>
         <div class="box-body">
             <div class="col-md-6">
                 <?= form_hidden("visit_id") ?>
                 <?= form_hidden("service_id") ?>
+                <?= form_hidden("px_id") ?>
                 <?= form_hidden("unit_id") ?>
                 <?= create_select([
                     "attr"         => ["name" => "tipe_patient=Tipe Penjualan", "id" => "tipe_patient", "class" => "form-control"],
@@ -131,8 +134,10 @@
             autoFocus: true,
             minLength:4,
             select: function(event, ui) {
+                $("#btn-history").attr("disabled",false);
                 $('#patient_norm').val(ui.item.px_norm); 
                 $('#patient_name').val(ui.item.px_name);
+                $('#px_id').val(ui.item.px_id);
                 $('#alamat').val(ui.item.px_address);
                 if ($("#tipe_patient").val() == 1) {
                     $('#visit_id').val(ui.item.visit_id);
@@ -187,7 +192,9 @@
             autoFocus: true,
             minLength:4,
             select: function(event, ui) {
+                $("#btn-history").attr("disabled",false);
                 $('#patient_norm').val(ui.item.px_norm);
+                $('#px_id').val(ui.item.px_id);
                 $('#patient_name').val(ui.item.px_name);
                 $('#alamat').val(ui.item.px_address);
                 $('#visit_id').val(ui.item.visit_id);
@@ -264,6 +271,10 @@
                 }
             });
         }
+    });
+
+    $('#modal_history').on('show.bs.modal', function () {
+        $(this).find(".modal-body").load("sale/show_history_px");
     });
     <?= $this->config->item('footerJS') ?>
 </script>

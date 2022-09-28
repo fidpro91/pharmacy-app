@@ -106,7 +106,16 @@
       table.draw();
     });
   });
+  function cek() {
+	  let own_id = $("#own_id").val()
+	  let unit_id = $("#unit_sender").val()
+	  if (own_id == '' || unit_id == ''){
+		  alert('kepemilikan / unit tujuan tidak boleh kosong');
+		  $().
+	  }
+  }
   $("#btn-add").click(function() {
+	  cek()
     $("#form_mutation").show();
     $("#form_mutation").load("mutation/show_form");
   });
