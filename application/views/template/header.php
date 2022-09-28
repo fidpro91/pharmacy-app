@@ -9,6 +9,11 @@
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Google Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+  <style>
+    .ui-menu-item div.ui-state-active {
+        background-color: #46fadc !important;
+    }
+  </style>
   <?=$this->config->item('my_library')?>
   <script>
   function formatNumeric(val = 0) {

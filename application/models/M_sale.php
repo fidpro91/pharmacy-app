@@ -62,6 +62,20 @@ class M_sale extends CI_Model
 		return $col;
 	}
 
+	public function get_col_history()
+	{
+		$col = [
+			"srv_date",
+			"unit_name",
+			"diagnosa",
+			"obat",
+			"tindakan",
+			"laboratorium",
+			"radiologi",
+		];
+		return $col;
+	}
+
 	public function rules()
 	{
 		$data = [

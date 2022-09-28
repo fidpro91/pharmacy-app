@@ -131,11 +131,16 @@
 			<button class="btn btn-warning" type="button" id="btn-cancel">Cancel</button>
 		</div>
 	</div>
+
+<?= modal_open("modal_pasien", "Biodata pasien", "modal-lg") ?>
+<?= modal_close() ?>
 <?= modal_open("modal_racikan", "List Item Racikan | [Ctrl+a]Add Item | [Ctrl+s]Save","modal-lg") ?>
 <?= modal_close() ?>
 <?= modal_open("modal_nonracikan", "List Item Non Racikan | [Ctrl+a]Add Item | [Ctrl+s]Save","modal-lg") ?>
 <?= modal_close() ?>
 <?= modal_open("modal_info_stock", "List Item Non Racikan | [Ctrl+i]Informasi Stock","modal-lg") ?>
+<?= modal_close() ?>
+<?= modal_open("modal_history", "History Pelayanan Pasien","modal-lg",["style"=>"width:90%"]) ?>
 <?= modal_close() ?>
 </div>
 <script type="text/javascript">
