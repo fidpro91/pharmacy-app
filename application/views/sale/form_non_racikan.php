@@ -1,3 +1,8 @@
+<style>
+	.comment-text{
+		color: black !important;
+	}
+</style>
 <?= form_open("", ["method" => "post", "id" => "form_non_racikan"]) ?>
 <div class="row">
 	<div class="col-md-12">
@@ -84,6 +89,5 @@
 		});
 
 	});
-	
 	<?=$this->config->item('footerJS')?>
 </script>
