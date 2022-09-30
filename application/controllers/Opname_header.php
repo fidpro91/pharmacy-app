@@ -16,7 +16,7 @@ class Opname_header extends MY_Generator {
 	public function index()
 	{
 		$this->load->model("m_ms_unit");
-		foreach ($this->m_ms_unit->get_ms_unit() as $key => $value) {
+		foreach ($this->m_ms_unit->get_ms_unit(["employee_id"=>$this->session->employee_id]) as $key => $value) {
 			$kat[$value->unit_id] = $value->unit_name;
 		}
 		$data['unit'] = $kat;
@@ -90,7 +90,6 @@ class Opname_header extends MY_Generator {
 		}else{
 			$this->session->set_flashdata('message',validation_errors('<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>','</div>'));
 		}
-		print_r($this->session->flashdata('message'));
 		redirect('opname_header');
 
 	}

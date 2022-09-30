@@ -10,6 +10,7 @@ class MY_Generator extends CI_Controller
 		$this->load->model('builder/m_builder');
 		$this->load->model("get_db");
 		$this->load->library('datascript');
+		$this->session->keep_flashdata('message');
 		if (empty($this->session->user_id)) {
 			redirect('login');
 		}

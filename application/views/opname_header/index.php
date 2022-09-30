@@ -1,7 +1,3 @@
-<?php
-print_r($this->session->flashdata('message'));
-die;
-?>
 <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -51,6 +47,7 @@ die;
                           "m_ownership" => "get_ownership",
                           "column" => ["own_id", "own_name"]
                   ],
+                  "selected" => "1"
           ]) ?>
         </div>
         <div class="col-md-12" id="data_opname_header">
