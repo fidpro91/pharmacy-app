@@ -10,7 +10,7 @@ class M_sale_return extends CI_Model
 				left join admin.ms_unit u on st.unit_id = u.unit_id
 				left join farmasi.ownership o on st.own_id = o.own_id
 				left join yanmed.ms_surety s on st.surety_id = s.surety_id
-				where st.sr_id > 214871 $sWhere $sOrder $sLimit
+				where st.sr_id > 214929 $sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
 	}
@@ -22,7 +22,7 @@ class M_sale_return extends CI_Model
 				left join admin.ms_unit u on st.unit_id = u.unit_id
 				left join farmasi.ownership o on st.own_id = o.own_id
 				left join yanmed.ms_surety s on st.surety_id = s.surety_id				
-				where st.sr_id > 214871 $sWhere
+				where st.sr_id > 214929 $sWhere
 			")->num_rows();
 		return $data;
 	}
@@ -89,7 +89,7 @@ class M_sale_return extends CI_Model
 			SELECT mi.item_code,mi.item_name,sd.sale_price::numeric as harga,sd.* FROM farmasi.sale_detail sd
 			JOIN farmasi.sale s on sd.sale_id = s.sale_id
 			JOIN admin.ms_item mi ON sd.item_id = mi.item_id
-			WHERE s.service_id = '$where' and coalesce(sd.sale_return,0) < sd.sale_qty
+			WHERE s.service_id = '$where' AND sd.sale_id > 1388206 and coalesce(sd.sale_return,0) < sd.sale_qty
 		")->result();
 	}
 
