@@ -162,7 +162,7 @@
         }).data("ui-autocomplete")._renderItem = function(ul, item) {
             if ($("#tipe_patient").val() == 1) {
                 return $("<li>")
-                .append("<div class='comment-text'><span class=\"username\"><b>" +
+                .append("<div style='color: black' class='comment-text'><span class=\"username\"><b>" +
                     item.px_norm + "|" + item.px_name +
                     "</b><span class=\"text-muted pull-right\">" + item.unit_name + "</span></span><p>" +
                     "<span>Tanggal Kunjung : <span class=\"text-muted pull-right\">" + (item.srv_date) + "</span></span><br>" +
@@ -172,7 +172,7 @@
                 .appendTo(ul);
             }else{
                 return $("<li>")
-                .append("<div class='comment-text'><span class=\"username\"><b>" +
+                .append("<div style='color: black' class='comment-text'><span class=\"username\"><b>" +
                     item.px_norm + "|" + item.px_name +
                     "</b><span class=\"text-muted pull-right\">Atas permintaan Sendiri(APS)</span></span><p>" +
                     "<span>NO Telp : <span class=\"text-muted pull-right\">" + (item.telepon) + "</span></span><br>" +
