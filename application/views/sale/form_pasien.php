@@ -172,7 +172,7 @@
                 .appendTo(ul);
             }else{
                 return $("<li>")
-                .append("<div class='comment-text'><span class=\"username\"><b>" +
+                .append("<div style='color: black' class='comment-text'><span class=\"username\"><b>" +
                     item.px_norm + "|" + item.px_name +
                     "</b><span class=\"text-muted pull-right\">Atas permintaan Sendiri(APS)</span></span><p>" +
                     "<span>NO Telp : <span class=\"text-muted pull-right\">" + (item.telepon) + "</span></span><br>" +

@@ -95,7 +95,7 @@ $("body").on("focus", ".autocom_item_id", function() {
         }
     }).data("ui-autocomplete")._renderItem = function(ul, item) {
         return $("<li>")
-            .append("<div class='comment-text'><span class=\"username\"><b>" +
+            .append("<div style='color: black' class='comment-text'><span class=\"username\"><b>" +
                 item.label + "|" + item.item_code +
                 "</b><span class=\"text-muted pull-right\">" + formatNumeric(item.expired_date) + "</span></span><p>" +
                 "<span>Stok terakhir : <span class=\"text-muted pull-right\">" + formatNumeric(item.total_stock) + "</span></span>" +
