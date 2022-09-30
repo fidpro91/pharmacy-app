@@ -10,7 +10,7 @@ class M_sale_return extends CI_Model
 				left join admin.ms_unit u on st.unit_id = u.unit_id
 				left join farmasi.ownership o on st.own_id = o.own_id
 				left join yanmed.ms_surety s on st.surety_id = s.surety_id
-				where 0=0 $sWhere $sOrder $sLimit
+				where st.sr_id > 214822 $sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
 	}
@@ -22,7 +22,7 @@ class M_sale_return extends CI_Model
 				left join admin.ms_unit u on st.unit_id = u.unit_id
 				left join farmasi.ownership o on st.own_id = o.own_id
 				left join yanmed.ms_surety s on st.surety_id = s.surety_id				
-				where 0=0 $sWhere
+				where st.sr_id > 214822 $sWhere
 			")->num_rows();
 		return $data;
 	}

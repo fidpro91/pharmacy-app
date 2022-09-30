@@ -44,7 +44,7 @@
         table = $('#tb_stock').DataTable({ 
             "processing": true, 
             "serverSide": true, 
-            "order": [], 
+            "order": [[4,"ASC"]], 
             "scrollX": true,
             "ajax": {
                 "url": "<?php echo site_url('stock/get_data')?>",
