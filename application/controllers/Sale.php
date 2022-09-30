@@ -63,7 +63,6 @@ class Sale extends MY_Generator
 
 		//insert into farmasi.sale
 		$this->db->insert("farmasi.sale", $input);
-		$this->db->insert("newfarmasi.sale", $input);
 		$saleId = $this->db->query("select currval('public.sale_id_seq')")->row('currval');
 		$saleDetail = [];
 		//nonracikan
