@@ -245,7 +245,7 @@ class M_sale extends CI_Model
 		$query_racik = $this->db->query("SELECT
 			c.racikan_id,
 			sale_qty,
-			(c.sale_price+(c.sale_price*C.percent_profit))sale_price,
+			(c.sale_price+(c.sale_price*COALESCE(C.percent_profit,0)))sale_price,
 			c.dosis,
 			mt.item_name,
 			a.sale_services,
