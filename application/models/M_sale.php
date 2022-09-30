@@ -12,7 +12,7 @@ class M_sale extends CI_Model
 				sale_status,surety_name,doctor_name,cash_id,patient_norm,sale_id AS id_key 
 				from farmasi.sale sl
 				left join yanmed.ms_surety su on sl.surety_id = su.surety_id	
-				where sl.sale_id > 1661194 $sWhere $sOrder $sLimit) x
+				where sl.sale_id > 1388206 $sWhere $sOrder $sLimit) x
 			")->result_array();
 		return $data;
 	}
@@ -26,7 +26,7 @@ class M_sale extends CI_Model
 		sale_status,surety_name,doctor_name,cash_id,patient_norm,sale_id AS id_key 
 		from farmasi.sale sl
 		left join yanmed.ms_surety su on sl.surety_id = su.surety_id	
-		where sl.sale_id > 1661194 $sWhere) x
+		where sl.sale_id > 1388206 $sWhere) x
 			")->num_rows();
 		return $data;
 	}
