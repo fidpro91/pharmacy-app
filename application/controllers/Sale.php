@@ -40,6 +40,7 @@ class Sale extends MY_Generator
 		foreach ($this->m_sale->rules() as $key => $value) {
 			$input[$key] = (!empty($sess[$key]) ? $sess[$key] : null);
 		}
+		$input['doctor_name'] = $this->session->penjualan['doctor_name'];
 		$input['unit_id'] = $data['unit_id'];
 		$input['user_id'] = ($this->session->user_id ? $this->session->user_id : 21);
 		$input['sale_num'] = $this->get_no_sale($data['unit_id']);
@@ -144,8 +145,12 @@ class Sale extends MY_Generator
 		$this->load->library('datatable');
 		$attr 	= $this->input->post();
 		$fields = $this->m_sale->get_column();
+		$filter=[];
 		$filter["unit_id"] = $attr['unit_id'];
-		$filter["sale_type"] = $attr['sale_type'];
+		if($attr["sale_type"] !=''){
+			$filter = array_merge($filter, ["sale_type" => $attr['sale_type']]);
+		}
+		//$filter["sale_type"] = $attr['sale_type'];
 		$filter["custom"] = " to_char(sale_date,'MM-YYYY')='" . $attr['bulan'] . "'";
 
 		$data 	= $this->datatable->get_data($fields, $filter, 'm_sale', $attr);
