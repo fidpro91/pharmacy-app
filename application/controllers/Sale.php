@@ -144,8 +144,12 @@ class Sale extends MY_Generator
 		$this->load->library('datatable');
 		$attr 	= $this->input->post();
 		$fields = $this->m_sale->get_column();
+		$filter=[];
 		$filter["unit_id"] = $attr['unit_id'];
-		$filter["sale_type"] = $attr['sale_type'];
+		if($attr["sale_type"] !=''){
+			$filter = array_merge($filter, ["sale_type" => $attr['sale_type']]);
+		}
+		//$filter["sale_type"] = $attr['sale_type'];
 		$filter["custom"] = " to_char(sale_date,'MM-YYYY')='" . $attr['bulan'] . "'";
 
 		$data 	= $this->datatable->get_data($fields, $filter, 'm_sale', $attr);

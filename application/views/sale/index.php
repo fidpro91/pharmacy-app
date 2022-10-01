@@ -51,7 +51,7 @@
           <?= create_select([
             "attr"         => ["name" => "filter_pembayaran=Cara Bayar", "id" => "filter_pembayaran", "class" => "form-control"],
             "option"    => [
-              ["id" => "0", "text" => "Tunai"], ["id" => "1", "text" => "Kredit"]
+              ["id" => "", "text" => "Semua"],["id" => "0", "text" => "Tunai"], ["id" => "1", "text" => "Kredit"]
             ]
           ]) ?>
         </div>
