@@ -99,7 +99,7 @@ class M_laporan_penjualan  extends CI_Model {
 		if (!empty($unit)) {
 			$where .= "AND sale.unit_id in ($unit)";
 		}
-		if($sale_type){
+		if($sale_type !==''){
 			$where .= " AND sale.sale_type = '$sale_type'";
 		}
 		if($kepemilikan){
