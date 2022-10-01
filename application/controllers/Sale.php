@@ -181,7 +181,20 @@ class Sale extends MY_Generator
 					]
 				], $row['id_key']);
 			} else {
-				$obj[] = "";
+				$obj[] = create_btnAction([					
+					"Cetak Faktur" =>
+					[
+						"btn-act" => "cetak_resep('" . $row['id_key'] . "',2)",
+						"btn-icon" => "fa fa-print",
+						"btn-class" => "btn-default",
+					],
+					"Cetak E-Tiket" =>
+					[
+						"btn-act" => "cetak_etiket('" . $row['id_key'] . "')",
+						"btn-icon" => "fa fa-bookmark",
+						"btn-class" => "btn-default",
+					]
+				], $row['id_key']);;
 			}
 			$records["aaData"][] = $obj;
 			$no++;
