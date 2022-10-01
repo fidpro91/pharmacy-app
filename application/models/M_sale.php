@@ -87,6 +87,7 @@ class M_sale extends CI_Model
 			"patient_name" => "trim",
 			"kronis" => "trim",
 			"user_id" => "trim|integer",
+			"sale_type" => "trim|integer",
 			"sale_status" => "trim|integer",
 			"service_id" => "trim|integer",
 			"surety_id" => "trim|integer",
