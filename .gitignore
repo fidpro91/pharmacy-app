@@ -34,3 +34,5 @@ index.php
 *.sublime-project
 /tests/tests/
 /tests/results/
+/system
+index.php
