@@ -685,6 +685,7 @@ class Sale extends MY_Generator
 			];
 			$this->session->set_userdata('penjualan', $dt);
 		}
+		print_r($dt);
 		echo json_encode($resp);
 	}
 
