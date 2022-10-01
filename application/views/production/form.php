@@ -157,10 +157,18 @@
 
     	});
 		$("#fm_production").on("submit",function(){
-			if (confirm("Simpan data produksi?")) {
-				return true;
-			}else{
+			if ($("#unit_id").val() === '') {
+				alert("Mohon di isikan Depo");
 				return false;
+			}else if($("#production_date").val() === ''){
+				alert("Mohon di isikan Tgl Produksi");
+				return false;
+			}else if($("#own_id").val() === ''){
+				alert("Mohon di isikan Kepemilikan");
+				return false;
+			}else{
+				confirm("apakah anda yakin ingin menyimpan");
+				return true;
 			}
 		});
 
