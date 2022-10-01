@@ -64,8 +64,12 @@ class Datatable
             $sLimit = " limit ".intval($length)." offset ".intval( $start );
         }
 
-        if ( isset($attr['order'][0]['column'])) {
-                $sOrder = "ORDER BY ".($aColumns[$attr['order']['0']['column']-2]).' '.$attr['order']['0']['dir'];
+        if ( isset($attr['order'])) {
+            $sOrder = "ORDER BY ";
+            foreach ($attr['order'] as $key => $od) {
+                $sOrder .= " ".$aColumns[$od['column']-2]." ".$od["dir"].",";
+            }
+            $sOrder = rtrim($sOrder,",");
         }
         
         $data = $CI->modelku->{$dataResource}($sLimit,$sWhere,$sOrder,$aColumns);
