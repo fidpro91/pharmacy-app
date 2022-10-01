@@ -5,7 +5,7 @@ class M_import_harga extends CI_Model {
 	public function get_data($sLimit,$sWhere,$sOrder,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).", as id_key  from admin.import_harga where 0=0 $sWhere $sOrder $sLimit
+				select ".implode(',', $aColumns).", kode as id_key  from admin.import_harga where 0=0 $sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
 	}
@@ -13,7 +13,7 @@ class M_import_harga extends CI_Model {
 	public function get_total($sWhere,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).", as id_key  from admin.import_harga where 0=0 $sWhere
+				select ".implode(',', $aColumns).", kode as id_key  from admin.import_harga where 0=0 $sWhere
 			")->num_rows();
 		return $data;
 	}
