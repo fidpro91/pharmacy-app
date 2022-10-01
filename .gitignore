@@ -1,5 +1,4 @@
 .DS_Store
-.gitignore
 
 application/cache/*
 !application/cache/index.html
@@ -19,7 +18,6 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 application/config/*
 application/views/template/*
 /system/*
-system/*
 # IDE Files
 #-------------------------
 /nbproject/
@@ -34,5 +32,3 @@ index.php
 *.sublime-project
 /tests/tests/
 /tests/results/
-/system
-index.php
