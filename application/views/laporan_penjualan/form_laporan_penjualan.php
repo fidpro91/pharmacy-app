@@ -35,8 +35,8 @@
 								"model"=>["m_ms_unit" => "get_farmasi_unit","column"=>["unit_id","unit_name"]]
 							])?>     
           <?= create_select([
-					"attr" => ["name" => "tipe_bayar=PENJUALAN", "id" => "tipe_bayar", "class" => "form-control", 'required' => true],
-					"option" => [["id" => '0', "text" => "Tunai"], ["id" => '1', "text" => "Kredit"]],
+					"attr" => ["name" => "tipe_bayar=PENJUALAN", "id" => "tipe_bayar", "class" => "form-control"],
+					"option" => [["id" => '', "text" => "SEMUA"],["id" => '0', "text" => "Tunai"], ["id" => '1', "text" => "Kredit"]],
 			]) ?>  
          <?=create_select(["attr"=>["name"=>"kepemilikan=KEPEMILIKAN","id"=>"kepemilikan","class"=>"form-control"],
 								"model"=>["m_ownership" => "get_ownership","column"=>["own_id","own_name"]]

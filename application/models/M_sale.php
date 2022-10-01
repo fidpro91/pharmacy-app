@@ -33,7 +33,7 @@ class M_sale extends CI_Model
 
 	public function get_column()
 	{
-		$col = [
+		$col = ["patient_norm",
 			"sale_num",
 			"sale_date",
 			"patient_name",

@@ -1,7 +1,7 @@
 <style>
-	.comment-text{
-		color: black !important;
-	}
+  .comment-text {
+    color: black !important;
+  }
 </style>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
@@ -51,7 +51,7 @@
           <?= create_select([
             "attr"         => ["name" => "filter_pembayaran=Cara Bayar", "id" => "filter_pembayaran", "class" => "form-control"],
             "option"    => [
-              ["id" => "0", "text" => "Tunai"], ["id" => "1", "text" => "Kredit"]
+              ["id" => "", "text" => "Semua"], ["id" => "0", "text" => "Tunai"], ["id" => "1", "text" => "Kredit"]
             ]
           ]) ?>
         </div>
@@ -89,7 +89,7 @@
 <div class="overlay loading-checkout" style="display: none;">
   <i class="fa fa-refresh fa-spin"></i>
 </div>
-<?= modal_close(null,false) ?>
+<?= modal_close(null, false) ?>
 <script src="<?= base_url("assets/plugins/jquery.hotkeys-master") ?>/jquery.hotkeys.js"></script>
 <script type="text/javascript">
   var table;
