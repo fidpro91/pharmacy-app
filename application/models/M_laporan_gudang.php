@@ -328,6 +328,7 @@ order by cb.supplier_name asc ")->result();
 	public function stok_opname($where)
 	{
 		$sql = "SELECT 
+	distinct
 	i.item_id,
 	i.item_name,
 	opr.opname_note,
@@ -365,7 +366,8 @@ FROM
 	INNER JOIN newfarmasi.opname_header opr ON opr.opname_header_id = b.opname_id
 	INNER JOIN newfarmasi.opname o on o.opname_header_id = opr.opname_header_id
 	INNER JOIN ( SELECT opname_header_id, MAX ( item_price ) item_price FROM newfarmasi.opname GROUP BY opname_header_id ) op ON op.opname_header_id = opr.opname_header_id
-	INNER JOIN ADMIN.ms_item i ON i.item_id = o.item_id";
+	INNER JOIN ADMIN.ms_item i ON i.item_id = o.item_id
+	order by item_name";
 
 		$result = $this->db->query($sql);
 		$result = $result->result();

@@ -77,7 +77,7 @@ class M_stock_fifo extends CI_Model
 		newfarmasi.stock sf
 		JOIN ADMIN.ms_item mi ON sf.item_id = mi.item_id 
 		JOIN farmasi.ownership o ON sf.own_id = o.own_id 
-		left join farmasi.price p on sf.item_id = p.item_id 
+		left join farmasi.price p on sf.item_id = p.item_id and sf.own_id = p.own_id
 		where 0=0 $where")->result();
 		
 		return $data;

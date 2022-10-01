@@ -8,11 +8,11 @@ class M_sale extends CI_Model
 		$data = $this->db->query("
 				select " . implode(',', $aColumns) . ",x.id_key,x.sale_type 
 				from (select 
-				sl.surety_id,sale_type,sale_num,sale_date,concat (patient_name,' (',patient_norm,')') as nama,sale_total,
+				sl.surety_id,sale_type,sale_num,sale_date,concat (patient_name,' (',patient_norm,')') as patient_name,sale_total,
 				sale_status,surety_name,doctor_name,cash_id,patient_norm,sale_id AS id_key 
 				from farmasi.sale sl
 				left join yanmed.ms_surety su on sl.surety_id = su.surety_id	
-				where to_char(sale_date,'YYYY') = '2022' $sWhere $sOrder $sLimit) x
+				where sl.sale_id > 1388206 $sWhere $sOrder $sLimit) x
 			")->result_array();
 		return $data;
 	}
@@ -22,11 +22,11 @@ class M_sale extends CI_Model
 		$data = $this->db->query("
 		select " . implode(',', $aColumns) . ",x.id_key 
 		from (select 
-		sl.surety_id,sale_type,sale_num,sale_date,concat (patient_name,' (',patient_norm,')') as nama,sale_total,
+		sl.surety_id,sale_type,sale_num,sale_date,concat (patient_name,' (',patient_norm,')') as patient_name,sale_total,
 		sale_status,surety_name,doctor_name,cash_id,patient_norm,sale_id AS id_key 
 		from farmasi.sale sl
 		left join yanmed.ms_surety su on sl.surety_id = su.surety_id	
-		where to_char(sale_date,'YYYY') = '2022' $sWhere) x
+		where sl.sale_id > 1388206 $sWhere) x
 			")->num_rows();
 		return $data;
 	}
@@ -36,7 +36,7 @@ class M_sale extends CI_Model
 		$col = [
 			"sale_num",
 			"sale_date",
-			"nama",
+			"patient_name",
 			"sale_status",
 			"surety_name",
 			"doctor_name",
@@ -170,7 +170,7 @@ class M_sale extends CI_Model
 				JOIN ADMIN.ms_unit mu ON mu.unit_id = s.unit_id
 				LEFT JOIN hr.employee emp ON s.par_id = emp.employee_id 
 			WHERE
-				s.unit_id NOT IN ( 45, 105, 12 ) 
+				mu.unit_support_status = 0
 				AND (date(v.visit_end_date)>='".date('Y-m-d',strtotime("- 3 days"))."' OR v.visit_end_date is null) 
 				AND v.visit_status NOT IN (35,60,70) $where
 			order by s.srv_date desc
@@ -245,7 +245,7 @@ class M_sale extends CI_Model
 		$query_racik = $this->db->query("SELECT
 			c.racikan_id,
 			sale_qty,
-			(c.sale_price+(c.sale_price*C.percent_profit))sale_price,
+			(c.sale_price+(c.sale_price*COALESCE(C.percent_profit,0)))sale_price,
 			c.dosis,
 			mt.item_name,
 			a.sale_services,
