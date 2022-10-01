@@ -37,12 +37,12 @@ class M_price extends CI_Model {
 		$col = [
 				"item_name"=>["label"=>"Obat"],
 				"own_name"=>["label"=>"Kepemilikan"],
-				"price_buy"=>["label"=>"Harga Jual",
+				"price_buy"=>["label"=>"Harga Beli",
 					"custom"=> function($a) {
 						return convert_currency($a);
 					}
 				],
-				"price_sell"=>["label"=>"Harga Beli",
+				"price_sell"=>["label"=>"Harga Jual",
 					"custom"=> function($a) {
 						return convert_currency($a);
 					}
