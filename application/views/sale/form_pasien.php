@@ -73,13 +73,13 @@
                     ],
                 ]) ?>
                 <?= create_select([
-                    "attr"         => ["name" => "kronis=Kronis", "id" => "kronis", "class" => "form-control"],
+                    "attr"         => ["name" => "kronis=Kronis", "id" => "kronis", "class" => "form-control","required"  => true],
                     "option"    => [
                         ["id" => "t", "text" => "Ya"], ["id" => "f", "text" => "Tidak"]
                     ]
                 ]) ?>
                 <?= create_select([
-                    "attr" => ["name" => "own_id=Kepemilikan", "id" => "own_id", "class" => "form-control"],
+                    "attr" => ["name" => "own_id=Kepemilikan", "id" => "own_id", "class" => "form-control","required"  => true],
                     "model" => [
                         "m_surety_ownership" => ["get_kepemilikan", ["0" => '0']],
                         "column"  => ["own_id", "own_name"]
