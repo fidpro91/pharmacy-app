@@ -63,6 +63,7 @@
 					return false;
 				}
 			});
+			// $("#modal_nonracikan").find(".modal-body").animate({ scrollTop: 300}, 1000);
 		});
 
 		$("#btn-save-non_racikan").click(()=>{
