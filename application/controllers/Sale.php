@@ -41,7 +41,7 @@ class Sale extends MY_Generator
 			$input[$key] = (!empty($sess[$key]) ? $sess[$key] : null);
 		}
 		$input['doctor_name'] = $this->session->penjualan['doctor_name'];
-		$input['unit_id'] = $data['unit_id'].'a';
+		$input['unit_id'] = $data['unit_id'];
 		$input['sale_type'] = $sess['sale_type'];
 		$input['user_id'] = ($this->session->user_id ? $this->session->user_id : 21);
 		$input['sale_num'] = $this->get_no_sale($data['unit_id']);
