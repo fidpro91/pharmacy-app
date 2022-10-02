@@ -72,10 +72,11 @@ class M_stock_fifo extends CI_Model
 	{
 
 		$data = $this->db->query("SELECT
-		mi.item_code,mi.item_name as value ,mi.item_id,mi.item_name,stock_summary as total_stock,COALESCE(p.price_sell::numeric,0) as harga 
+		mi.item_code,mi.item_name as value ,mi.item_id,mi.item_name,stock_summary as total_stock,COALESCE(p.price_sell::numeric,0) as harga,mc.classification_name 
 		FROM
 		newfarmasi.stock sf
 		JOIN ADMIN.ms_item mi ON sf.item_id = mi.item_id 
+		JOIN ADMIN.ms_classification mc ON mi.classification_id = mc.classification_id 
 		JOIN farmasi.ownership o ON sf.own_id = o.own_id 
 		left join farmasi.price p on sf.item_id = p.item_id and sf.own_id = p.own_id
 		where 0=0 $where")->result();

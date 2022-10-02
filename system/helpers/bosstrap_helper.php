@@ -199,13 +199,13 @@ function create_tableData($attr = array())
 function modal_open($id, $header, $size = "",$attr=array())
 {
 	$txt = '<div class="modal fade" id="' . $id . '">
-	        <div class="modal-dialog ' . $size . '" '._attributes_to_string($attr).'>
-	          <div class="modal-content">
-	            <div class="modal-header">
+	        <div class="modal-dialog '.$id.' ' . $size . '" '._attributes_to_string($attr).'>
+	          <div class="modal-content '.$id.'">
+	            <div class="modal-header '.$id.'">
 	            	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 	                  <span aria-hidden="true">×</span></button>
 	                <h4 class="modal-title">' . $header . ' </h4></div>
-	            <div class="modal-body" id="modal-body">';
+	            <div class="modal-body '.$id.'">';
 	return $txt;
 }
 

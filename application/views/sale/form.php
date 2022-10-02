@@ -131,7 +131,15 @@
 			<button class="btn btn-warning" type="button" id="btn-cancel">Cancel</button>
 		</div>
 	</div>
-
+<style>
+	.modal-dialog{
+    overflow-y: initial !important
+}
+.modal-body{
+    height: 80vh;
+    overflow-y: auto;
+}
+</style>
 <?= modal_open("modal_pasien", "Biodata pasien", "modal-lg") ?>
 <?= modal_close() ?>
 <?= modal_open("modal_racikan", "List Item Racikan | [Ctrl+a]Add Item | [Ctrl+s]Save","modal-lg") ?>

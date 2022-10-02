@@ -41,7 +41,7 @@ class Sale extends MY_Generator
 			$input[$key] = (!empty($sess[$key]) ? $sess[$key] : null);
 		}
 		$input['doctor_name'] = $this->session->penjualan['doctor_name'];
-		$input['unit_id'] = $data['unit_id'];
+		$input['unit_id'] = $data['unit_id'].'a';
 		$input['sale_type'] = $sess['sale_type'];
 		$input['user_id'] = ($this->session->user_id ? $this->session->user_id : 21);
 		$input['sale_num'] = $this->get_no_sale($data['unit_id']);
@@ -62,9 +62,16 @@ class Sale extends MY_Generator
 		$input['embalase_item_sale'] = $data["embalase_item"];
 		$input['sale_services'] = $totalService;
 		$input['date_act'] 	= date('Y-m-d H:i:s');
-
 		//insert into farmasi.sale
 		$this->db->insert("farmasi.sale", $input);
+		$err = $this->db->error();
+		if ($err["message"]) {
+			echo json_encode([
+				"code" 		=> "202",
+				"message"	=> "table sale : ".$err["message"],
+			]);
+			exit();
+		}
 		$saleId = $this->db->query("SELECT last_value as seq FROM public.sale_id_seq;")->row('seq');
 		$saleDetail = [];
 		//nonracikan
@@ -95,6 +102,14 @@ class Sale extends MY_Generator
 
 		$this->db->insert_batch("farmasi.sale_detail", $saleDetail);
 		$err = $this->db->error();
+		if ($err["message"]) {
+			echo json_encode([
+				"code" 		=> "203",
+				"message"	=> "table sale_detail : ".$err["message"],
+			]);
+			exit();
+		}
+
 		if ($this->db->trans_status() === false) {
 			$this->db->trans_rollback();
 			$resp = [
