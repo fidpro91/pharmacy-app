@@ -120,6 +120,7 @@ class Sale extends MY_Generator
 			$this->db->trans_commit();
 			$resp = [
 				"code" 		=> "200",
+				"sale_id" 	=> $saleId,
 				"message"	=> "Data berhasil disimpan"
 			];
 		}
@@ -261,7 +262,8 @@ class Sale extends MY_Generator
 			$detail[$x]['subtotal'] = $price_total;
 			$totalAll += $price_total;
 		}
-
+		print_r($detail);
+		die;
 		$grandtotal = $totalAll + $input['sale_services'] + $input["embalase_item_sale"];
 		$embalase = $grandtotal / 100;
 		$embalase = abs(ceil($embalase) - $embalase) * 100;
@@ -370,7 +372,7 @@ class Sale extends MY_Generator
 		$diff		= date_diff($date1, $date2); */
 		$data['dataHistory'] = $this->db->query("
 			SELECT * from (
-				select v.visit_id,v.visit_date,s.srv_id,mu.unit_name,string_agg(DISTINCT concat(mi.icd_code,'-',mi.icd_name), '<br>')diagnosa,string_agg(DISTINCT mb.bill_name, '<br>') tindakan,string_agg(DISTINCT vo.item_name, '<br>') obat
+				select v.visit_id,v.visit_date,s.srv_id,mu.unit_name,string_agg(DISTINCT concat(mi.icd_code,'-',mi.icd_name), '<br>')diagnosa,string_agg(DISTINCT mb.bill_name, '<br>') tindakan,string_agg(DISTINCT concat(vo.item_name,' Qty : ',sd.sale_qty,' ',vo.item_unitofitem), '<br>') obat
 				from yanmed.visit v
 				join yanmed.services s on s.visit_id = v.visit_id
 				join yanmed.patient p on v.px_id = p.px_id
@@ -733,7 +735,7 @@ class Sale extends MY_Generator
 			"delimiter" => "/",
 			"number"	=> "2",
 			"lpad"		=> "4",
-			"filter"	=> " AND unit_id = '$id'"
+			"filter"	=> " AND unit_id = '$id' and date(sale_date) = date(now())"
 		]);
 	}
 

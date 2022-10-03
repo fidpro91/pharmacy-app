@@ -165,6 +165,9 @@
         $.each(data, (ind, obj) => {
           $('.modal-body').find("#" + ind).val(obj);
         });
+        if (data.visit_id) {
+          $('.modal-body').find("#tipe_patient").val(1);
+        }
         $("select[class*='select2']").trigger("change");
       }, 'json');
     });
