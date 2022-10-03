@@ -81,21 +81,23 @@
 			$total_stock_adj += $data->qty_adj;
 			$total_stock_sistem += $data->qty_data;
 			$total_stock_opname += $data->qty_opname;
-
-			$total_nilai_adj += $data->nilai_adj;
-			$total_nilai_stock_sistem += $data->nilai_sistem;
-			$total_nilai_stock_opname += $data->nilai_opname;
+			$nilai_adj = ($data->qty_adj*$data->item_price);
+			$nilai_sistem = ($data->qty_data*$data->item_price);
+			$nilai_opname = ($data->qty_opname*$data->item_price);
+			$total_nilai_adj += ($nilai_adj);
+			$total_nilai_stock_sistem += ($nilai_sistem);
+			$total_nilai_stock_opname += ($nilai_opname);
 			?>
 			<tr>
 				<td align="center"><?php echo $no;?></td>
 				<td><?php echo $data->item_name;?></td>
 				<td><?php echo number_format($data->item_price,2,'.',',');?></td>
 				<td align="center"><?php echo $data->qty_data;?></td>
-				<td align="right"><?php echo number_format($data->nilai_sistem,2,'.',',');?></td>
+				<td align="right"><?php echo number_format($nilai_sistem,2,'.',',');?></td>
 				<td align="center"><?php echo $data->qty_opname;?></td>
-				<td align="right"><?php echo number_format($data->nilai_opname,2,'.',',');?></td>
+				<td align="right"><?php echo number_format($nilai_opname,2,'.',',');?></td>
 				<td align="center"><?php echo $data->qty_adj;?></td>
-				<td align="right"><?php echo number_format($data->nilai_adj,2,'.',',');?></td>
+				<td align="right"><?php echo number_format($nilai_adj,2,'.',',');?></td>
 				<td align="left"><?php echo $data->opname_note;?></td>
 			</tr>
 			<?php

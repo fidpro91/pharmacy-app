@@ -216,7 +216,7 @@ class M_sale extends CI_Model
 		$data = array(
 			"tanggal" => $result->tanggal,
 			"noresep" => $result->sale_num,
-			"namapasien" => $result->patient_name,
+			"namapasien" => $result->patient_name.'/'.$result->patient_norm,
 			"kepemilikan" => $result->surety_name,
 			"doctor_name" => $result->doctor_name,
 			"unit_name" => $result->unit_name,
