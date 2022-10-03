@@ -72,7 +72,7 @@
 			$(this).closest('tr').find('.inputan').attr("readonly",false);
 		} else {
 			$(this).closest('tr').find('.inputan').attr("readonly",true);
-			$(this).closest('tr').find('.inputan').val(0).trigger("change");
+			$(this).closest('tr').find('.inputan').trigger("change");
 		}
 		hitunggrandTotal();
 	});
