@@ -304,6 +304,7 @@
 					leavePage=false;
 					alert(data.message);
 					if (data.code == '200') {
+						cetak_resep(data.sale_id,0,0);
 						location.reload(true);
 					}
 				}
