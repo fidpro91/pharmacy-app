@@ -262,8 +262,6 @@ class Sale extends MY_Generator
 			$detail[$x]['subtotal'] = $price_total;
 			$totalAll += $price_total;
 		}
-		print_r($detail);
-		die;
 		$grandtotal = $totalAll + $input['sale_services'] + $input["embalase_item_sale"];
 		$embalase = $grandtotal / 100;
 		$embalase = abs(ceil($embalase) - $embalase) * 100;
@@ -487,7 +485,7 @@ class Sale extends MY_Generator
 				];
 			} elseif ($value == "racikan_id") {
 				$racikan = $this->db->query(
-					"select distinct racikan_id as id,racikan_id as text from farmasi.sale_detail sd where sale_id = '$sale_id'"
+					"select distinct coalesce(racikan_id,'') as id,racikan_id as text from farmasi.sale_detail sd where sale_id = '$sale_id'"
 				)->result();
 				$row[] = [
 					"id" => $value,
