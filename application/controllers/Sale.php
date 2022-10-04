@@ -100,6 +100,28 @@ class Sale extends MY_Generator
 			exit;
 		}
 
+		$sukses = true;
+		foreach ($saleDetail as $row){
+			$cek = $this->db->query("SELECT * FROM newfarmasi.stock s
+         	join admin.ms_item i on s.item_id = i.item_id
+			WHERE s.item_id = ".$row['item_id']."
+			AND own_id = ".$input['own_id']."
+			AND unit_id = ".$input['unit_id'])->row();
+			if ($cek->stock_summary<$row['sale_qty']){
+				echo json_encode([
+					"code" 		=> "203",
+					"message"	=> "Stock item $cek->item_name kurang dari jumlah penjualan",
+				]);
+				$sukses = false;
+				break;
+
+			}
+		}
+		if ($sukses == false){
+			$this->db->trans_rollback();
+			exit();
+		}
+
 		$this->db->insert_batch("farmasi.sale_detail", $saleDetail);
 		$err = $this->db->error();
 		if ($err["message"]) {

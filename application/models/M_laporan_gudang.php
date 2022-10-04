@@ -327,47 +327,17 @@ order by cb.supplier_name asc ")->result();
 
 	public function stok_opname($where)
 	{
-		$sql = "SELECT 
-	distinct
-	i.item_id,
-	i.item_name,
-	opr.opname_note,
-	opr.opname_header_id,
-	opr.opname_date,
-	o.qty_adj,
-	o.qty_data,
-	o.qty_opname,
-	op.item_price :: NUMERIC,
-	op.item_price :: NUMERIC * o.qty_adj AS nilai_adj,
-	op.item_price :: NUMERIC * o.qty_data AS nilai_sistem,
-	op.item_price :: NUMERIC * o.qty_opname AS nilai_opname 
-FROM
-	(
-	SELECT
-		item_id,
-		MAX ( A.opname_header_id ) AS opname_id 
-	FROM
-		(
-		SELECT
-			o.opname_header_id,
-			item_id,
-			opname_date,
-			opname_note 
-		FROM
-			newfarmasi.opname o
-			JOIN newfarmasi.opname_header oh on o.opname_header_id = oh.opname_header_id
-		WHERE
-			0 = 0 
-			$where
-		) a 
-	GROUP BY
-		item_id 
-	) b
-	INNER JOIN newfarmasi.opname_header opr ON opr.opname_header_id = b.opname_id
-	INNER JOIN newfarmasi.opname o on o.opname_header_id = opr.opname_header_id
-	INNER JOIN ( SELECT opname_header_id, MAX ( item_price ) item_price FROM newfarmasi.opname GROUP BY opname_header_id ) op ON op.opname_header_id = opr.opname_header_id
-	INNER JOIN ADMIN.ms_item i ON i.item_id = o.item_id
-	order by item_name";
+		$sql = "
+		SELECT mi.item_code,mi.item_name,oh.opname_date,opname_note,o.* FROM newfarmasi.opname o
+		INNER JOIN newfarmasi.opname_header oh ON o.opname_header_id = oh.opname_header_id
+		INNER JOIN admin.ms_item mi ON o.item_id = mi.item_id
+		INNER JOIN (
+			SELECT max(o.opname_id)id_op,item_id,own_id FROM newfarmasi.opname o
+			JOIN newfarmasi.opname_header oh ON o.opname_header_id = oh.opname_header_id
+			WHERE 0=0 $where
+			GROUP BY item_id,own_id
+		)x ON o.opname_id = x.id_op
+		ORDER BY mi.item_name";
 
 		$result = $this->db->query($sql);
 		$result = $result->result();

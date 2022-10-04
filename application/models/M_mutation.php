@@ -151,13 +151,13 @@ class M_mutation extends CI_Model {
 		return $this->db->get_where("newfarmasi.mutation",$where)->row();
 	}
 
-	public function get_item_autocomplete($where)
+	public function get_item_autocomplete($where,$own_id,$unit_id)
 	{
 		return $this->db->query(
 			"SELECT  mi.item_id,mi.item_package,mi.item_name as value,mi.item_code,mi.item_unitofitem,
-			(sf.stock_summary) as total_stock
-			FROM newfarmasi.stock sf
-			JOIN admin.ms_item mi ON sf.item_id = mi.item_id
+			coalesce(sf.stock_summary,0) as total_stock
+			FROM farmasi.v_obat mi
+			left JOIN newfarmasi.stock sf ON sf.item_id = mi.item_id and sf.own_id = '$own_id' and sf.unit_id = '$unit_id'
 			where 0=0 $where"
 		)->result();
 	}

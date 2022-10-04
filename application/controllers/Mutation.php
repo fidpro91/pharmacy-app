@@ -70,11 +70,11 @@ class Mutation extends MY_Generator {
 	{
 		$term = $this->input->get('term');
 		
-		$where = " AND sf.own_id = '$own_id' AND sf.unit_id='$unit_id' AND (
-			lower(mi.item_name) like lower('%$term%')
+		$where = " AND (
+			lower(mi.item_name) like lower('%$term%') AND sf.stock_summary > 0
 		)";	
 		//$select=" mi.item_name as value,";	
-		echo json_encode($this->m_mutation->get_item_autocomplete($where));
+		echo json_encode($this->m_mutation->get_item_autocomplete($where,$own_id,$unit_id));
 	}
 
 	public function save()
