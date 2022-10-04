@@ -78,9 +78,11 @@ class Bon_mutation extends MY_Generator {
 	{
 		$data = $this->input->post();
         $input = [];
+
         foreach ($this->m_mutation->rules() as $key => $value) {
             $input[$key] = (isset($data[$key])?$data[$key]:null);
         }
+
         $input['user_require'] 		= $this->session->user_id;
         $input['mutation_status'] 	= '1';
         $this->form_validation->set_data($input);
