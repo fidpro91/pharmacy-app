@@ -48,7 +48,7 @@ class Receiving extends MY_Generator {
 									"po_id" => $dataPo->po_id
 								 ])->num_rows();
 
-			if ($poComplete === 0) {
+			if ($poComplete < 1) {
 				$this->db->where("po_id",$dataPo->po_id)->update("farmasi.po",[
 					"po_status"	=> 1
 				]);

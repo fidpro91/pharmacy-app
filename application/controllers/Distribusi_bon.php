@@ -88,7 +88,7 @@ class Distribusi_bon extends MY_Generator {
 			"delimiter" => "/",
 			"number"	=> "2",
 			"lpad"		=> "4",
-			"filter"	=> ""
+			"filter"	=> " AND date(mutation_date) = date(now())"
 		]);
 	}
 
