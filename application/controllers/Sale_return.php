@@ -47,7 +47,6 @@ class Sale_return extends MY_Generator {
 		$detailRetur['detail'] = array_map(function($arr) use ($sr_id){
 			return $arr + ['sr_id' => $sr_id];
 		}, $detailRetur['detail']);
-
 		$this->db->insert_batch("farmasi.sale_return_detail",$detailRetur['detail']);
 		$err = $this->db->error();
 		if ($this->db->trans_status() === false) {
@@ -172,6 +171,9 @@ class Sale_return extends MY_Generator {
 
 	public function show_form()
 	{
+		$this->session->unset_userdata([
+			'itemReturn'
+		]);
 		$data['model'] 	= $this->m_sale_return->rules();
 		$data['sr_num']	= $this->get_no_sale();
 		$this->load->view("sale_return/form",$data);
@@ -193,31 +195,36 @@ class Sale_return extends MY_Generator {
 		$itemRetur=[];
 		$itemReturnOld = $this->session->userdata('itemReturn');
 		foreach ($post['div_detail'] as $x => $v) {
-			if(isset($v['itemdet_id'])){
-				$sale = explode('|',$v['itemdet_id']);
-				if (!empty($itemReturnOld)) {
-					$row = array_search($sale[1], array_column($itemReturnOld['detail'], 'saledetail_id'));
-					if ($row !== false) {
-						continue;
-					}
-				}
-				$v['sale_id'] = $sale[0];
-				$v['saledetail_id'] = $sale[1];
-				$v['item_id'] = $sale[2];
-				foreach ($this->m_sale_return_detail->rules() as $key => $value) {
-					if ($key != 'sr_id') {
-						$itemRetur[$x][$key] = (isset($v[$key])?$v[$key]:null);
-					}
-				}
-				$totalItem++;
-				$totalQty += $v['qty_return'];
-				$totalRp += $v['total_return'];
+			if (empty($v['itemdet_id'])) {
+				continue;
 			}
+			$sale = explode('|',$v['itemdet_id']);
+			if (!empty($itemReturnOld)) {
+				echo "suuuu";
+				$row = array_search($sale[1], array_column($itemReturnOld['detail'], 'saledetail_id'));
+				if ($row !== false) {
+					continue;
+				}
+			}
+			$v['sale_id'] = $sale[0];
+			$v['saledetail_id'] = $sale[1];
+			$v['item_id'] = $sale[2];
+			foreach ($this->m_sale_return_detail->rules() as $key => $value) {
+				if ($key != 'sr_id') {
+					$itemRetur[$x][$key] = (isset($v[$key])?$v[$key]:null);
+				}
+			}
+			$totalItem++;
+			$totalQty += $v['qty_return'];
+			$totalRp += $v['total_return'];
 		}
+
 		$detailRetur['detail'] = $itemRetur;
 		$detailRetur['totalItem'] = $totalItem;
 		$detailRetur['totalQty'] = $totalQty;
 		$detailRetur['totalRp'] = $totalRp;
+		
+		
 		if (!empty($itemReturnOld)) {
 			$detailRetur['detail'] = array_merge_recursive($itemReturnOld['detail'],$detailRetur['detail']);
 			$detailRetur['totalItem'] = $itemReturnOld['totalItem']+$totalItem;
@@ -225,6 +232,8 @@ class Sale_return extends MY_Generator {
 			$detailRetur['totalRp'] = $itemReturnOld['totalRp']+$totalRp;
 		}
 		$detailRetur['detail'] = array_unique($detailRetur['detail'],SORT_REGULAR);
+		
+		// print_r($detailRetur['detail']);
 		$this->session->set_userdata('itemReturn',$detailRetur);
 		echo json_encode([
 			"code" 		=> '200',
