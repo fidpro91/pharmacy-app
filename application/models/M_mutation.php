@@ -201,7 +201,7 @@ class M_mutation extends CI_Model {
 		// 			WHERE 0=0 
 		// 			$sWhere 
 		// 			$sOrder $sLimit  ";
-		$sql = "SELECT mutation_id, mutation_date,mutation_no,u.unit_name as asal,u2.unit_name as tujuan,o.own_name, m.mutation_status
+		$sql = "SELECT mutation_id, mutation_date,mutation_no,u.unit_name as asal,u2.unit_name as tujuan,o.own_name, m.mutation_status,m.bon_no
 FROM newfarmasi.mutation m
 INNER JOIN admin.ms_unit u on m.unit_require = u.unit_id 
 INNER JOIN admin.ms_unit u2 on m.unit_sender = u2.unit_id
