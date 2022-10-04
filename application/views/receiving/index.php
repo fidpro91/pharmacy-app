@@ -82,6 +82,11 @@
     "content"   => "Cancel"
 ])
 ]) ?>
+<style>
+  .merah > td {
+		background: #FF9999;
+	}
+</style>
 <script type="text/javascript">
   var table;
   var dataHibah=null;
@@ -99,6 +104,13 @@
             f.own_id = $("#kepemilikan_id").val();
         }
       },
+      "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+				if ( aData[3] == null)
+				{
+          $(nRow).addClass('merah');
+				}
+				
+			},
       'columnDefs': [{
           'targets': [0, 1, -1],
           'searchable': false,
