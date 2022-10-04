@@ -246,8 +246,8 @@ class Bon_mutation extends MY_Generator {
 			"column"	=> "bon_no",
 			"delimiter" => "/",
 			"number"	=> "3",
-			"lpad"		=> "5",
-			"filter"	=> ""
+			"lpad"		=> "7",
+			"filter"	=> " AND date(mutation_date) = date(now())"
 		]);
 		$this->load->view("bon_mutation/form",$data);
 	}
