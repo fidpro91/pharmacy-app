@@ -66,16 +66,44 @@ class Distribusi_bon extends MY_Generator {
 		];
 		$this->db->where('mutation_id',$data['mutation_id'])->update('newfarmasi.mutation',$input);
 		$data["mutation_no"] = $input["mutation_no"];
+		$sukses = true;
+		foreach ($data['list_item'] as $row){
+			$item_id = explode("|",$row["mutation_detil_id"]);
+			$item_id = $item_id[1];
+			$cek = $this->db->query("SELECT s.*,i.item_name FROM newfarmasi.stock s
+         	join admin.ms_item i on s.item_id = i.item_id
+			WHERE s.item_id = ".$item_id."
+			AND own_id = ".$data['own_id']."
+			AND unit_id = ".$data['unit_sender'])->row();
+			if ($cek->stock_summary<$row['qty_send']){
+				echo json_encode([
+					"code" 		=> "203",
+					"message"	=> "Stock item $cek->item_name kurang dari jumlah pengiriman",
+				]);
+				$sukses = false;
+				break;
+			}
+		}
+		if ($sukses == false){
+			$this->db->trans_rollback();
+			exit();
+		}
 		$detail=$this->update_mutation($data);
 		$err = $this->db->error();
 		if ($err['message'] && $detail==false) {
 			$this->db->trans_rollback();
-			$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
+			$resp = [
+				"code" 		=> "202",
+				"message"	=> $err['message'],
+			];
 		}else{
 			$this->db->trans_commit();
-			$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
+			$resp = [
+				"code" 		=> "200",
+				"message"	=> "Sukses",
+			];
 		}
-		redirect('Distribusi_bon');
+		echo json_encode($resp);
 
 	}
 
@@ -99,6 +127,8 @@ class Distribusi_bon extends MY_Generator {
 			if (empty($value['mutation_detil_id'])) {
 				continue;
 			}
+			$id_mut = explode('|',$value['mutation_detil_id']);
+			$value['mutation_detil_id'] = $id_mut[0];
 			$this->db->where(["mutation_detil_id"=>$value['mutation_detil_id']])
 					 ->update("newfarmasi.mutation_detail",
 					 [

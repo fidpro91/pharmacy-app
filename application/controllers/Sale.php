@@ -102,7 +102,7 @@ class Sale extends MY_Generator
 
 		$sukses = true;
 		foreach ($saleDetail as $row){
-			$cek = $this->db->query("SELECT * FROM newfarmasi.stock s
+			$cek = $this->db->query("SELECT s.*,i.item_name FROM newfarmasi.stock s
          	join admin.ms_item i on s.item_id = i.item_id
 			WHERE s.item_id = ".$row['item_id']."
 			AND own_id = ".$input['own_id']."

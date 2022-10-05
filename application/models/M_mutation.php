@@ -157,7 +157,7 @@ class M_mutation extends CI_Model {
 			"SELECT  mi.item_id,mi.item_package,mi.item_name as value,mi.item_code,mi.item_unitofitem,
 			coalesce(sf.stock_summary,0) as total_stock
 			FROM farmasi.v_obat mi
-			left JOIN newfarmasi.stock sf ON sf.item_id = mi.item_id and sf.own_id = '$own_id' and sf.unit_id = '$unit_id'
+			JOIN newfarmasi.stock sf ON sf.item_id = mi.item_id and sf.own_id = '$own_id' and sf.unit_id = '$unit_id'
 			where 0=0 $where"
 		)->result();
 	}
