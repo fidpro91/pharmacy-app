@@ -75,7 +75,7 @@ class Distribusi_bon extends MY_Generator {
 			WHERE s.item_id = ".$item_id."
 			AND own_id = ".$data['own_id']."
 			AND unit_id = ".$data['unit_sender'])->row();
-			if ($cek->stock_summary<$row['qty_send']){
+			if (isset($cek->stock_summary) && $cek->stock_summary<$row['qty_send']){
 				echo json_encode([
 					"code" 		=> "203",
 					"message"	=> "Stock item $cek->item_name kurang dari jumlah pengiriman",

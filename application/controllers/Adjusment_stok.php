@@ -113,9 +113,14 @@ class Adjusment_stok extends MY_Generator {
 		echo json_encode($resp);
 	}
 
-	public function show_form()
+	public function show_form($item_id,$unit_id,$own_id)
 	{
 		$data['model'] = $this->m_adjusment_stok->rules();
+		$data['item']  = $this->db->order_by("stockprocess_id","desc")->get_where("newfarmasi.stock_process",[
+							"item_id"	=> $item_id,
+							"unit_id"	=> $unit_id,
+							"own_id"	=> $own_id,
+						])->row();
 		$this->load->view("adjusment_stok/form",$data);
 	}
 }
