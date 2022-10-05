@@ -686,6 +686,7 @@ class Sale extends MY_Generator
 			$nonRacikan['detail'] = array_merge_recursive($itemNonRacikan, $itemNonRacikOld['detail']);
 			$nonRacikan['total'] = $itemNonRacikOld['total'] + $total;
 		}
+		$this->session->set_userdata('itemNonRacik', $nonRacikan);
 		$resp = [
 			'total' 	=> $total,
 			'embalase' 	=> (count($itemNonRacikan) * $this->session->penjualan["embalaseItem"]),
