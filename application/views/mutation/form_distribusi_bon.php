@@ -66,7 +66,7 @@
                             <td>$value->qty_request</td>
                             <td>$value->stock_unit</td>
                             <td>
-                                ".form_hidden("list_item[$key][mutation_detil_id]",$value->mutation_detil_id).form_input([
+                                ".form_hidden("list_item[$key][mutation_detil_id]",$value->mutation_detil_id.'|'.$value->item_id).form_input([
                                     "type"  => "text",
                                     "name"  => "list_item[$key][qty_send]",
                                     "class" => "form-control",
@@ -92,10 +92,21 @@
     });
     $("#fm_mutation").on("submit",function(){
         if (confirm("Simpan data permintaan?")) {
-            return true;
-        }else{
-            return false;
+            $.ajax({
+                'type': "post",
+                'data': $("#fm_mutation").serialize(),
+                'url': "distribusi_bon/save_distribusi",
+                'dataType' : 'json',
+                'success': function(data) {
+                    alert(data.message);
+                    if (data.code == '200') {
+                        table.draw();
+                        $("#modal_distribusi").modal('hide');
+                    }
+                }
+            });
         }
+        return false;
     });
     <?= $this->config->item('footerJS') ?>
 </script>

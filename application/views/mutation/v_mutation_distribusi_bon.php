@@ -29,7 +29,16 @@
         ]) ?>
       </div>
       <div class="col-md-3">
-        <?= create_inputDaterange("tanggal", ["locale" => ["format" => "YYYY-MM-DD", "separator" => "/"]]) ?>
+        <?= create_inputDate("tanggal=bulan mutasi", [
+            "format"    => "mm-yyyy",
+            "viewMode"    => "year",
+            "minViewMode"  => "year",
+            "autoclose"    => true
+          ], [
+            "value"     => date('m-Y'),
+            "readonly"  => true
+          ])
+          ?>
       </div>
       <div class="col-md-3">
         <?= create_select([
