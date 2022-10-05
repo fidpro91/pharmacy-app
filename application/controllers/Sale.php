@@ -34,6 +34,13 @@ class Sale extends MY_Generator
 	{
 		$data = $this->input->post();
 		$sess = $this->session->userdata('penjualan')['pasien'];
+		if (empty($sess)) {
+			echo json_encode([
+				"code" 		=> "207",
+				"message"	=> "Mohon dilengkapi data pasien!",
+			]);
+			exit();
+		}
 		$this->db->trans_begin();
 		// if ($this->m_sale->validation()) {
 		$input = [];
@@ -109,7 +116,7 @@ class Sale extends MY_Generator
 			AND unit_id = ".$input['unit_id'])->row();
 			if ($cek->stock_summary<$row['sale_qty']){
 				echo json_encode([
-					"code" 		=> "203",
+					"code" 		=> "204",
 					"message"	=> "Stock item $cek->item_name kurang dari jumlah penjualan",
 				]);
 				$sukses = false;
@@ -126,7 +133,7 @@ class Sale extends MY_Generator
 		$err = $this->db->error();
 		if ($err["message"]) {
 			echo json_encode([
-				"code" 		=> "203",
+				"code" 		=> "205",
 				"message"	=> "table sale_detail : ".$err["message"],
 			]);
 			exit();
@@ -135,7 +142,7 @@ class Sale extends MY_Generator
 		if ($this->db->trans_status() === false) {
 			$this->db->trans_rollback();
 			$resp = [
-				"code" 		=> "202",
+				"code" 		=> "206",
 				"message"	=> $err['message']
 			];
 		} else {
@@ -654,6 +661,7 @@ class Sale extends MY_Generator
 			$price_total = ($v['price_total'] * $header['profit']) + $v['price_total'];
 			$itemNonRacikan[$x]['subtotal'] = $price_total;
 			$total += $price_total;
+
 			$item = $v['autocom_item_id'] . "(" . $v['sale_qty'] . ")";
 			$html .= "
 			<div class='comment-text itemNonracikan'>
@@ -663,13 +671,14 @@ class Sale extends MY_Generator
 						<a href=\"#\" onclick=\"removeNonRacikan(this,'" . $v['item_id'] . "','" . $price_total . "')\" class=\"btn btn-xs btn-danger\"><i class=\"fa fa-minus\"></i></a>
 					</span>
 					<span class=\"text-muted pull-right\">
-						" . convert_currency(($total)) . "
+						" . convert_currency(($price_total)) . "
 					</span>
 					<p>" . $v['dosis'] . "</p>
 				</span>
 			</div>
 			";
 		}
+		
 		$nonRacikan['detail'] = $itemNonRacikan;
 		$nonRacikan['total'] = $total;
 		if (!empty($this->session->userdata('itemNonRacik'))) {
@@ -677,7 +686,6 @@ class Sale extends MY_Generator
 			$nonRacikan['detail'] = array_merge_recursive($itemNonRacikan, $itemNonRacikOld['detail']);
 			$nonRacikan['total'] = $itemNonRacikOld['total'] + $total;
 		}
-		$this->session->set_userdata('itemNonRacik', $nonRacikan);
 		$resp = [
 			'total' 	=> $total,
 			'embalase' 	=> (count($itemNonRacikan) * $this->session->penjualan["embalaseItem"]),

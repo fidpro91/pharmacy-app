@@ -8,7 +8,7 @@ class M_sale extends CI_Model
 		$data = $this->db->query("
 				select " . implode(',', $aColumns) . ",x.id_key,x.sale_type 
 				from (select 
-				sl.surety_id,sale_type,sale_num,sale_date,concat (patient_name,' (',patient_norm,')') as patient_name,sale_total,
+				sl.date_act,sl.surety_id,sale_type,sale_num,sale_date,concat (patient_name,' (',patient_norm,')') as patient_name,sale_total,
 				sale_status,surety_name,doctor_name,cash_id,patient_norm,sale_id AS id_key 
 				from farmasi.sale sl
 				left join yanmed.ms_surety su on sl.surety_id = su.surety_id	
@@ -21,7 +21,7 @@ class M_sale extends CI_Model
 	{
 		$data = $this->db->query("
 		select " . implode(',', $aColumns) . ",x.id_key 
-		from (select 
+		from (select sl.date_act,
 		sl.surety_id,sale_type,sale_num,sale_date,concat (patient_name,' (',patient_norm,')') as patient_name,sale_total,
 		sale_status,surety_name,doctor_name,cash_id,patient_norm,sale_id AS id_key 
 		from farmasi.sale sl
@@ -35,6 +35,7 @@ class M_sale extends CI_Model
 	{
 		$col = ["patient_norm",
 			"sale_num",
+			"date_act",
 			"sale_date",
 			"patient_name",
 			"sale_status",

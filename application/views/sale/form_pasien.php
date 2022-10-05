@@ -124,7 +124,7 @@
                 $("#"+ind).val(obj).trigger('change');
             });
         }
-        $("#px_norm").focus();
+        $("#patient_norm").focus();
 	});
 
     $("body").on("focus", "#patient_norm", function() {
