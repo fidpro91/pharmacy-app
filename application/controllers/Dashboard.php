@@ -26,9 +26,9 @@ class Dashboard extends MY_Generator {
         )->row();
         $data['obat_ready'] = $this->db->query("select count(distinct item_id) total from newfarmasi.stock 
         where stock_summary>0 and unit_id = '$unit'")->row();
-        $data['obat_habis'] = $this->db->query('SELECT count(*) total FROM newfarmasi.stock_fifo where stock_saldo<0')->row();
+        $data['obat_habis'] = $this->db->query('SELECT count(distinct item_id) total FROM newfarmasi.stock_fifo where stock_saldo<1')->row();
         $data['obat_akan_habis']=$this->db->query("
-        SELECT sum(coalesce(stock_summary,0)) total FROM newfarmasi.stock s
+        SELECT count(distinct s.item_id) total FROM newfarmasi.stock s
         join farmasi.stock_maxmin_unit su on s.item_id = su.item_id and s.own_id = su.own_id 
         and s.unit_id = su.unit_id 
         where s.stock_summary <= su.stock_min and s.unit_id = '$unit'
