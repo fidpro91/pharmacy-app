@@ -330,9 +330,8 @@ class Distribusi_bon extends MY_Generator {
 		$this->load->library('datatable');
 		$attr 	= $this->input->post();
 		$fields = $this->m_mutation->get_column_bon();
-		list($tgl1,$tgl2) = explode('/', $attr['tgl']); 
         $filter = [];	
-		$filter["custom"]= "(date(mutation_date) between '$tgl1' and '$tgl2')";	
+		$filter["custom"] = " to_char(mutation_date,'MM-YYYY')='" . $attr['tgl'] . "'";
 		$filter = array_merge($filter, ["unit_sender" => ''.(!empty($attr['unit'])?$attr['unit']:0).'']);
 		if($attr['sts'] != ' '){
 			$filter =array_merge($filter, ["mutation_status" => $attr['sts']]);
