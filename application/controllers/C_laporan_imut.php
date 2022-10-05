@@ -5,14 +5,15 @@ class C_laporan_imut extends MY_Generator
 	public function __construct()
 	{
 		parent::__construct();
-		$this->datascript->lib_select2()->lib_daterange();
+		$this->datascript
+			->lib_select2()
+			->lib_daterange();
 		$this->load->model('M_laporan_imut');
 	}
 	public function index()
 	{
 		$idEmpl=$this->session->user_id;
 		$data['data'] = [];
-		$data['unit'] = $this->m_laporan_penjualan->get_unit($idEmpl)->result();
 		$this->theme('laporan_imutu/v_laporan_imut',$data);
 	}
 
@@ -25,7 +26,7 @@ class C_laporan_imut extends MY_Generator
 		$surety       		= $this->input->post('surety',true);
 		$gol_laporan        = $this->input->post('gol_laporan',true);
 		$unit_id            = "";
-		$where 				= ""; //816753
+		$where 				= "";
 
 		if($unit_penjualan !=null){
 			$unit_id = implode(',',$unit_penjualan);
