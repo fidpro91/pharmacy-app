@@ -138,8 +138,8 @@
         let stock_3 = stock_1-stock_2;
         $(".modal-title").text("Penyesuaian Stok#"+$(a).closest('tr').find("td:eq(3)").text());
         $("#modal_penyesuaian").find("#stock_old").val(stock_2);
-        $("#modal_penyesuaian").find("#stock_after").val(stock_1);
-        $("#modal_penyesuaian").find("#different_qty").val(stock_3);
+        /* $("#modal_penyesuaian").find("#stock_after").val(stock_1);
+        $("#modal_penyesuaian").find("#different_qty").val(stock_3); */
         $("#modal_penyesuaian").find("#item_id").val(item_id);
         $("#modal_penyesuaian").find("#unit_id").val($("#unit_id_depo").val());
         $("#modal_penyesuaian").find("#own_id").val($("#kepemilikan_id").val());
