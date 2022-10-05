@@ -43,12 +43,8 @@ class Receiving extends MY_Generator {
 
 			$data['own_id'] = $dataPo->own_id;
 			$sukses=$this->insert_recdet($data);
-			$poComplete=$this->db->where("(po_qtyreceived != po_qtyunit)",null)
-								 ->get_where("farmasi.po_detail",[
-									"po_id" => $dataPo->po_id
-								 ])->num_rows();
 
-			if ($poComplete < 1) {
+			if ($data["jns_penerimaan"] == 2) {
 				$this->db->where("po_id",$dataPo->po_id)->update("farmasi.po",[
 					"po_status"	=> 1
 				]);

@@ -77,7 +77,7 @@
   "style" => "width:90%"
 ]) ?>
 <?= modal_close() ?>
-<?= modal_open("modal_checkout", "Checkout Resep") ?>
+<?= modal_open("modal_checkout", "Checkout Resep",null,null,false) ?>
 <div class="input-group input-group-sm">
   <input id="nomor_resep_co" name="nomor_resep_co" required="true" class="form-control input-sm" type="text" placeholder="isikan nomor rekam medis pasien / scan barcode">
   <span class="input-group-btn">
@@ -89,7 +89,7 @@
 <div class="overlay loading-checkout" style="display: none;">
   <i class="fa fa-refresh fa-spin"></i>
 </div>
-<?= modal_close(null, false) ?>
+<?= modal_close() ?>
 <script src="<?= base_url("assets/plugins/jquery.hotkeys-master") ?>/jquery.hotkeys.js"></script>
 <script type="text/javascript">
   var table;

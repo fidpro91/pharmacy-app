@@ -229,16 +229,13 @@
     });
 
     function changeSurety() {
-
         var sale_type = $("#surety_id").val();
         if (sale_type == 1 || sale_type == 33) {
-            $('#sale_type option[value="0"]').attr('selected', true);
+            $('#sale_type').val(0);
 
         } else {
-            $('#sale_type option[value="1"]').attr('selected', true);
-
+            $('#sale_type').val(1);
         }
-
     }
     
     $('#form_pasien').on("submit",function(){
