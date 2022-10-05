@@ -23,7 +23,6 @@
                 <?= form_hidden("visit_id") ?>
                 <?= form_hidden("service_id") ?>
                 <?= form_hidden("px_id") ?>
-                <?= form_hidden("unit_id") ?>
                 <?= create_select([
                     "attr"         => ["name" => "tipe_patient=Tipe Penjualan", "id" => "tipe_patient", "class" => "form-control"],
                     "option"    => [
@@ -125,7 +124,7 @@
                 $("#"+ind).val(obj).trigger('change');
             });
         }
-        $("#px_norm").focus();
+        $("#patient_norm").focus();
 	});
 
     $("body").on("focus", "#patient_norm", function() {
@@ -145,7 +144,6 @@
                     $('#service_id').val(ui.item.srv_id);
                     $('#doctor_name').val(ui.item.par_name);
                     $('#unit_id_lay').val(ui.item.unit_id);
-                    $('#unit_id').val(ui.item.unit_id);  
                     $('#sep').val(ui.item.sep_no);                   
                     if (ui.item.surety_id) {
                         $('#surety_id').val(ui.item.surety_id);
@@ -202,7 +200,6 @@
                 $('#service_id').val(ui.item.srv_id);
                 $('#doctor_name').val(ui.item.par_name);
                 $('#unit_id_lay').val(ui.item.unit_id);
-                $('#unit_id').val(ui.item.unit_id);
                 $('#kronis').val(ui.item.kronis);
                 if (ui.item.surety_id) {
                     $('#surety_id').val(ui.item.surety_id);
@@ -232,16 +229,13 @@
     });
 
     function changeSurety() {
-
         var sale_type = $("#surety_id").val();
         if (sale_type == 1 || sale_type == 33) {
-            $('#sale_type option[value="0"]').attr('selected', true);
+            $('#sale_type').val(0);
 
         } else {
-            $('#sale_type option[value="1"]').attr('selected', true);
-
+            $('#sale_type').val(1);
         }
-
     }
     
     $('#form_pasien').on("submit",function(){

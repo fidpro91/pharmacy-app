@@ -196,16 +196,26 @@ function create_tableData($attr = array())
 
 }
 
-function modal_open($id, $header, $size = "",$attr=array())
+function modal_open($id, $header, $size = "",$attr=array(),$autohide=true)
 {
 	$txt = '<div class="modal fade" id="' . $id . '">
 	        <div class="modal-dialog '.$id.' ' . $size . '" '._attributes_to_string($attr).'>
-	          <div class="modal-content '.$id.'">
-	            <div class="modal-header '.$id.'">
-	            	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	                  <span aria-hidden="true">×</span></button>
-	                <h4 class="modal-title">' . $header . ' </h4></div>
-	            <div class="modal-body '.$id.'">';
+	          <div class="modal-content '.$id.'">';
+	
+	if ($autohide) {
+		$txt .= '
+		<script>
+		$("#' . $id . '").on(\'hidden.bs.modal\',function(){
+			$(this).find(\'.modal-body\').html("");
+			});
+		</script>';
+	}
+	$txt .= '
+	<div class="modal-header '.$id.'">
+		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		  <span aria-hidden="true">×</span></button>
+		<h4 class="modal-title">' . $header . ' </h4></div>
+	<div class="modal-body '.$id.'">';
 	return $txt;
 }
 
@@ -221,14 +231,6 @@ function modal_close($footer = null,$autohide=true) {
 	          </div>
 	        </div>
 	        </div>';
-	if ($autohide != false) {
-		$txt .= '
-		<script>
-		$(".modal").on(\'hidden.bs.modal\',function(){
-			$(this).find(\'.modal-body\').html("");
-		  });
-		</script>';
-	}
 	return $txt;
 }
 

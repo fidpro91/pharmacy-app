@@ -52,6 +52,11 @@
 											"column"  => ["po_id","detail_po"]
 										],
 						])?>
+
+						<?=create_select([
+							"attr"=>["name"=>"jns_penerimaan=Jenis Penerimaan","id"=>"jns_penerimaan","class"=>"form-control"],
+							"option"=> [["id"=>'1',"text"=>"Terima Sebagian"],["id"=>'2',"text"=>"Terima Semua"]],
+						])?>
 					
 						<?=create_select([
 							"attr"=>["name"=>"pay_type=Tipe pembayaran","id"=>"pay_type","class"=>"form-control"],

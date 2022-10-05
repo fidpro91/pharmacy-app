@@ -14,6 +14,7 @@
 	]) ?>
 	<?= create_input("stock_old",[
 		"onchange"	=> "hitung_selisih()",
+		"value"		=> $item->stock_after,
 		"readonly"	=> true
 	]) ?>
 	<?= create_input("stock_after",[
@@ -25,7 +26,9 @@
 	<?= create_inputMask("price_item","IDR",[
 		"onchange"	=> "hitung_total()"
 	]) ?>
-	<?= create_inputMask("price_total","IDR") ?>
+	<?= create_inputMask("price_total","IDR",[
+		"value" => $item->item_price
+	]) ?>
 	<?= form_close() ?>
 	<div class="box-footer">
 		<button class="btn btn-primary" type="button" onclick="$('#fm_adjusment_stok').submit()">Save</button>
