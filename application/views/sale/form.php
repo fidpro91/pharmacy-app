@@ -347,8 +347,8 @@
 	}
 
 	function edit_px() {
-		/* $("#modal_pasien").modal('show');
-      	$("#modal_pasien").find(".modal-body").load("sale/show_form_pasien"); */
+		$("#modal_pasien").modal('show');
+      	$("#modal_pasien").find(".modal-body").load("sale/show_form_pasien");
 	}
 
 	$(window).bind('beforeunload', function(){
