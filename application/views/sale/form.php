@@ -322,6 +322,7 @@
 		$("#modal_nonracikan").find(".modal-body").load("sale/show_form_nonracikan");
 	});
 	$("#btn-cancel").click(() => {
+		leavePage = false;
 		$("#form_sale").hide();
 		$("#form_sale").html('');
 	});
