@@ -347,7 +347,7 @@
 	}
 
 	function edit_px() {
-		$("#modal_pasien").modal('show');
+		$("#modal_pasien").modal({backdrop: "static"});
       	$("#modal_pasien").find(".modal-body").load("sale/show_form_pasien");
 	}
 
