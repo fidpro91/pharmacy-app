@@ -208,7 +208,6 @@ class Sale_return extends MY_Generator {
 			}
 			$sale = explode('|',$v['itemdet_id']);
 			if (!empty($itemReturnOld)) {
-				echo "suuuu";
 				$row = array_search($sale[1], array_column($itemReturnOld['detail'], 'saledetail_id'));
 				if ($row !== false) {
 					continue;

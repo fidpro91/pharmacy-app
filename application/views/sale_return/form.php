@@ -119,7 +119,7 @@
 
 	function grandTotal(total) {
 		let embalase = total/100;
-		embalase = Math.abs(Math.ceil(embalase)-embalase)*100;
+		embalase = (parseFloat(Math.abs(Math.ceil(embalase)-embalase)).toFixed(2))*100;
 		total = total+embalase;
 		$("#embalase").val(embalase);
 		$("#total_return").val(total);
