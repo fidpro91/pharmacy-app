@@ -759,7 +759,7 @@ class Sale extends MY_Generator
 		
 		$nomor = generate_code_transaksi([
 			// "text"	=> "S/$nickName/NOMOR/" . date("d.m.Y"),
-			"text"	=> "$nickName/NOMOR/" . date("d.m.Y"),
+			"text"	=> "$nickName/NOMOR/" . date("m.Y"),
 			"table"	=> "newfarmasi.nomor_sale",
 			"column"	=> "sale_num",
 			"delimiter" => "/",
