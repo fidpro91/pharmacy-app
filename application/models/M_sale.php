@@ -253,7 +253,8 @@ class M_sale extends CI_Model
 			a.sale_services,
 			a.embalase_item_sale,
 			a.sale_embalase,
-			c.subtotal
+			(c.sale_price*sale_qty+(c.sale_price*sale_qty*COALESCE(percent_profit,0)))
+ as subtotal
 			FROM
 			farmasi.sale a
 			JOIN farmasi.sale_detail C ON a.sale_id = c.sale_id
