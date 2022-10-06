@@ -322,6 +322,7 @@
 		$("#modal_nonracikan").find(".modal-body").load("sale/show_form_nonracikan");
 	});
 	$("#btn-cancel").click(() => {
+		leavePage = false;
 		$("#form_sale").hide();
 		$("#form_sale").html('');
 	});
@@ -347,8 +348,8 @@
 	}
 
 	function edit_px() {
-		 $("#modal_pasien").modal('show');
-      	$("#modal_pasien").find(".modal-body").load("sale/show_form_pasien"); 
+		$("#modal_pasien").modal({backdrop: "static"});
+      	$("#modal_pasien").find(".modal-body").load("sale/show_form_pasien");
 	}
 
 	$(window).bind('beforeunload', function(){
