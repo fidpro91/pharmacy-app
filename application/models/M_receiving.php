@@ -114,7 +114,7 @@ class M_receiving extends CI_Model {
 					"rec_date" => "trim",
 					"po_id" => "trim|integer",
 					"own_id" => "trim|integer",
-					"receiver_unit" => "trim|integer",
+					"receiver_unit" => "trim|integer|required",
 					"sender_unit" => "trim|integer",
 					"sender_num" => "trim",
 					"sender_date" => "trim",

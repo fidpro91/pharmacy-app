@@ -44,7 +44,7 @@ class Receiving extends MY_Generator {
 			$data['own_id'] = $dataPo->own_id;
 			$sukses=$this->insert_recdet($data);
 
-			if ($data["jns_penerimaan"] == 2) {
+			if ($data["jns_penerimaan"] == "2") {
 				$this->db->where("po_id",$dataPo->po_id)->update("farmasi.po",[
 					"po_status"	=> 1
 				]);
