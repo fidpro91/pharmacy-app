@@ -196,18 +196,6 @@ class Receiving extends MY_Generator {
 			$this->db->insert("newfarmasi.stock_fifo",$stockku[$x]);
 			$sukses=true;
 		}
-
-		//update po header komplete
-		$totalItem = $this->db->get_where("farmasi.po_detail",[
-			"po_qtyunit < coalesce(po_qtyreceived,0)"	=> null,
-			"po_id"		=> $data["po_id"]
-		])->num_rows();
-		
-		if ($totalItem === 0) {
-			$this->db->where(["po_id" => $data["po_id"]])->update("farmasi.po",[
-				"po_status"	=> "1"
-			]);
-		}
 		
 		return $sukses;
 	}
