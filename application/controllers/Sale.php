@@ -41,7 +41,6 @@ class Sale extends MY_Generator
 			]);
 			exit();
 		}
-		$this->db->trans_begin();
 		// if ($this->m_sale->validation()) {
 		$input = [];
 		foreach ($this->m_sale->rules() as $key => $value) {
@@ -69,6 +68,7 @@ class Sale extends MY_Generator
 		$input['embalase_item_sale'] = $data["embalase_item"];
 		$input['sale_services'] = $totalService;
 		$input['date_act'] 	= date('Y-m-d H:i:s');
+		$this->db->trans_begin();
 		//insert into farmasi.sale
 		$this->db->insert("farmasi.sale", $input);
 		$err = $this->db->error();
@@ -756,16 +756,24 @@ class Sale extends MY_Generator
 	public function get_no_sale($id)
 	{
 		$nickName = $this->db->get_where("admin.ms_unit", ["unit_id" => $id])->row("unit_nickname");
-		return generate_code_transaksi([
+		
+		$nomor = generate_code_transaksi([
 			// "text"	=> "S/$nickName/NOMOR/" . date("d.m.Y"),
 			"text"	=> "$nickName/NOMOR/" . date("m.Y"),
-			"table"	=> "farmasi.sale",
+			"table"	=> "newfarmasi.nomor_sale",
 			"column"	=> "sale_num",
 			"delimiter" => "/",
 			"number"	=> "2",
 			"lpad"		=> "4",
-			"filter"	=> " AND unit_id = '$id' and date(sale_date) = date(now())"
+			"filter"	=> " AND unit_id = '$id' and date(date_act) = date(now())"
 		]);
+
+		$this->db->insert("newfarmasi.nomor_sale",[
+			"sale_num" 	=> $nomor,
+			"unit_id"	=> $id
+		]);
+
+		return $nomor;
 	}
 
 	public function strukapotikresep($sale_id, $unit_id, $type)
