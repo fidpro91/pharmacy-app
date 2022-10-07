@@ -70,7 +70,7 @@
     table = $('#tb_mutation').DataTable({
       "processing": true,
       "serverSide": true,
-      "order": [],
+      "order": [[3,"desc"]],
       "scrollX": true,
       "ajax": {
         "url": "<?php echo site_url('bon_mutation/get_data') ?>",

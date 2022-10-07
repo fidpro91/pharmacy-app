@@ -1,6 +1,7 @@
 <style>
     .ui-autocomplete { z-index:2147483647; }
 </style>
+<script src="<?=base_url("assets/plugins/autocompletescroll/jquery.ui.autocomplete.scroll.min.js")?>"></script>
 <div class="row">
 <?= form_open("sale/save", ["method" => "post", "id" => "fm_sale_h"], $model) ?>
 	<?= form_hidden("sale_id") ?>
