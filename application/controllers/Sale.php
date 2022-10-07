@@ -51,6 +51,10 @@ class Sale extends MY_Generator
 		$input['sale_type'] = $sess['sale_type'];
 		$input['user_id'] = ($this->session->user_id ? $this->session->user_id : 21);
 		$input['sale_num'] = $this->get_no_sale($data['unit_id']);
+		$this->db->insert("newfarmasi.nomor_sale",[
+			"sale_num" 	=> $input['sale_num'],
+			"unit_id"	=> $data['unit_id']
+		]);
 		$racikan = $this->session->userdata('itemRacik');
 		$nonRacikan = $this->session->userdata('itemNonRacik');
 		if (!empty($racikan)) {
@@ -766,11 +770,6 @@ class Sale extends MY_Generator
 			"number"	=> "2",
 			"lpad"		=> "4",
 			"filter"	=> " AND unit_id = '$id' and date(date_act) = date(now())"
-		]);
-
-		$this->db->insert("newfarmasi.nomor_sale",[
-			"sale_num" 	=> $nomor,
-			"unit_id"	=> $id
 		]);
 
 		return $nomor;
