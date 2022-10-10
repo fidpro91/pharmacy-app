@@ -169,7 +169,7 @@ class Receiving extends MY_Generator {
 			$detail[$x]['item_id'] = $dataPo->item_id;
 			$detail[$x]['item_pack'] = $dataPo->po_pack;
 			$detail[$x]['item_unit'] = $dataPo->po_unititem;
-			$detail[$x]['price_pack'] = $dataPo->po_pricepack;
+			$detail[$x]['price_pack'] = ($dataPo->po_qtyunit/$dataPo->po_qtypack)*$value['price_item'];
 			// $detail[$x]['price_total'] = $dataPo->po_pricepack;
 			$detail[$x]['qty_pack'] 	= $value['qty_unit']/$dataPo->po_qtyunit*$dataPo->po_qtypack;
 			$detail[$x]['podet_id'] 	= $dataPo->podet_id;
