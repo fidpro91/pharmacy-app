@@ -273,7 +273,21 @@ class Sale extends MY_Generator
 		$detail = [];
 		$input["embalase_item_sale"] = 0;
 		$totalAll = 0;
+		$sukses = true;
 		foreach ($post['list_obat_edited'] as $x => $v) {
+			$cek = $this->db->query("SELECT s.*,i.item_name FROM newfarmasi.stock s
+         	join admin.ms_item i on s.item_id = i.item_id
+			WHERE s.item_id = ".$v['item_id']."
+			AND own_id = ".$input['own_id']."
+			AND unit_id = ".$input['unit_id'])->row();
+			if ($cek->stock_summary<$v['sale_qty']){
+				echo json_encode([
+					"code" 		=> "204",
+					"message"	=> "Stock item $cek->item_name kurang dari jumlah penjualan",
+				]);
+				$sukses = false;
+				break;
+			}
 			foreach ($this->m_sale_detail->rules() as $key => $value) {
 				if ($key != 'sale_id') {
 					$detail[$x][$key] = (isset($v[$key]) ? $v[$key] : null);
@@ -295,6 +309,10 @@ class Sale extends MY_Generator
 			$price_total = ($v['price_total'] * $post['profit']) + $v['price_total'];
 			$detail[$x]['subtotal'] = $price_total;
 			$totalAll += $price_total;
+		}
+		if ($sukses == false){
+			$this->db->trans_rollback();
+			exit();
 		}
 		$grandtotal = $totalAll + $input['sale_services'] + $input["embalase_item_sale"];
 		$embalase = $grandtotal / 100;
