@@ -170,6 +170,8 @@ class M_mutation extends CI_Model {
 								   ->get_where("newfarmasi.mutation m",$where)->row();
 		
 		$data["detail"] = $this->db->join("admin.ms_item mi","mi.item_id=md.item_id")
+								   ->join("newfarmasi.mutation m","m.mutation_id=md.mutation_id")
+								   ->join("newfarmasi.stock s","s.item_id=md.item_id AND s.unit_id = m.unit_sender AND s.own_id = m.own_id","left")
 								   ->get_where("newfarmasi.mutation_detail md",$where)
 								   ->result();
 		
