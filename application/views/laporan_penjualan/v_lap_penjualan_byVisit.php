@@ -95,6 +95,7 @@ body {
 						<th rowspan="2">Nama Produk</th>
 						<th rowspan="2">Satuan</th>
 						<th colspan="2">Jumlah</th>
+						<th rowspan="2">percent_profit</th>
 						<th rowspan="2">Harga</th>
 						<th rowspan="2">Total Retur</th>
 						<th rowspan="2">Subtotal</th>
@@ -119,6 +120,7 @@ body {
 							<td><?=strtoupper($res_det->satuan)?></td>
 							<td><?=($res_det->sale_qty)?></td>
 							<td><?=($res_det->qty_return)?></td>
+							<td><?=convert_currency($res_det->percent_profit)?></td>
 							<td><?=convert_currency($res_det->harga)?></td>
 							<td><?=convert_currency($res_det->total_return)?></td>
 							<td><?=convert_currency($res_det->subtotal-$res_det->total_return)?></td>
