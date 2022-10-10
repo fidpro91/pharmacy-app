@@ -95,7 +95,7 @@ body {
 						<th rowspan="2">Nama Produk</th>
 						<th rowspan="2">Satuan</th>
 						<th colspan="2">Jumlah</th>
-						<th rowspan="2">percent_profit</th>
+						<th rowspan="2">Laba (%)</th>
 						<th rowspan="2">Harga</th>
 						<th rowspan="2">Total Retur</th>
 						<th rowspan="2">Subtotal</th>
@@ -120,7 +120,7 @@ body {
 							<td><?=strtoupper($res_det->satuan)?></td>
 							<td><?=($res_det->sale_qty)?></td>
 							<td><?=($res_det->qty_return)?></td>
-							<td><?=convert_currency($res_det->percent_profit)?></td>
+							<td><?=$res_det->percent_profit?></td>
 							<td><?=convert_currency($res_det->harga)?></td>
 							<td><?=convert_currency($res_det->total_return)?></td>
 							<td><?=convert_currency($res_det->subtotal-$res_det->total_return)?></td>
@@ -135,6 +135,7 @@ body {
 						<td colspan="3">Embalase Item</td>
 						<td><?=$non_racikan?></td>
 						<td></td>
+						<td></td>
 						<td><?=convert_currency(($non_racikan!=0)?($res['embalase_item_sale']/$non_racikan):0)?></td>
 						<td></td>
 						<td><?=convert_currency($res['embalase_item_sale'])?></td>
@@ -143,6 +144,7 @@ body {
 						<td></td>
 						<td colspan="3">Embalase Racikan</td>
 						<td><?=$racikan?></td>
+						<td></td>
 						<td></td>
 						<td><?=convert_currency(($racikan!=0)?($res['sale_service']/$racikan):0)?></td>
 						<td></td>
