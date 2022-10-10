@@ -132,6 +132,7 @@
             source: "<?php echo site_url('sale/get_no_rm/norm'); ?>/"+$("#tipe_patient").val(),
             autoFocus: true,
             minLength:4,
+            maxShowItems: 5,
             select: function(event, ui) {
                 $("#btn-history").attr("disabled",false);
                 $('#patient_norm').val(ui.item.px_norm); 
@@ -160,7 +161,7 @@
         }).data("ui-autocomplete")._renderItem = function(ul, item) {
             if ($("#tipe_patient").val() == 1) {
                 return $("<li>")
-                .append("<div style='color: black' class='comment-text'><span class=\"username\"><b>" +
+                .append("<div style='color: black;' class='comment-text'><span class=\"username\"><b>" +
                     item.px_norm + "|" + item.px_name +
                     "</b><span class=\"text-muted pull-right\">" + item.unit_name + "</span></span><p>" +
                     "<span>Tanggal Kunjung : <span class=\"text-muted pull-right\">" + (item.srv_date) + "</span></span><br>" +

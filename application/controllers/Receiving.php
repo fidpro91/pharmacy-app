@@ -44,7 +44,7 @@ class Receiving extends MY_Generator {
 			$data['own_id'] = $dataPo->own_id;
 			$sukses=$this->insert_recdet($data);
 
-			if ($data["jns_penerimaan"] == 2) {
+			if ($data["jns_penerimaan"] == "2") {
 				$this->db->where("po_id",$dataPo->po_id)->update("farmasi.po",[
 					"po_status"	=> 1
 				]);
@@ -195,18 +195,6 @@ class Receiving extends MY_Generator {
 			$stockku[$x]["expired_date"] = $detail[$x]['expired_date'];
 			$this->db->insert("newfarmasi.stock_fifo",$stockku[$x]);
 			$sukses=true;
-		}
-
-		//update po header komplete
-		$totalItem = $this->db->get_where("farmasi.po_detail",[
-			"po_qtyunit < coalesce(po_qtyreceived,0)"	=> null,
-			"po_id"		=> $data["po_id"]
-		])->num_rows();
-		
-		if ($totalItem === 0) {
-			$this->db->where(["po_id" => $data["po_id"]])->update("farmasi.po",[
-				"po_status"	=> "1"
-			]);
 		}
 		
 		return $sukses;

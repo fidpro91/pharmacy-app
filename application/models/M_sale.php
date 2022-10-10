@@ -172,7 +172,7 @@ class M_sale extends CI_Model
 				JOIN ADMIN.ms_unit mu ON mu.unit_id = s.unit_id
 				LEFT JOIN hr.employee emp ON s.par_id = emp.employee_id 
 			WHERE
-				mu.unit_type in (21,22,23,42)
+				mu.unit_type in (21,22,23,42,9)
 				AND (date(v.visit_end_date)>='".date('Y-m-d',strtotime("- 3 days"))."' OR v.visit_end_date is null) 
 				AND v.visit_status NOT IN (35,60,70) $where
 			order by s.srv_date desc

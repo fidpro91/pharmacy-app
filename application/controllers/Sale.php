@@ -41,7 +41,6 @@ class Sale extends MY_Generator
 			]);
 			exit();
 		}
-		$this->db->trans_begin();
 		// if ($this->m_sale->validation()) {
 		$input = [];
 		foreach ($this->m_sale->rules() as $key => $value) {
@@ -50,8 +49,13 @@ class Sale extends MY_Generator
 		$input['doctor_name'] = $this->session->penjualan['doctor_name'];
 		$input['unit_id'] = $data['unit_id'];
 		$input['sale_type'] = $sess['sale_type'];
+		$input['sale_app'] = 'HEAPY';
 		$input['user_id'] = ($this->session->user_id ? $this->session->user_id : 21);
 		$input['sale_num'] = $this->get_no_sale($data['unit_id']);
+		$this->db->insert("newfarmasi.nomor_sale",[
+			"sale_num" 	=> $input['sale_num'],
+			"unit_id"	=> $data['unit_id']
+		]);
 		$racikan = $this->session->userdata('itemRacik');
 		$nonRacikan = $this->session->userdata('itemNonRacik');
 		if (!empty($racikan)) {
@@ -69,6 +73,7 @@ class Sale extends MY_Generator
 		$input['embalase_item_sale'] = $data["embalase_item"];
 		$input['sale_services'] = $totalService;
 		$input['date_act'] 	= date('Y-m-d H:i:s');
+		$this->db->trans_begin();
 		//insert into farmasi.sale
 		$this->db->insert("farmasi.sale", $input);
 		$err = $this->db->error();
@@ -756,16 +761,19 @@ class Sale extends MY_Generator
 	public function get_no_sale($id)
 	{
 		$nickName = $this->db->get_where("admin.ms_unit", ["unit_id" => $id])->row("unit_nickname");
-		return generate_code_transaksi([
+		
+		$nomor = generate_code_transaksi([
 			// "text"	=> "S/$nickName/NOMOR/" . date("d.m.Y"),
 			"text"	=> "$nickName/NOMOR/" . date("m.Y"),
-			"table"	=> "farmasi.sale",
+			"table"	=> "newfarmasi.nomor_sale",
 			"column"	=> "sale_num",
 			"delimiter" => "/",
 			"number"	=> "2",
 			"lpad"		=> "4",
-			"filter"	=> " AND unit_id = '$id' and date(sale_date) = date(now())"
+			"filter"	=> " AND unit_id = '$id' and date(date_act) = date(now())"
 		]);
+
+		return $nomor;
 	}
 
 	public function strukapotikresep($sale_id, $unit_id, $type)

@@ -1,6 +1,7 @@
 <style>
     .ui-autocomplete { z-index:2147483647; }
 </style>
+<script src="<?=base_url("assets/plugins/autocompletescroll/jquery.ui.autocomplete.scroll.min.js")?>"></script>
 <div class="row">
 <?= form_open("sale/save", ["method" => "post", "id" => "fm_sale_h"], $model) ?>
 	<?= form_hidden("sale_id") ?>
@@ -322,6 +323,7 @@
 		$("#modal_nonracikan").find(".modal-body").load("sale/show_form_nonracikan");
 	});
 	$("#btn-cancel").click(() => {
+		leavePage = false;
 		$("#form_sale").hide();
 		$("#form_sale").html('');
 	});
@@ -347,7 +349,7 @@
 	}
 
 	function edit_px() {
-		$("#modal_pasien").modal('show');
+		$("#modal_pasien").modal({backdrop: "static"});
       	$("#modal_pasien").find(".modal-body").load("sale/show_form_pasien");
 	}
 

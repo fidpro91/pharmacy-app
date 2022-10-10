@@ -32,6 +32,14 @@ class Sale_return extends MY_Generator {
 		$input = [];
 		$this->db->trans_begin();
 		$detailRetur = $this->session->userdata('itemReturn');
+		if (empty($detailRetur)) {
+			$resp = [
+				"code" 		=> "203",
+				"message"	=> "Data item tidak ada, mohon melengkapi data item retur"
+			];
+			echo json_encode($resp);
+			exit;
+		}
 		foreach ($this->m_sale_return->rules() as $key => $value) {
 			$input[$key] = (isset($data[$key])?$data[$key]:null);
 		}
@@ -200,7 +208,6 @@ class Sale_return extends MY_Generator {
 			}
 			$sale = explode('|',$v['itemdet_id']);
 			if (!empty($itemReturnOld)) {
-				echo "suuuu";
 				$row = array_search($sale[1], array_column($itemReturnOld['detail'], 'saledetail_id'));
 				if ($row !== false) {
 					continue;
