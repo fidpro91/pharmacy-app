@@ -49,6 +49,7 @@ class Sale extends MY_Generator
 		$input['doctor_name'] = $this->session->penjualan['doctor_name'];
 		$input['unit_id'] = $data['unit_id'];
 		$input['sale_type'] = $sess['sale_type'];
+		$input['sale_app'] = 'HEAPY';
 		$input['user_id'] = ($this->session->user_id ? $this->session->user_id : 21);
 		$input['sale_num'] = $this->get_no_sale($data['unit_id']);
 		$this->db->insert("newfarmasi.nomor_sale",[
