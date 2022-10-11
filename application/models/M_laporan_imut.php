@@ -6,12 +6,12 @@ class M_laporan_imut extends CI_Model
 		$data = $this->db->select("*,(select reg_name from admin.ms_region where reg_code=a.hsp_city) as kota")
 			->get('admin.profil a')
 			->row();
-
-		if (count($data) > 0) {
-			return $data;
-		}else{
-			return array();
-		}
+		return $data;
+//		if (count($data) > 0) {
+//			return $data;
+//		}else{
+//			return array();
+//		}
 	}
 
 	public function get_data_lap($where)

@@ -85,6 +85,15 @@ class Bon_mutation extends MY_Generator {
 
         $input['user_require'] 		= $this->session->user_id;
         $input['mutation_status'] 	= '1';
+        $input['bon_no'] 	= generate_code_transaksi([
+			"text"	=> "M/BON/NOMOR/".date("d.m.Y"),
+			"table"	=> "newfarmasi.mutation",
+			"column"	=> "bon_no",
+			"delimiter" => "/",
+			"number"	=> "3",
+			"lpad"		=> "4",
+			"filter"	=> " AND date(mutation_date) = date(now())"
+		]);
         $this->form_validation->set_data($input);
 		if ($this->m_mutation->validation()) {
 			$this->db->trans_begin();
@@ -246,7 +255,7 @@ class Bon_mutation extends MY_Generator {
 			"column"	=> "bon_no",
 			"delimiter" => "/",
 			"number"	=> "3",
-			"lpad"		=> "7",
+			"lpad"		=> "4",
 			"filter"	=> " AND date(mutation_date) = date(now())"
 		]);
 		$this->load->view("bon_mutation/form",$data);

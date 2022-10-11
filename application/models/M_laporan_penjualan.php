@@ -398,7 +398,7 @@ class M_laporan_penjualan  extends CI_Model {
 						 	group by saledetail_id
 						 	) d','b.saledetail_id = d.saledetail_id','left')
 						 ->join('farmasi.v_obat c','b.item_id = c.item_id')
-						 ->select("c.item_code,c.item_name,c.item_unitofitem as satuan,b.sale_qty,b.sale_price::numeric as harga, (b.sale_price::numeric * b.sale_qty) as subtotal,d.qty_return,d.total_return::numeric,b.racikan_id",false)
+						 ->select("c.item_code,c.item_name,c.item_unitofitem as satuan,b.sale_qty,b.sale_price::numeric as harga, (b.sale_price::numeric+(b.sale_price::numeric*b.percent_profit::numeric)) as subtotal,d.qty_return,d.total_return::numeric,b.racikan_id,b.percent_profit::numeric",false)
 						 ->get('farmasi.sale a')
 						 ->result();
 		if (count($data) > 0) {

@@ -64,7 +64,7 @@
                             <td>$value->item_name</td>
                             <td>$value->item_package</td>
                             <td>$value->qty_request</td>
-                            <td>$value->stock_unit</td>
+                            <td>".(!empty($value->stock_summary)?$value->stock_summary:"0")."</td>
                             <td>
                                 ".form_hidden("list_item[$key][mutation_detil_id]",$value->mutation_detil_id.'|'.$value->item_id).form_input([
                                     "type"  => "text",

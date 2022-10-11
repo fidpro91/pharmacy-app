@@ -440,7 +440,7 @@ class Distribusi_bon extends MY_Generator {
 	public function show_form($id)
 	{
 		$data['model'] 		= $this->m_mutation->rules();
-		$data['dataBon'] 	= $this->m_mutation->get_databon(["mutation_id"=>$id]);
+		$data['dataBon'] 	= $this->m_mutation->get_databon(["m.mutation_id"=>$id]);
 		$this->load->view("mutation/form_distribusi_bon",$data);
 	}
 
