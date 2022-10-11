@@ -19,15 +19,23 @@ class Sale extends MY_Generator
 	public function index()
 	{
 		// session_destroy();
-		$this->session->unset_userdata([
+		/* $this->session->unset_userdata([
 			'penjualan', 'itemRacik', 'itemNonRacik'
-		]);
+		]); */
+		$this->unset_ses();
 		$this->load->model("m_ms_unit");
 		foreach ($this->m_ms_unit->get_ms_unit(["employee_id" => $this->session->employee_id]) as $key => $value) {
 			$kat[$value->unit_id] = $value->unit_name;
 		}
 		$data['unit'] = $kat;
 		$this->theme('sale/index', $data, get_class($this));
+	}
+
+	public function unset_ses()
+	{
+		unset($_SESSION['penjualan']);
+		unset($_SESSION['itemRacik']);
+		unset($_SESSION['itemNonRacik']);
 	}
 
 	public function save()
@@ -126,7 +134,6 @@ class Sale extends MY_Generator
 				]);
 				$sukses = false;
 				break;
-
 			}
 		}
 		if ($sukses == false){
@@ -382,9 +389,10 @@ class Sale extends MY_Generator
 
 	public function show_form($id)
 	{
-		$this->session->unset_userdata([
+		/* $this->session->unset_userdata([
 			'penjualan', 'itemRacik', 'itemNonRacik'
-		]);
+		]); */
+		$this->unset_ses();
 		$data['model'] = $this->m_sale->rules();
 		$data['sale_num'] = $this->get_no_sale($id);
 		$this->load->view("sale/form", $data);
@@ -392,9 +400,10 @@ class Sale extends MY_Generator
 
 	public function show_form_update($id)
 	{
-		$this->session->unset_userdata([
+		/* $this->session->unset_userdata([
 			'penjualan', 'itemRacik', 'itemNonRacik'
-		]);
+		]); */
+		$this->unset_ses();
 		$data["item"]  = $this->db->query("
 			SELECT sd.*,sd.sale_price::numeric as sale_price,mi.item_name as label_item_id,st.stock_summary as stock,
 			(sd.sale_qty*sd.sale_price+(sd.sale_qty*sd.sale_price*sd.percent_profit))::numeric as price_total FROM farmasi.sale_detail sd
