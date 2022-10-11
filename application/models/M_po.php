@@ -63,11 +63,12 @@ class M_po extends CI_Model {
 	public function get_po($where)
 	{
 		return $this->db
-					 ->join("admin.ms_supplier sp",'sp.supplier_id=po.supplier_id')
-					 ->join("farmasi.ownership ow",'ow.own_id=po.own_id')
-					 ->select("po.po_id,concat(po.po_no,'/',sp.supplier_name,'/',ow.own_name)detail_po",false)
-					 ->order_by("po_date","desc")
-					 ->get_where("farmasi.po po",$where)->result();
+				 ->join("admin.ms_supplier sp",'sp.supplier_id=po.supplier_id')
+				 ->join("farmasi.ownership ow",'ow.own_id=po.own_id')
+				 ->select("po.po_id,concat(po.po_no,'/',sp.supplier_name,'/',ow.own_name)detail_po",false)
+				 ->order_by("po_date","desc")
+				 ->get_where("farmasi.po po",$where)
+			->result();
 	}
 
 	public function find_one($where)
