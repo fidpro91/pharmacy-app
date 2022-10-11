@@ -264,7 +264,7 @@ class Bon_mutation extends MY_Generator {
 	public function show_form_konfirmasi($id)
 	{
 		$data['model'] 		= $this->m_mutation->rules();
-		$data['dataBon'] 	= $this->m_mutation->get_databon(["mutation_id"=>$id]);
+		$data['dataBon'] 	= $this->m_mutation->get_databon(["m.mutation_id"=>$id]);
 		$this->load->view("bon_mutation/form_konfirmasi_bon",$data);
 	}
 
