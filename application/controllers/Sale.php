@@ -81,8 +81,6 @@ class Sale extends MY_Generator
 		$input['embalase_item_sale'] = $data["embalase_item"];
 		$input['sale_services'] = $totalService;
 		$input['date_act'] 	= date('Y-m-d H:i:s');
-		$this->db->trans_begin();
-		//insert into farmasi.sale
 		$this->db->insert("farmasi.sale", $input);
 		$err = $this->db->error();
 		if ($err["message"]) {
@@ -92,7 +90,8 @@ class Sale extends MY_Generator
 			]);
 			exit();
 		}
-		$saleId = $this->db->query("SELECT last_value as seq FROM public.sale_id_seq;")->row('seq');
+		$saleId = $this->db->query("select currval('public.sale_id_seq')seq")->row('seq');
+		//insert into farmasi.sale
 		$saleDetail = [];
 		//nonracikan
 		if (!empty($nonRacikan)) {
@@ -112,6 +111,9 @@ class Sale extends MY_Generator
 
 		//insert sale detail
 		if (empty($saleDetail)) {
+			$this->db->where([
+				"sale_id" => $saleId
+			])->delete("farmasi.sale");
 			$resp = [
 				"code" 		=> "203",
 				"message"	=> "Data item tidak ada, mohon melengkapi data item racikan/non racikan"
@@ -119,7 +121,6 @@ class Sale extends MY_Generator
 			echo json_encode($resp);
 			exit;
 		}
-
 		$sukses = true;
 		foreach ($saleDetail as $row){
 			$cek = $this->db->query("SELECT s.*,i.item_name FROM newfarmasi.stock s
@@ -137,22 +138,19 @@ class Sale extends MY_Generator
 			}
 		}
 		if ($sukses == false){
-			$this->db->trans_rollback();
+			$this->db->where([
+				"sale_id" => $saleId
+			])->delete("farmasi.sale");
 			exit();
 		}
-
+		$this->db->trans_begin();
 		$this->db->insert_batch("farmasi.sale_detail", $saleDetail);
 		$err = $this->db->error();
-		if ($err["message"]) {
-			echo json_encode([
-				"code" 		=> "205",
-				"message"	=> "table sale_detail : ".$err["message"],
-			]);
-			exit();
-		}
-
 		if ($this->db->trans_status() === false) {
 			$this->db->trans_rollback();
+			$this->db->where([
+				"sale_id" => $saleId
+			])->delete("farmasi.sale");
 			$resp = [
 				"code" 		=> "206",
 				"message"	=> $err['message']
@@ -316,6 +314,11 @@ class Sale extends MY_Generator
 			$price_total = ($v['price_total'] * $post['profit']) + $v['price_total'];
 			$detail[$x]['subtotal'] = $price_total;
 			$totalAll += $price_total;
+			
+		}
+		if ($sukses == false){
+			$this->db->trans_rollback();
+			exit();
 		}
 		if ($sukses == false){
 			$this->db->trans_rollback();
@@ -326,7 +329,6 @@ class Sale extends MY_Generator
 		$embalase = abs(ceil($embalase) - $embalase) * 100;
 		$input['sale_total'] = $grandtotal + $embalase;
 		$input['sale_embalase'] 	 = $embalase;
-
 		$this->db->where(["sale_id" => $input["sale_id"]])->update("farmasi.sale", $input);
 		$this->db->where(["sale_id" => $input["sale_id"]])->delete("farmasi.sale_detail");
 		$this->db->insert_batch("farmasi.sale_detail", $detail);
@@ -406,7 +408,7 @@ class Sale extends MY_Generator
 		$this->unset_ses();
 		$data["item"]  = $this->db->query("
 			SELECT sd.*,sd.sale_price::numeric as sale_price,mi.item_name as label_item_id,st.stock_summary as stock,
-			(sd.sale_qty*sd.sale_price+(sd.sale_qty*sd.sale_price*sd.percent_profit))::numeric as price_total FROM farmasi.sale_detail sd
+			(sd.sale_qty*sd.sale_price)::numeric as price_total FROM farmasi.sale_detail sd
 			JOIN admin.ms_item mi ON sd.item_id = mi.item_id
 			JOIN farmasi.sale s on sd.sale_id = s.sale_id
 			JOIN newfarmasi.stock st ON st.item_id = sd.item_id and st.own_id = sd.own_id and st.unit_id = s.unit_id
