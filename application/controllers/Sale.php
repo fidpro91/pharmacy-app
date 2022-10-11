@@ -320,10 +320,6 @@ class Sale extends MY_Generator
 			$this->db->trans_rollback();
 			exit();
 		}
-		if ($sukses == false){
-			$this->db->trans_rollback();
-			exit();
-		}
 		$grandtotal = $totalAll + $input['sale_services'] + $input["embalase_item_sale"];
 		$embalase = $grandtotal / 100;
 		$embalase = abs(ceil($embalase) - $embalase) * 100;
