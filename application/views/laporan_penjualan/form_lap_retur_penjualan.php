@@ -30,17 +30,17 @@
             <?=form_hidden("visit_id")?>
             <?=form_hidden("srv_id")?>
             <?=form_hidden("px_norm")?>
-          <?=create_inputDaterange("tanggal",["locale"=>["format"=>"YYYY-MM-DD","separator"=>"/"]])?>          
-          <?=create_select(["attr"=>["name"=>"unit_name=UNIT","id"=>"unit_name","class"=>"form-control"],
-								"model"=>["m_ms_unit" => "get_farmasi_unit","column"=>["unit_id","unit_name"]]
-							])?>  
-          <?= create_select([
-					"attr" => ["name" => "tipe_bayar=PENJUALAN", "id" => "tipe_bayar", "class" => "form-control", 'required' => true],
-					"option" => [["id" => '0', "text" => "Tunai"], ["id" => '1', "text" => "Kredit"]],
-			]) ?>  
-         <?=create_select(["attr"=>["name"=>"kepemilikan=KEPEMILIKAN","id"=>"kepemilikan","class"=>"form-control"],
-								"model"=>["m_ownership" => "get_ownership","column"=>["own_id","own_name"]]
-							])?> 
+			  <?=create_inputDaterange("tanggal",["locale"=>["format"=>"YYYY-MM-DD","separator"=>"/"]])?>
+			  <?=create_select(["attr"=>["name"=>"unit_name=UNIT","id"=>"unit_name","class"=>"form-control"],
+									"model"=>["m_ms_unit" => "get_farmasi_unit","column"=>["unit_id","unit_name"]]
+								])?>
+			  <?= create_select([
+						"attr" => ["name" => "tipe_bayar=PENJUALAN", "id" => "tipe_bayar", "class" => "form-control", 'required' => true],
+						"option" => [["id" => '0', "text" => "Tunai"], ["id" => '1', "text" => "Kredit"]],
+				]) ?>
+			 <?=create_select(["attr"=>["name"=>"kepemilikan=KEPEMILIKAN","id"=>"kepemilikan","class"=>"form-control"],
+									"model"=>["m_ownership" => "get_ownership","column"=>["own_id","own_name"]]
+								])?>
                 
        </div>
        <div class="col-md-5">       
@@ -162,8 +162,8 @@
                   // menambahkan  placeholder Untuk Medapatkan koma
                   terms.push( "" );
                   terms2.push( "" );
-                  this.value = terms.join( ", " );
-                  $('#item_id').val(terms2.join( ", " ));
+                  this.value = terms.join( "" );
+                  $('#item_id').val(terms2.join( "" ));
                   return false;
                   }
                   });

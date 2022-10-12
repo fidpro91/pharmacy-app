@@ -71,12 +71,13 @@ class M_laporan_retur_penjualan  extends CI_Model {
 				srd.qty_return,'|',srd.sale_price::numeric,'|',srd.total_return::numeric)) as retur_detail
 				FROM farmasi.sale_return sr
 				INNER JOIN farmasi.sale_return_detail srd ON sr.sr_id = srd.sr_id
-				INNER JOIN farmasi.v_obat vo ON srd.item_id = vo.item_id
+				INNER JOIN admin.ms_item vo on srd.item_id = vo.item_id  
+				-- INNER JOIN farmasi.v_obat vo ON srd.item_id = vo.item_id
 				left JOIN farmasi.sale s on srd.sale_id = s.sale_id
 				INNER JOIN yanmed.v_services vs ON sr.visit_id = vs.visit_id AND sr.service_id = vs.srv_id
 				where 0=0 $where
 				group by vo.item_code,vo.item_name");
-		
+
 		$result = $sql->result();
 
 		if (count($result)>0) {

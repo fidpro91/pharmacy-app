@@ -62,10 +62,19 @@ class Laporan_retur_penjualan extends MY_Generator {
             $data['data']=$this->M_laporan_retur_penjualan->get_retur_detail($where); 
             $this->load->view("laporan_penjualan/v_lap_retur_detail",$data);
         }elseif($karakteristik == 2) {
+			$px_id = $this->input->post('px_id');
             // $data['pasien']        = $this->m_lap_retur_depo->get_pasien_by_id($this->input->post('px_id'));
+			if ($this->input->post('px_id')){
+				$where .= " and vs.px_id = $px_id";
+			}
             $data['data']          = $this->M_laporan_retur_penjualan->get_retur_by_patient($where);
             $this->load->view('laporan_penjualan/v_lap_retur_penjualan_byPasien',$data);
         }elseif($karakteristik == 3) {
+			$item_id = $this->input->post('item_id');
+			if ($item_id){
+				$where .= " and vo.item_id = $item_id";
+			}
+
             $data['data']          = $this->M_laporan_retur_penjualan->get_retur_by_item($where);
             $this->load->view('laporan_penjualan/v_lap_retur_penjualan_by_item',$data); //print_r($data);die;
         }
