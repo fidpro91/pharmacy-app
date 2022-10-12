@@ -183,6 +183,20 @@ class Receiving extends MY_Generator {
 			$this->db->where("podet_id",$dataPo->podet_id)->update("farmasi.po_detail",[
 				"po_qtyreceived"=>($detail[$x]['qty_unit']+$dataPo->po_qtyreceived)
 			]);
+
+			//cek price
+			$price = $this->db->get_where("farmasi.price",[
+				"item_id"	=> $dataPo->item_id,
+				"own_id"	=> $data['own_id']
+			]);
+			if ($price->num_rows()<1) {
+				$this->db->insert("farmasi.price",[
+					"item_id"	=> $dataPo->item_id,
+					"own_id"	=> $data['own_id'],
+					"price_sell"	=> $value['price_item'],
+					"price_buy"		=> $detail[$x]['hpp']
+				]);
+			}
 			
 			//insert stock
 			$stockku[$x]["recdet_id"] = $recdetid;
@@ -230,6 +244,20 @@ class Receiving extends MY_Generator {
 			$stockku[$x]["total_price"] = $detail[$x]['price_total'];
 			$stockku[$x]["expired_date"] = $detail[$x]['expired_date'];
 			$this->db->insert("newfarmasi.stock_fifo",$stockku[$x]);
+
+			//cek price
+			$price = $this->db->get_where("farmasi.price",[
+				"item_id"	=> $detail[$x]['item_id'],
+				"own_id"	=> $data['own_id']
+			]);
+			if ($price->num_rows()<1) {
+				$this->db->insert("farmasi.price",[
+					"item_id"	=> $detail[$x]['item_id'],
+					"own_id"	=> $data['own_id'],
+					"price_sell"	=> $detail[$x]['price_item'],
+					"price_buy"		=> $detail[$x]['price_item']
+				]);
+			}
 		
 			$sukses=true;
 		}

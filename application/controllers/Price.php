@@ -110,4 +110,11 @@ class Price extends MY_Generator {
 		$data['model'] = $this->m_price->rules();
 		$this->load->view("price/form",$data);
 	}
+
+	public function get_item()
+	{
+		$term       = $this->input->post('term');
+		$data = $this->m_price->get_item($term);
+		echo json_encode($data);
+	}
 }
