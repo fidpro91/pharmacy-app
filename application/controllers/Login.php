@@ -12,7 +12,8 @@ class Login extends CI_Controller {
 	{
 		$data = $this->input->post();
 		$data['user_salt_encrypt'] = md5($data['user_password']);
-		$data['user_password'] = md5($data['user_password']);
+		$data['user_password'] 	= md5($data['user_password']);
+		$data["user_status"]	= 't';
 		$dataLogin = $this->db->where($data)->get("admin.ms_user")->row_array();
 		$resp["is_error"] = "false";
 		if (isset($dataLogin)) {
