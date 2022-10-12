@@ -42,7 +42,7 @@ class M_laporan_penjualan  extends CI_Model {
 
     public function get_item($term)
 	{
-		$data = $this->db->query("select *,item_name as value from admin.ms_item where lower(item_name) like '%".strtolower($term)."%'")->result();
+		$data = $this->db->query("select *,item_name as value from admin.ms_item where lower(item_name) like '%".strtolower($term)."%' AND comodity_id in (1,2) ")->result();
 
 		return $data;
     }
