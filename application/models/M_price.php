@@ -89,4 +89,9 @@ class M_price extends CI_Model {
 	{
 		return $this->db->get_where("farmasi.price",$where)->row();
 	}
+
+	public function get_item($input)
+	{
+		return $this->db->query("SELECT *, item_name as value FROM admin.ms_item i where lower(item_name) like '%$input%'")->result();
+	}
 }
