@@ -70,6 +70,9 @@ class Distribusi_bon extends MY_Generator {
 		foreach ($data['list_item'] as $row){
 			$item_id = explode("|",$row["mutation_detil_id"]);
 			$item_id = $item_id[1];
+			if (empty($item_id)) {
+				continue;
+			}
 			$cek = $this->db->query("SELECT s.*,i.item_name FROM newfarmasi.stock s
          	join admin.ms_item i on s.item_id = i.item_id
 			WHERE s.item_id = ".$item_id."
@@ -128,6 +131,9 @@ class Distribusi_bon extends MY_Generator {
 				continue;
 			}
 			$id_mut = explode('|',$value['mutation_detil_id']);
+			if (empty($id_mut[1])) {
+				continue;
+			}
 			$value['mutation_detil_id'] = $id_mut[0];
 			$this->db->where(["mutation_detil_id"=>$value['mutation_detil_id']])
 					 ->update("newfarmasi.mutation_detail",
@@ -149,7 +155,7 @@ class Distribusi_bon extends MY_Generator {
 			$dataku["qty"] = $mutationDetail->qty_send;
 			$dataku["trans_num"] = $data['mutation_no'];
 			$dataku["trans_type"] = 3;
-			$unit_penerima = $this->db->get_where("admin.ms_unit",["unit_id"=>$dataku['unit_require']])->row("unit_name");
+			$unit_penerima = $this->db->get_where("admin.ms_unit",["unit_id"=>$data['unit_require']])->row("unit_name");
 			$this->insert_stock_process($dataku,"Mutasi Keluar Ke $unit_penerima ","minus");
             $sukses = true;
 		}
