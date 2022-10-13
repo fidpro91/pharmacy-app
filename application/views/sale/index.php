@@ -176,11 +176,13 @@
   function checkout_pasien(noresep) {
     $(".loading-checkout").show();
     $.post('<?php echo base_url() ?>sale/checkout_pasien', {
-      noresep: noresep
+      noresep: noresep,
+      unit_id: $("#unit_id_depo").val()
     }, function(data) {
       alert(data.message);
       $(".loading-checkout").hide();
       $('#nomor_resep_co').val('');
+      $('#nomor_resep_co').focus();
       table.draw();
       return false;
     }, 'json');
