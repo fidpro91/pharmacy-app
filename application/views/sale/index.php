@@ -181,8 +181,8 @@
     }, function(data) {
       alert(data.message);
       $(".loading-checkout").hide();
-      $('#nomor_resep_co').val('');
       $('#nomor_resep_co').focus();
+      $('#nomor_resep_co').val('');
       table.draw();
       return false;
     }, 'json');

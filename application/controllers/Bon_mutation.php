@@ -256,7 +256,7 @@ class Bon_mutation extends MY_Generator {
 			"delimiter" => "/",
 			"number"	=> "3",
 			"lpad"		=> "4",
-			"filter"	=> " AND date(mutation_date) = date(now())"
+			"filter"	=> " AND LOWER(bon_no) like 'm/bon%' AND date(mutation_date) = date(now())"
 		]);
 		$this->load->view("bon_mutation/form",$data);
 	}
