@@ -86,6 +86,14 @@ class M_laporan_penjualan  extends CI_Model {
 			$unit = rtrim($all_unit,','); 
 		 }
 
+		 if($kepemilikan !=null){
+			$own_all = "";
+			foreach ($kepemilikan as $key => $value) {
+				$own_all .= $value.",";
+			}
+			$own_id = rtrim($own_all,','); 
+		 }
+
 		 if($unit_layanan !=null){
 			$all_layanan = "";
 			foreach ($unit_layanan as $key => $value) {
@@ -102,8 +110,8 @@ class M_laporan_penjualan  extends CI_Model {
 		if($sale_type !==''){
 			$where .= " AND sale.sale_type = '$sale_type'";
 		}
-		if($kepemilikan){
-			$where .= "and sale.own_id = $kepemilikan";
+		if(!empty($own_id)){
+			$where .= "and sale.own_id in ($own_id)";
 		}		
 		if ($surety) {
 			$where .= " AND sale.surety_id = '$surety'";
@@ -143,7 +151,7 @@ class M_laporan_penjualan  extends CI_Model {
 		return $result;
 	}
 
-    public function get_sale_by_doctor($unit_penjualan,$surety,$sale_type,$unit_layanan,$date)
+    public function get_sale_by_doctor($unit_penjualan,$kepemilikan,$surety,$sale_type,$unit_layanan,$date)
 	{
 		if($unit_penjualan !=null){
 			$all_unit = "";
@@ -151,6 +159,14 @@ class M_laporan_penjualan  extends CI_Model {
 				$all_unit .= $value.",";
 			}
 			$unit = rtrim($all_unit,','); 
+		 }
+
+		 if($kepemilikan !=null){
+			$own_all = "";
+			foreach ($kepemilikan as $key => $value) {
+				$own_all .= $value.",";
+			}
+			$own_id = rtrim($own_all,','); 
 		 }
 
 		 if($unit_layanan !=null){
@@ -164,6 +180,9 @@ class M_laporan_penjualan  extends CI_Model {
 		$where = "";
 		if (!empty($unit)) {
 			$where .= "AND x.unit_id in ($unit)";
+		}
+		if(!empty($own_id)){
+			$where .= "and x.own_id in ($own_id)";
 		}
 
 		if ($surety) {
@@ -201,7 +220,7 @@ class M_laporan_penjualan  extends CI_Model {
 		return $data;
 	}
 
-    public function get_sale_by_visit($unit_penjualan,$surety,$sale_type,$unit_layanan,$date,$visit_id)
+    public function get_sale_by_visit($unit_penjualan,$kepemilikan,$surety,$sale_type,$unit_layanan,$date,$visit_id)
 	{
 		if($unit_penjualan !=null){
 			$all_unit = "";
@@ -209,6 +228,13 @@ class M_laporan_penjualan  extends CI_Model {
 				$all_unit .= $value.",";
 			}
 			$unit = rtrim($all_unit,','); 
+		 }
+		 if($kepemilikan !=null){
+			$own_all = "";
+			foreach ($kepemilikan as $key => $value) {
+				$own_all .= $value.",";
+			}
+			$own_id = rtrim($own_all,','); 
 		 }
 		 if($unit_layanan !=null){
 			$all_layanan = "";
@@ -221,6 +247,9 @@ class M_laporan_penjualan  extends CI_Model {
 		$where = "";
 		if (!empty($unit)) {
 			$where .= "AND s.unit_id in ($unit)";
+		}
+		if(!empty($own_id)){
+			$where .= "and s.own_id in ($own_id)";
 		}
 
 		if ($surety) {
@@ -267,6 +296,13 @@ class M_laporan_penjualan  extends CI_Model {
 			}
 			$unit = rtrim($all_unit,','); 
 		 }
+		 if($kepemilikan !=null){
+			$own_all = "";
+			foreach ($kepemilikan as $key => $value) {
+				$own_all .= $value.",";
+			}
+			$own_id = rtrim($own_all,','); 
+		 }
 
 		 if($unit_layanan !=null){
 			$all_layanan = "";
@@ -277,8 +313,8 @@ class M_laporan_penjualan  extends CI_Model {
 		 }
 
 		$where = "";	
-        if ($kepemilikan) {
-			$this->db->where('s.surety_id',$kepemilikan);
+		if(!empty($own_id)){
+			$where .= "and s.own_id in ($own_id)";
 		}
         if ($item_id) {
             $item_id = substr_replace( $item_id, "", - 2 );
@@ -338,6 +374,15 @@ class M_laporan_penjualan  extends CI_Model {
 			$unit = rtrim($all_unit,','); 
 		 }
 
+		 if($kepemilikan !=null){
+			$own_all = "";
+			foreach ($kepemilikan as $key => $value) {
+				$own_all .= $value.",";
+			}
+			$own_id = rtrim($own_all,','); 
+		 }
+		 
+
 		 if($unit_layanan !=null){
 			$all_layanan = "";
 			foreach ($unit_layanan as $key => $value) {
@@ -351,8 +396,8 @@ class M_laporan_penjualan  extends CI_Model {
 			//$this->db->where("a.unit_id in ('$unit')");
 			$where = " a.unit_id in ($unit)";
 		}
-		if ($kepemilikan) {
-			$this->db->where('a.own_id',$kepemilikan);
+		if(!empty($own_id)){
+			$where .= "and a.own_id in ($own_id)";
 		}		
 		if ($surety) {
 			$where = " a.surety_id = '$surety'";
@@ -417,6 +462,13 @@ class M_laporan_penjualan  extends CI_Model {
 			}
 			$unit = rtrim($all_unit,','); 
 		 }
+		 if($kepemilikan !=null){
+			$own_all = "";
+			foreach ($kepemilikan as $key => $value) {
+				$own_all .= $value.",";
+			}
+			$own_id = rtrim($own_all,','); 
+		 }
 
 		 if($unit_layanan !=null){
 			$all_layanan = "";
@@ -427,9 +479,9 @@ class M_laporan_penjualan  extends CI_Model {
 		 }
 
 		$where = "";
-		if ($kepemilikan) {
-			$this->db->where('s.own_id',$kepemilikan);
-		}
+		if(!empty($own_id)){
+			$where .= "and s.own_id in ($own_id)";
+		}	
 
 		if ($item_id) {
             $item_id = substr_replace( $item_id, "", - 2 );
