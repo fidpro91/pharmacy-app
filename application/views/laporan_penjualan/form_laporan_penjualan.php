@@ -38,7 +38,7 @@
 					"attr" => ["name" => "tipe_bayar=PENJUALAN", "id" => "tipe_bayar", "class" => "form-control"],
 					"option" => [["id" => '', "text" => "SEMUA"],["id" => '0', "text" => "Tunai"], ["id" => '1', "text" => "Kredit"]],
 			]) ?>  
-         <?=create_select(["attr"=>["name"=>"kepemilikan=KEPEMILIKAN","id"=>"kepemilikan","class"=>"form-control"],
+         <?=create_select2(["attr"=>["name"=>"kepemilikan[]=KEPEMILIKAN","id"=>"kepemilikan","class"=>"form-control","multiple"=>true],
 								"model"=>["m_ownership" => "get_ownership","column"=>["own_id","own_name"]]
 							])?>  
          <?=create_select2(["attr"=>["name"=>"surety=PENJAMIN","id"=>"surety","class"=>"form-control"],
@@ -54,7 +54,7 @@
 			]) ?>
          <?= create_select([
 					"attr" => ["name" => "status_bayar=STATUS BAYAR", "id" => "status_bayar", "class" => "form-control", 'required' => true],
-					"option" => [["id" => '1', "text" => "Sudah Bayar"], ["id" => '2', "text" => "Belum Bayar"]],
+					"option" => [["id" => '0', "text" => "Semua"],["id" => '1', "text" => "Sudah Bayar"], ["id" => '2', "text" => "Belum Bayar"]],
 			]) ?> 
          <?= create_select([
 					"attr" => ["name" => "tipe=TIPE LAPORAN", "id" => "tipe", "class" => "form-control", 'required' => true],
@@ -91,6 +91,7 @@
      
     $('#jenis_px').change(function(){
 		$('#unit_layanan option[value != 0]').remove();
+     
 		$('#unit_layanan').val(null).trigger('change'); 
 			$.post('laporan_penjualan/get_unit_layanan',{catunit_id : $(this).val() }, 
 				function(data){
