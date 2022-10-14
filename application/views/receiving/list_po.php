@@ -45,7 +45,9 @@
 	});
 
     $("body").on("change", ".qty_unit", function() {
-		hitungTotal_terima($(this));
+		if (isEditing == false) {
+			hitungTotal_terima($(this));
+		}
 		hitungDiskon($(this));
 		hitungTotal($(this));
 		hitunggrandTotal();
