@@ -90,6 +90,7 @@
 <script type="text/javascript">
   var table;
   var dataHibah=null;
+  var isEditing=false;
   $(document).ready(function() {
     table = $('#tb_receiving').DataTable({
       "processing": true,
@@ -136,6 +137,7 @@
   });
 
   $("#btn-add-pembelian").click(function() {
+    isEditing = false;
     $("#form_receiving").show();
     $("#form_receiving").load("receiving/show_form");
   });
@@ -147,6 +149,7 @@
 
   function set_val(id) {
     $("#form_receiving").show();
+    isEditing = true;
     $.get('receiving/find_one/' + id+"/update", (data) => {
       if (typeof(data.message) != "undefined" && data.message !== null) {
           alert(data.message);

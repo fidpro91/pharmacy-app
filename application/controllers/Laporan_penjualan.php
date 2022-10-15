@@ -73,10 +73,10 @@ class Laporan_penjualan extends MY_Generator {
             $data['total'] = $query->num_rows();           
             $this->load->view("laporan_penjualan/v_laporan_all",$data);
         }else if($karakteristik == 1){
-            $data['data']=$this->m_laporan_penjualan->get_sale_by_doctor($unit_penjualan,$surety,$sale_type,$unit_layanan,$date); 
+            $data['data']=$this->m_laporan_penjualan->get_sale_by_doctor($unit_penjualan,$kepemilikan,$surety,$sale_type,$unit_layanan,$date); 
             $this->load->view("laporan_penjualan/v_lap_penjualan_byDokter",$data);
         }else if($karakteristik == 2) {       
-            $data['data']=$this->m_laporan_penjualan->get_sale_by_visit($unit_penjualan,$surety,$sale_type,$unit_layanan,$date,$visit_id); 
+            $data['data']=$this->m_laporan_penjualan->get_sale_by_visit($unit_penjualan,$kepemilikan,$surety,$sale_type,$unit_layanan,$date,$visit_id); 
             $this->load->view("laporan_penjualan/v_lap_penjualan_sum_customer",$data);
         }else if($karakteristik == 3){
             $pasien = $this->input->post('px_norm');           
