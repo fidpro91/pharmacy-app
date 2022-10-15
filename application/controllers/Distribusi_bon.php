@@ -155,7 +155,7 @@ class Distribusi_bon extends MY_Generator {
 			$dataku["qty"] = $mutationDetail->qty_send;
 			$dataku["trans_num"] = $data['mutation_no'];
 			$dataku["trans_type"] = 3;
-			$unit_penerima = $this->db->get_where("admin.ms_unit",["unit_id"=>$data['unit_require']])->row("unit_name");
+			$unit_penerima = $this->db->get_where("admin.ms_unit",["unit_id"=>$id_mut[2]])->row("unit_name");
 			$this->insert_stock_process($dataku,"Mutasi Keluar Ke $unit_penerima ","minus");
             $sukses = true;
 		}
