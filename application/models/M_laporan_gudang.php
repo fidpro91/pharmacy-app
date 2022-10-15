@@ -156,11 +156,12 @@ order by cb.supplier_name asc ")->result();
 	public function get_lap_penerimaan_06($where)
 	{
 		$data = $this->db->query("SELECT x.rec_date,x.no_faktur,x.supplier_name,sum(x.price_total)total FROM (
-              SELECT rc.rec_date,COALESCE(nullif(rc.rec_num,''),concat('Faktur belum terbit(',rc.rec_id,')'))no_faktur,sup.supplier_name,(((COALESCE(po.po_ppn,0)*(rd.price_total- COALESCE(rd.disc_value,0)))/100)+rd.price_total-rd.disc_value)price_total FROM newfarmasi.receiving rc
+              SELECT rc.rec_date,COALESCE(nullif(rc.rec_num,''),concat('Faktur belum terbit(',rc.rec_id,')'))no_faktur,sup.supplier_name, grand_total as price_total FROM newfarmasi.receiving rc
               INNER JOIN newfarmasi.receiving_detail rd ON rc.rec_id = rd.rec_id
               INNER JOIN farmasi.po on po.po_id = rc.po_id
               INNER JOIN admin.ms_supplier sup ON rc.supplier_id = sup.supplier_id
               where 0=0 $where
+			  GROUP BY rec_date,rc.rec_num,rc.rec_id,sup.supplier_name,grand_total
             ) x
             GROUP BY x.rec_date,x.no_faktur,x.supplier_name
             ORDER BY x.rec_date
