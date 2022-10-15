@@ -126,6 +126,10 @@
           "targets": -1
         },
         {
+          "visible": false,
+          "targets": 7
+        },
+        {
           'targets': 0,
           'className': 'dt-body-center',
           'render': function(data, type, full, meta) {
