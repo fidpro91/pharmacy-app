@@ -316,6 +316,7 @@ class Bon_mutation extends MY_Generator {
 			$dataku["qty"] = $value->qty_send;
 			$dataku["trans_num"] = $value->mutation_no;
 			$dataku["trans_type"] = 3;
+			$dataku["unit_sender"] = $value->unit_sender;
 			$this->insert_stock_process($dataku,"plus");
 		}
 		if ($this->db->trans_status() === false) {
@@ -417,8 +418,8 @@ class Bon_mutation extends MY_Generator {
 			$dataku["debet"] 		= $dataku["qty"];
 			$dataku["stock_after"] 	= $dataku["qty"]+$stockAwal;
 			$dataku["total_price"] 	= ($harga*$dataku["qty"]);
-			$dataku["description"] 	= "Mutasi masuk No : ".$dataku["trans_num"];
-			unset($dataku["qty"]);
+			$unit_pengirim = $this->db->get_where("admin.ms_unit",["unit_id"=>$dataku['unit_sender']])->row("unit_name");
+			$dataku["description"] 	= "Mutasi masuk dari $unit_pengirim No : ".$dataku["trans_num"];
 		}else{
 			$this->load->model("m_stock_process");
 			foreach ($this->m_stock_process->rules() as $key => $value) {
@@ -439,8 +440,9 @@ class Bon_mutation extends MY_Generator {
 			$dataku["stock_after"] 	= $stockAwal-$dataku["qty"];
 			$dataku["total_price"] 	= ($harga*$dataku["qty"]);
 			$dataku["description"] 	= "Batal Terima Mutasi No : ".$dataku["trans_num"];
-			unset($dataku["qty"]);
 		}
+		$removeKeys = ['expired_date','qty','unit_sender'];
+		$dataku = array_diff_key($dataku, array_flip($removeKeys));
 		$this->db->insert("newfarmasi.stock_process",$dataku);
 	}
 
