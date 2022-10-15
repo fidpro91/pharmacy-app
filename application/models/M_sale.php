@@ -56,6 +56,13 @@ class M_sale extends CI_Model
 					} else {
 						$label = '<label class="label label-danger">Belum Terbayar</label>';
 					}
+					if ($a["sale_status"] == 1) {
+						$label .= '|<label class="label label-success">Paid</label>';
+					}elseif($a["sale_status"] == 2) {
+						$label .= '|<label class="label label-danger">Checkout</label>';
+					}else{
+						$label .= '|<label class="label label-warning">Proccess</label>';
+					}
 					return $label;
 				}
 			],
