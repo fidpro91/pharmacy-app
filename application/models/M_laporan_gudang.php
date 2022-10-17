@@ -587,7 +587,7 @@ ORDER BY
 		}
 
 		if ($own_id != "semua") {
-			$where .= " and m.own_id = '$own_id'";
+			$where .= " and p.own_id = '$own_id'";
 		}
 
 //		$sql    = "	SELECT
