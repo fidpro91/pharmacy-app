@@ -40,6 +40,7 @@
 			<th class="text-center" style="font-size: 12px;">Satuan</th>
 			<th class="text-center" style="font-size: 12px;">Jumlah</th>
 			<th class="text-center" style="font-size: 12px;">Harga</th>
+			<th class="text-center" style="font-size: 12px;">Total</th>
 		</tr>
 		<?php $total_jml_qty=0; foreach($datas as $index => $data) : $total_jml_qty += $data->jml_qty;?>
 			<tr>
@@ -47,8 +48,9 @@
 				<td class="text-left" 	style="font-size: 12px;"><?php echo $data->item_code?></td>
 				<td class="text-left" 	style="font-size: 12px;"><?php echo $data->item_name?></td>
 				<td class="text-center" style="font-size: 12px;"><?php echo $data->satuan ?></td>
-				<td class="text-right"  style="font-size: 12px;"><?php echo $data->jml_qty?></td>
+				<td class="text-center"  style="font-size: 12px;"><?php echo $data->jml_qty?></td>
 				<td class="text-right" style="font-size: 12px;"><?php echo number_format($data->harga,2,".",",")?></td>
+				<td class="text-right" style="font-size: 12px;"><?php $tot= $data->jml_qty * $data->harga; echo $tot ?></td>
 			</tr>
 		<?php endforeach;?>
 		<tr>
