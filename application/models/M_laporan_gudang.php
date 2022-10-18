@@ -58,7 +58,8 @@ group by upper(trim(NULLIF(estimate_resource,''))) order by upper(trim(NULLIF(es
 	rec.receiver_num,
 	rec.rec_date,
 	COALESCE ( sp.supplier_name, rec.sender_name ) supplier_name,
-	P.po_ppn 
+	rec.po_ppn,
+	rec.grand_total
 FROM
 	newfarmasi.receiving rec
 	LEFT JOIN farmasi.po P ON P.po_id = rec.po_id
@@ -74,7 +75,7 @@ GROUP BY
 	rec.receiver_num,
 	rec.rec_date,
 	sp.supplier_name,
-	P.po_ppn,rec.sender_name
+	rec.po_ppn,rec.sender_name,rec.grand_total
 ORDER BY
 	rec.rec_id DESC")->result();
 
@@ -123,7 +124,7 @@ INNER JOIN (
 	}
 
 	public function get_lap_penerimaan_02($where1,$where2)
-	{
+	{//var_dump($where2);die();
 		$data = $this->db->query("SELECT cb.supplier_id,cb.supplier_name,json_agg(cb.gabung) as detail_item FROM (
     SELECT sp.supplier_id,sp.supplier_name,dt.gabung 
     FROM newfarmasi.receiving rc 
@@ -131,13 +132,13 @@ INNER JOIN (
     INNER JOIN ( 
         SELECT r.supplier_id,r.rec_id,concat(r.rec_num,'|',r.receiver_num,'|',r.rec_date,'|',
         json_agg(concat(rd.item_id,'-*-',i.item_code,'-*-',i.item_name,'-*-',rd.qty_pack,'-*-',rd.qty_unit,'-*-',rd.price_pack,'-*-',
-        rd.disc_percent,'-*-',rd.price_total,'-*-',rd.unit_per_pack)),'|',p.po_ppn) gabung
+        rd.disc_percent,'-*-',rd.price_total,'-*-',rd.unit_per_pack)),'|',r.po_ppn,'|',r.grand_total) gabung
         from newfarmasi.receiving r 
         INNER JOIN newfarmasi.receiving_detail rd on r.rec_id = rd.rec_id
         INNER JOIN farmasi.po P ON P.po_id = r.po_id
         INNER JOIN admin.ms_item i on rd.item_id= i.item_id
         where 0=0 $where2 and r.receiver_unit = 55
-        GROUP BY r.rec_id,r.supplier_id,p.po_ppn,r.rec_num,r.receiver_num,r.rec_date order by r.rec_id desc
+        GROUP BY r.rec_id,r.supplier_id,r.po_ppn,r.rec_num,r.receiver_num,r.rec_date,r.grand_total order by r.rec_id desc
     ) dt on rc.supplier_id = dt.supplier_id 
     where 0=0 $where1
     GROUP BY sp.supplier_id,dt.gabung

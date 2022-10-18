@@ -151,7 +151,7 @@
 													<tr>
 														<td colspan="7"></td>
 														<td colspan="2" class="text-right">Total PPN</td>
-														<td class="text-right"><?php $ppn = $data_detail[4]/100*($total-($total_disk)); echo number_format($ppn,2,".",",")?></td>
+														<td class="text-right"><?php $ppn = $data_detail[4]/100*($data_detail[5]); echo number_format($ppn,2,".",",")?></td>
 													</tr>
 													<tr>
 														<td colspan="7"></td>
