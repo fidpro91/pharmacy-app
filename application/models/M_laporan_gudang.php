@@ -5,7 +5,7 @@ class M_laporan_gudang extends CI_Model {
 	{
 
 		$data = $this->db->query("select DISTINCT upper(trim(NULLIF(estimate_resource,''))) estimate_resource
-from farmasi.receiving
+from newfarmasi.receiving
 group by upper(trim(NULLIF(estimate_resource,''))) order by upper(trim(NULLIF(estimate_resource,''))) asc");
 
 		return $data->result();
@@ -90,7 +90,7 @@ ORDER BY
 
 	public function get_lap_penerimaan_05($where)
 	{
-		$data = $this->db->query("select item_name,SUM(qty_unit) as qty_unit, SUM((price_total) - disc_value + ppn) as price_total from farmasi.v_penerimaan where 0=0 $where and comodity_id != 5 GROUP BY item_name ORDER BY item_name ASC")->result();
+		$data = $this->db->query("select item_name,SUM(qty_unit) as qty_unit, SUM((price_total)+ ppn) as price_total from newfarmasi.v_penerimaan where 0=0 $where and comodity_id != 5 GROUP BY item_name ORDER BY item_name ASC")->result();
 
 		if (count($data)>0) {
 			return $data;
@@ -107,12 +107,12 @@ SELECT rc.supplier_id,sp.supplier_name,dt.gabung
 FROM newfarmasi.receiving rc
 INNER JOIN admin.ms_supplier sp on rc.supplier_id = sp.supplier_id
 INNER JOIN (
-          SELECT r.supplier_id,r.rec_id,concat(r.rec_num,'|',r.receiver_num,'|',r.rec_date,'|',sum(((COALESCE(po.po_ppn,0)*(rd.price_total- COALESCE(rd.disc_value,0)))/100)+(rd.price_total-coalesce(rd.disc_value,0)))) gabung,sum(((COALESCE(po.po_ppn,0)*(rd.price_total- COALESCE(rd.disc_value,0)))/100)+rd.price_total-rd.disc_value) as sub_total 
+          SELECT r.supplier_id,r.rec_id,concat(r.rec_num,'|',r.receiver_num,'|',r.rec_date,'|',r.grand_total) gabung,r.grand_total as sub_total 
 				from newfarmasi.receiving r
           INNER JOIN newfarmasi.receiving_detail rd on r.rec_id = rd.rec_id
           left JOIN farmasi.po on po.po_id = r.po_id
           where 0=0 $where2 and r.receiver_unit = 55
-          GROUP BY r.rec_id,r.supplier_id,r.rec_num,r.receiver_num,r.rec_date order by r.rec_id desc
+          GROUP BY r.rec_id,r.supplier_id,r.rec_num,r.receiver_num,r.rec_date,r.grand_total order by r.rec_id desc
         ) dt on rc.supplier_id = dt.supplier_id
         where 0=0 $where1
         GROUP BY rc.supplier_id,sp.supplier_name,dt.gabung) cb 
