@@ -1,5 +1,5 @@
 <div class="col-md-12">
-    <?= form_open("bon_mutation/konfirmasi_distribusi", ["method" => "post", "class" => "form-horizontal", "id" => "fm_konfirmasi_bon"], $model) ?>
+    <?= form_open("bon_mutation/konfirmasi_distribusi", ["method" => "post", "class" => "form-horizontal", "id" => "fm_penerimaan"], $model) ?>
     <?= form_hidden("mutation_id",$dataBon['header']->mutation_id) ?>
     <div class="list_item">
         <table class="table">
@@ -36,7 +36,7 @@
         $("#modal_konfirmasi").modal("hide");
     });
 
-    $("#fm_konfirmasi_bon").on("submit",()=>{
+    $("#fm_penerimaan").on("submit",()=>{
         if(!confirm("Konfirmasi distribusi item?")){
             return false;
         };

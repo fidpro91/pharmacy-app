@@ -92,7 +92,7 @@ class Bon_mutation extends MY_Generator {
 			"delimiter" => "/",
 			"number"	=> "3",
 			"lpad"		=> "4",
-			"filter"	=> " AND date(mutation_date) = date(now())"
+			"filter"	=> " AND date(mutation_date) = date(now()) AND LOWER(bon_no) like 'm/bon%' "
 		]);
         $this->form_validation->set_data($input);
 		if ($this->m_mutation->validation()) {

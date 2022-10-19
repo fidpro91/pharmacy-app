@@ -100,7 +100,7 @@ class M_stock extends CI_Model {
 	{
 		$data = $this->db->query("
 			SELECT mi.item_id,mi.item_name,mi.item_unitofitem,
-			json_agg((so.unit_id,so.stock_summary))detail
+			json_agg((so.unit_id,so.stock_summary))detail,sum(so.stock_summary) as jumlah
 			FROM admin.ms_item mi
 			LEFT JOIN newfarmasi.stock so ON mi.item_id = so.item_id and so.own_id = '$own_id'
 			WHERE comodity_id in (1,2)

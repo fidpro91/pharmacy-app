@@ -40,6 +40,7 @@ class Stock_all_unit extends MY_Generator {
             $row = "<tr>
                     <td>".($key+1)."</td>
                     <td>$value->item_name</td>";
+                    
             foreach ($unit as $x => $v) {
                 $dt = json_decode($value->detail,true); 
                 $i = array_search($v->unit_id, array_column($dt, 'f1'));
@@ -49,6 +50,7 @@ class Stock_all_unit extends MY_Generator {
                 }
                 $row .= "<td>$stok</td>";
             } 
+              $row .= "<td>$value->jumlah</td>";  
             $row .= "</tr>";            
             echo $row;
         }
