@@ -100,6 +100,9 @@
 		$("#form_receiving").html('');
 	});
 	$(document).ready(()=>{
+		if (isEditing) {
+			$("#po_id").find("option").remove();
+		}
 		$("#po_id").change(function(){
 			$.get("receiving/find_po_detail/"+$(this).val(),function(resp){
 				$("#list_item").html(resp);

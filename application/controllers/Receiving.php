@@ -26,6 +26,11 @@ class Receiving extends MY_Generator {
 			foreach ($this->m_receiving->rules() as $key => $value) { 
 				$input[$key] = !empty($data[$key])?$data[$key]:null;
 			}
+			if ($data['rec_id']) {
+				$input['po_id'] = $this->db->select("po_id")->get_where("newfarmasi.receiving",[
+					"rec_id" => $data['rec_id']
+				])->row('po_id');
+			}
 			$dataPo = $this->db->get_where("farmasi.po",["po_id"=>$input['po_id']])->row();
 			$input['supplier_id'] = $dataPo->supplier_id; 
 			$input['rec_type'] 	= 0;
