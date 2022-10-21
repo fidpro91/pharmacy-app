@@ -19,7 +19,7 @@
                             echo "<th>$value->unit_name</th>";
                         }
                     ?>
-				<th>Total</th>
+					<th>Total</th>
                 </tr>
             </thead>
             <tbody>
