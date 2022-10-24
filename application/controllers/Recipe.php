@@ -6,6 +6,10 @@ class Recipe extends MY_Generator {
 	public function __construct()
 	{
 		parent::__construct();
+		$this->datascript->lib_datepicker()
+						->lib_inputmulti()
+						->lib_select2()
+						->lib_inputmask();
 		$this->load->model('m_recipe');
 	}
 
@@ -38,6 +42,79 @@ class Recipe extends MY_Generator {
 		}
 		redirect('recipe');
 
+	}
+
+	public function show_form($id)
+	{
+		$data["item"]  = $this->db->query("
+			SELECT sd.*,sd.sale_price::numeric as sale_price,mi.item_name as label_item_id,st.stock_summary as stock,
+			(sd.sale_qty*sd.sale_price)::numeric as price_total FROM farmasi.sale_detail sd
+			JOIN admin.ms_item mi ON sd.item_id = mi.item_id
+			JOIN farmasi.sale s on sd.sale_id = s.sale_id
+			JOIN newfarmasi.stock st ON st.item_id = sd.item_id and st.own_id = sd.own_id and st.unit_id = s.unit_id
+			WHERE sd.sale_id = '$id'
+		")->result();
+		$data['recipe_id'] = $id;
+		$data['model'] 	 = $this->m_recipe->rules();
+		$this->load->view("recipe/form", $data);
+	}
+
+	public function show_multiRows($rcp_id = 0)
+	{
+		$this->load->model("m_recipe_detail");
+		$data = $this->m_recipe_detail->get_column_multiple();
+		$colauto = ["item_id" => "Nama Barang"];
+		foreach ($data as $key => $value) {
+			if (array_key_exists($value, $colauto)) {
+				$row[] = [
+					"id" => $value,
+					"label" => $colauto[$value],
+					"type" => 'autocomplete',
+					"width" => '30%',
+				];
+			} elseif ($value == "sale_price" || $value == "stock") {
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"width" => '10%',
+					"attr" => [
+						"readonly" => 'readonly',
+						"data-inputmask" => "'alias': 'IDR'"
+					]
+				];
+			} elseif ($value == "price_total") {
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"width" => "30%",
+					"attr" => [
+						"readonly" => "readonly",
+						"data-inputmask" => "'alias': 'IDR'"
+					]
+				];
+			} elseif ($value == "racikan_id") {
+				$racikan = $this->db->query(
+					"select distinct coalesce(racikan_id,'') as id,racikan_id as text from newfarmasi.recipe_detail where rcp_id = '$rcp_id'"
+				)->result();
+				$row[] = [
+					"id" => $value,
+					"label" => "Racikan",
+					"type" => 'select',
+					"width" => '15%',
+					"data" => $racikan
+				];
+			} else {
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"width" => '10%',
+				];
+			}
+		}
+		echo json_encode($row);
 	}
 
 	public function get_data()
@@ -104,11 +181,5 @@ class Recipe extends MY_Generator {
 			$resp['message'] = 'Data berhasil dihapus';
 		}
 		echo json_encode($resp);
-	}
-
-	public function show_form()
-	{
-		$data['model'] = $this->m_recipe->rules();
-		$this->load->view("recipe/form",$data);
 	}
 }
