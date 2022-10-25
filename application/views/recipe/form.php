@@ -1,9 +1,10 @@
 <?= form_open("recipe/save", ["method" => "post", "id" => "fm_recipe"], $model) ?>
 <div class="row">
-	<div class="col-md-4">
+	<div class="col-md-2">
 		<?= form_hidden("rcp_id") ?>
 		<?= form_hidden("px_id") ?>
 		<?= form_hidden("visit_id") ?>
+		<?= form_hidden("surety_id") ?>
 		<?= form_hidden("services_id") ?>
 		<?= create_inputDate("rcp_date", [
 			"format"        => "yyyy-mm-dd",
@@ -29,7 +30,7 @@
 			]
 		]) ?>
 	</div>
-	<div class="col-md-8">
+	<div class="col-md-10">
 		<div class="list_recipe">
 		</div>
 	</div>
@@ -40,11 +41,11 @@
 	</div>
 </div>
 <script type="text/javascript">
+	var dataItemRecipe = null;
+	var dataku;
 	$(document).ready(() => {
-		var dataItemRecipe = null;
 		$(".list_recipe").inputMultiRow({
 			column: () => {
-				var dataku;
 				$.ajax({
 					'async': false,
 					'type': "GET",
@@ -139,6 +140,31 @@
 				}
 			});
 		}
+	});
+
+	$("#own_id").change(function(){
+		$.post("recipe/get_recipe_detail",{
+			"unit_id" : +$("#unit_id_depo").val(),
+			"rcp_id" : $("#rcp_id").val(),
+			"own_id" : $(this).val(),
+			"surety_id" : $("#surety_id").val(),
+		},function(resp){
+			$(".list_recipe").inputMultiRow({
+				column: () => {
+					return dataku;
+				},
+				"data": resp
+			});
+		},'json').then(function(){
+			$('.tb_list_recipe > tbody  > tr').each(function() {
+				const jumlah_barang = $(this).find(".qty").val();				
+				const harga_satuan = $(this).find(".sale_price").val();
+				const total_item = jumlah_barang * harga_satuan;
+				console.log(jumlah_barang+"-"+harga_satuan);
+				$(this).find('.price_total').val(total_item);
+				// $(this).find('.price_total').inputmask("IDR");
+        	});
+		});
 	});
 
 	<?= $this->config->item('footerJS') ?>

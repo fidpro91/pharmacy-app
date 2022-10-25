@@ -339,7 +339,7 @@ class Receiving extends MY_Generator {
 	public function remove_data_recdet($id)
 	{
 		$data=$this->db->where('rec_id',$id)
-						->get_where("xnewfarmasi.receiving_detail",[
+						->get_where("newfarmasi.receiving_detail",[
 							"rec_id"=>$id,
 							"is_usage"=>'f',
 						])->result();
