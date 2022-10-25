@@ -50,7 +50,7 @@ class Stock_all_unit extends MY_Generator {
                 }
                 $row .= "<td>$stok</td>";
             } 
-//              $row .= "<td>$value->jumlah</td>";
+              $row .= "<td>$value->jumlah</td>";
             $row .= "</tr>";            
             echo $row;
         }
