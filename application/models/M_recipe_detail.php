@@ -35,6 +35,21 @@ class M_recipe_detail extends CI_Model {
 		return $col;
 	}
 
+	public function get_column_multiple()
+	{
+		$col = [
+				"item_id",
+				"racikan_id",
+				"qty",
+				"stock",			
+				"sale_price",
+				"dosis",
+				"kronis",
+				"price_total"
+			];
+		return $col;
+	}
+
 	public function rules()
 	{
 		$data = [

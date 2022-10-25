@@ -12,13 +12,14 @@
         <table id="table_stock" class="table table-bordered table-hover">
             <thead>
                 <tr>
-                    <td>NO</td>
-                    <td>ITEM</td>
+                    <th>NO</th>
+                    <th>ITEM</th>
                     <?PHP
                         foreach ($unit as $key => $value) {
-                            echo "<td>$value->unit_name</td>";
+                            echo "<th>$value->unit_name</th>";
                         }
                     ?>
+					<th>Total</th>
                 </tr>
             </thead>
             <tbody>

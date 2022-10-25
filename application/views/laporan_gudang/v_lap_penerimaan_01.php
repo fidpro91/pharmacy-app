@@ -117,12 +117,15 @@
 									<tr>
 										<td colspan="7"></td>
 										<td colspan="2" class="text-right">Total PPN</td>
-										<td class="text-right"><?php $ppn = $res->po_ppn/100*($total-$total_disk); echo number_format($ppn,2,",",".")?></td>
+										<td class="text-right"><?php //var_dump($res->po_ppn)
+											// $ppn = $res->po_ppn/100*($res->grand_total);
+										echo number_format($res->rec_taxes,2,",",".")?></td>
 									</tr>
 									<tr>
 										<td colspan="7"></td>
 										<td colspan="2" class="text-right">Total Pembelian</td>
-										<td class="text-right"><?php $hasil= $total-$total_disk+$ppn; $grand_total += $hasil; echo number_format($hasil,2,",",".");
+										<td class="text-right"><?php 
+										$grand_total += $res->grand_total; echo number_format($res->grand_total,2,",",".");
 											?></td>
 									</tr>
 								</table>

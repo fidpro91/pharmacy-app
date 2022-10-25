@@ -26,6 +26,11 @@ class Receiving extends MY_Generator {
 			foreach ($this->m_receiving->rules() as $key => $value) { 
 				$input[$key] = !empty($data[$key])?$data[$key]:null;
 			}
+			if ($data['rec_id']) {
+				$input['po_id'] = $this->db->select("po_id")->get_where("newfarmasi.receiving",[
+					"rec_id" => $data['rec_id']
+				])->row('po_id');
+			}
 			$dataPo = $this->db->get_where("farmasi.po",["po_id"=>$input['po_id']])->row();
 			$input['supplier_id'] = $dataPo->supplier_id; 
 			$input['rec_type'] 	= 0;
@@ -128,10 +133,10 @@ class Receiving extends MY_Generator {
 
 	public function validasi_act($id)
 	{
-		$data=$this->db->get_where("newfarmasi.stock_fifo",["rec_id"=>$id])->result();
+		$data=$this->db->get_where("newfarmasi.receiving_detail",["rec_id"=>$id])->result();
 		$allow=true;
 		foreach ($data as $key => $value) {
-			if ($value->stock_in > $value->stock_saldo) {
+			if ($value->is_usage == 't') {
 				$allow=false;
 				break;
 			}
@@ -156,6 +161,8 @@ class Receiving extends MY_Generator {
 		$this->load->model('m_receiving_detail');
 		$stockku=[];
 		$sukses=false;
+		/* print_r($data);
+		die; */
 		foreach ($data['div_detail'] as $x => $value) {
 			if (empty($value['podet_id'])) {
 				continue;
