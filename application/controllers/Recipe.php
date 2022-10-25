@@ -15,7 +15,12 @@ class Recipe extends MY_Generator {
 
 	public function index()
 	{
-		$this->theme('recipe/index','',get_class($this));
+		$this->load->model("m_ms_unit");
+		foreach ($this->m_ms_unit->get_ms_unit(["employee_id" => $this->session->employee_id]) as $key => $value) {
+			$kat[$value->unit_id] = $value->unit_name;
+		}
+		$data['unit'] = $kat;
+		$this->theme('recipe/index',$data,get_class($this));
 	}
 
 	public function save()
@@ -59,6 +64,22 @@ class Recipe extends MY_Generator {
 		$this->load->view("recipe/form", $data);
 	}
 
+	public function get_recipe_detail()
+	{
+		$post = $this->input->post();
+		$data = $this->db->query("SELECT rd.*,mi.item_name as label_item_id,racikan_id,racikan_desc,qty,s.stock_summary as stock,
+		(p.price_sell::numeric+(p.price_sell::numeric*so.percent_profit)+ow.profit_item)sale_price
+		FROM newfarmasi.recipe_detail rd
+		JOIN admin.ms_item mi ON mi.item_id = rd.item_id
+		LEFT JOIN newfarmasi.stock s ON s.item_id = rd.item_id AND s.unit_id = ".$post["unit_id"]." AND s.own_id = ".$post["own_id"]."
+		LEFT JOIN farmasi.ownership ow ON ow.own_id = s.own_id
+		LEFT JOIN farmasi.price p ON s.item_id = p.item_id AND s.own_id = p.own_id
+		LEFT JOIN farmasi.surety_ownership so ON so.own_id = s.own_id AND so.surety_id = ".$post["surety_id"]."
+		where rd.rcp_id = ".$post["rcp_id"]."
+		")->result();
+		echo json_encode($data);
+	}
+
 	public function show_multiRows($rcp_id = 0)
 	{
 		$this->load->model("m_recipe_detail");
@@ -88,7 +109,11 @@ class Recipe extends MY_Generator {
 					"id" => $value,
 					"label" => ucwords(str_replace('_', ' ', $value)),
 					"type" => 'text',
+<<<<<<< HEAD
 					"width" => "30%",
+=======
+					"width" => "20%",
+>>>>>>> 997196f8206048588b68615b4879684ae20d8be4
 					"attr" => [
 						"readonly" => "readonly",
 						"data-inputmask" => "'alias': 'IDR'"
@@ -102,15 +127,41 @@ class Recipe extends MY_Generator {
 					"id" => $value,
 					"label" => "Racikan",
 					"type" => 'select',
+<<<<<<< HEAD
 					"width" => '15%',
 					"data" => $racikan
 				];
 			} else {
+=======
+					"width" => '10%',
+					"data" => $racikan
+				];
+			}elseif ($value == "kronis") {
+				$row[] = [
+					"id" => $value,
+					"label" => "Jns Obat",
+					"type" => 'select',
+					"width" => '10%',
+					"data" => get_type_kronis()
+				];
+			} elseif ($value == "price_total"||$value == "dosis") {
+>>>>>>> 997196f8206048588b68615b4879684ae20d8be4
 				$row[] = [
 					"id" => $value,
 					"label" => ucwords(str_replace('_', ' ', $value)),
 					"type" => 'text',
+<<<<<<< HEAD
 					"width" => '10%',
+=======
+					"width" => '15%',
+				];
+			}else {
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"width" => '5%',
+>>>>>>> 997196f8206048588b68615b4879684ae20d8be4
 				];
 			}
 		}
@@ -149,7 +200,9 @@ class Recipe extends MY_Generator {
 
 	public function find_one($id)
 	{
-		$data = $this->db->where('rcp_id',$id)->get("newfarmasi.recipe")->row();
+		$data = $this->db->where('rcp_id',$id)
+						 ->join("yanmed.visit v", "v.visit_id=r.visit_id")
+						 ->get("newfarmasi.recipe r")->row();
 
 		echo json_encode($data);
 	}
