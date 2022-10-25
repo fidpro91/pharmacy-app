@@ -5,10 +5,8 @@ class M_laporan_penjualan  extends CI_Model {
 	public function get_jenis_layanan()
 	{
 		$data = $this->db->query("
-        select distinct a3.catunit_id, a3.nama from admin.v_employee_in_unit a1
-        inner join admin.ms_unit a2 on a1.unit_id = a2.unit_id
-        inner join admin.ms_category_unit a3 on a3.catunit_id = a2.unit_type
-        inner join yanmed.category_unit_yanmed a4 on a4.catunit_id = a3.parent_id and a4.jmlanak > 0
+        
+      
 			")->result();
 		return $data;
 	}
@@ -17,28 +15,12 @@ class M_laporan_penjualan  extends CI_Model {
 	{
 		$data = $this->db->where('unit_type',$catunit_id)
 						 ->order_by('unit_name','ASC')
-						 ->get('admin.ms_unit')
+						 ->get('ms_unit')
 						 ->result();
 		return $data;
 	}
 
-	public function get_unit($idEmpl){
-		$sql = "select
-		vf.unit_id,
-		vf.unit_name
-		from
-		farmasi.v_unit_farmasi vf
-		/*inner join hr.employee e
-		on e.employee_id = u.employee_id
-		inner join hr.employee_on_unit eu
-		on eu.employee_id = e.employee_id
-		inner join farmasi.v_unit_farmasi vf
-		on vf.unit_id = eu.unit_id*/
-		where /*e.employee_id = $idEmpl
-		and*/ cat_unit_code = '0504' and unit_active = 't' ";
-		$result = $this->db->query($sql);
-		return $result;
-	}
+	
 
     public function get_item($term)
 	{
