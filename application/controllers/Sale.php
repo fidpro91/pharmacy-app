@@ -106,7 +106,7 @@ class Sale extends MY_Generator
 			$racikan['detail'] = array_map(function ($arr) use ($saleId) {
 				return $arr + ['sale_id' => $saleId];
 			}, $racikan['detail']);
-			$saleDetail = array_merge_recursive($saleDetail, $racikan['detail']);
+			$saleDetail = array_merge($saleDetail, $racikan['detail']);
 		}
 
 		//insert sale detail
@@ -143,6 +143,7 @@ class Sale extends MY_Generator
 			])->delete("farmasi.sale");
 			exit();
 		}
+		$saleDetail = array_unique($saleDetail,SORT_REGULAR);
 		$this->db->trans_begin();
 		$this->db->insert_batch("farmasi.sale_detail", $saleDetail);
 		$err = $this->db->error();
@@ -176,6 +177,9 @@ class Sale extends MY_Generator
 		$nomorRm = $this->input->post('noresep');
 		$user = $this->session->user_id;
 		$this->db->set('finish_time', 'now()', false);
+		if ($this->input->post('asal_resep')) {
+			$this->db->where("unit_id_lay",$this->input->post('asal_resep'));
+		}
 		$this->db->where([
 			"unit_id"			=> $this->input->post('unit_id'),
 			"date(sale_date)>= '" . date("Y-m-d", strtotime("- 3 days")) . "' and finish_time is null" => null
@@ -599,7 +603,7 @@ class Sale extends MY_Generator
 		$total = $total;
 		if (!empty($this->session->userdata('itemRacik'))) {
 			$itemRacikOld = $this->session->userdata('itemRacik');
-			$itemRacikan['detail'] 		= array_merge_recursive($itemRacik, $itemRacikOld['detail']);
+			$itemRacikan['detail'] 		= array_merge($itemRacik, $itemRacikOld['detail']);
 			$itemRacikan['biaya_racik']	= $itemRacikOld['biaya_racik'] + $post['biaya_racikan'];
 			$itemRacikan['total']			= $itemRacikOld['total'] + $total;
 		} else {
@@ -713,7 +717,7 @@ class Sale extends MY_Generator
 		$nonRacikan['total'] = $total;
 		if (!empty($this->session->userdata('itemNonRacik'))) {
 			$itemNonRacikOld = $this->session->userdata('itemNonRacik');
-			$nonRacikan['detail'] = array_merge_recursive($itemNonRacikan, $itemNonRacikOld['detail']);
+			$nonRacikan['detail'] = array_merge($itemNonRacikan, $itemNonRacikOld['detail']);
 			$nonRacikan['total'] = $itemNonRacikOld['total'] + $total;
 		}
 		$this->session->set_userdata('itemNonRacik', $nonRacikan);

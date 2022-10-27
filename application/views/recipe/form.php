@@ -1,11 +1,17 @@
+<style>
+    .ui-autocomplete { z-index:2147483647; }
+</style>
 <?= form_open("recipe/save", ["method" => "post", "id" => "fm_recipe"], $model) ?>
 <div class="row">
 	<div class="col-md-2">
 		<?= form_hidden("rcp_id") ?>
 		<?= form_hidden("px_id") ?>
 		<?= form_hidden("visit_id") ?>
+		<?= form_hidden("par_id") ?>
 		<?= form_hidden("surety_id") ?>
+		<?= form_hidden("unit_id_lay") ?>
 		<?= form_hidden("services_id") ?>
+		<?= form_hidden("percent_profit") ?>
 		<?= create_inputDate("rcp_date", [
 			"format"        => "yyyy-mm-dd",
 			"autoclose"     => "true",
@@ -67,12 +73,12 @@
 
 	$("body").on("change", ".tb_list_recipe", function() {
 		$('.tb_list_recipe > tbody  > tr').each(function() {
-			const jumlah_barang = $(this).find(".sale_qty").val();
+			const jumlah_barang = $(this).find(".qty").val();
 			const harga_satuan = $(this).find(".sale_price").val();
 			const total_item = jumlah_barang * harga_satuan;
 			$(this).find('.price_total').val(total_item);
 		});
-		$(this).find("input").on('keyup', null, 'ctrl+a', function(e) {
+		/* $(this).find("input").on('keyup', null, 'ctrl+a', function(e) {
 			$(".btnplus_list_recipe").click();
 			$(".autocom_item_id:last").focus();
 			e.stopImmediatePropagation();
@@ -82,10 +88,10 @@
 			$("#btn-save-updated").click();
 			e.stopImmediatePropagation();
 			return false;
-		});
+		}); */
 		$(this).find("input:not([class*='autocom_item_id'])").on("keydown", function(e) {
 			if (e.which == 13) {
-				$(".btnplus_list_obat_edited").click();
+				$(".btnplus_list_recipe").click();
 				$(".autocom_item_id:last").focus();
 				e.stopImmediatePropagation();
 				return false;
@@ -100,7 +106,7 @@
 			select: function(event, ui) {
 				$('tr[class*="list_obat"]').each(function(i, a) {
 					if ($(this).find('.item_id').val() == ui.item.item_id) {
-						$(this).eq((i)).closest('tr').find('.sale_qty').focus();
+						$(this).eq((i)).closest('tr').find('.qty').focus();
 						$(this).last().remove();
 						return false;
 					}
@@ -108,7 +114,7 @@
 				$(this).closest('tr').find('.item_id').val(ui.item.item_id);
 				$(this).closest('tr').find('.stock').val(ui.item.total_stock);
 				$(this).closest('tr').find('.sale_price').val(ui.item.harga);
-				$(this).closest('tr').find('.sale_qty').focus();
+				$(this).closest('tr').find('.qty').focus();
 			}
 		}).data("ui-autocomplete")._renderItem = function(ul, item) {
 			return $("<li>")
@@ -127,7 +133,7 @@
 			leavePage = false;
 			$.ajax({
 				'type': "post",
-				'data': $(form).serialize(),
+				'data': $(form).serialize()+"&unit_id="+$("#unit_id_depo").val(),
 				'url': "recipe/save",
 				'dataType': 'json',
 				'success': function(data) {
