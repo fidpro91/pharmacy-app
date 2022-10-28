@@ -659,10 +659,12 @@ class Sale extends MY_Generator
 		$session['detail'] = array_filter($session['detail'], function ($var) use ($id) {
 			return ($var['item_id'] != $id);
 		});
-		$session['total'] = $session['total'] - $harga;
+		$totalOld = $session['total'];
+		$session['total'] = $totalOld - $harga;
 		$this->session->set_userdata('itemNonRacik', $session);
 		$resp = [
 			'total' 		=> $session['total'],
+			'tester'		=> $totalOld.'-'.$harga,
 			'embalase'		=> (count($session['detail']) * $this->session->penjualan["embalaseItem"]),
 		];
 		echo json_encode($resp);
