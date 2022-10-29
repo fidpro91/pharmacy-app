@@ -99,7 +99,7 @@
 	</div>
 	<div class="row">
 		<div class="col-md-12">
-			<div class="col-xs-6">
+			<div class="col-xs-6 footer-kiri">
 				<li class="list-group-item">
 					<b>Biaya Racikan</b> <a class="pull-right" id="total_biaya_racikan" isi="0">0</a>
 				</li>
@@ -113,7 +113,7 @@
 					<b>Sub Total Non Racikan</b> <a class="pull-right" id="sub_total_nonracikan" isi="0">0</a>
 				</li>
 			</div>
-			<div class="col-xs-6">
+			<div class="col-xs-6 footer-kanan">
 				<li class="list-group-item">
 					<?= form_hidden('margin_profit') ?>
 					<b id="labelProfit">Profit </b> <a class="pull-right" id="profit_rp">0</a>
