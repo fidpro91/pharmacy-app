@@ -133,10 +133,10 @@ class Receiving extends MY_Generator {
 
 	public function validasi_act($id)
 	{
-		$data=$this->db->get_where("newfarmasi.stock_fifo",["rec_id"=>$id])->result();
+		$data=$this->db->get_where("newfarmasi.receiving_detail",["rec_id"=>$id])->result();
 		$allow=true;
 		foreach ($data as $key => $value) {
-			if ($value->stock_in > $value->stock_saldo) {
+			if ($value->is_usage == 't') {
 				$allow=false;
 				break;
 			}
@@ -161,6 +161,8 @@ class Receiving extends MY_Generator {
 		$this->load->model('m_receiving_detail');
 		$stockku=[];
 		$sukses=false;
+		/* print_r($data);
+		die; */
 		foreach ($data['div_detail'] as $x => $value) {
 			if (empty($value['podet_id'])) {
 				continue;

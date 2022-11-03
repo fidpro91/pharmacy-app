@@ -106,7 +106,7 @@ class Sale extends MY_Generator
 			$racikan['detail'] = array_map(function ($arr) use ($saleId) {
 				return $arr + ['sale_id' => $saleId];
 			}, $racikan['detail']);
-			$saleDetail = array_merge_recursive($saleDetail, $racikan['detail']);
+			$saleDetail = array_merge($saleDetail, $racikan['detail']);
 		}
 
 		//insert sale detail
@@ -137,12 +137,14 @@ class Sale extends MY_Generator
 				break;
 			}
 		}
+
 		if ($sukses == false){
 			$this->db->where([
 				"sale_id" => $saleId
 			])->delete("farmasi.sale");
 			exit();
 		}
+		// $saleDetail = array_unique($saleDetail,SORT_REGULAR);
 		$this->db->trans_begin();
 		$this->db->insert_batch("farmasi.sale_detail", $saleDetail);
 		$err = $this->db->error();
@@ -176,6 +178,9 @@ class Sale extends MY_Generator
 		$nomorRm = $this->input->post('noresep');
 		$user = $this->session->user_id;
 		$this->db->set('finish_time', 'now()', false);
+		if ($this->input->post('asal_resep')) {
+			$this->db->where("unit_id_lay",$this->input->post('asal_resep'));
+		}
 		$this->db->where([
 			"unit_id"			=> $this->input->post('unit_id'),
 			"date(sale_date)>= '" . date("Y-m-d", strtotime("- 3 days")) . "' and finish_time is null" => null
@@ -599,7 +604,7 @@ class Sale extends MY_Generator
 		$total = $total;
 		if (!empty($this->session->userdata('itemRacik'))) {
 			$itemRacikOld = $this->session->userdata('itemRacik');
-			$itemRacikan['detail'] 		= array_merge_recursive($itemRacik, $itemRacikOld['detail']);
+			$itemRacikan['detail'] 		= array_unique(array_merge($itemRacik, $itemRacikOld['detail']),SORT_REGULAR);
 			$itemRacikan['biaya_racik']	= $itemRacikOld['biaya_racik'] + $post['biaya_racikan'];
 			$itemRacikan['total']			= $itemRacikOld['total'] + $total;
 		} else {
@@ -655,10 +660,12 @@ class Sale extends MY_Generator
 		$session['detail'] = array_filter($session['detail'], function ($var) use ($id) {
 			return ($var['item_id'] != $id);
 		});
-		$session['total'] = $session['total'] - $harga;
+		$totalOld = $session['total'];
+		$session['total'] = $totalOld - $harga;
 		$this->session->set_userdata('itemNonRacik', $session);
 		$resp = [
 			'total' 		=> $session['total'],
+			'tester'		=> $totalOld.'-'.$harga,
 			'embalase'		=> (count($session['detail']) * $this->session->penjualan["embalaseItem"]),
 		];
 		echo json_encode($resp);
@@ -708,18 +715,18 @@ class Sale extends MY_Generator
 			</div>
 			";
 		}
-		
+	
 		$nonRacikan['detail'] = $itemNonRacikan;
-		$nonRacikan['total'] = $total;
+		$nonRacikan['total'] = array_sum(array_column($itemNonRacikan,'subtotal'));
 		if (!empty($this->session->userdata('itemNonRacik'))) {
 			$itemNonRacikOld = $this->session->userdata('itemNonRacik');
-			$nonRacikan['detail'] = array_merge_recursive($itemNonRacikan, $itemNonRacikOld['detail']);
-			$nonRacikan['total'] = $itemNonRacikOld['total'] + $total;
+			$nonRacikan['detail'] = array_unique(array_merge($itemNonRacikan, $itemNonRacikOld['detail']),SORT_REGULAR);
+			$nonRacikan['total'] = array_sum(array_column($nonRacikan['detail'],'subtotal'));
 		}
 		$this->session->set_userdata('itemNonRacik', $nonRacikan);
 		$resp = [
-			'total' 	=> $total,
-			'embalase' 	=> (count($itemNonRacikan) * $this->session->penjualan["embalaseItem"]),
+			'total' 	=> $nonRacikan['total'],
+			'embalase' 	=> (count($nonRacikan['detail']) * $this->session->penjualan["embalaseItem"]),
 			'html'		=> $html
 		];
 		echo json_encode($resp);
@@ -779,6 +786,9 @@ class Sale extends MY_Generator
 				"dokter"	=> (!empty($dt['doctor_name']) ? $dt['doctor_name'] : null)
 			];
 			$this->session->set_userdata('penjualan', $dt);
+			$this->session->unset_userdata([
+				'itemRacik', 'itemNonRacik'
+			]);
 		}
 		echo json_encode($resp);
 	}

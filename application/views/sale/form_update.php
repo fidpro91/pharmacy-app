@@ -6,6 +6,7 @@
     <div class="col-md-4">
         <div class="col-md-6">
             <?= form_hidden("sale_id") ?>
+            <?= form_hidden("surety_id") ?>
             <?= form_hidden("visit_id") ?>
             <?= form_hidden("service_id") ?>
             <?= form_hidden("unit_id") ?>
@@ -38,17 +39,7 @@
                 "required"  => true,
             ]) ?>
             
-            <?= create_select2([
-                "attr" => [
-                    "name" => "surety_id=Penjamin", "id" => "surety_id", "class" => "form-control", "onchange" => "changeSurety()",
-                    "required"  => true
-                ],
-                "model" => [
-                    "m_sale" => ["get_penjamin", ["surety_active" => 't']],
-                    "column"  => ["surety_id", "surety_name"]
-                ],
-                "selected" => "1"
-            ]) ?>
+            
 
             <?= create_select([
                 "attr"         => ["name" => "sale_type=Cara Bayar", "id" => "sale_type", "class" => "form-control"],

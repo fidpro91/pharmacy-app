@@ -5,7 +5,11 @@ class M_recipe extends CI_Model {
 	public function get_data($sLimit,$sWhere,$sOrder,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).",rcp_id as id_key  from newfarmasi.recipe where 0=0 $sWhere $sOrder $sLimit
+				select ".implode(',', $aColumns).",rcp_id as id_key from newfarmasi.recipe r
+				join admin.ms_unit mu on mu.unit_id = r.unit_id_layanan
+				join hr.employee e on e.employee_id = r.doctor_id
+				join yanmed.patient p on r.px_id = p.px_id
+				 where 0=0 $sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
 	}
@@ -13,7 +17,11 @@ class M_recipe extends CI_Model {
 	public function get_total($sWhere,$aColumns)
 	{
 		$data = $this->db->query("
-				select ".implode(',', $aColumns).",rcp_id as id_key  from newfarmasi.recipe where 0=0 $sWhere
+				select ".implode(',', $aColumns).",rcp_id as id_key  from newfarmasi.recipe r
+				join admin.ms_unit mu on mu.unit_id = r.unit_id_layanan
+				join hr.employee e on e.employee_id = r.doctor_id
+				join yanmed.patient p on r.px_id = p.px_id
+				where 0=0 $sWhere
 			")->num_rows();
 		return $data;
 	}
@@ -23,11 +31,36 @@ class M_recipe extends CI_Model {
 		$col = [
 				"rcp_id",
 				"rcp_date",
-				"services_id",
-				"rcp_status",
-				"user_id",
-				"doctor_id",
-				"unit_id",
+				"rcp_no",
+				"px_norm",
+				"px_name",
+				"unit_name",
+				"employee_name",
+				"iterasi" => [
+					"custom" => function($a){
+						if ($a=="1") {
+							$label = "<span class=\"label label-info\">Tanpa Iterasi</span>";
+						}elseif($a=="2"){
+							$label = "<span class=\"label label-info\">Iterasi 1x</span>";
+						}elseif ($a=="3") {
+							$label = "<span class=\"label label-info\">Iterasi 2x</span>";
+						}
+						return $label;
+					}
+				],
+				"rcp_status" => [
+					"custom" => function($a){
+						if ($a=="0") {
+							$label = "<span class=\"label label-primary\">Request</span>";
+						}elseif($a=="1"){
+							$label = "<span class=\"label label-success\">Dilayani Penuh</span>";
+						}elseif ($a=="2") {
+							$label = "<span class=\"label label-warning\">Dilayani Sebagian</span>";
+						}
+						return $label;
+					}
+				]
+				/* "unit_id",
 				"rcp_no",
 				"diagnosa_id",
 				"verificated",
@@ -35,14 +68,15 @@ class M_recipe extends CI_Model {
 				"verified_at",
 				"racikan_txt",
 				"px_id",
-				"visit_id"];
+				"visit_id" */
+		];
 		return $col;
 	}
 
 	public function rules()
 	{
 		$data = [
-										"rcp_date" => "trim",
+					"rcp_date" => "trim",
 					"services_id" => "trim|integer|required",
 					"rcp_status" => "trim|integer",
 					"user_id" => "trim|integer|required",
