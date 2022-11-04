@@ -33,12 +33,12 @@ class M_lap_konsolidasi  extends CI_Model {
             ) y  ON s.item_id = y.item_id AND s.own_id = y.own_id AND s.unit_id = y.unit_id
             LEFT JOIN (
                 SELECT sum(kredit-debet) as stock_op,sp.item_id,sp.own_id,sp.unit_id,max(sp.item_price) as harga_so FROM newfarmasi.stock_process sp
-                WHERE sp.trans_type = 5 $where
+                WHERE sp.trans_type = 5 $where $where2
                 GROUP BY sp.item_id,sp.own_id,sp.unit_id
             )z ON s.item_id = z.item_id AND s.own_id = z.own_id AND s.unit_id = z.unit_id
             LEFT JOIN (
                 SELECT sum(coalesce(sp.debet,0))masuk,sum(coalesce(sp.kredit,0))keluar,sp.item_id,sp.own_id,sp.unit_id FROM newfarmasi.stock_process sp
-                WHERE sp.trans_type != 5 $where
+                WHERE sp.trans_type != 5 $where $where2
                 GROUP BY sp.item_id,sp.own_id,sp.unit_id
             )x ON s.item_id = x.item_id AND s.own_id = x.own_id AND s.unit_id = x.unit_id
             where 0=0 $unit $kepemilikan
