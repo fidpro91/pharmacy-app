@@ -29,7 +29,7 @@ class M_stock_process extends CI_Model {
 	public function get_column()
 	{
 		$col = [
-				"date_trans"=>['label'=>'Tgl Transaksi'],
+				"date_act"=>['label'=>'Tgl Transaksi'],
 				"item_name"=>['label'=>'nama obat'],
 				"description"=>['label'=>'Keterangan'],				
 				"trans_num"=>['label'=>'No Transaksi'],

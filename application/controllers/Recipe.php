@@ -184,6 +184,7 @@ class Recipe extends MY_Generator {
 			JOIN newfarmasi.stock st ON st.item_id = sd.item_id and st.own_id = sd.own_id and st.unit_id = s.unit_id
 			WHERE sd.sale_id = '$id'
 		")->result();
+		$data["kelengkapan"] = $this->db->get_where("admin.ms_reff",["refcat_id"=>38])->result_array();
 		$data['recipe_id'] = $id;
 		$data['model'] 	 = $this->m_recipe->rules();
 		$this->load->view("recipe/form", $data);
@@ -309,7 +310,16 @@ class Recipe extends MY_Generator {
 		$this->load->library('datatable');
 		$attr 	= $this->input->post();
 		$fields = $this->m_recipe->get_column();
-		$data 	= $this->datatable->get_data($fields,$filter = array(),'m_recipe',$attr);
+		$filter = [
+			"r.unit_id"			=> $attr['unit_id'],
+			"surety_id"			=> $attr['surety_id'],
+			"r.rcp_status"		=> $attr['rcp_status'],
+		];
+		$filter['custom'] = " date(rcp_date) = '".date('Y-m-d',strtotime($attr['tanggal']))."'";
+		if ($attr['unit_layanan']) {
+			$filter['unit_id_layanan'] = $attr['unit_layanan'];
+		}
+		$data 	= $this->datatable->get_data($fields,$filter,'m_recipe',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
         foreach ($data['dataku'] as $index=>$row) { 

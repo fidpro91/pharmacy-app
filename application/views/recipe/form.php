@@ -1,5 +1,7 @@
 <style>
-    .ui-autocomplete { z-index:2147483647; }
+	.ui-autocomplete {
+		z-index: 2147483647;
+	}
 </style>
 <?= form_open("recipe/save", ["method" => "post", "id" => "fm_recipe"], $model) ?>
 <div class="row">
@@ -36,11 +38,34 @@
 			]
 		]) ?>
 	</div>
-<<<<<<< HEAD
-	<div class="col-md-8">
-=======
 	<div class="col-md-10">
->>>>>>> 997196f8206048588b68615b4879684ae20d8be4
+		<div class="box box-primary">
+			<div class="box-header">
+				TELAAH RESEP
+			</div>
+			<div class="box-body">
+				<div style="border:1px solid #000;">
+					<table class="table">
+						<?php
+						$col = 4;
+						$brs = count($kelengkapan) / $col;
+						$clear=[];
+						for ($i = 0; $i < $brs; $i++) {
+							echo "<tr>";
+							for ($j=0; $j < $col; $j++) {
+								$ii = ($j * $brs) + $i;
+								if (!in_array($kelengkapan[$ii]['reff_name'],$clear)) {
+									echo "<td> <label><input type=\"checkbox\" name=\"cek_kelengkapan[]\" value=\"".$kelengkapan[$ii]['reff_id']."\"/> " . $kelengkapan[$ii]['reff_name'] . "</label></td>\n";
+								}
+								$clear[]=$kelengkapan[$ii]['reff_name'];
+							}
+							echo "</tr>";
+						}
+						?>
+					</table>
+				</div>
+			</div>
+		</div>
 		<div class="list_recipe">
 		</div>
 	</div>
@@ -51,19 +76,11 @@
 	</div>
 </div>
 <script type="text/javascript">
-<<<<<<< HEAD
-	$(document).ready(() => {
-		var dataItemRecipe = null;
-		$(".list_recipe").inputMultiRow({
-			column: () => {
-				var dataku;
-=======
 	var dataItemRecipe = null;
 	var dataku;
 	$(document).ready(() => {
 		$(".list_recipe").inputMultiRow({
 			column: () => {
->>>>>>> 997196f8206048588b68615b4879684ae20d8be4
 				$.ajax({
 					'async': false,
 					'type': "GET",
@@ -77,6 +94,7 @@
 			},
 			"data": dataItemRecipe
 		});
+		$("#own_id").trigger("change");
 	});
 	$("#btn-cancel").click(() => {
 		$("#form_recipe").hide();
@@ -145,7 +163,7 @@
 			leavePage = false;
 			$.ajax({
 				'type': "post",
-				'data': $(form).serialize()+"&unit_id="+$("#unit_id_depo").val(),
+				'data': $(form).serialize() + "&unit_id=" + $("#unit_id_depo").val(),
 				'url': "recipe/save",
 				'dataType': 'json',
 				'success': function(data) {
@@ -160,33 +178,30 @@
 		}
 	});
 
-<<<<<<< HEAD
-=======
-	$("#own_id").change(function(){
-		$.post("recipe/get_recipe_detail",{
-			"unit_id" : +$("#unit_id_depo").val(),
-			"rcp_id" : $("#rcp_id").val(),
-			"own_id" : $(this).val(),
-			"surety_id" : $("#surety_id").val(),
-		},function(resp){
+	$("#own_id").change(function() {
+		$.post("recipe/get_recipe_detail", {
+			"unit_id": +$("#unit_id_depo").val(),
+			"rcp_id": $("#rcp_id").val(),
+			"own_id": $(this).val(),
+			"surety_id": $("#surety_id").val(),
+		}, function(resp) {
 			$(".list_recipe").inputMultiRow({
 				column: () => {
 					return dataku;
 				},
 				"data": resp
 			});
-		},'json').then(function(){
+		}, 'json').then(function() {
 			$('.tb_list_recipe > tbody  > tr').each(function() {
-				const jumlah_barang = $(this).find(".qty").val();				
+				const jumlah_barang = $(this).find(".qty").val();
 				const harga_satuan = $(this).find(".sale_price").val();
 				const total_item = jumlah_barang * harga_satuan;
-				console.log(jumlah_barang+"-"+harga_satuan);
+				console.log(jumlah_barang + "-" + harga_satuan);
 				$(this).find('.price_total').val(total_item);
 				// $(this).find('.price_total').inputmask("IDR");
-        	});
+			});
 		});
 	});
 
->>>>>>> 997196f8206048588b68615b4879684ae20d8be4
 	<?= $this->config->item('footerJS') ?>
 </script>
