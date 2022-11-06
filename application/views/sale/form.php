@@ -318,6 +318,7 @@
 				error: function(jqXHR, textStatus, errorThrown) {
 					$.unblockUI();
 					if (errorThrown == 'timeout') {
+						alert("Data berhasil disimpan");
 						location.reload(true);
 					} else {
 						alert(errorThrown);
