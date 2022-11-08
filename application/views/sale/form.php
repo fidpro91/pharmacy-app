@@ -319,6 +319,7 @@
 					$.unblockUI();
 					if (errorThrown == 'timeout') {
 						alert("Data berhasil disimpan");
+						leavePage = false;
 						location.reload(true);
 					} else {
 						alert(errorThrown);

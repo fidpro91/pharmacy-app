@@ -44,7 +44,7 @@
             ], 
             "processing": true, 
             "serverSide": true, 
-            "order": [], 
+            "order": [[2,'ASC']], 
             "scrollX": true,
             "pageLength": 100,
             "ajax": {
