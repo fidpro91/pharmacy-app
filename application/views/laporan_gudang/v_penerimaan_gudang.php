@@ -81,6 +81,7 @@
                 <?= form_close() ?>
 			<div class="box-footer">
 				<button class="btn btn-primary" type="button" onclick="$('#formlaporan').submit()">Tampilkan</button>
+				<button class="btn btn-primary" type="button" id="excel"><i class="fa fa-search"></i>excel</button>
 			</div>
             </div>
     </section>

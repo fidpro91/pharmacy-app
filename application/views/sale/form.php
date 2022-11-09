@@ -350,7 +350,7 @@
 
 	function edit_px() {
 		$("#modal_pasien").modal({backdrop: "static"});
-      	$("#modal_pasien").find(".modal-body").load("sale/show_form_pasien");
+      	$("#modal_pasien").find(".modal-body").load("sale/show_form_pasien");	
 	}
 
 	$(window).bind('beforeunload', function(){

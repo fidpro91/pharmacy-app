@@ -77,6 +77,7 @@
                         ["id" => "t", "text" => "Ya"], ["id" => "f", "text" => "Tidak"]
                     ]
                 ]) ?>
+                
                 <?= create_select([
                     "attr" => ["name" => "own_id=Kepemilikan", "id" => "own_id", "class" => "form-control","required"  => true],
                     "model" => [
