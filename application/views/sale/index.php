@@ -78,6 +78,17 @@
 ]) ?>
 <?= modal_close() ?>
 <?= modal_open("modal_checkout", "Checkout Resep",null,null,false) ?>
+<?= create_select2([
+    "attr" => [
+        "name" => "asal_resep=unit layanan", "id" => "asal_resep", "class" => "form-control"
+    ],
+    "model" => [
+        "m_sale" => ["get_unit_layanan", [
+            "unit_active" => 't'
+        ]],
+        "column" => ["unit_id", "unit_name"]
+    ],
+]) ?>
 <div class="input-group input-group-sm">
   <input id="nomor_resep_co" name="nomor_resep_co" required="true" class="form-control input-sm" type="text" placeholder="isikan nomor rekam medis pasien / scan barcode">
   <span class="input-group-btn">
@@ -181,7 +192,8 @@
     $(".loading-checkout").show();
     $.post('<?php echo base_url() ?>sale/checkout_pasien', {
       noresep: noresep,
-      unit_id: $("#unit_id_depo").val()
+      unit_id: $("#unit_id_depo").val(),
+      asal_resep: $("#asal_resep").val(),
     }, function(data) {
       alert(data.message);
       $(".loading-checkout").hide();

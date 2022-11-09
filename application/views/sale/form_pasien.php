@@ -263,6 +263,9 @@
                     $("#margin_profit").val(data.profit);
                     $("#tno_rm").html($("#no_rm").val());
                     $("#tpx_name").html($("#nama").val());
+                    $(".list_obat_nonracikan2, .list_obat_racikan").empty();
+                    $(".footer-kanan, .footer-kiri").find('a').attr('isi',0);
+                    $(".footer-kanan, .footer-kiri").find('a').text(0);
                     $("#modal_pasien").modal('hide');
                 }
             });

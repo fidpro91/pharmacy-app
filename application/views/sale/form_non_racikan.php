@@ -77,8 +77,8 @@
 					$(".list_obat_nonracikan2").append(data.html);
 					let total = parseFloat($.isNumeric($('#sub_total_nonracikan').attr('isi'))?$('#sub_total_nonracikan').attr('isi'):0);
 					let biayaNonracik = parseFloat($.isNumeric($('#total_biaya_nonracikan').attr('isi'))?$('#total_biaya_nonracikan').attr('isi'):0);
-            		total = total+data.total;
-            		biayaNonracik = biayaNonracik+data.embalase;
+            		total = data.total;
+            		biayaNonracik = data.embalase;
 					$("#total_biaya_nonracikan").text(formatMoney(biayaNonracik));
             		$("#total_biaya_nonracikan").attr("isi",biayaNonracik);
 					$("#sub_total_nonracikan").text(formatMoney(total));
