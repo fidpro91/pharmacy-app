@@ -7,8 +7,8 @@ class M_recipe extends CI_Model {
 		$data = $this->db->query("
 				select ".implode(',', $aColumns).",rcp_id as id_key from newfarmasi.recipe r
 				join admin.ms_unit mu on mu.unit_id = r.unit_id_layanan
-				join hr.employee e on e.employee_id = r.doctor_id
-				join yanmed.patient p on r.px_id = p.px_id
+				left join hr.employee e on e.employee_id = r.doctor_id
+				left join yanmed.patient p on r.px_id = p.px_id
 				 where 0=0 $sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
@@ -19,8 +19,8 @@ class M_recipe extends CI_Model {
 		$data = $this->db->query("
 				select ".implode(',', $aColumns).",rcp_id as id_key  from newfarmasi.recipe r
 				join admin.ms_unit mu on mu.unit_id = r.unit_id_layanan
-				join hr.employee e on e.employee_id = r.doctor_id
-				join yanmed.patient p on r.px_id = p.px_id
+				left join hr.employee e on e.employee_id = r.doctor_id
+				left join yanmed.patient p on r.px_id = p.px_id
 				where 0=0 $sWhere
 			")->num_rows();
 		return $data;
@@ -38,6 +38,7 @@ class M_recipe extends CI_Model {
 				"employee_name",
 				"iterasi" => [
 					"custom" => function($a){
+						$label = null;
 						if ($a=="1") {
 							$label = "<span class=\"label label-info\">Tanpa Iterasi</span>";
 						}elseif($a=="2"){

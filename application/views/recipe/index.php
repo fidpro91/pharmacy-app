@@ -124,7 +124,7 @@
             ], 
         });
 
-        $("#unit_id_depo, #filter_bulan, #unit_id_layanan, #surety_id, #rcp_status").change(()=>{
+        $("#unit_id_depo, #filter_tanggal, #unit_id_layanan, #surety_id, #rcp_status").change(()=>{
           table.draw();
         })
     });
