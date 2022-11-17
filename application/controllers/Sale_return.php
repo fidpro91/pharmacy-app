@@ -142,7 +142,7 @@ class Sale_return extends MY_Generator {
 			$where = "AND LOWER(px_name) like '%$term%'";
 			$select = "p.px_name as label,";
 		}
-		$respond= $this->m_sale->get_pasien_pelayanan($where,$select);
+		$respond= $this->m_sale_return->get_pasien_pelayanan($where,$select);
 		echo json_encode($respond);
 	}
 

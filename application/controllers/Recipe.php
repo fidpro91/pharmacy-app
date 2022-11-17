@@ -10,6 +10,7 @@ class Recipe extends MY_Generator {
 						->lib_inputmulti()
 						->lib_select2()
 						->lib_inputmask();
+						
 		$this->load->model('m_recipe');
 	}
 
