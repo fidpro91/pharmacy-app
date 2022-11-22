@@ -1,6 +1,9 @@
 <style>
     .tampilan {
-        height: 80vh !important;
+        height: 150vh !important;
+    }
+    table td,th {
+        font-size: 3vh !important;
     }
 </style>
 <script src="<?=base_url()."assets/"?>bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
