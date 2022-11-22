@@ -247,11 +247,7 @@ class Recipe extends MY_Generator {
 					"id" => $value,
 					"label" => ucwords(str_replace('_', ' ', $value)),
 					"type" => 'text',
-<<<<<<< HEAD
-					"width" => "30%",
-=======
 					"width" => "20%",
->>>>>>> 997196f8206048588b68615b4879684ae20d8be4
 					"attr" => [
 						"readonly" => "readonly",
 						"data-inputmask" => "'alias': 'IDR'"
@@ -265,12 +261,6 @@ class Recipe extends MY_Generator {
 					"id" => $value,
 					"label" => "Racikan",
 					"type" => 'select',
-<<<<<<< HEAD
-					"width" => '15%',
-					"data" => $racikan
-				];
-			} else {
-=======
 					"width" => '10%',
 					"data" => $racikan
 				];
@@ -283,14 +273,10 @@ class Recipe extends MY_Generator {
 					"data" => get_type_kronis()
 				];
 			} elseif ($value == "price_total"||$value == "dosis") {
->>>>>>> 997196f8206048588b68615b4879684ae20d8be4
 				$row[] = [
 					"id" => $value,
 					"label" => ucwords(str_replace('_', ' ', $value)),
 					"type" => 'text',
-<<<<<<< HEAD
-					"width" => '10%',
-=======
 					"width" => '15%',
 				];
 			}else {
@@ -299,7 +285,6 @@ class Recipe extends MY_Generator {
 					"label" => ucwords(str_replace('_', ' ', $value)),
 					"type" => 'text',
 					"width" => '5%',
->>>>>>> 997196f8206048588b68615b4879684ae20d8be4
 				];
 			}
 		}
