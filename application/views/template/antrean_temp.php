@@ -100,7 +100,7 @@
             <div class="col-md-3">
               <div class="box box-primary box-solid">
                 <div class="box-header with-border">
-                  <h3 class="box-title">RESEP RACIKAN</h3>
+                  <h3 class="box-title">OBAT RACIKAN</h3>
                 </div>
                 <div class="box-body">
                   <h1 id="txt_rcp_racikan">0</h1>
@@ -111,7 +111,7 @@
             <div class="col-md-3">
               <div class="box box-primary box-solid">
                 <div class="box-header with-border">
-                  <h3 class="box-title">RESEP NON RACIKAN</h3>
+                  <h3 class="box-title">OBAT NON RACIKAN</h3>
                 </div>
                 <div class="box-body">
                   <h1 id="txt_rcp_nonracikan">0</h1>
@@ -158,11 +158,12 @@
   <script src="<?= site_url("assets") ?>/dist/js/demo.js"></script>
   <script>
     $(document).ready(() => {
+      $.fn.dataTable.ext.errMode = 'none';
       get_antrean();
 
       setInterval(() => {
         get_antrean();
-      }, 1000);
+      }, 3000);
     });
 
     $("#unit_id_depo").change(() => {
