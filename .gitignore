@@ -1,5 +1,4 @@
 .DS_Store
-.gitignore
 
 application/cache/*
 !application/cache/index.html
@@ -18,7 +17,6 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 /vendor/
 application/config/*
 /system/*
-system/*
 # IDE Files
 #-------------------------
 /nbproject/
