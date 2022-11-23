@@ -6,8 +6,6 @@
         font-size: 3vh !important;
     }
 </style>
-<script src="<?=base_url()."assets/"?>bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
-<script src="<?=base_url()."assets/"?>bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 <div class="col-md-4">
     <div class="box box-success tampilan">
         <div class="box-header with-border">
