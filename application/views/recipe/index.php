@@ -47,13 +47,12 @@
           </div>
           <div class="col-md-3">
             <?= create_select2([
-                "attr" => ["name" => "surety_id=Penjamin", "id" => "surety_id", "class" => "form-control",
+                "attr" => ["name" => "surety_id_filter=Penjamin", "id" => "surety_id_filter", "class" => "form-control",
                 "required"  => true],
                 "model" => [
                     "m_sale" => ["get_penjamin", ["surety_active" => 't']],
                     "column"  => ["surety_id", "surety_name"]
-                ],
-                "selected" => "1"
+                ]
             ]) ?>
           </div>
           <div class="col-md-3">
@@ -93,7 +92,11 @@
 <?= modal_close() ?>
 <script type="text/javascript">
     var table;
+    var audio = document.createElement('audio');
+	  var audioActive = 'true';
+    var lastNotice = 0;
     $(document).ready(function() {
+        audio.src =  "<?php echo base_url()?>assets/audio/e-resep.mp3";
         table = $('#tb_recipe').DataTable({ 
             "processing": true, 
             "serverSide": true, 
@@ -106,10 +109,17 @@
                   f.unit_id = $("#unit_id_depo").val();
                   f.tanggal = $("#filter_tanggal").val();
                   f.unit_layanan = $("#unit_id_layanan").val();
-                  f.surety_id = $("#surety_id").val();
+                  f.surety_id = $("#surety_id_filter").val();
                   f.rcp_status = $("#rcp_status").val();
                 }
 
+            },
+            "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+              if ( aData[10].includes("Request") && lastNotice < aData[2])
+              {
+          			audio.play();
+                lastNotice = aData[2];
+              }
             },
             'columnDefs': [
             {
@@ -124,10 +134,14 @@
             ], 
         });
 
-        $("#unit_id_depo, #filter_tanggal, #unit_id_layanan, #surety_id, #rcp_status").change(()=>{
+        $("#unit_id_depo, #filter_tanggal, #unit_id_layanan, #surety_id_filter, #rcp_status").change(()=>{
           table.draw();
         })
     });
+
+    setInterval(() => {
+      table.draw();
+    }, 30000);
 
     function set_val(id) {
       $("#modal_recipe").modal('show');
@@ -136,7 +150,7 @@
           $.each(data, (ind, obj) => {
             $('.modal-body').find("#" + ind).val(obj);
           });
-          $("select[class*='select2']").trigger("change");
+          $("#modal_recipe").find("select[class*='select2']").trigger("change");
         }, 'json');
       });
     }

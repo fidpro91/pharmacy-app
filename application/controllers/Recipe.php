@@ -298,9 +298,11 @@ class Recipe extends MY_Generator {
 		$fields = $this->m_recipe->get_column();
 		$filter = [
 			"r.unit_id"			=> $attr['unit_id'],
-			"surety_id"			=> $attr['surety_id'],
 			"r.rcp_status"		=> $attr['rcp_status'],
 		];
+		if (!empty($attr['surety_id'])) {
+			$filter["surety_id"] = $attr['surety_id'];
+		}
 		$filter['custom'] = " date(rcp_date) = '".date('Y-m-d',strtotime($attr['tanggal']))."'";
 		if ($attr['unit_layanan']) {
 			$filter['unit_id_layanan'] = $attr['unit_layanan'];
