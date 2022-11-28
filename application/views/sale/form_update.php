@@ -155,7 +155,7 @@
 				$('tr[class*="list_obat"]').each(function(i,a){
 					if($(this).find('.item_id').val() == ui.item.item_id ){
 						$(this).eq((i)).closest('tr').find('.sale_qty').focus();
-						$(this).last().remove();
+						$(this).last().find('.removeItem_list_obat').click();
 						return false;
 					}
 				});

@@ -102,7 +102,6 @@ class Recipe extends MY_Generator {
 			"user_id" => $this->session->user_id,
 			"sale_type" => $sale_type,
 			"sale_status" => "0",
-			"sale_id" => "1",
 			"rcp_id" => $data["rcp_id"],
 			"service_id" => $data["services_id"],
 			"surety_id" => $data["surety_id"],
@@ -112,18 +111,19 @@ class Recipe extends MY_Generator {
 			"embalase_item_sale" => $embalaseNonRacikan,
 			"sale_services" => $saleServices,
 			"unit_id_lay" => $data["unit_id_lay"],
-			"sale_embalase" => $embalase
+			"sale_embalase" => $embalase,
+			"sale_app"		=> "HEAPY"
 		];
 
 		$this->db->trans_begin();
-		$this->db->insert("newfarmasi.sale",$saleInput);
-		// $saleId = $this->db->insert_id();
-		$saleId = 1;
+		$this->db->insert("farmasi.sale",$saleInput);
+		$saleId = $this->db->insert_id();
+		// $saleId = 1;
 		$saleDetailInput = array_map(function ($arr) use ($saleId) {
 			return $arr + ['sale_id' => $saleId];
 		}, $saleDetailInput);
 		foreach ($saleDetailInput as $key => $value) {
-			$this->db->insert("newfarmasi.sale_detail",$value);
+			$this->db->insert("farmasi.sale_detail",$value);
 			$saleDetailId = $this->db->insert_id();
 			$this->db->where([
 				"item_id" 		=> $value["item_id"],
@@ -137,17 +137,40 @@ class Recipe extends MY_Generator {
 		$this->db->where([
 			"rcp_id"	=> $data["rcp_id"]
 		])->update("newfarmasi.recipe",[
-			"rcp_status" => 1
+			"rcp_status" => $data["jns_resep"]
 		]);
 
-		$err = $this->db->error();
-		if ($err['message']) {
-			$this->db->trans_rollback();
-			$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
-		}else{
-			$this->db->trans_commit();
-			$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
+		//telaah resep
+		if (!empty($data['cek_kelengkapan'])) {
+			$telaaah=[];
+			$i=0;
+			$this->db->where("rcp_id",$data["rcp_id"])->delete("newfarmasi.review_recipe");
+			foreach ($data['cek_kelengkapan'] as $key => $value) {
+				$telaaah[$i] = [
+					"rcp_id"	=> $data["rcp_id"],
+					"reff_id"	=> $value
+				];
+				$i++;
+			}
+			$this->db->insert_batch("newfarmasi.review_recipe",$telaaah);
 		}
+
+		$err = $this->db->error();
+		if ($this->db->trans_status() === false) {
+			$this->db->trans_rollback();
+			$resp = [
+				"code" 		=> "206",
+				"message"	=> $err['message']
+			];
+		} else {
+			$this->db->trans_commit();
+			$resp = [
+				"code" 		=> "200",
+				"sale_id" 	=> $saleId,
+				"message"	=> "Data berhasil disimpan"
+			];
+		}
+		echo json_encode($resp);
 		// redirect('recipe');
 
 	}
@@ -177,15 +200,8 @@ class Recipe extends MY_Generator {
 
 	public function show_form($id)
 	{
-		$data["item"]  = $this->db->query("
-			SELECT sd.*,sd.sale_price::numeric as sale_price,mi.item_name as label_item_id,st.stock_summary as stock,
-			(sd.sale_qty*sd.sale_price)::numeric as price_total FROM farmasi.sale_detail sd
-			JOIN admin.ms_item mi ON sd.item_id = mi.item_id
-			JOIN farmasi.sale s on sd.sale_id = s.sale_id
-			JOIN newfarmasi.stock st ON st.item_id = sd.item_id and st.own_id = sd.own_id and st.unit_id = s.unit_id
-			WHERE sd.sale_id = '$id'
-		")->result();
-		$data["kelengkapan"] = $this->db->get_where("admin.ms_reff",["refcat_id"=>38])->result_array();
+		$data["kelengkapan"] = $this->db->join("newfarmasi.review_recipe rr","rr.reff_id = mr.reff_id and rr.rcp_id = $id","left")
+										->get_where("admin.ms_reff mr",["refcat_id"=>38])->result_array();
 		$data['recipe_id'] = $id;
 		$data['model'] 	 = $this->m_recipe->rules();
 		$this->load->view("recipe/form", $data);
@@ -194,12 +210,13 @@ class Recipe extends MY_Generator {
 	public function show_form_delete($id)
 	{
 		$data["sale"] = $this->db->query("
-		SELECT s.sale_id,s.sale_num,
+		SELECT s.sale_id,s.sale_num,s.rcp_id,
 		string_agg(concat(mi.item_name,' ',sd.dosis,' [',sd.sale_qty,']'),'<br>')detail_obat
-		FROM newfarmasi.sale s
-		JOIN newfarmasi.sale_detail sd ON s.sale_id = sd.sale_id
+		FROM farmasi.sale s
+		JOIN farmasi.sale_detail sd ON s.sale_id = sd.sale_id
 		JOIN admin.ms_item mi on sd.item_id = mi.item_id
-		GROUP BY s.sale_id,s.sale_num")->result();
+		where s.rcp_id = $id
+		GROUP BY s.sale_id,s.sale_num,s.rcp_id")->result();
 		$this->load->view("recipe/v_detail_recipe",$data);
 	}
 
