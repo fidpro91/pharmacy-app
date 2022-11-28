@@ -55,7 +55,11 @@
 							for ($j=0; $j < $col; $j++) {
 								$ii = ($j * $brs) + $i;
 								if (!in_array($kelengkapan[$ii]['reff_name'],$clear)) {
-									echo "<td> <label><input type=\"checkbox\" name=\"cek_kelengkapan[]\" value=\"".$kelengkapan[$ii]['reff_id']."\"/> " . $kelengkapan[$ii]['reff_name'] . "</label></td>\n";
+									$checked="";
+									if (isset($kelengkapan[$ii]['revrcp_id'])) {
+										$checked = "checked";
+									}
+									echo "<td> <label><input $checked type=\"checkbox\" name=\"cek_kelengkapan[]\" value=\"".$kelengkapan[$ii]['reff_id']."\"/> " . $kelengkapan[$ii]['reff_name'] . "</label></td>\n";
 								}
 								$clear[]=$kelengkapan[$ii]['reff_name'];
 							}
@@ -94,7 +98,9 @@
 			},
 			"data": dataItemRecipe
 		});
-		$("#own_id").trigger("change");
+		setTimeout(() => {
+			$("#own_id").trigger("change");
+		}, '500');
 	});
 	$("#btn-cancel").click(() => {
 		$("#form_recipe").hide();

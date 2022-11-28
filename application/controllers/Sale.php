@@ -360,8 +360,24 @@ class Sale extends MY_Generator
 		echo json_encode($data);
 	}
 
-	public function delete_row($id)
+	public function delete_row($id,$rcp_id=null)
 	{
+		if (!empty($rcp_id)) {
+			$cekResep = $this->db->get_where("farmasi.sale",["rcp_id"=>$rcp_id])->num_rows();
+			if ($cekResep>1) {
+				$this->db->where([
+					"rcp_id"	=> $rcp_id
+				])->update("newfarmasi.recipe",[
+					"rcp_status" => 2
+				]);
+			}else{
+				$this->db->where([
+					"rcp_id"	=> $rcp_id
+				])->update("newfarmasi.recipe",[
+					"rcp_status" => 0
+				]);
+			}
+		}
 		$this->db->where('sale_id', $id)->delete("farmasi.sale_detail");
 		$this->db->where('sale_id', $id)->delete("farmasi.sale");
 		$resp = array();
