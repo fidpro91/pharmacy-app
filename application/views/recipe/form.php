@@ -167,6 +167,7 @@
 	$('#fm_recipe').on("submit", function() {
 		$(this).data("validator").settings.submitHandler = function(form) {
 			leavePage = false;
+			$.blockUI();
 			$.ajax({
 				'type': "post",
 				'data': $(form).serialize() + "&unit_id=" + $("#unit_id_depo").val(),
