@@ -26,8 +26,10 @@ class Laporan_konsolidasi extends MY_Generator {
         $tampilkan = $this->input->post('tampil');
         $where = "";
         $where2 = " ";
+		$where3 = " ";
         $where2 .= " AND (date(sp.date_trans) between '".$tgl1."' and '".$tgl2."')";
-        
+        $where3 .= " AND date(sp.date_trans) <= '".$tgl2."'";
+
         if(!empty($unit)){
             $where .= " AND sp.unit_id = $unit";
         }
@@ -40,7 +42,7 @@ class Laporan_konsolidasi extends MY_Generator {
         //     $where .= " and mi.gol='$gol'";
         // }
        
-        $data['data']=$this->M_lap_konsolidasi->get_new_konsolidasi($where,$where2,$unit,$kepemilikan);  //print_r($data);die; 
+        $data['data']=$this->M_lap_konsolidasi->get_new_konsolidasi($where,$where2,$unit,$kepemilikan,$where3);  //print_r($data);die;
         $this->load->view("laporan_konsolidasi/v_laporan_konsolidasi",$data);	      
        
     }
