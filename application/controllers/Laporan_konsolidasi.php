@@ -28,7 +28,7 @@ class Laporan_konsolidasi extends MY_Generator {
         $where2 = " ";
 		$where3 = " ";
         $where2 .= " AND (date(sp.date_trans) between '".$tgl1."' and '".$tgl2."')";
-        $where3 .= " AND date(sp.date_trans) <= '".$tgl2."'";
+        $where3 .= " AND date(sp.date_trans) < '".$tgl1."'";
 
         if(!empty($unit)){
             $where .= " AND sp.unit_id = $unit";
