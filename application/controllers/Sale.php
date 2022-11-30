@@ -82,6 +82,7 @@ class Sale extends MY_Generator
 		$input['sale_services'] = $totalService;
 		$input['date_act'] 	= date('Y-m-d H:i:s');
 		$this->db->insert("farmasi.sale", $input);
+		$saleId = $this->db->query("select currval('public.sale_id_seq')seq")->row('seq');
 		$err = $this->db->error();
 		if ($err["message"]) {
 			echo json_encode([
@@ -90,7 +91,6 @@ class Sale extends MY_Generator
 			]);
 			exit();
 		}
-		$saleId = $this->db->query("select currval('public.sale_id_seq')seq")->row('seq');
 		//insert into farmasi.sale
 		$saleDetail = [];
 		//nonracikan
