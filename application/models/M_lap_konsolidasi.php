@@ -10,7 +10,7 @@ class M_lap_konsolidasi  extends CI_Model {
 			")->result();
 		return $data;
 	}
-    public function get_new_konsolidasi($where,$where2,$unit,$kepemilikan)
+    public function get_new_konsolidasi($where,$where2,$unit,$kepemilikan,$where3)
     {
         if(!empty($unit)){
             $unit = "AND s.unit_id = $unit";
@@ -27,7 +27,7 @@ class M_lap_konsolidasi  extends CI_Model {
                 SELECT sp.stock_after as stock_awal,sp.item_id,sp.own_id,sp.unit_id,sp.item_price as harga_awal FROM newfarmasi.stock_process sp
                 INNER JOIN (
                                 SELECT max(sp.stockprocess_id)idsp,sp.item_id,sp.own_id,sp.unit_id FROM newfarmasi.stock_process sp
-                                WHERE 0=0 $where2 
+                                WHERE 0=0 $where3 
                                 GROUP BY sp.item_id,sp.own_id,sp.unit_id
                 ) x ON sp.stockprocess_id = x.idsp
             ) y  ON s.item_id = y.item_id AND s.own_id = y.own_id AND s.unit_id = y.unit_id
