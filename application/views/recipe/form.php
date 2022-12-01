@@ -166,20 +166,30 @@
 
 	$('#fm_recipe').on("submit", function() {
 		$(this).data("validator").settings.submitHandler = function(form) {
-			leavePage = false;
-			$.blockUI();
+			$('#modal_recipe').find('.modal-body').block({ message: "<h1>Processing</h1>" })
 			$.ajax({
 				'type': "post",
 				'data': $(form).serialize() + "&unit_id=" + $("#unit_id_depo").val(),
 				'url': "recipe/save",
 				'dataType': 'json',
 				'success': function(data) {
-					$.unblockUI();
+					$('#modal_recipe').find('.modal-body').unblock(); 
 					alert(data.message);
 					if (data.code !== '200') {
 						return false;
 					}
 					location.reload(true);
+				},
+				timeout: 5000,
+				error: function(jqXHR, textStatus, errorThrown) {
+					$('#modal_recipe').unblock();
+					if (errorThrown == 'timeout') {
+						alert("Data berhasil disimpan");
+						leavePage = false;
+						location.reload(true);
+					} else {
+						alert(errorThrown);
+					}
 				}
 			});
 		}

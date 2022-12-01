@@ -41,6 +41,7 @@ class M_recipe_detail extends CI_Model {
 				"item_id",
 				"racikan_id",
 				"qty",
+				"racikan_qty",
 				"stock",			
 				"sale_price",
 				"dosis",
@@ -53,7 +54,7 @@ class M_recipe_detail extends CI_Model {
 	public function rules()
 	{
 		$data = [
-										"rcp_id" => "trim|integer|required",
+					"rcp_id" => "trim|integer|required",
 					"item_id" => "trim|integer",
 					"qty" => "trim|integer|required",
 					"dosis" => "trim",
