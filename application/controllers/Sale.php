@@ -232,7 +232,13 @@ class Sale extends MY_Generator
 			}
 			if (($row['sale_type'] == 0 && empty($row['cash_id'])) || ($row['sale_type'] == 1)) {
 				$obj[] = create_btnAction([
-					"update", "delete",
+					"update",
+					"Delete Data" =>
+					[
+						"btn-act" => "deleteRow('" . $row['id_key'] . "," . $row['rcp_id'] . "')",
+						"btn-icon" => "fa fa-print",
+						"btn-class" => "btn-default",
+					],
 					"Cetak Faktur" =>
 					[
 						"btn-act" => "cetak_resep('" . $row['id_key'] . "',2)",
