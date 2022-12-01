@@ -69,10 +69,6 @@
             <?=create_table("tb_recipe","M_recipe",["class"=>"table table-bordered" ,"style" => "width:100% !important;"])?>
           </div>
         </div>
-        <div class="box-footer">
-          <button class="btn btn-danger" id="btn-deleteChecked"><i class="fa fa-trash"></i> Delete</button>
-        </div>
-        <!-- /.box-footer-->
       </div>
       <!-- /.box -->
 
