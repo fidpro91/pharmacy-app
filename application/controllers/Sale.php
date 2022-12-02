@@ -236,8 +236,8 @@ class Sale extends MY_Generator
 					"Delete Data" =>
 					[
 						"btn-act" => "deleteRow('" . $row['id_key'] . "," . $row['rcp_id'] . "')",
-						"btn-icon" => "fa fa-print",
-						"btn-class" => "btn-default",
+						"btn-icon" => "fa fa-trash",
+						"btn-class" => "btn-danger",
 					],
 					"Cetak Faktur" =>
 					[
