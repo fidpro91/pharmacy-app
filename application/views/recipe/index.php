@@ -96,6 +96,7 @@
         table = $('#tb_recipe').DataTable({ 
             "processing": true, 
             "serverSide": true, 
+            "pageLength": 100,
             "order": [], 
             "scrollX": true,
             "ajax": {

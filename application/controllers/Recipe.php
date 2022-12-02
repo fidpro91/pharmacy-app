@@ -54,7 +54,7 @@ class Recipe extends MY_Generator
 			$sd = [
 				// "sale_id" 		=> "trim|integer|required",
 				"item_id" 		=> $value["item_id"],
-				"sale_price" 	=> $value["sale_price"] - ($value["sale_price"] * $data["percent_profit"]),
+				"sale_price" 	=> $value["sale_price"],
 				"sale_qty" 		=> $value["qty"],
 				"racikan" 		=> "f",
 				"dosis" 		=> $value["dosis"],
@@ -76,14 +76,16 @@ class Recipe extends MY_Generator
 			$saleDetailInput[$x]['subtotal'] = $value['price_total'];
 			$saleDetailInput[$x] = array_merge($sd, $saleDetailInput[$x]);
 			$totalAll += $value["price_total"];
+			/* echo $saleDetailInput[$x]['subtotal']."<br>";
+			echo $totalAll."<br>"; */
 		}
+		// die;
 		$saleServices = $this->db->get_where("newfarmasi.setting_app", ["setting_name" => "BIAYA RACIKAN"])->row("setting_value");
 		$namaRacikan  = array_filter(array_column($saleDetailInput, "racikan_id"), function ($var) {
 			return ($var != '');
 		});
 		$jmlRacikan = count(array_unique($namaRacikan));
 		$saleServices = $jmlRacikan * $saleServices;
-
 		$pasien = $this->db->get_where("yanmed.patient", [
 			"px_id" => $data["px_id"]
 		])->row();
@@ -97,6 +99,7 @@ class Recipe extends MY_Generator
 		$embalase = $totalAll / 100;
 		$embalase = abs(ceil($embalase) - $embalase) * 100;
 		$totalAll = $totalAll + $embalase;
+		
 		$saleInput = [
 			"sale_num" => $this->get_no_sale($data["unit_id"]),
 			"sale_date" => $data["rcp_date"],
@@ -128,6 +131,9 @@ class Recipe extends MY_Generator
 		$saleDetailInput = array_map(function ($arr) use ($saleId) {
 			return $arr + ['sale_id' => $saleId];
 		}, $saleDetailInput);
+
+		/* print_r($saleDetailInput);
+		die; */
 		foreach ($saleDetailInput as $key => $value) {
 			$this->db->insert("farmasi.sale_detail", $value);
 			$saleDetailId = $this->db->insert_id();
@@ -231,7 +237,7 @@ class Recipe extends MY_Generator
 	{
 		$post = $this->input->post();
 		$data = $this->db->query("SELECT rd.*,mi.item_name as label_item_id,racikan_id,racikan_desc,qty,s.stock_summary as stock,
-		(p.price_sell::numeric+(p.price_sell::numeric*so.percent_profit))sale_price
+		(p.price_sell::numeric)sale_price
 		FROM newfarmasi.recipe_detail rd
 		JOIN admin.ms_item mi ON mi.item_id = rd.item_id
 		LEFT JOIN newfarmasi.stock s ON s.item_id = rd.item_id AND s.unit_id = " . $post["unit_id"] . " AND s.own_id = " . $post["own_id"] . "
@@ -253,7 +259,7 @@ class Recipe extends MY_Generator
 					"id" => $value,
 					"label" => $colauto[$value],
 					"type" => 'autocomplete',
-					"width" => '30%',
+					"width" => '20%',
 				];
 			} elseif ($value == "sale_price" || $value == "stock") {
 				$row[] = [
@@ -296,12 +302,12 @@ class Recipe extends MY_Generator
 					"width" => '10%',
 					"data" => get_type_kronis()
 				];
-			} elseif ($value == "price_total" || $value == "dosis") {
+			} elseif ($value == "dosis") {
 				$row[] = [
 					"id" => $value,
 					"label" => ucwords(str_replace('_', ' ', $value)),
 					"type" => 'text',
-					"width" => '15%',
+					"width" => '10%',
 				];
 			} else {
 				$row[] = [
@@ -395,7 +401,7 @@ class Recipe extends MY_Generator
 			->join("yanmed.visit v", "v.visit_id=r.visit_id")
 			->join("yanmed.services s", "s.srv_id=r.services_id")
 			->join("farmasi.surety_ownership so", "so.surety_id=v.surety_id and so.own_id=1")
-			->select("*,s.unit_id as unit_id_lay")
+			->select("r.*,so.*,r.doctor_id as par_id,s.unit_id as unit_id_lay")
 			->get("newfarmasi.recipe r")->row();
 
 		echo json_encode($data);
