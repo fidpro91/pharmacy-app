@@ -235,7 +235,7 @@ class Sale extends MY_Generator
 					"update",
 					"Delete Data" =>
 					[
-						"btn-act" => "deleteRow('" . $row['id_key'] . "," . $row['rcp_id'] . "')",
+						"btn-act" => "deleteRow('" . $row['id_key'] . "','" . $row['rcp_id'] . "')",
 						"btn-icon" => "fa fa-trash",
 						"btn-class" => "btn-danger",
 					],
