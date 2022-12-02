@@ -277,7 +277,7 @@ class Recipe extends MY_Generator
 					"id" => $value,
 					"label" => ucwords(str_replace('_', ' ', $value)),
 					"type" => 'text',
-					"width" => "20%",
+					"width" => "15%",
 					"attr" => [
 						"readonly" => "readonly",
 						"data-inputmask" => "'alias': 'IDR'"
