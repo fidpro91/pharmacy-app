@@ -175,7 +175,7 @@ class M_ms_item extends CI_Model {
 
 	public function get_price_detail($id)
 	{
-		$data = $this->db->query("SELECT p.own_id,p.price_buy,p.price_sell FROM admin.ms_item i
+		$data = $this->db->query("SELECT p.own_id,p.price_buy::numeric,p.price_sell::numeric FROM admin.ms_item i
 		LEFT JOIN farmasi.price p on i.item_id = p.item_id
 		left JOIN farmasi.ownership o on p.own_id = o.own_id
 		WHERE i.item_id =$id")->result();
