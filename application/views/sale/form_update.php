@@ -99,9 +99,10 @@
     </div>
 </div>
 <?= form_close() ?>
+
 <script>
     $(document).ready(()=>{
-        var dataItemSale = JSON.parse('<?=json_encode($item)?>');
+        var dataItemSale = JSON.parse('<?=addslashes(json_encode($item))?>');
         $(".list_obat_edited").inputMultiRow({
             column: ()=>{
                 var dataku;
