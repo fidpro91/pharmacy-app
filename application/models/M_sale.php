@@ -181,7 +181,7 @@ class M_sale extends CI_Model
 			WHERE
 				mu.unit_type in (21,22,23,42,9)
 				AND (date(v.visit_end_date)>='".date('Y-m-d',strtotime("- 3 days"))."' OR v.visit_end_date is null) 
-				AND v.visit_status NOT IN (35,60,70) $where
+				/* AND v.visit_status NOT IN (35,60,70) */ $where
 			order by s.srv_date desc
 		")->result();
 	}
