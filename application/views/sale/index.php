@@ -118,6 +118,9 @@
         [3, 'desc']
       ],
       "scrollX": true,
+      search: {
+          return: true,
+      },
       "ajax": {
         "url": "<?php echo site_url('sale/get_data') ?>",
         "type": "POST",
