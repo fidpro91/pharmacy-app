@@ -75,33 +75,67 @@
         </style>
         <section class="content">
           <div class="row">
-            <div class="col-md-5">
+            <div class="col-md-3">
+                <div class="box box-success box-solid">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">RESEP TERLAYANI</h3>
+                    </div>
+                    <div class="box-body">
+                      <div class="box box-success">
+                        <div class="box-header with-border">
+                          <h3 class="box-title">NOMOR RESEP RACIKAN</h3>
+                        </div>
+                        <div class="box-body" style="min-height:8em;">
+                          <h1 id="rcp_racikan_ready">0</h1>
+                        </div>
+                        <!-- /.box-body -->
+                      </div>
+                      <div class="box box-success ">
+                        <div class="box-header with-border">
+                          <h3 class="box-title">NOMOR RESEP NON RACIKAN</h3>
+                        </div>
+                        <div class="box-body" style="min-height:8em;">
+                          <h1 id="rcp_non_racikan_ready">0</h1>
+                        </div>
+                        <!-- /.box-body -->
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
               <div class="box box-primary box-solid">
-                <div class="box-header with-border">
-                  <h3 class="box-title">NOMOR RESEP RACIKAN</h3>
-                </div>
-                <div class="box-body" style="min-height:8em;">
-                  <h1 id="rcp_racikan">0</h1>
-                </div>
-                <!-- /.box-body -->
-              </div>
-              <div class="box box-primary box-solid">
-                <div class="box-header with-border">
-                  <h3 class="box-title">NOMOR RESEP NON RACIKAN</h3>
-                </div>
-                <div class="box-body" style="min-height:8em;">
-                  <h1 id="rcp_non_racikan">0</h1>
+                <div class="box-body" style="text-align: center !important; min-height:8em !important;">
+                    <img src="<?=base_url("assets")?>/images/logors.png" style="width: 80%;" alt="IMG">
                 </div>
                 <!-- /.box-body -->
               </div>
             </div>
-            <div class="col-md-7">
-              <div class="box box-primary box-solid">
-                <div class="box-body" style="text-align: center !important; min-height:10em;">
-                    <img src="<?=base_url("assets")?>/images/logors.png" style="width: 50%;" alt="IMG">
+            <div class="col-md-3">
+                <div class="box box-danger box-solid">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">PERSIAPAN RESEP</h3>
+                    </div>
+                    <div class="box-body">
+                      <div class="box box-success">
+                        <div class="box-header with-border">
+                          <h3 class="box-title">NOMOR RESEP RACIKAN</h3>
+                        </div>
+                        <div class="box-body" style="min-height:8em;">
+                          <h1 id="rcp_racikan_prepare">0</h1>
+                        </div>
+                        <!-- /.box-body -->
+                      </div>
+                      <div class="box box-success ">
+                        <div class="box-header with-border">
+                          <h3 class="box-title">NOMOR RESEP NON RACIKAN</h3>
+                        </div>
+                        <div class="box-body" style="min-height:8em;">
+                          <h1 id="rcp_non_racikan_prepare">0</h1>
+                        </div>
+                        <!-- /.box-body -->
+                      </div>
+                    </div>
                 </div>
-                <!-- /.box-body -->
-              </div>
             </div>
           </div>
           <div class="row" id="data_antrian">
@@ -157,8 +191,10 @@
     function get_antrean() {
       $.get("antrean_recipe/get_data/" + $("#unit_id_depo").val(), function(resp) {
         $("#data_antrian").html(resp.html);
-        $("#rcp_racikan").text(resp.noResepRacikan);
-        $("#rcp_non_racikan").text(resp.noResepNonRacikan);
+        $("#rcp_racikan_ready").text(resp.noResepRacikanReady);
+        $("#rcp_non_racikan_ready").text(resp.noResepNonRacikanReady);
+        $("#rcp_racikan_prepare").text(resp.noResepRacikanPrepare);
+        $("#rcp_non_racikan_prepare").text(resp.noResepNonRacikanPrepare);
       }, 'json');
     }
   </script>

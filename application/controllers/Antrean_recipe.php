@@ -28,7 +28,7 @@ class Antrean_recipe extends CI_Controller {
 		$detail["antreanRcp"] = $this->db
 									->select("s.*,to_char(r.rcp_date,'HH24:MM:SS')order_rcp,to_char(s.date_act,'HH24:MM:SS')entri_rcp,to_char(s.finish_time,'HH24:MM:SS')finish_rcp",false)
 									->join("newfarmasi.recipe r","r.rcp_id=s.rcp_id","left")
-									->order_by("s.date_act","desc")
+									->order_by("s.date_act","ASC")
 									->get_where("farmasi.sale s",[
 										"s.unit_id"						=> $unit_id,
 										"date(sale_date)=date(now()) and s.finish_time is null"	=> null
@@ -39,22 +39,20 @@ class Antrean_recipe extends CI_Controller {
 											"date(sale_date)=date(now())"	=> null,
 											"rcp_id is null"				=> null
 										])->num_rows(); */
-		$data["noResepRacikan"] = $this->db->query(
-			"SELECT split_part(sale_num, '/', 2)nomor_resep FROM farmasi.sale s
-			JOIN farmasi.sale_detail sd ON s.sale_id = sd.sale_id
-			WHERE date(s.sale_date) = CURRENT_DATE AND s.unit_id = $unit_id
-			GROUP BY s.sale_id,sale_num
-			HAVING 't' = ANY(ARRAY_AGG(sd.racikan))
-			ORDER BY s.sale_id DESC
+		$data["noResepRacikanReady"] = $this->db->query(
+			"SELECT nomor_resep from newfarmasi.v_antrean_apotek where unit_id = $unit_id and racikan = 'YA' and sale_status = 2
 			LIMIT 1"
 		)->row('nomor_resep');
-		$data["noResepNonRacikan"] = $this->db->query(
-			"SELECT split_part(sale_num, '/', 2)nomor_resep FROM farmasi.sale s
-			JOIN farmasi.sale_detail sd ON s.sale_id = sd.sale_id
-			WHERE date(s.sale_date) = CURRENT_DATE AND s.unit_id = $unit_id
-			GROUP BY s.sale_id,sale_num
-			HAVING 't' != ANY(ARRAY_AGG(sd.racikan))
-			ORDER BY s.sale_id DESC
+		$data["noResepNonRacikanReady"] = $this->db->query(
+			"SELECT nomor_resep from newfarmasi.v_antrean_apotek where unit_id = $unit_id and racikan = 'TIDAK' and sale_status = 2
+			LIMIT 1"
+		)->row('nomor_resep');
+		$data["noResepRacikanPrepare"] = $this->db->query(
+			"SELECT nomor_resep from newfarmasi.v_antrean_apotek where unit_id = $unit_id and racikan = 'YA' and sale_status = 0
+			LIMIT 1"
+		)->row('nomor_resep');
+		$data["noResepNonRacikanPrepare"] = $this->db->query(
+			"SELECT nomor_resep from newfarmasi.v_antrean_apotek where unit_id = $unit_id and racikan = 'TIDAK' and sale_status = 0
 			LIMIT 1"
 		)->row('nomor_resep');
 		// $detail["orderRcp"] = $detail["orderRcp"]->result();
