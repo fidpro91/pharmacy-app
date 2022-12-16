@@ -22,12 +22,9 @@
                     "patient_name" => [
                         "label" => "NAMA PASIEN"
                     ],
-                    "entri_rcp" => [
-                        "label" => "PROSESS/PERSIAPAN"
-                    ],
-                    "finish_rcp" => [
-                        "label" => "TERLAYANI"
-                    ],
+                    "status_resep" => [
+                        "label"     => "STATUS"
+                    ]
                 ],
                 "data"     => $antreanRcp,
             ]) ?>

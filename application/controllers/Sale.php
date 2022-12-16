@@ -159,6 +159,8 @@ class Sale extends MY_Generator
 			];
 		} else {
 			$this->db->trans_commit();
+			$this->db->query("
+			REFRESH MATERIALIZED VIEW CONCURRENTLY newfarmasi.v_antrean_apotek;");
 			$resp = [
 				"code" 		=> "200",
 				"sale_id" 	=> $saleId,

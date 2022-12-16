@@ -11,7 +11,7 @@ class Antrean_recipe extends CI_Controller {
 	public function index()
 	{
 		$this->load->model("m_ms_unit");
-		foreach ($this->m_ms_unit->get_ms_unit(["employee_id" => $this->session->employee_id]) as $key => $value) {
+		foreach ($this->m_ms_unit->get_farmasi_unit() as $key => $value) {
 			$kat[$value->unit_id] = $value->unit_name;
 		}
 		$data['unit'] = $kat;
@@ -26,7 +26,9 @@ class Antrean_recipe extends CI_Controller {
 		]); */
 		
 		$detail["antreanRcp"] = $this->db
-									->select("s.*,to_char(r.rcp_date,'HH24:MM:SS')order_rcp,to_char(s.date_act,'HH24:MM:SS')entri_rcp,to_char(s.finish_time,'HH24:MM:SS')finish_rcp",false)
+									->select("s.*,
+									case when coalesce(s.sale_status,0) = 0 or coalesce(s.sale_status,0) = 1 then 'Proses' else 'Selesai' end as status_resep
+									",false)
 									->join("newfarmasi.recipe r","r.rcp_id=s.rcp_id","left")
 									->order_by("s.date_act","ASC")
 									->get_where("farmasi.sale s",[
@@ -41,18 +43,22 @@ class Antrean_recipe extends CI_Controller {
 										])->num_rows(); */
 		$data["noResepRacikanReady"] = $this->db->query(
 			"SELECT nomor_resep from newfarmasi.v_antrean_apotek where unit_id = $unit_id and racikan = 'YA' and sale_status = 2
+			ORDER BY nomor_resep DESC
 			LIMIT 1"
 		)->row('nomor_resep');
 		$data["noResepNonRacikanReady"] = $this->db->query(
 			"SELECT nomor_resep from newfarmasi.v_antrean_apotek where unit_id = $unit_id and racikan = 'TIDAK' and sale_status = 2
+			ORDER BY nomor_resep DESC
 			LIMIT 1"
 		)->row('nomor_resep');
 		$data["noResepRacikanPrepare"] = $this->db->query(
 			"SELECT nomor_resep from newfarmasi.v_antrean_apotek where unit_id = $unit_id and racikan = 'YA' and sale_status = 0
+			ORDER BY nomor_resep DESC
 			LIMIT 1"
 		)->row('nomor_resep');
 		$data["noResepNonRacikanPrepare"] = $this->db->query(
 			"SELECT nomor_resep from newfarmasi.v_antrean_apotek where unit_id = $unit_id and racikan = 'TIDAK' and sale_status = 0
+			ORDER BY nomor_resep DESC
 			LIMIT 1"
 		)->row('nomor_resep');
 		// $detail["orderRcp"] = $detail["orderRcp"]->result();
