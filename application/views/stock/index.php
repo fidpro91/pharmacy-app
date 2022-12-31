@@ -42,6 +42,28 @@
     var table;
     $(document).ready(function() {
         table = $('#tb_stock').DataTable({ 
+          dom: 'Bfrtip',
+                "pageLength":100,
+                buttons: [
+                    {
+                    "extend": 'pdf',
+                    "text": '<i class="fa fa-file-pdf-o" style="color: green;"></i> PDF',
+                    "titleAttr": 'PDF',
+                    "orientation" : 'landscape',
+                    "pageSize" : 'LEGAL',
+                    "download": 'open'
+                    },
+                    {
+                    "extend": 'excel',
+                    "text": '<i class="fa fa-file-excel-o" style="color: green;"></i> EXCEL',
+                    "titleAttr": 'Excel'
+                    },
+                    {
+                    "extend": 'print',
+                    "text": '<i class="fa fa-print" style="color: green;"></i> CETAK',
+                    "titleAttr": 'Print'
+                    }
+                ],
             "processing": true, 
             "serverSide": true, 
             "order": [[4,"ASC"]], 
