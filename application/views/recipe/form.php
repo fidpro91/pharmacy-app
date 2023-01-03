@@ -35,7 +35,8 @@
 			"model" => [
 				"m_surety_ownership" => ["get_kepemilikan", ["0" => '0']],
 				"column"  => ["own_id", "own_name"]
-			]
+			],
+			"selected" => 1
 		]) ?>
 	</div>
 	<div class="col-md-10">
@@ -55,7 +56,11 @@
 							for ($j=0; $j < $col; $j++) {
 								$ii = ($j * $brs) + $i;
 								if (!in_array($kelengkapan[$ii]['reff_name'],$clear)) {
-									echo "<td> <label><input type=\"checkbox\" name=\"cek_kelengkapan[]\" value=\"".$kelengkapan[$ii]['reff_id']."\"/> " . $kelengkapan[$ii]['reff_name'] . "</label></td>\n";
+									$checked="";
+									if (isset($kelengkapan[$ii]['revrcp_id'])) {
+										$checked = "checked";
+									}
+									echo "<td> <label><input $checked type=\"checkbox\" name=\"cek_kelengkapan[]\" value=\"".$kelengkapan[$ii]['reff_id']."\"/> " . $kelengkapan[$ii]['reff_name'] . "</label></td>\n";
 								}
 								$clear[]=$kelengkapan[$ii]['reff_name'];
 							}
@@ -94,7 +99,9 @@
 			},
 			"data": dataItemRecipe
 		});
-		$("#own_id").trigger("change");
+		setTimeout(() => {
+			$("#own_id").trigger("change");
+		}, '500');
 	});
 	$("#btn-cancel").click(() => {
 		$("#form_recipe").hide();
@@ -104,7 +111,7 @@
 	$("body").on("change", ".tb_list_recipe", function() {
 		$('.tb_list_recipe > tbody  > tr').each(function() {
 			const jumlah_barang = $(this).find(".qty").val();
-			const harga_satuan = $(this).find(".sale_price").val();
+			const harga_satuan = (valid_numeric($(this).find(".sale_price").val()) + (valid_numeric($(this).find(".sale_price").val())*valid_numeric($("#percent_profit").val())));
 			const total_item = jumlah_barang * harga_satuan;
 			$(this).find('.price_total').val(total_item);
 		});
@@ -137,7 +144,7 @@
 				$('tr[class*="list_obat"]').each(function(i, a) {
 					if ($(this).find('.item_id').val() == ui.item.item_id) {
 						$(this).eq((i)).closest('tr').find('.qty').focus();
-						$(this).last().remove();
+						$(this).last().find('.removeItem_list_obat').click();
 						return false;
 					}
 				});
@@ -160,19 +167,30 @@
 
 	$('#fm_recipe').on("submit", function() {
 		$(this).data("validator").settings.submitHandler = function(form) {
-			leavePage = false;
+			$('#modal_recipe').find('.modal-body').block({ message: "<h1>Processing</h1>" })
 			$.ajax({
 				'type': "post",
 				'data': $(form).serialize() + "&unit_id=" + $("#unit_id_depo").val(),
 				'url': "recipe/save",
 				'dataType': 'json',
 				'success': function(data) {
-					$.unblockUI();
+					$('#modal_recipe').find('.modal-body').unblock(); 
 					alert(data.message);
 					if (data.code !== '200') {
 						return false;
 					}
 					location.reload(true);
+				},
+				timeout: 5000,
+				error: function(jqXHR, textStatus, errorThrown) {
+					$('#modal_recipe').unblock();
+					if (errorThrown == 'timeout') {
+						alert("Data berhasil disimpan");
+						leavePage = false;
+						location.reload(true);
+					} else {
+						$('#modal_recipe').find('.modal-body').unblock();
+					}
 				}
 			});
 		}
@@ -194,14 +212,17 @@
 		}, 'json').then(function() {
 			$('.tb_list_recipe > tbody  > tr').each(function() {
 				const jumlah_barang = $(this).find(".qty").val();
-				const harga_satuan = $(this).find(".sale_price").val();
+				const harga_satuan = valid_numeric($(this).find(".sale_price").val()) + ( valid_numeric($(this).find(".sale_price").val())*valid_numeric($("#percent_profit").val()));
 				const total_item = jumlah_barang * harga_satuan;
-				console.log(jumlah_barang + "-" + harga_satuan);
 				$(this).find('.price_total').val(total_item);
 				// $(this).find('.price_total').inputmask("IDR");
 			});
 		});
 	});
+
+	function valid_numeric(a) {
+		return parseFloat($.isNumeric(a) ? a : 0);
+	}
 
 	<?= $this->config->item('footerJS') ?>
 </script>

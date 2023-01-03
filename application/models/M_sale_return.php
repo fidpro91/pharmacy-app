@@ -27,6 +27,44 @@ class M_sale_return extends CI_Model
 		return $data;
 	}
 
+	public function get_pasien_pelayanan($where, $select)
+	{
+		return $this->db->query("
+			SELECT  $select P
+				.px_id,
+				P.px_norm,
+				P.px_name,
+				P.px_address,
+				to_char( P.px_birthdate, 'DD-MM-YYYY' ) tgl_lahir,
+				concat ( '(', COALESCE ( P.px_phone, lpad('0', 12, '0') ), ')' ) telepon,
+				v.visit_id,
+				s.srv_id,
+				s.srv_date,
+				s.unit_id,
+				mu.unit_name,
+				s.surety_id,
+				s.par_id,
+				concat ( emp.employee_ft, emp.employee_name, emp.employee_bt ) par_name,
+				v.sep_no,
+				case when s.srv_status = 30 then 'Dilayani' 
+				when s.srv_status = 35 then 'batal'
+				when s.srv_status = 20 then 'chekout'
+				when s.srv_status = 10 then 'Pulang'
+				 else 'Belum Dilayani' end as status_kunjungan
+			FROM
+				yanmed.patient
+				P JOIN yanmed.visit v ON v.px_id = P.px_id
+				JOIN yanmed.services s ON v.visit_id = s.visit_id
+				JOIN ADMIN.ms_unit mu ON mu.unit_id = s.unit_id
+				LEFT JOIN hr.employee emp ON s.par_id = emp.employee_id 
+			WHERE
+				mu.unit_type in (21,22,23,42,9)
+				AND v.visit_status NOT IN (35,60,70) $where
+			order by s.srv_date desc
+			LIMIT 10
+		")->result();
+	}
+
 	public function get_column()
 	{
 		$col = [

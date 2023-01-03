@@ -82,6 +82,7 @@ class Sale extends MY_Generator
 		$input['sale_services'] = $totalService;
 		$input['date_act'] 	= date('Y-m-d H:i:s');
 		$this->db->insert("farmasi.sale", $input);
+		$saleId = $this->db->query("select currval('public.sale_id_seq')seq")->row('seq');
 		$err = $this->db->error();
 		if ($err["message"]) {
 			echo json_encode([
@@ -90,7 +91,6 @@ class Sale extends MY_Generator
 			]);
 			exit();
 		}
-		$saleId = $this->db->query("select currval('public.sale_id_seq')seq")->row('seq');
 		//insert into farmasi.sale
 		$saleDetail = [];
 		//nonracikan
@@ -159,6 +159,8 @@ class Sale extends MY_Generator
 			];
 		} else {
 			$this->db->trans_commit();
+			/* $this->db->query("
+			REFRESH MATERIALIZED VIEW CONCURRENTLY newfarmasi.v_antrean_apotek;"); */
 			$resp = [
 				"code" 		=> "200",
 				"sale_id" 	=> $saleId,
@@ -232,7 +234,13 @@ class Sale extends MY_Generator
 			}
 			if (($row['sale_type'] == 0 && empty($row['cash_id'])) || ($row['sale_type'] == 1)) {
 				$obj[] = create_btnAction([
-					"update", "delete",
+					"update",
+					"Delete Data" =>
+					[
+						"btn-act" => "deleteRow('" . $row['id_key'] . "','" . $row['rcp_id'] . "')",
+						"btn-icon" => "fa fa-trash",
+						"btn-class" => "btn-danger",
+					],
 					"Cetak Faktur" =>
 					[
 						"btn-act" => "cetak_resep('" . $row['id_key'] . "',2)",
@@ -360,8 +368,24 @@ class Sale extends MY_Generator
 		echo json_encode($data);
 	}
 
-	public function delete_row($id)
+	public function delete_row($id,$rcp_id=null)
 	{
+		if (!empty($rcp_id)) {
+			$cekResep = $this->db->get_where("farmasi.sale",["rcp_id"=>$rcp_id])->num_rows();
+			if ($cekResep>1) {
+				$this->db->where([
+					"rcp_id"	=> $rcp_id
+				])->update("newfarmasi.recipe",[
+					"rcp_status" => 2
+				]);
+			}else{
+				$this->db->where([
+					"rcp_id"	=> $rcp_id
+				])->update("newfarmasi.recipe",[
+					"rcp_status" => 0
+				]);
+			}
+		}
 		$this->db->where('sale_id', $id)->delete("farmasi.sale_detail");
 		$this->db->where('sale_id', $id)->delete("farmasi.sale");
 		$resp = array();

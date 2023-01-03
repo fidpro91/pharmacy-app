@@ -6,7 +6,7 @@ class M_employee extends CI_Model {
 	{
 		$data = $this->db->query("
 				select ".implode(',', $aColumns).",employee_id as id_key from hr.employee 
-				where 0=0 and empcat_id = 12
+				where 0=0 
 				$sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
@@ -16,7 +16,7 @@ class M_employee extends CI_Model {
 	{
 		$data = $this->db->query("
 				select ".implode(',', $aColumns).",employee_id as id_key from hr.employee 
-				where 0=0 and empcat_id = 12
+				where 0=0
 				$sWhere
 			")->num_rows();
 		return $data;

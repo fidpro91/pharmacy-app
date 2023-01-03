@@ -272,7 +272,7 @@ class Production extends MY_Generator {
 	{
 		$term = $this->input->get('term',true); 
 		
-		$where = " AND lower(mi.item_name) like lower('%$term%') and classification_id in (1,175,162)";
+		$where = " AND lower(mi.item_name) like lower('%$term%') and classification_id in (1,175,162,97)";
 		$data=$this->db->query("
 				SELECT mi.item_id,mi.item_code,mi.item_name as value,p.price_sell::numeric from farmasi.v_obat mi	
 				left join farmasi.price p on mi.item_id = p.item_id and p.own_id = '$own_id'	

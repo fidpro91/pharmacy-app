@@ -69,4 +69,17 @@ function newexportaction(e, dt, button, config) {
       $("#tb_ms_jabatan input[type='checkbox']").attr("checked", false);
     }
   });
+
+  $(document).ready(()=>{
+    $('body').on( 'init.dt', function ( e, ctx ) {
+      var api = new $.fn.dataTable.Api( ctx );
+      $('.dataTables_filter input').unbind();
+      $('.dataTables_filter input').bind('keyup', function(e){
+          var code = e.keyCode || e.which;
+          if (code == 13) { 
+              api.search(this.value).draw();
+          }
+      });
+    });
+  })
 </script>

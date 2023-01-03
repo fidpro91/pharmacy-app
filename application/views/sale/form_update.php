@@ -99,9 +99,10 @@
     </div>
 </div>
 <?= form_close() ?>
+
 <script>
     $(document).ready(()=>{
-        var dataItemSale = JSON.parse('<?=json_encode($item)?>');
+        var dataItemSale = JSON.parse('<?=addslashes(json_encode($item))?>');
         $(".list_obat_edited").inputMultiRow({
             column: ()=>{
                 var dataku;
@@ -155,7 +156,7 @@
 				$('tr[class*="list_obat"]').each(function(i,a){
 					if($(this).find('.item_id').val() == ui.item.item_id ){
 						$(this).eq((i)).closest('tr').find('.sale_qty').focus();
-						$(this).last().remove();
+						$(this).last().find('.removeItem_list_obat').click();
 						return false;
 					}
 				});
