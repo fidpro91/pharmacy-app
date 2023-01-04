@@ -40,10 +40,7 @@ class Stock extends MY_Generator {
 		if ($attr['own_id'] != ' ') {
 			$filter = array_merge($filter, ["s.own_id" => $attr['own_id']]);
 		}
-
-		if ($attr['ss'] != 't') {
-			$filter = array_merge($filter, ["stock_saldo != stock_summary"]);
-		}
+		
 		$data 	= $this->datatable->get_data($fields,$filter,'m_stock',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
