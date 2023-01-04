@@ -12,16 +12,19 @@ class Laporan_penjualan extends MY_Generator {
 
 	public function index()
 	{
-		$idEmpl=$this->session->user_id;
+		$idEmpl=$this->session->user_id; //print_r($idEmpl);die;
 	    $data['data'] = [];	        
-        $data['unit'] = $this->m_laporan_penjualan->get_unit($idEmpl)->result();	
+        $data['unit'] = $this->m_laporan_penjualan->get_jenis_layanan();	
 		$this->theme('laporan_penjualan/form_laporan_penjualan',$data);
 	} 
 
     public function get_unit_layanan(){
-        $catunit_id = $this->input->post('catunit_id', true); 
-       
-        $result = $this->m_laporan_penjualan->get_unit_layanan($catunit_id);
+        $catunit_id = $this->input->post('catunit_id', true);       
+        // $result = $this->m_laporan_penjualan->get_unit_layanan($catunit_id);
+        // echo json_encode($result);
+        $arrayunit = explode('*-*', $catunit_id);
+        $result = $this->m_laporan_penjualan->get_unit_layanan($arrayunit[0]);
+
         echo json_encode($result);
     } 
     public function get_item()

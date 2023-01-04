@@ -162,7 +162,9 @@ class Receiving extends MY_Generator {
 		$stockku=[];
 		$sukses=false;
 		//print_r($data);die;
+	
 		foreach ($data['div_detail'] as $x => $value) {
+		
 			if (empty($value['podet_id'])) {
 				continue;
 			}
@@ -179,7 +181,7 @@ class Receiving extends MY_Generator {
 			// $detail[$x]['price_total'] = $dataPo->po_pricepack;
 			$detail[$x]['qty_pack'] 	= $value['qty_unit']/$dataPo->po_qtyunit*$dataPo->po_qtypack;
 			$detail[$x]['podet_id'] 	= $dataPo->podet_id;
-			$detail[$x]['hpp'] 			= $value['price_item']+($value['price_item']*($data['ppn']/100));
+			$detail[$x]['hpp'] 			= $value['price_item']+($value['price_item']*($data['ppn']/100));			
 			$detail[$x]['rec_id'] 		= $data['rec_id'];
 			$detail[$x]['expired_date'] = date('Y-m-d',strtotime($value['expired_date']));
 			$this->db->insert("newfarmasi.receiving_detail",$detail[$x]);
@@ -199,8 +201,8 @@ class Receiving extends MY_Generator {
 				$this->db->insert("farmasi.price",[
 					"item_id"	=> $dataPo->item_id,
 					"own_id"	=> $data['own_id'],
-					"price_sell"=> $value['price_item'],
-					"price_buy"	=> $detail[$x]['hpp']
+					"price_sell"=> $detail[$x]['hpp'],
+					"price_buy"	=> $value['price_item']
 				]);
 			}
 
