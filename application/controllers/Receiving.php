@@ -20,7 +20,7 @@ class Receiving extends MY_Generator {
 
 	public function save()
 	{
-		$data = $this->input->post(); //print_r($data);
+		$data = $this->input->post(); //print_r($data);die;
 		// if ($this->m_receiving->validation()) {
 			$input = [];
 			foreach ($this->m_receiving->rules() as $key => $value) { 
@@ -161,8 +161,7 @@ class Receiving extends MY_Generator {
 		$this->load->model('m_receiving_detail');
 		$stockku=[];
 		$sukses=false;
-		/* print_r($data);
-		die; */
+		//print_r($data);die;
 		foreach ($data['div_detail'] as $x => $value) {
 			if (empty($value['podet_id'])) {
 				continue;
@@ -200,10 +199,20 @@ class Receiving extends MY_Generator {
 				$this->db->insert("farmasi.price",[
 					"item_id"	=> $dataPo->item_id,
 					"own_id"	=> $data['own_id'],
-					"price_sell"	=> $value['price_item'],
-					"price_buy"		=> $detail[$x]['hpp']
+					"price_sell"=> $value['price_item'],
+					"price_buy"	=> $detail[$x]['hpp']
 				]);
 			}
+
+			//cek update harga
+			$update = $data['update'];
+			if ($update == 1) {
+				$this->db->where(["item_id"	=> $dataPo->item_id,"own_id"=> $data['own_id']])
+						->update("farmasi.price",[
+							"price_sell"	=> $detail[$x]['hpp'],
+							"price_buy"		=> $value['price_item']
+						]);
+			} 
 			
 			//insert stock
 			$stockku[$x]["recdet_id"] = $recdetid;

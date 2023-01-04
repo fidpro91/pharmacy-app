@@ -1,6 +1,6 @@
 <table class="table table-bordered" id="table_po">
-    <tr>
-        <th><input type="checkbox" id="checkAllPo"/></th>
+    <tr>		
+        <th><input type="checkbox" id="checkAllPo"/></th>		
         <th>ITEM</th>
         <th>ED</th>
         <th>SATUAN UNIT</th>
@@ -21,7 +21,7 @@
 			}else{
 				$checked = '';
 			}
-            echo "<tr>
+            echo "<tr>					
                     <td><input $checked type=\"checkbox\" class=\"podet_id\" name=\"div_detail[$key][podet_id]\" value=\"".(isset($value->podet_id)?$value->podet_id:$value->recdet_id)."\"/></td>
                     <td>$value->item_name</td>
                     <td><input readonly type=\"text\" value=\"".(isset($value->expired_date)?$value->expired_date:null)."\"  class=\"inputan form-control input-sm expired_date\" name=\"div_detail[$key][expired_date]\"/></td>

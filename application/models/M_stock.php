@@ -45,6 +45,11 @@ class M_stock extends CI_Model {
 				"item_name",
 				"item_unitofitem",
 				"own_name",
+				"price_buy" => [
+					"custom" => function($a){
+						return str_replace('$','',$a['price_buy']);
+					}
+				],
 				"price_sell" => [
 					"custom" => function($a){
 						return str_replace('$','',$a['price_sell']);
