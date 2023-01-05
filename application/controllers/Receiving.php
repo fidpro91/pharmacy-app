@@ -173,10 +173,6 @@ class Receiving extends MY_Generator {
 			foreach ($this->m_receiving_detail->rules() as $r => $v) {
 				$detail[$x][$r] = isset($value[$r])?$value[$r]:null;
 			}
-			$hpp = $value['price_item']+($value['price_item']*($data['ppn']/100)); 
-			$disk = ($value['price_item']*($value['disc_percent']/100));
-			$diskPPn = $disk + ($disk*($data['ppn']/100));
-			$hppafterdisk= $hpp - $diskPPn; //new perhitungan diskon hpp
 			$detail[$x]['unit_per_pack'] = ($dataPo->po_qtyunit/$dataPo->po_qtypack);
 			$detail[$x]['item_id'] = $dataPo->item_id;
 			$detail[$x]['item_pack'] = $dataPo->po_pack;
