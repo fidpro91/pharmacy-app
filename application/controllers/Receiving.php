@@ -169,10 +169,14 @@ class Receiving extends MY_Generator {
 				continue;
 			}
 			$dataPo=$this->db->get_where("farmasi.po_detail",["podet_id"=>$value['podet_id']])->row();
-			// print_r($value);die;
+		
 			foreach ($this->m_receiving_detail->rules() as $r => $v) {
 				$detail[$x][$r] = isset($value[$r])?$value[$r]:null;
 			}
+			$hpp = $value['price_item']+($value['price_item']*($data['ppn']/100)); 
+			$disk = ($value['price_item']*($value['disc_percent']/100));
+			$diskPPn = $disk + ($disk*($data['ppn']/100));
+			$hppafterdisk= $hpp - $diskPPn; //new perhitungan diskon hpp
 			$detail[$x]['unit_per_pack'] = ($dataPo->po_qtyunit/$dataPo->po_qtypack);
 			$detail[$x]['item_id'] = $dataPo->item_id;
 			$detail[$x]['item_pack'] = $dataPo->po_pack;
@@ -181,7 +185,7 @@ class Receiving extends MY_Generator {
 			// $detail[$x]['price_total'] = $dataPo->po_pricepack;
 			$detail[$x]['qty_pack'] 	= $value['qty_unit']/$dataPo->po_qtyunit*$dataPo->po_qtypack;
 			$detail[$x]['podet_id'] 	= $dataPo->podet_id;
-			$detail[$x]['hpp'] 			= $value['price_item']+($value['price_item']*($data['ppn']/100));			
+			$detail[$x]['hpp'] 			= $hppafterdisk;//$value['price_item']+($value['price_item']*($data['ppn']/100));			
 			$detail[$x]['rec_id'] 		= $data['rec_id'];
 			$detail[$x]['expired_date'] = date('Y-m-d',strtotime($value['expired_date']));
 			$this->db->insert("newfarmasi.receiving_detail",$detail[$x]);
@@ -202,17 +206,17 @@ class Receiving extends MY_Generator {
 					"item_id"	=> $dataPo->item_id,
 					"own_id"	=> $data['own_id'],
 					"price_sell"=> $detail[$x]['hpp'],
-					"price_buy"	=> $value['price_item']
+					"price_buy"	=> $detail[$x]['price_item']
 				]);
 			}
 
 			//cek update harga
-			$update = $data['update'];
-			if ($update == 1) {
+			$update = $value['update']; 
+			if ($update == 2) {
 				$this->db->where(["item_id"	=> $dataPo->item_id,"own_id"=> $data['own_id']])
 						->update("farmasi.price",[
 							"price_sell"	=> $detail[$x]['hpp'],
-							"price_buy"		=> $value['price_item']
+							"price_buy"		=> $detail[$x]['price_item']
 						]);
 			} 
 			
