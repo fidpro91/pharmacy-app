@@ -35,6 +35,10 @@
 								],
 								"select2" => ["tags" => true]
 							]) ?>
+							<!-- <?= create_select([
+								"attr" => ["name" => "update=Update Harga", "id" => "pay_type", "class" => "form-control"],
+								"option" => [["id" => '1', "text" => "Update"], ["id" => '2', "text" => "Tidak"]],
+							]) ?> -->
     					</div>
     					<div class="col-md-6">
     						<?= create_select2([
@@ -72,6 +76,7 @@
 									"column"  => ["setting_value", "setting_name"]
 								],
 							]) ?>
+							
     					</div>
     				</div>
     			</div>

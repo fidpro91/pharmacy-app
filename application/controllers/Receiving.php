@@ -20,7 +20,7 @@ class Receiving extends MY_Generator {
 
 	public function save()
 	{
-		$data = $this->input->post(); //print_r($data);
+		$data = $this->input->post(); //print_r($data);die;
 		// if ($this->m_receiving->validation()) {
 			$input = [];
 			foreach ($this->m_receiving->rules() as $key => $value) { 
@@ -161,14 +161,15 @@ class Receiving extends MY_Generator {
 		$this->load->model('m_receiving_detail');
 		$stockku=[];
 		$sukses=false;
-		/* print_r($data);
-		die; */
+		//print_r($data);die;
+	
 		foreach ($data['div_detail'] as $x => $value) {
+		
 			if (empty($value['podet_id'])) {
 				continue;
 			}
 			$dataPo=$this->db->get_where("farmasi.po_detail",["podet_id"=>$value['podet_id']])->row();
-			// print_r($value);die;
+		
 			foreach ($this->m_receiving_detail->rules() as $r => $v) {
 				$detail[$x][$r] = isset($value[$r])?$value[$r]:null;
 			}
@@ -180,7 +181,8 @@ class Receiving extends MY_Generator {
 			// $detail[$x]['price_total'] = $dataPo->po_pricepack;
 			$detail[$x]['qty_pack'] 	= $value['qty_unit']/$dataPo->po_qtyunit*$dataPo->po_qtypack;
 			$detail[$x]['podet_id'] 	= $dataPo->podet_id;
-			$detail[$x]['hpp'] 			= $value['price_item']+($value['price_item']*($data['ppn']/100));
+			$hargaAfterDiskon			= $value['price_item'] - ($value['disc_value']/$value['qty_unit']);
+			$detail[$x]['hpp'] 			= $hargaAfterDiskon+($hargaAfterDiskon*($data['ppn']/100));
 			$detail[$x]['rec_id'] 		= $data['rec_id'];
 			$detail[$x]['expired_date'] = date('Y-m-d',strtotime($value['expired_date']));
 			$this->db->insert("newfarmasi.receiving_detail",$detail[$x]);
@@ -200,10 +202,20 @@ class Receiving extends MY_Generator {
 				$this->db->insert("farmasi.price",[
 					"item_id"	=> $dataPo->item_id,
 					"own_id"	=> $data['own_id'],
-					"price_sell"	=> $value['price_item'],
-					"price_buy"		=> $detail[$x]['hpp']
+					"price_sell"=> $detail[$x]['hpp'],
+					"price_buy"	=> $detail[$x]['price_item']
 				]);
 			}
+
+			//cek update harga
+			$update = $value['update']; 
+			if ($update == 2) {
+				$this->db->where(["item_id"	=> $dataPo->item_id,"own_id"=> $data['own_id']])
+						->update("farmasi.price",[
+							"price_sell"	=> $detail[$x]['hpp'],
+							"price_buy"		=> $detail[$x]['price_item']
+						]);
+			} 
 			
 			//insert stock
 			$stockku[$x]["recdet_id"] = $recdetid;

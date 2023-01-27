@@ -205,9 +205,9 @@
     }, 'json');
   }
 
-  function deleteRow(id) {
+  function deleteRow(id,rcp_id) {
     if (confirm("Anda yakin akan menghapus data ini?")) {
-      $.get('sale/delete_row/' + id, (data) => {
+      $.get('sale/delete_row/' + id+'/'+ rcp_id, (data) => {
         alert(data.message);
         location.reload();
       }, 'json');

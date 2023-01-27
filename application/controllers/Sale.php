@@ -159,6 +159,8 @@ class Sale extends MY_Generator
 			];
 		} else {
 			$this->db->trans_commit();
+			/* $this->db->query("
+			REFRESH MATERIALIZED VIEW CONCURRENTLY newfarmasi.v_antrean_apotek;"); */
 			$resp = [
 				"code" 		=> "200",
 				"sale_id" 	=> $saleId,
@@ -232,7 +234,13 @@ class Sale extends MY_Generator
 			}
 			if (($row['sale_type'] == 0 && empty($row['cash_id'])) || ($row['sale_type'] == 1)) {
 				$obj[] = create_btnAction([
-					"update", "delete",
+					"update",
+					"Delete Data" =>
+					[
+						"btn-act" => "deleteRow('" . $row['id_key'] . "','" . $row['rcp_id'] . "')",
+						"btn-icon" => "fa fa-trash",
+						"btn-class" => "btn-danger",
+					],
 					"Cetak Faktur" =>
 					[
 						"btn-act" => "cetak_resep('" . $row['id_key'] . "',2)",

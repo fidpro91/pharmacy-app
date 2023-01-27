@@ -23,6 +23,7 @@
           <div class="box-tools pull-left col-md-3" >
             <?= form_dropdown("kepemilikan", $own, '', 'class="form-control select2" id="kepemilikan_id"') ?>
           </div>
+          
         </div>
         <div class="box-body" id="kartu_Stok" style="display: none;">
         </div>
@@ -42,6 +43,31 @@
     var table;
     $(document).ready(function() {
         table = $('#tb_stock').DataTable({ 
+          dom: 'Bfrtip',
+                "pageLength":100,
+                buttons: [
+                  {
+                  "extend": 'pdf',
+                  "text": '<i class="fa fa-file-pdf-o" style="color: green;"></i> PDF',
+                  "titleAttr": 'PDF',                               
+                  "action": newexportaction,
+                  "orientation" : 'landscape',
+                  "pageSize" : 'LEGAL',
+                  "download": 'open'
+                },
+                {
+                  "extend": 'excel',
+                  "text": '<i class="fa fa-file-excel-o" style="color: green;"></i> EXCEL',
+                  "titleAttr": 'Excel',                               
+                  "action": newexportaction
+                },
+                {
+                  "extend": 'print',
+                  "text": '<i class="fa fa-print" style="color: green;"></i> CETAK',
+                  "titleAttr": 'Print',                                
+                  "action": newexportaction
+                }
+            ],
             "processing": true, 
             "serverSide": true, 
             "order": [[4,"ASC"]], 
@@ -52,6 +78,7 @@
                 "data" : function (f) {
                     f.unit_id = $("#unit_id_depo").val();
                     f.own_id = $("#kepemilikan_id").val();
+                    
                   }
             },
             'columnDefs': [

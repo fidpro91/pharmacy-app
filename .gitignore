@@ -17,7 +17,7 @@ user_guide_src/cilexer/dist/*
 user_guide_src/cilexer/pycilexer.egg-info/*
 /vendor/
 application/config/*
-/system/*
+system/*
 # IDE Files
 #-------------------------
 /nbproject/
@@ -34,3 +34,4 @@ index.php
 /tests/results/
 /system
 indexphp7.php
+
