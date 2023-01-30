@@ -61,7 +61,7 @@ class M_sale_return extends CI_Model
 				mu.unit_type in (21,22,23,42,9)
 				AND v.visit_status NOT IN (35,60,70) $where
 			order by s.srv_date desc
-			LIMIT 15
+			LIMIT 25
 		")->result();
 	}
 
