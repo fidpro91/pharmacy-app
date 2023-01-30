@@ -135,6 +135,20 @@
       }
     });
 
+    $('#tb_pegawai_filter input').bind('keyup', function(e){
+          var code = e.keyCode || e.which;
+          if (code == 13) { 
+              table1.draw();
+          }
+      });
+
+    $('#tb_employee_on_unit_filter input').bind('keyup', function(e){
+          var code = e.keyCode || e.which;
+          if (code == 13) { 
+              table2.draw();
+          }
+      });
+
     $("#btn-right").click(()=>{
       $.ajax({
         type: 'POST',
