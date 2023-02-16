@@ -120,7 +120,7 @@ class Adjusment_stok extends MY_Generator {
 							"item_id"	=> $item_id,
 							"unit_id"	=> $unit_id,
 							"own_id"	=> $own_id,
-						])->row();
+						])->row(); //print_r($data['item']);die;
 		$this->load->view("adjusment_stok/form",$data);
 	}
 }
