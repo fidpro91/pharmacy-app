@@ -59,43 +59,15 @@
         </tr>
         <tr style="border-left: 1px solid black; border-right: 1px solid black;">
             <td>Aturan Pakai</td>
-            <td></td>
-            <td style="text-transform:uppercase;font-size: 12px"></td>
-            <td style="text-transform:uppercase;font-size: 12px"></td>
-        </tr>
-        <tr style="border-left: 1px solid black; border-right: 1px solid black;">
-            <td>Pagi</td>
             <td>:</td>
-            <td style="text-transform:uppercase;font-size: 12px">Jam 07:00</td>
+            <td style="text-transform:uppercase;font-size: 12px"><?php echo $row->dosis ?></td>
             <td style="text-transform:uppercase;font-size: 12px"></td>
         </tr>
+       
         <tr style="border-left: 1px solid black; border-right: 1px solid black;">
-            <td>Siang</td>
-            <td>:</td>
-            <td style="text-transform:uppercase;font-size: 12px">Jam 12:00</td>
-            <td style="text-transform:uppercase;font-size: 12px"></td>
+            <td colspan="4" style="text-align: center; font-weight: bold; font-size: 14px;"></td>
         </tr>
-        <tr style="border-left: 1px solid black; border-right: 1px solid black;">
-            <td>Sore</td>
-            <td>:</td>
-            <td style="text-transform:uppercase;font-size: 12px">Jam 18:00</td>
-            <td style="text-transform:uppercase;font-size: 12px"></td>
-        </tr>
-        <tr style="border-left: 1px solid black; border-right: 1px solid black;">
-            <td>Malam</td>
-            <td>:</td>
-            <td style="text-transform:uppercase;font-size: 12px"></td>
-            <td style="text-transform:uppercase;font-size: 12px"></td>
-        </tr>
-        <tr style="border-left: 1px solid black; border-right: 1px solid black;">
-            <td colspan="4" style="text-align: center; font-weight: bold; font-size: 14px;"><?php echo $row->dosis ?></td>
-        </tr>
-        <tr style="border-left: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black;">
-            <td>Petunjuk khusus</td>
-            <td>:</td>
-            <td style="text-transform:uppercase;font-size: 12px"></td>
-            <td style="text-transform:uppercase;font-size: 12px"></td>
-        </tr>
+       
         <!-- <tr>
         <td colspan="4"><hr></td>
       </tr> -->
