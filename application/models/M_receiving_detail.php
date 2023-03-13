@@ -99,6 +99,7 @@ class M_receiving_detail extends CI_Model {
 	public function get_column_multiple()
 	{
 		$col = [
+				"update_harga",
 				"item_id",
 				"item_pack",
 				"item_unit",
