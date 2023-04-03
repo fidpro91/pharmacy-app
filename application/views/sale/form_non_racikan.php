@@ -43,6 +43,9 @@
 				$(this).find('.price_total').val(total_item);
 				$(this).find('.price_total').inputmask("IDR");
         	});
+			$("body").on("focus", ".ed_obat", function() {
+			$(this).inputmask("9999-99-99",{ "placeholder": "yyyy-mm-dd" });
+			});
 
 			$(this).find("input").on('keyup', null, 'ctrl+a', function(e){
 				$(".btnplus_list_obat_nonracikan").click();

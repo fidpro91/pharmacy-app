@@ -61,6 +61,7 @@ class M_sale_detail extends CI_Model
 				"sale_price",
 				"dosis",
 				"price_total",
+				"ed_obat",
 			];
 		}else{
 			$col = [
@@ -70,6 +71,7 @@ class M_sale_detail extends CI_Model
 				"sale_price",
 				"dosis",
 				"price_total",
+				"ed_obat"
 			];
 		}
 		return $col;
@@ -90,6 +92,7 @@ class M_sale_detail extends CI_Model
 			"racikan_dosis" => "trim",
 			"racikan_desc" => "trim",
 			"own_id" => "trim|integer",
+			"ed_obat" => "trim"
 		];
 		return $data;
 	}

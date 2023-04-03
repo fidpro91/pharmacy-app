@@ -11,7 +11,9 @@
     table.td,
     table.th {
         border: 1px solid black;
+        
     }
+    
 </style>
 <table width="100%" border="0" cellpadding="2" cellspacing="1" style="font:12px tahoma;">
     <!-- <tr id="header">
@@ -23,8 +25,13 @@
 <table width="100%" border="0" cellpadding="2" cellspacing="1" style="font:12px tahoma; border-collapse: collapse;">
     <?php
     $i = 1;
-    foreach ($listresep as $row) {
+    foreach ($listresep as $row) {           
+       
     ?>
+     
+     
+       
+   
         <tr>
             <td colspan="4">
                 <!--<hr size="1"/>-->
@@ -45,22 +52,47 @@
                 <p style="position: absolute; right: 10px; top: 0px; width: 60px;"><?php echo date("d-m-y"); ?></p>
             </td>
         </tr>
-        <tr style="border-left: 1px solid black; border-right: 1px solid black; border-top: 1px solid grey;">
+        <tr style="border-left: 1px solid black; border-right: 1px solid black; border-top: 1px solid grey; font-weight:bold;">
+            <td>No Resep</td>
+            <td>:&nbsp;</td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $row->sale_num ?></td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;</td>
+        </tr>
+        <tr style="border-left: 1px solid black; border-right: 1px solid black; border-top: 1px solid grey; font-weight:bold;">
             <td>Nama Pasien</td>
             <td>:&nbsp;</td>
             <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $detailcetak['namapasien']; ?></td>
             <td style="text-transform:uppercase;font-size: 12px">&nbsp;</td>
         </tr>
-        <tr style="border-left: 1px solid black; border-right: 1px solid black;">
-            <td width="28%">Nama Obat / Jumlah</td>
+        <tr style="border-left: 1px solid black; border-right: 1px solid black; border-top: 1px solid grey; font-weight:bold;">
+            <td>Tgl Lahir</td>
             <td>:&nbsp;</td>
-            <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $row->obat_name; ?> / <?php echo $row->obat_qty; ?></td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $detailcetak['px_birthdate']; ?></td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;</td>
+        </tr>        
+        <tr style="border-left: 1px solid black; border-right: 1px solid black; font-weight:bold;">
+            <td width="28%">Nama Obat/Jumlah</td>
+            <td>:&nbsp;</td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $row->item_name; ?>/<?php echo $row->sale_qty; ?> </td>
             <td style="text-transform:uppercase;font-size: 12px">&nbsp;</td>
         </tr>
-        <tr style="border-left: 1px solid black; border-right: 1px solid black;">
+        <tr style="border-left: 1px solid black; border-right: 1px solid black; font-weight:bold;">
+            <td>Tgl ED/BUD</td>
+            <td>:</td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $row->ed_obat?>/<?php echo $row->expired_date?></td>
+            <td style="text-transform:uppercase;font-size: 12px"></td>
+        </tr>
+
+        <tr style="border-left: 1px solid black; border-right: 1px solid black; font-weight:bold;">
             <td>Aturan Pakai</td>
             <td>:</td>
-            <td style="text-transform:uppercase;font-size: 12px"><?php echo $row->dosis ?></td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $row->dosis ?></td>
+            <td style="text-transform:uppercase;font-size: 12px"></td>
+        </tr>
+        <tr style="border-left: 1px solid black; border-right: 1px solid black; font-weight:bold;">
+            <td>Petunjuk</td>
+            <td>:</td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $row->racikan ?></td>
             <td style="text-transform:uppercase;font-size: 12px"></td>
         </tr>
        
@@ -74,7 +106,9 @@
     <?php
         $i++;
     }
+
     ?>
+ 
 
     <!-- <tr>
         <td>Tanggal</td>
