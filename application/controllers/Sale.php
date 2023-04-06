@@ -585,12 +585,70 @@ class Sale extends MY_Generator
 			} elseif ($value == "ed_obat") {
 				$row[] = [
 					"id" => $value,
-					"label" => "Exp Obat",
+					"label" => "BUD",
 					"type" => 'text',
-					"width" => "13%",
+					"width" => "13%",				
 					
 				];
 			} else {
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"width" => '10%',
+				];
+			}
+		}
+		echo json_encode($row);
+	}
+
+	public function show_multiRowsRacikan($update = false, $sale_id = 0)
+	{
+		$this->load->model("m_sale_detail");
+		$data = $this->m_sale_detail->get_column_racikan($update);
+		$colauto = ["item_id" => "Nama Barang"];
+		foreach ($data as $key => $value) {
+			if (array_key_exists($value, $colauto)) {
+				$row[] = [
+					"id" => $value,
+					"label" => $colauto[$value],
+					"type" => 'autocomplete',
+					"width" => '30%',
+				];
+			} elseif ($value == "sale_price" || $value == "stock") {
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"width" => '10%',
+					"attr" => [
+						"readonly" => 'readonly',
+						"data-inputmask" => "'alias': 'IDR'"
+					]
+				];
+			} elseif ($value == "price_total") {
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"width" => "25%",
+					"attr" => [
+						"readonly" => "readonly",
+						"data-inputmask" => "'alias': 'IDR'"
+					]
+				];
+			} elseif ($value == "racikan_id") {
+				$racikan = $this->db->query(
+					"select distinct coalesce(racikan_id,'') as id,racikan_id as text from farmasi.sale_detail sd where sale_id = '$sale_id'"
+				)->result();
+				$row[] = [
+					"id" => $value,
+					"label" => "Racikan",
+					"type" => 'select',
+					"width" => '15%',
+					"data" => $racikan
+				];
+			}else {
 				$row[] = [
 					"id" => $value,
 					"label" => ucwords(str_replace('_', ' ', $value)),
@@ -625,6 +683,7 @@ class Sale extends MY_Generator
 			$itemRacik[$x]['own_id'] = $header['pasien']['own_id'];
 			$itemRacik[$x]['percent_profit'] = $header['profit'];
 			$itemRacik[$x]['racikan_id'] = $post['nama_racikan'];
+			$itemRacik[$x]['ed_obat'] = $post['ed_obat'];
 			$itemRacik[$x]['racikan_qty'] = $post['qty_racikan'];
 			$itemRacik[$x]['racikan_dosis'] = $post['signa'];
 			$price_total = ($v['price_total'] * $header['profit']) + $v['price_total'];
@@ -742,14 +801,13 @@ class Sale extends MY_Generator
 						" . convert_currency(($price_total)) . "
 					</span>
 					<p>" . $v['dosis'] . "</p>
-					<p>" . $v['ed_obat'] . "</p>
+					
 				</span>
 			</div>
 			";
 		}
 	
-		$nonRacikan['detail'] = $itemNonRacikan;	
-					
+		$nonRacikan['detail'] = $itemNonRacikan;						
 		$nonRacikan['total'] = array_sum(array_column($itemNonRacikan,'subtotal'));
 		if (!empty($this->session->userdata('itemNonRacik'))) {
 			$itemNonRacikOld = $this->session->userdata('itemNonRacik');
@@ -873,22 +931,28 @@ class Sale extends MY_Generator
 		//$data['listresep'] = $this->m_sale->resep_dijual($sale_id);		
 		$data['pencetak'] =  $this->m_sale->get_employee($this->session->employee_id);
 		$data['listresep'] = $this->db->query("
-		SELECT sale_num,item_name,sale_qty,dosis,ed_obat,expired_date
+		SELECT sale_num,item_name,sale_qty,dosis,ed_obat,expired_date,reff_name
 		FROM farmasi.sale_detail sd
 		join farmasi.sale s on sd.sale_id = s.sale_id
 		JOIN ADMIN.ms_item i ON sd.item_id = i.item_id
+		join admin.ms_reff rr on i.label_item_id = rr.reff_id
 		join newfarmasi.sale_fifo n on sd.saledetail_id = n.saledet_id 
 		join newfarmasi.stock_fifo sf on n.stock_id = sf.stock_id
-		WHERE sd.sale_id =  $sale_id ")->result();
-		// $data['racikan'] = $this->db->query("
-		// SELECT sale_num,item_name,sale_qty,dosis,ed_obat,expired_date,racikan_id 
-		// FROM farmasi.sale_detail sd
-		// join farmasi.sale s on sd.sale_id = s.sale_id
-		// JOIN ADMIN.ms_item i ON sd.item_id = i.item_id
-		// join newfarmasi.sale_fifo n on sd.saledetail_id = n.saledet_id 
-		// join newfarmasi.stock_fifo sf on n.stock_id = sf.stock_id
-		// WHERE sd.sale_id =  $sale_id and racikan_id is not null")->result();
+		WHERE sd.sale_id =  $sale_id and racikan_id is null ")->result();
+		$data['racikan'] = $this->db->query("		
+		SELECT sale_num,string_agg(concat(item_name),' , ') as item_name,			
+		racikan_qty,dosis,ed_obat,racikan_dosis,reff_name
+		FROM
+		farmasi.sale_detail sd
+		JOIN farmasi.sale s ON sd.sale_id = s.sale_id
+		JOIN ADMIN.ms_item i ON sd.item_id = i.item_id
+		join admin.ms_reff rr on i.label_item_id = rr.reff_id
+		JOIN newfarmasi.sale_fifo n ON sd.saledetail_id = n.saledet_id
+		JOIN newfarmasi.stock_fifo sf ON n.stock_id = sf.stock_id 
+		WHERE sd.sale_id = $sale_id  and racikan_id IS NOT NULL
+		GROUP BY sale_num,racikan_qty,dosis,ed_obat,racikan_dosis,reff_name
+		")->row();
 		 $this->load->view('sale/v_cetakanetiket',$data);
-		//$this->load->view('sale/v_tiket_new',$data);
+		
 	}
 }

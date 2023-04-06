@@ -43,9 +43,13 @@
 				$(this).find('.price_total').val(total_item);
 				$(this).find('.price_total').inputmask("IDR");
         	});
-			$("body").on("focus", ".ed_obat", function() {
-			$(this).inputmask("9999-99-99",{ "placeholder": "yyyy-mm-dd" });
-			});
+			// $("body").on("focus", ".ed_obat", function() {
+			// $(this).inputmask("9999-99-99",{ "placeholder": "yyyy-mm-dd" });
+			// });
+			$('.ed_obat').datepicker({
+							format: "dd-mm-yyyy",							
+							autoclose : true
+						});
 
 			$(this).find("input").on('keyup', null, 'ctrl+a', function(e){
 				$(".btnplus_list_obat_nonracikan").click();
@@ -69,8 +73,8 @@
 			// $("#modal_nonracikan").find(".modal-body").animate({ scrollTop: 300}, 1000);
 		});
 
-		$("#btn-save-non_racikan").click(()=>{
-			$.ajax({
+		$("#btn-save-non_racikan").click(()=>{		
+				$.ajax({
 				'async': false,
 				'type': "post",
 				'data': $("#form_non_racikan").serialize()+"&embalase_item="+$("#labelEmbalase").text(),
@@ -90,6 +94,9 @@
 					$("#modal_nonracikan").modal('hide');
 				}
 			});
+				
+			
+		
 		});
 
 	});

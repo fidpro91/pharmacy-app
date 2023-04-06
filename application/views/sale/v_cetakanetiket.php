@@ -13,6 +13,9 @@
         border: 1px solid black;
         
     }
+    .field_judul{
+		font-weight: 900;
+	}
     
 </style>
 <table width="100%" border="0" cellpadding="2" cellspacing="1" style="font:12px tahoma;">
@@ -72,8 +75,8 @@
         </tr>        
         <tr style="border-left: 1px solid black; border-right: 1px solid black; font-weight:bold;">
             <td width="28%">Nama Obat/Jumlah</td>
-            <td>:&nbsp;</td>
-            <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $row->item_name; ?>/<?php echo $row->sale_qty; ?> </td>
+            <td >:&nbsp;</td>
+            <td style="text-transform:uppercase;font-size: 12px;font-weight: 900;">&nbsp;<?php echo $row->item_name; ?>/<?php echo $row->sale_qty; ?> </td>
             <td style="text-transform:uppercase;font-size: 12px">&nbsp;</td>
         </tr>
         <tr style="border-left: 1px solid black; border-right: 1px solid black; font-weight:bold;">
@@ -84,17 +87,18 @@
         </tr>
 
         <tr style="border-left: 1px solid black; border-right: 1px solid black; font-weight:bold;">
-            <td>Aturan Pakai</td>
+            <td>Aturan Pakai/Petunjuk</td>
             <td>:</td>
             <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $row->dosis ?></td>
             <td style="text-transform:uppercase;font-size: 12px"></td>
         </tr>
         <tr style="border-left: 1px solid black; border-right: 1px solid black; font-weight:bold;">
-            <td>Petunjuk</td>
+            <td>Jenis Obat</td>
             <td>:</td>
-            <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $row->racikan ?></td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $row->reff_name ?></td>
             <td style="text-transform:uppercase;font-size: 12px"></td>
         </tr>
+
        
         <tr style="border-left: 1px solid black; border-right: 1px solid black;">
             <td colspan="4" style="text-align: center; font-weight: bold; font-size: 14px;"></td>
@@ -108,6 +112,69 @@
     }
 
     ?>
+
+    <?php
+    if($racikan){        
+     ?>
+     <tr style="border-left: 1px solid black; border-right: 1px solid black; border-top: 1px solid black;">
+            <td colspan="3" align="left" style="line-height:25px; font-weight:bold;">
+                <p><?php echo ucfirst($detailrs->hsp_name); ?> <br />
+                    <?php echo ucfirst($detailrs->hsp_address); ?> </p>
+            </td>
+            <td style="position: relative;">
+                <p style="position: absolute; right: 10px; top: 0px; width: 60px;"><?php echo date("d-m-y"); ?></p>
+            </td>
+        </tr>
+        <tr style="border-left: 1px solid black; border-right: 1px solid black; border-top: 1px solid grey; font-weight:bold;">
+            <td>No Resep</td>
+            <td>:&nbsp;</td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $racikan->sale_num ?></td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;</td>
+        </tr>
+        <tr style="border-left: 1px solid black; border-right: 1px solid black; border-top: 1px solid grey; font-weight:bold;">
+            <td>Nama Pasien</td>
+            <td>:&nbsp;</td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $detailcetak['namapasien']; ?></td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;</td>
+        </tr>
+        <tr style="border-left: 1px solid black; border-right: 1px solid black; border-top: 1px solid grey; font-weight:bold;">
+            <td>Tgl Lahir</td>
+            <td>:&nbsp;</td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $detailcetak['px_birthdate']; ?></td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;</td>
+        </tr>        
+        <tr  style="border-left: 1px solid black; border-right: 1px solid black; font-weight:bold;">
+            <td  style="font-weight: 900" width="28%">Nama Obat/Jumlah</td>
+            <td style="font-weight: 900">:&nbsp;</td>
+            <td  style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $racikan->item_name; ?>/<?php echo $racikan->racikan_qty; ?> </td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;</td>
+        </tr>
+        <tr style="border-left: 1px solid black; border-right: 1px solid black; font-weight:bold;">
+            <td>Tgl BUD</td>
+            <td>:</td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $racikan->ed_obat?></td>
+            <td style="text-transform:uppercase;font-size: 12px"></td>
+        </tr>
+
+        <tr style="border-left: 1px solid black; border-right: 1px solid black; font-weight:bold;">
+            <td>Aturan Pakai/Petunjuk</td>
+            <td>:</td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $racikan->racikan_dosis ?></td>
+            <td style="text-transform:uppercase;font-size: 12px"></td>
+        </tr>
+        <tr style="border-left: 1px solid black; border-right: 1px solid black; font-weight:bold;">
+            <td>Jenis Obat</td>
+            <td>:</td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $racikan->reff_name ?></td>
+            <td style="text-transform:uppercase;font-size: 12px"></td>
+        </tr>
+       
+       
+        <tr style="border-left: 1px solid black; border-right: 1px solid black;">
+            <td colspan="4" style="text-align: center; font-weight: bold; font-size: 14px;"></td>
+        </tr>
+
+     <?php }?>
  
 
     <!-- <tr>
