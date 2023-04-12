@@ -1,25 +1,25 @@
 <?php
-class M_lap_konsolidasi  extends CI_Model {
+class M_lap_konsolidasi  extends CI_Model
+{
 
-	public function get_golongan()
-	{
-		$data = $this->db->query("
+    public function get_golongan()
+    {
+        $data = $this->db->query("
         SELECT distinct(gol) as gol from admin.ms_item 
         where gol is not null and gol !=''
         order by gol asc
 			")->result();
-		return $data;
-	}
-    public function get_new_konsolidasi($where,$where2,$unit,$kepemilikan,$where3)
+        return $data;
+    }
+    public function get_new_konsolidasi($where, $where2, $unit, $kepemilikan, $where3)
     {
-        if(!empty($unit)){
+        if (!empty($unit)) {
             $unit = "AND s.unit_id = $unit";
-
         }
-        if(!empty($kepemilikan)){
+        if (!empty($kepemilikan)) {
             $kepemilikan = "AND s.own_id = $kepemilikan";
         }
-       $data =  $this->db->query("SELECT vo.item_code,vo.item_name,ow.own_name,coalesce(y.stock_awal,0)stock_awal,coalesce(y.harga_awal,0)harga_awal,s.item_id,s.own_id,s.unit_id,(p.price_buy)::numeric harga,(coalesce(x.masuk,0))masuk,(coalesce(x.keluar,0))keluar,coalesce(z.stock_op,0)stock_op,coalesce(z.harga_so,0)harga_so FROM newfarmasi.stock s
+        $data =  $this->db->query("SELECTs vo.item_code,vo.item_name,ow.own_name,coalesce(y.stock_awal,0)stock_awal,coalesce(y.harga_awal,0)harga_awal,s.item_id,s.own_id,s.unit_id,(p.price_buy)::numeric harga,(coalesce(x.masuk,0))masuk,(coalesce(x.keluar,0))keluar,coalesce(z.stock_op,0)stock_op,coalesce(z.harga_so,0)harga_so FROM newfarmasi.stock s
             INNER JOIN farmasi.v_obat vo on vo.item_id = s.item_id
             INNER JOIN farmasi.ownership ow ON s.own_id = ow.own_id
             INNER JOIN farmasi.price p on p.own_id = s.own_id AND p.item_id = s.item_id
@@ -43,7 +43,7 @@ class M_lap_konsolidasi  extends CI_Model {
             )x ON s.item_id = x.item_id AND s.own_id = x.own_id AND s.unit_id = x.unit_id
             where 0=0 $unit $kepemilikan
             order by vo.item_name asc")->result();
-       
+
         return $data;
     }
 }
