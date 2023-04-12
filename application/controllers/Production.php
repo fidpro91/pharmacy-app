@@ -86,6 +86,19 @@ class Production extends MY_Generator {
 			}
 			$detail[$x]['production_id'] 	= $data['production_id'];
 			$this->db->insert("newfarmasi.production_outdetail",$detail[$x]);
+			$price = $this->db->get_where("farmasi.price",[
+				"item_id"	=> $value['item_id'],
+				"own_id"	=> $data['own_id']
+			]);
+			if ($price->num_rows()<1) {
+				$this->db->insert("farmasi.price",[
+					"item_id"	=> $value['item_id'],
+					"own_id"	=> $data['own_id'],
+					"price_sell"=> $value["item_price"],
+					"price_buy"	=> $value["item_price"]
+				]);
+			}
+
 			$this->db->where([
 				"item_id"	=> $value["item_id"],
 				"own_id"	=> $data["own_id"],
