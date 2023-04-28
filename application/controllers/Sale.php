@@ -22,7 +22,7 @@ class Sale extends MY_Generator
 		]); */
 		$this->unset_ses();
 		$this->load->model("m_ms_unit");
-		foreach ($this->m_ms_unit->get_ms_unit(["employee_id" => $this->session->employee_id]) as $key => $value) {
+		foreach ($this->m_ms_unit->get_ms_unit_depo(["employee_id" => $this->session->employee_id]) as $key => $value) {
 			$kat[$value->unit_id] = $value->unit_name;
 		}
 		$data['unit'] = $kat;
@@ -935,7 +935,7 @@ class Sale extends MY_Generator
 		FROM farmasi.sale_detail sd
 		join farmasi.sale s on sd.sale_id = s.sale_id
 		JOIN ADMIN.ms_item i ON sd.item_id = i.item_id
-		join admin.ms_reff rr on i.label_item_id = rr.reff_id
+		left join admin.ms_reff rr on i.label_item_id = rr.reff_id
 		join newfarmasi.sale_fifo n on sd.saledetail_id = n.saledet_id 
 		join newfarmasi.stock_fifo sf on n.stock_id = sf.stock_id
 		WHERE sd.sale_id =  $sale_id and racikan_id is null ")->result();
@@ -946,12 +946,13 @@ class Sale extends MY_Generator
 		farmasi.sale_detail sd
 		JOIN farmasi.sale s ON sd.sale_id = s.sale_id
 		JOIN ADMIN.ms_item i ON sd.item_id = i.item_id
-		join admin.ms_reff rr on i.label_item_id = rr.reff_id
+		left join admin.ms_reff rr on i.label_item_id = rr.reff_id
 		JOIN newfarmasi.sale_fifo n ON sd.saledetail_id = n.saledet_id
 		JOIN newfarmasi.stock_fifo sf ON n.stock_id = sf.stock_id 
 		WHERE sd.sale_id = $sale_id  and racikan_id IS NOT NULL
 		GROUP BY sale_num,racikan_qty,dosis,ed_obat,racikan_dosis,reff_name
 		")->row();
+		//print_r($data);die;
 		 $this->load->view('sale/v_cetakanetiket',$data);
 		
 	}

@@ -282,13 +282,21 @@ class Receiving extends MY_Generator {
 			
 			//update harga
 			$update = $value['update_harga']; 
-			if ($update == 1) {
+			$kepemilikan = $data['own_id'];
+			if ($update == 1 && $kepemilikan == 2) {
 				$this->db->where(["item_id"	=> $detail[$x]['item_id'],"own_id"=> $data['own_id']])
 						->update("farmasi.price",[
 							"price_sell"	=> 0,
 							"price_buy"		=> $detail[$x]['price_item']
 						]);
-			} 
+			}else if($update == 1 && $kepemilikan != 2){
+				$this->db->where(["item_id"	=> $detail[$x]['item_id'],"own_id"=> $data['own_id']])
+				->update("farmasi.price",[
+					"price_sell"	=> $detail[$x]['price_item'],
+					"price_buy"		=> $detail[$x]['price_item']
+				]);
+
+			}
 		
 			$sukses=true;
 		}

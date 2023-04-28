@@ -71,6 +71,16 @@ class M_ms_unit extends CI_Model {
 	{
 		return $this->db->where(["unit_active"=>'t'])
 						->where("unit_type in (34,32)")
+						
+						->join("hr.employee_on_unit eo","eo.unit_id=mu.unit_id")
+						->get_where("admin.ms_unit mu",$where)->result();
+	}
+
+	public function get_ms_unit_depo($where=[0=>0])
+	{
+		return $this->db->where(["unit_active"=>'t'])
+						->where("unit_type in (34,32)")
+						->where("mu.unit_id not in (55,57)")
 						->join("hr.employee_on_unit eo","eo.unit_id=mu.unit_id")
 						->get_where("admin.ms_unit mu",$where)->result();
 	}
