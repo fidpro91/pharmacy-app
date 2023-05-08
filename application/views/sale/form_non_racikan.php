@@ -34,7 +34,7 @@
 	                },
                 "data": dataItemSale
 	    });
-
+		
 		$("body").on("change", ".tb_list_obat_nonracikan", function() {
 			$('.tb_list_obat_nonracikan > tbody  > tr').each(function() {
 				const jumlah_barang = $(this).find(".sale_qty").val();				

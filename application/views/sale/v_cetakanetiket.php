@@ -92,17 +92,14 @@
             <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $row->dosis ?></td>
             <td style="text-transform:uppercase;font-size: 12px"></td>
         </tr>
-        <tr style="border-left: 1px solid black; border-right: 1px solid black; font-weight:bold;">
+        <tr style="border-left: 1px solid black; border-right: 1px solid black;  border-bottom: 1px solid black; font-weight:bold;">
             <td>Jenis Obat</td>
             <td>:</td>
             <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $row->reff_name ?></td>
             <td style="text-transform:uppercase;font-size: 12px"></td>
         </tr>
 
-       
-        <tr style="border-left: 1px solid black; border-right: 1px solid black;">
-            <td colspan="4" style="text-align: center; font-weight: bold; font-size: 14px;"></td>
-        </tr>
+     
        
         <!-- <tr>
         <td colspan="4"><hr></td>
@@ -114,8 +111,13 @@
     ?>
 
     <?php
-    if($racikan){        
+    if($racik){               
      ?>
+       <?php
+    $i = 1;
+    foreach ($racik as $racikan) {           
+       
+    ?>
      <tr style="border-left: 1px solid black; border-right: 1px solid black; border-top: 1px solid black;">
             <td colspan="3" align="left" style="line-height:25px; font-weight:bold;">
                 <p><?php echo ucfirst($detailrs->hsp_name); ?> <br />
@@ -149,6 +151,7 @@
             <td  style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $racikan->item_name; ?>/<?php echo $racikan->racikan_qty; ?> </td>
             <td style="text-transform:uppercase;font-size: 12px">&nbsp;</td>
         </tr>
+       
         <tr style="border-left: 1px solid black; border-right: 1px solid black; font-weight:bold;">
             <td>Tgl BUD</td>
             <td>:</td>
@@ -168,12 +171,17 @@
             <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $racikan->reff_name ?></td>
             <td style="text-transform:uppercase;font-size: 12px"></td>
         </tr>
-       
-       
-        <tr style="border-left: 1px solid black; border-right: 1px solid black;">
-            <td colspan="4" style="text-align: center; font-weight: bold; font-size: 14px;"></td>
-        </tr>
 
+        <tr style="border-left: 1px solid black; border-right: 1px solid black;border-bottom: 1px solid black;  font-weight:bold;">
+            <td>Racikan</td>
+            <td>:</td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $racikan->racikan_id ?></td>
+            <td style="text-transform:uppercase;font-size: 12px"></td>
+        </tr>
+       
+       
+    
+        <?php }?>
      <?php }?>
  
 

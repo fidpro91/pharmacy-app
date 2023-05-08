@@ -536,11 +536,23 @@ class Sale extends MY_Generator
 		$this->load->view("sale/form_non_racikan", $data);
 	}
 
+	public function get_dose()
+	{
+		$term = $this->input->get('term');
+		print_r($term);die;
+		
+		$where = " AND (
+			lower(dose_name) like lower('%$term%')
+		)";	
+		//$select=" mi.item_name as value,";	
+		echo json_encode($this->m_sale->get_dose($where));
+	}
+
 	public function show_multiRows($update = false, $sale_id = 0)
 	{
 		$this->load->model("m_sale_detail");
 		$data = $this->m_sale_detail->get_column_multiple($update);
-		$colauto = ["item_id" => "Nama Barang"];
+		$colauto = ["item_id" => "Nama Barang"];		
 		foreach ($data as $key => $value) {
 			if (array_key_exists($value, $colauto)) {
 				$row[] = [
@@ -549,7 +561,7 @@ class Sale extends MY_Generator
 					"type" => 'autocomplete',
 					"width" => '30%',
 				];
-			} elseif ($value == "sale_price" || $value == "stock") {
+			}elseif ($value == "sale_price" || $value == "stock") {
 				$row[] = [
 					"id" => $value,
 					"label" => ucwords(str_replace('_', ' ', $value)),
@@ -939,9 +951,9 @@ class Sale extends MY_Generator
 		join newfarmasi.sale_fifo n on sd.saledetail_id = n.saledet_id 
 		join newfarmasi.stock_fifo sf on n.stock_id = sf.stock_id
 		WHERE sd.sale_id =  $sale_id and racikan_id is null ")->result();
-		$data['racikan'] = $this->db->query("		
+		$data['racik'] = $this->db->query("		
 		SELECT sale_num,string_agg(concat(item_name),' , ') as item_name,			
-		racikan_qty,dosis,ed_obat,racikan_dosis,reff_name
+		racikan_qty,dosis,ed_obat,racikan_dosis,reff_name,racikan_id
 		FROM
 		farmasi.sale_detail sd
 		JOIN farmasi.sale s ON sd.sale_id = s.sale_id
@@ -950,10 +962,11 @@ class Sale extends MY_Generator
 		JOIN newfarmasi.sale_fifo n ON sd.saledetail_id = n.saledet_id
 		JOIN newfarmasi.stock_fifo sf ON n.stock_id = sf.stock_id 
 		WHERE sd.sale_id = $sale_id  and racikan_id IS NOT NULL
-		GROUP BY sale_num,racikan_qty,dosis,ed_obat,racikan_dosis,reff_name
-		")->row();
+		GROUP BY sale_num,racikan_qty,dosis,ed_obat,racikan_dosis,reff_name,racikan_id
+		")->result();
 		//print_r($data);die;
-		 $this->load->view('sale/v_cetakanetiket',$data);
-		
+		 $this->load->view('sale/v_cetakanetiket',$data);		
 	}
+
+
 }
