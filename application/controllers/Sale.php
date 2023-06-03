@@ -950,7 +950,8 @@ class Sale extends MY_Generator
 		left join admin.ms_reff rr on i.label_item_id = rr.reff_id
 		join newfarmasi.sale_fifo n on sd.saledetail_id = n.saledet_id 
 		join newfarmasi.stock_fifo sf on n.stock_id = sf.stock_id
-		WHERE sd.sale_id =  $sale_id and racikan_id is null ")->result();
+		WHERE sd.sale_id =  $sale_id and racikan_id is null 
+		order by sd.saledetail_id asc ")->result();
 		$data['racik'] = $this->db->query("		
 		SELECT sale_num,string_agg(concat(item_name),' , ') as item_name,			
 		racikan_qty,dosis,ed_obat,racikan_dosis,reff_name,racikan_id
@@ -965,7 +966,9 @@ class Sale extends MY_Generator
 		GROUP BY sale_num,racikan_qty,dosis,ed_obat,racikan_dosis,reff_name,racikan_id
 		")->result();
 		//print_r($data);die;
-		 $this->load->view('sale/v_cetakanetiket',$data);		
+		//$mpdf = new \Mpdf\Mpdf();
+		$this->load->view('sale/v_cetakanetiket',$data);
+		
 	}
 
 
