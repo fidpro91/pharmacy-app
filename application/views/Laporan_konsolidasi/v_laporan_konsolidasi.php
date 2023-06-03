@@ -89,6 +89,7 @@
         <?php 
             $no=1;
             foreach ($data as $rs) {
+                
                 echo "<tr>
                     <th>$no</th>
                     <th>$rs->item_name</th>
