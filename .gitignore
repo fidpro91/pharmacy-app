@@ -22,7 +22,7 @@ system/*
 #-------------------------
 /nbproject/
 .idea/*
-index.php
+/index.php
 
 ## Sublime Text cache files
 *.tmlanguage.cache
