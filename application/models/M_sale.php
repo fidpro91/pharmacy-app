@@ -299,8 +299,5 @@ class M_sale extends CI_Model
 		$data	=	$query->result();
 		return $data;
 	}
-
-	
-	
 	
 }

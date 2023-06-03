@@ -92,9 +92,7 @@ class M_lap_konsolidasi  extends CI_Model {
                            sp.item_id,sp.own_id,sp.unit_id 
                        FROM
                            newfarmasi.stock_process sp 
-                       WHERE
-                           sp.trans_type != 5 AND sp.unit_id = 55 AND sp.own_id = 1 
-                           AND ( DATE ( sp.date_trans ) BETWEEN '2023-04-06' AND '2023-04-06' ) 
+                           WHERE sp.trans_type != 5 $where $where2
                        GROUP BY
                            sp.item_id,sp.own_id,sp.unit_id 
                        ) x ON s.item_id = x.item_id AND s.own_id = x.own_id AND s.unit_id = x.unit_id 
