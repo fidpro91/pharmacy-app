@@ -60,7 +60,6 @@ class Antrean_recipe extends CI_Controller
 
 		$data['noResepRacikanReady'] = $this->db->query("
 		SELECT x.*,mu.unit_name,af.tgl_panggil, status FROM(
-	
 				SELECT 
 				s.service_id,
 				s.sale_id,
@@ -85,8 +84,8 @@ class Antrean_recipe extends CI_Controller
 				where x.unit_id = $unit_id 
 				and racikan = 'YA' 
 				--and sale_status = 2
-				--and af.status = 1
-				ORDER BY x.sale_id DESC
+				-- and af.status = 1
+				ORDER BY tgl_panggil DESC
 		")->row();
 		echo json_encode($data);
 	}
@@ -120,7 +119,8 @@ class Antrean_recipe extends CI_Controller
 		where x.unit_id = $unit_id 
 		and racikan = 'TIDAK' 
 		--and sale_status = 2
-		ORDER BY sale_id DESC
+		--and af.status = 1
+		ORDER BY tgl_panggil DESC
 		LIMIT 1
 		")->row();
 		echo json_encode($data);
