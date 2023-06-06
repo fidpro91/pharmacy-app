@@ -83,7 +83,7 @@ class Panggilan extends MY_Generator
 			$input = [
 				'sale_id'=>$sale_id,
 				'tgl'=>date('Y-m-d'),
-				'tgl_panggil'=>date('Y-m-d'),
+				'tgl_panggil'=>date('Y-m-d h:i:s'),
 				'status'=>1
 			];
 			$insert = $this->db->insert('yanmed.antrian_farmasi2',$input);
