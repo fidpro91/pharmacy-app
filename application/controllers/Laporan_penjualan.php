@@ -12,16 +12,19 @@ class Laporan_penjualan extends MY_Generator {
 
 	public function index()
 	{
-		$idEmpl=$this->session->user_id;
+		$idEmpl=$this->session->user_id; //print_r($idEmpl);die;
 	    $data['data'] = [];	        
-        $data['unit'] = $this->m_laporan_penjualan->get_unit($idEmpl)->result();	
+        $data['unit'] = $this->m_laporan_penjualan->get_jenis_layanan();	
 		$this->theme('laporan_penjualan/form_laporan_penjualan',$data);
 	} 
 
     public function get_unit_layanan(){
-        $catunit_id = $this->input->post('catunit_id', true); 
-       
-        $result = $this->m_laporan_penjualan->get_unit_layanan($catunit_id);
+        $catunit_id = $this->input->post('catunit_id', true);       
+        // $result = $this->m_laporan_penjualan->get_unit_layanan($catunit_id);
+        // echo json_encode($result);
+        $arrayunit = explode('*-*', $catunit_id);
+        $result = $this->m_laporan_penjualan->get_unit_layanan($arrayunit[0]);
+
         echo json_encode($result);
     } 
     public function get_item()
@@ -73,10 +76,10 @@ class Laporan_penjualan extends MY_Generator {
             $data['total'] = $query->num_rows();           
             $this->load->view("laporan_penjualan/v_laporan_all",$data);
         }else if($karakteristik == 1){
-            $data['data']=$this->m_laporan_penjualan->get_sale_by_doctor($unit_penjualan,$surety,$sale_type,$unit_layanan,$date); 
+            $data['data']=$this->m_laporan_penjualan->get_sale_by_doctor($unit_penjualan,$kepemilikan,$surety,$sale_type,$unit_layanan,$date); 
             $this->load->view("laporan_penjualan/v_lap_penjualan_byDokter",$data);
         }else if($karakteristik == 2) {       
-            $data['data']=$this->m_laporan_penjualan->get_sale_by_visit($unit_penjualan,$surety,$sale_type,$unit_layanan,$date,$visit_id); 
+            $data['data']=$this->m_laporan_penjualan->get_sale_by_visit($unit_penjualan,$kepemilikan,$surety,$sale_type,$unit_layanan,$date,$visit_id); 
             $this->load->view("laporan_penjualan/v_lap_penjualan_sum_customer",$data);
         }else if($karakteristik == 3){
             $pasien = $this->input->post('px_norm');           

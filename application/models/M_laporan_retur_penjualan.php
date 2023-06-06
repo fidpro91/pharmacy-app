@@ -17,11 +17,11 @@ class M_laporan_retur_penjualan  extends CI_Model {
 	public function get_retur_detail($where){
 		
 		$sql = "SELECT vo.item_code,vo.item_name,sr.sr_num,
-			to_char(sr.date_act,'DD-MM-YYYY HH24:MI:SS') tgl_retur,sr.patient_name,sr.doctor_name,s.sale_num,srd.qty_return,srd.sale_price::numeric,srd.total_return::numeric
+			to_char(coalesce(sr.date_act,sr.sr_date),'DD-MM-YYYY HH24:MI:SS') tgl_retur,sr.patient_name,s.doctor_name,s.sale_num,srd.qty_return,srd.sale_price::numeric,srd.total_return::numeric
 			FROM farmasi.sale_return sr
 			INNER JOIN farmasi.sale_return_detail srd ON sr.sr_id = srd.sr_id
 			INNER JOIN farmasi.v_obat vo ON srd.item_id = vo.item_id
-			INNER JOIN farmasi.sale s on sr.sale_id = s.sale_id
+			INNER JOIN farmasi.sale s on srd.sale_id = s.sale_id
 			INNER JOIN yanmed.services vs ON sr.visit_id = vs.visit_id AND sr.service_id = vs.srv_id
 			where 0=0 $where
 			ORDER BY sr.sr_date DESC,sr.patient_name ASC";
@@ -44,7 +44,7 @@ class M_laporan_retur_penjualan  extends CI_Model {
 				FROM farmasi.sale_return sr
 				left JOIN farmasi.sale_return_detail srd ON sr.sr_id = srd.sr_id
 				left JOIN farmasi.v_obat vo ON srd.item_id = vo.item_id
-				left JOIN farmasi.sale s on sr.sale_id = s.sale_id
+				left JOIN farmasi.sale s on srd.sale_id = s.sale_id
 				left JOIN yanmed.v_services vs ON sr.visit_id = vs.visit_id AND sr.service_id = vs.srv_id
 				where 0=0 $where
 				group by sr.sr_num,sr.date_act,sr.patient_name,sr.doctor_name,s.sale_num,vs.unit_name
@@ -71,12 +71,13 @@ class M_laporan_retur_penjualan  extends CI_Model {
 				srd.qty_return,'|',srd.sale_price::numeric,'|',srd.total_return::numeric)) as retur_detail
 				FROM farmasi.sale_return sr
 				INNER JOIN farmasi.sale_return_detail srd ON sr.sr_id = srd.sr_id
-				INNER JOIN farmasi.v_obat vo ON srd.item_id = vo.item_id
-				left JOIN farmasi.sale s on sr.sale_id = s.sale_id
+				INNER JOIN admin.ms_item vo on srd.item_id = vo.item_id  
+				-- INNER JOIN farmasi.v_obat vo ON srd.item_id = vo.item_id
+				left JOIN farmasi.sale s on srd.sale_id = s.sale_id
 				INNER JOIN yanmed.v_services vs ON sr.visit_id = vs.visit_id AND sr.service_id = vs.srv_id
 				where 0=0 $where
 				group by vo.item_code,vo.item_name");
-		
+
 		$result = $sql->result();
 
 		if (count($result)>0) {

@@ -26,17 +26,21 @@ class Ms_item extends MY_Generator {
 			foreach ($this->m_ms_item->rules() as $key => $value) {
 				$input[$key] = (!empty($data[$key]))?$data[$key]:null;
 			}
-
+			
 			if ($data['item_id']) {
 				$this->db->where('item_id',$data['item_id'])->update('admin.ms_item',$input);
 			}else{
 				$this->db->insert('admin.ms_item',$input);
 				$insertId = $this->db->query("select currval('admin.item_id_seq')")->row();
+				$data['item_id'] = $insertId->currval;
+			}
 
+			//insert price
+			if ($data['list_item']) {
+				$this->db->where("item_id",$data['item_id'])->delete("farmasi.price");
 				for ($i=0;$i<count($data['list_item']);$i++){
-
 					$dtown = [
-						"item_id"=>$insertId->currval,
+						"item_id"=>$data['item_id'],
 						"own_id"=>$data['list_item'][$i]['own_id'],
 						"price_buy"=>$data['list_item'][$i]['price_buy'],
 						"price_sell"=>$data['list_item'][$i]['price_sell'],
@@ -44,6 +48,7 @@ class Ms_item extends MY_Generator {
 					$this->db->insert('farmasi.price',$dtown);
 				};
 			}
+
 			$err = $this->db->error();
 			if ($err['message']) {
 				$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');

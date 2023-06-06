@@ -46,13 +46,10 @@ function get_dataShift()
 			];
 }
 
-function get_absen(){
+function get_type_kronis(){
 	return [
-			["id"=>"1", "text" => "CUTI/IJIN"],
-			["id"=>"2", "text" => "MASUK"],
-			["id"=>"3", "text"=> "LEMBUR"],
-			["id"=>"4", "text"=> "LIBUR"],
-			["id"=>"5", "text"=> "ALPA"],
+			["id"=>"t", "text" => "KRONIS"],
+			["id"=>"f", "text" => "NON KRONIS"]
 		];
 }
 

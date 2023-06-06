@@ -5,7 +5,7 @@ class M_laporan_gudang extends CI_Model {
 	{
 
 		$data = $this->db->query("select DISTINCT upper(trim(NULLIF(estimate_resource,''))) estimate_resource
-from farmasi.receiving
+from newfarmasi.receiving
 group by upper(trim(NULLIF(estimate_resource,''))) order by upper(trim(NULLIF(estimate_resource,''))) asc");
 
 		return $data->result();
@@ -58,7 +58,9 @@ group by upper(trim(NULLIF(estimate_resource,''))) order by upper(trim(NULLIF(es
 	rec.receiver_num,
 	rec.rec_date,
 	COALESCE ( sp.supplier_name, rec.sender_name ) supplier_name,
-	P.po_ppn 
+	rec.po_ppn,
+	rec.rec_taxes,
+	rec.grand_total
 FROM
 	newfarmasi.receiving rec
 	LEFT JOIN farmasi.po P ON P.po_id = rec.po_id
@@ -70,11 +72,12 @@ WHERE
 	$where
 GROUP BY
 	rec.rec_id,
+	rec.rec_taxes,
 	rec.rec_num,
 	rec.receiver_num,
 	rec.rec_date,
 	sp.supplier_name,
-	P.po_ppn,rec.sender_name
+	rec.po_ppn,rec.sender_name,rec.grand_total
 ORDER BY
 	rec.rec_id DESC")->result();
 
@@ -87,7 +90,7 @@ ORDER BY
 
 	public function get_lap_penerimaan_05($where)
 	{
-		$data = $this->db->query("select item_name,SUM(qty_unit) as qty_unit, SUM((price_total) - disc_value + ppn) as price_total from farmasi.v_penerimaan where 0=0 $where and comodity_id != 5 GROUP BY item_name ORDER BY item_name ASC")->result();
+		$data = $this->db->query("select item_name,SUM(qty_unit) as qty_unit, SUM((price_total)+ ppn) as price_total from newfarmasi.v_penerimaan where 0=0 $where and comodity_id != 5 GROUP BY item_name ORDER BY item_name ASC")->result();
 
 		if (count($data)>0) {
 			return $data;
@@ -104,12 +107,12 @@ SELECT rc.supplier_id,sp.supplier_name,dt.gabung
 FROM newfarmasi.receiving rc
 INNER JOIN admin.ms_supplier sp on rc.supplier_id = sp.supplier_id
 INNER JOIN (
-          SELECT r.supplier_id,r.rec_id,concat(r.rec_num,'|',r.receiver_num,'|',r.rec_date,'|',sum(((COALESCE(po.po_ppn,0)*(rd.price_total- COALESCE(rd.disc_value,0)))/100)+(rd.price_total-coalesce(rd.disc_value,0)))) gabung,sum(((COALESCE(po.po_ppn,0)*(rd.price_total- COALESCE(rd.disc_value,0)))/100)+rd.price_total-rd.disc_value) as sub_total 
+          SELECT r.supplier_id,r.rec_id,concat(r.rec_num,'|',r.receiver_num,'|',r.rec_date,'|',r.grand_total) gabung,r.grand_total as sub_total 
 				from newfarmasi.receiving r
           INNER JOIN newfarmasi.receiving_detail rd on r.rec_id = rd.rec_id
           left JOIN farmasi.po on po.po_id = r.po_id
           where 0=0 $where2 and r.receiver_unit = 55
-          GROUP BY r.rec_id,r.supplier_id,r.rec_num,r.receiver_num,r.rec_date order by r.rec_id desc
+          GROUP BY r.rec_id,r.supplier_id,r.rec_num,r.receiver_num,r.rec_date,r.grand_total order by r.rec_id desc
         ) dt on rc.supplier_id = dt.supplier_id
         where 0=0 $where1
         GROUP BY rc.supplier_id,sp.supplier_name,dt.gabung) cb 
@@ -123,7 +126,7 @@ INNER JOIN (
 	}
 
 	public function get_lap_penerimaan_02($where1,$where2)
-	{
+	{//var_dump($where2);die();
 		$data = $this->db->query("SELECT cb.supplier_id,cb.supplier_name,json_agg(cb.gabung) as detail_item FROM (
     SELECT sp.supplier_id,sp.supplier_name,dt.gabung 
     FROM newfarmasi.receiving rc 
@@ -131,13 +134,13 @@ INNER JOIN (
     INNER JOIN ( 
         SELECT r.supplier_id,r.rec_id,concat(r.rec_num,'|',r.receiver_num,'|',r.rec_date,'|',
         json_agg(concat(rd.item_id,'-*-',i.item_code,'-*-',i.item_name,'-*-',rd.qty_pack,'-*-',rd.qty_unit,'-*-',rd.price_pack,'-*-',
-        rd.disc_percent,'-*-',rd.price_total,'-*-',rd.unit_per_pack)),'|',p.po_ppn) gabung
+        rd.disc_percent,'-*-',rd.price_total,'-*-',rd.unit_per_pack)),'|',r.po_ppn,'|',r.grand_total,'|',r.rec_taxes) gabung
         from newfarmasi.receiving r 
         INNER JOIN newfarmasi.receiving_detail rd on r.rec_id = rd.rec_id
         INNER JOIN farmasi.po P ON P.po_id = r.po_id
         INNER JOIN admin.ms_item i on rd.item_id= i.item_id
         where 0=0 $where2 and r.receiver_unit = 55
-        GROUP BY r.rec_id,r.supplier_id,p.po_ppn,r.rec_num,r.receiver_num,r.rec_date order by r.rec_id desc
+        GROUP BY r.rec_id,r.supplier_id,r.po_ppn,r.rec_num,r.receiver_num,r.rec_date,r.grand_total,r.rec_taxes order by r.rec_id desc
     ) dt on rc.supplier_id = dt.supplier_id 
     where 0=0 $where1
     GROUP BY sp.supplier_id,dt.gabung
@@ -156,11 +159,12 @@ order by cb.supplier_name asc ")->result();
 	public function get_lap_penerimaan_06($where)
 	{
 		$data = $this->db->query("SELECT x.rec_date,x.no_faktur,x.supplier_name,sum(x.price_total)total FROM (
-              SELECT rc.rec_date,COALESCE(nullif(rc.rec_num,''),concat('Faktur belum terbit(',rc.rec_id,')'))no_faktur,sup.supplier_name,(((COALESCE(po.po_ppn,0)*(rd.price_total- COALESCE(rd.disc_value,0)))/100)+rd.price_total-rd.disc_value)price_total FROM newfarmasi.receiving rc
+              SELECT rc.rec_date,COALESCE(nullif(rc.rec_num,''),concat('Faktur belum terbit(',rc.rec_id,')'))no_faktur,sup.supplier_name, grand_total as price_total FROM newfarmasi.receiving rc
               INNER JOIN newfarmasi.receiving_detail rd ON rc.rec_id = rd.rec_id
               INNER JOIN farmasi.po on po.po_id = rc.po_id
               INNER JOIN admin.ms_supplier sup ON rc.supplier_id = sup.supplier_id
               where 0=0 $where
+			  GROUP BY rec_date,rc.rec_num,rc.rec_id,sup.supplier_name,grand_total
             ) x
             GROUP BY x.rec_date,x.no_faktur,x.supplier_name
             ORDER BY x.rec_date
@@ -327,45 +331,17 @@ order by cb.supplier_name asc ")->result();
 
 	public function stok_opname($where)
 	{
-		$sql = "SELECT 
-	i.item_id,
-	i.item_name,
-	opr.opname_note,
-	opr.opname_header_id,
-	opr.opname_date,
-	o.qty_adj,
-	o.qty_data,
-	o.qty_opname,
-	op.item_price :: NUMERIC,
-	op.item_price :: NUMERIC * o.qty_adj AS nilai_adj,
-	op.item_price :: NUMERIC * o.qty_data AS nilai_sistem,
-	op.item_price :: NUMERIC * o.qty_opname AS nilai_opname 
-FROM
-	(
-	SELECT
-		item_id,
-		MAX ( A.opname_header_id ) AS opname_id 
-	FROM
-		(
-		SELECT
-			o.opname_header_id,
-			item_id,
-			opname_date,
-			opname_note 
-		FROM
-			newfarmasi.opname o
-			JOIN newfarmasi.opname_header oh on o.opname_header_id = oh.opname_header_id
-		WHERE
-			0 = 0 
-			$where
-		) a 
-	GROUP BY
-		item_id 
-	) b
-	INNER JOIN newfarmasi.opname_header opr ON opr.opname_header_id = b.opname_id
-	INNER JOIN newfarmasi.opname o on o.opname_header_id = opr.opname_header_id
-	INNER JOIN ( SELECT opname_header_id, MAX ( item_price ) item_price FROM newfarmasi.opname GROUP BY opname_header_id ) op ON op.opname_header_id = opr.opname_header_id
-	INNER JOIN ADMIN.ms_item i ON i.item_id = o.item_id";
+		$sql = "
+		SELECT mi.item_code,mi.item_name,oh.opname_date,opname_note,o.* FROM newfarmasi.opname o
+		INNER JOIN newfarmasi.opname_header oh ON o.opname_header_id = oh.opname_header_id
+		INNER JOIN admin.ms_item mi ON o.item_id = mi.item_id
+		INNER JOIN (
+			SELECT max(o.opname_id)id_op,item_id,own_id FROM newfarmasi.opname o
+			JOIN newfarmasi.opname_header oh ON o.opname_header_id = oh.opname_header_id
+			WHERE 0=0 $where
+			GROUP BY item_id,own_id
+		)x ON o.opname_id = x.id_op
+		ORDER BY mi.item_name";
 
 		$result = $this->db->query($sql);
 		$result = $result->result();
@@ -614,7 +590,7 @@ ORDER BY
 		}
 
 		if ($own_id != "semua") {
-			$where .= " and m.own_id = '$own_id'";
+			$where .= " and p.own_id = '$own_id'";
 		}
 
 //		$sql    = "	SELECT

@@ -59,11 +59,11 @@ class Bon_mutation extends MY_Generator {
 	{
 		$term = $this->input->get('term'); 
 
-		$where = " AND sf.own_id = '$own_id' AND sf.unit_id='$unit_id' AND (
+		$where = " AND (
 			lower(mi.item_name) like lower('%$term%')
 		)";
 		//$select=" mi.item_name as value,";
-		echo json_encode($this->m_mutation->get_item_autocomplete($where));
+		echo json_encode($this->m_mutation->get_item_autocomplete($where,$own_id,$unit_id));
 	}
 
 	// public function get_item()
@@ -78,11 +78,22 @@ class Bon_mutation extends MY_Generator {
 	{
 		$data = $this->input->post();
         $input = [];
+
         foreach ($this->m_mutation->rules() as $key => $value) {
             $input[$key] = (isset($data[$key])?$data[$key]:null);
         }
+
         $input['user_require'] 		= $this->session->user_id;
         $input['mutation_status'] 	= '1';
+        $input['bon_no'] 	= generate_code_transaksi([
+			"text"	=> "M/BON/NOMOR/".date("d.m.Y"),
+			"table"	=> "newfarmasi.mutation",
+			"column"	=> "bon_no",
+			"delimiter" => "/",
+			"number"	=> "3",
+			"lpad"		=> "4",
+			"filter"	=> " AND date(mutation_date) = date(now()) AND LOWER(bon_no) like 'm/bon%' "
+		]);
         $this->form_validation->set_data($input);
 		if ($this->m_mutation->validation()) {
 			$this->db->trans_begin();
@@ -244,8 +255,8 @@ class Bon_mutation extends MY_Generator {
 			"column"	=> "bon_no",
 			"delimiter" => "/",
 			"number"	=> "3",
-			"lpad"		=> "5",
-			"filter"	=> ""
+			"lpad"		=> "4",
+			"filter"	=> " AND LOWER(bon_no) like 'm/bon%' AND date(mutation_date) = date(now())"
 		]);
 		$this->load->view("bon_mutation/form",$data);
 	}
@@ -253,7 +264,7 @@ class Bon_mutation extends MY_Generator {
 	public function show_form_konfirmasi($id)
 	{
 		$data['model'] 		= $this->m_mutation->rules();
-		$data['dataBon'] 	= $this->m_mutation->get_databon(["mutation_id"=>$id]);
+		$data['dataBon'] 	= $this->m_mutation->get_databon(["m.mutation_id"=>$id]);
 		$this->load->view("bon_mutation/form_konfirmasi_bon",$data);
 	}
 
@@ -305,6 +316,7 @@ class Bon_mutation extends MY_Generator {
 			$dataku["qty"] = $value->qty_send;
 			$dataku["trans_num"] = $value->mutation_no;
 			$dataku["trans_type"] = 3;
+			$dataku["unit_sender"] = $value->unit_sender;
 			$this->insert_stock_process($dataku,"plus");
 		}
 		if ($this->db->trans_status() === false) {
@@ -406,8 +418,8 @@ class Bon_mutation extends MY_Generator {
 			$dataku["debet"] 		= $dataku["qty"];
 			$dataku["stock_after"] 	= $dataku["qty"]+$stockAwal;
 			$dataku["total_price"] 	= ($harga*$dataku["qty"]);
-			$dataku["description"] 	= "Mutasi masuk No : ".$dataku["trans_num"];
-			unset($dataku["qty"]);
+			$unit_pengirim = $this->db->get_where("admin.ms_unit",["unit_id"=>$dataku['unit_sender']])->row("unit_name");
+			$dataku["description"] 	= "Mutasi masuk dari $unit_pengirim No : ".$dataku["trans_num"];
 		}else{
 			$this->load->model("m_stock_process");
 			foreach ($this->m_stock_process->rules() as $key => $value) {
@@ -428,8 +440,9 @@ class Bon_mutation extends MY_Generator {
 			$dataku["stock_after"] 	= $stockAwal-$dataku["qty"];
 			$dataku["total_price"] 	= ($harga*$dataku["qty"]);
 			$dataku["description"] 	= "Batal Terima Mutasi No : ".$dataku["trans_num"];
-			unset($dataku["qty"]);
 		}
+		$removeKeys = ['expired_date','qty','unit_sender'];
+		$dataku = array_diff_key($dataku, array_flip($removeKeys));
 		$this->db->insert("newfarmasi.stock_process",$dataku);
 	}
 

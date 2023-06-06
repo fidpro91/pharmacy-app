@@ -6,6 +6,7 @@
     <div class="col-md-4">
         <div class="col-md-6">
             <?= form_hidden("sale_id") ?>
+            <?= form_hidden("surety_id") ?>
             <?= form_hidden("visit_id") ?>
             <?= form_hidden("service_id") ?>
             <?= form_hidden("unit_id") ?>
@@ -38,17 +39,7 @@
                 "required"  => true,
             ]) ?>
             
-            <?= create_select2([
-                "attr" => [
-                    "name" => "surety_id=Penjamin", "id" => "surety_id", "class" => "form-control", "onchange" => "changeSurety()",
-                    "required"  => true
-                ],
-                "model" => [
-                    "m_sale" => ["get_penjamin", ["surety_active" => 't']],
-                    "column"  => ["surety_id", "surety_name"]
-                ],
-                "selected" => "1"
-            ]) ?>
+            
 
             <?= create_select([
                 "attr"         => ["name" => "sale_type=Cara Bayar", "id" => "sale_type", "class" => "form-control"],
@@ -108,9 +99,10 @@
     </div>
 </div>
 <?= form_close() ?>
+
 <script>
     $(document).ready(()=>{
-        var dataItemSale = JSON.parse('<?=json_encode($item)?>');
+        var dataItemSale = JSON.parse('<?=addslashes(json_encode($item))?>');
         $(".list_obat_edited").inputMultiRow({
             column: ()=>{
                 var dataku;
@@ -164,7 +156,7 @@
 				$('tr[class*="list_obat"]').each(function(i,a){
 					if($(this).find('.item_id').val() == ui.item.item_id ){
 						$(this).eq((i)).closest('tr').find('.sale_qty').focus();
-						$(this).last().remove();
+						$(this).last().find('.removeItem_list_obat').click();
 						return false;
 					}
 				});

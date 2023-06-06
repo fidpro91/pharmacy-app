@@ -1,3 +1,8 @@
+<style>
+  .comment-text {
+    color: black !important;
+  }
+</style>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
   <!-- Content Header (Page header) -->
@@ -46,7 +51,7 @@
           <?= create_select([
             "attr"         => ["name" => "filter_pembayaran=Cara Bayar", "id" => "filter_pembayaran", "class" => "form-control"],
             "option"    => [
-              ["id" => "0", "text" => "Tunai"], ["id" => "1", "text" => "Kredit"]
+              ["id" => "", "text" => "Semua"], ["id" => "0", "text" => "Tunai"], ["id" => "1", "text" => "Kredit"]
             ]
           ]) ?>
         </div>
@@ -72,7 +77,18 @@
   "style" => "width:90%"
 ]) ?>
 <?= modal_close() ?>
-<?= modal_open("modal_checkout", "Checkout Resep") ?>
+<?= modal_open("modal_checkout", "Checkout Resep",null,null,false) ?>
+<?= create_select2([
+    "attr" => [
+        "name" => "asal_resep=unit layanan", "id" => "asal_resep", "class" => "form-control"
+    ],
+    "model" => [
+        "m_sale" => ["get_unit_layanan", [
+            "unit_active" => 't'
+        ]],
+        "column" => ["unit_id", "unit_name"]
+    ],
+]) ?>
 <div class="input-group input-group-sm">
   <input id="nomor_resep_co" name="nomor_resep_co" required="true" class="form-control input-sm" type="text" placeholder="isikan nomor rekam medis pasien / scan barcode">
   <span class="input-group-btn">
@@ -84,7 +100,7 @@
 <div class="overlay loading-checkout" style="display: none;">
   <i class="fa fa-refresh fa-spin"></i>
 </div>
-<?= modal_close(null,false) ?>
+<?= modal_close() ?>
 <script src="<?= base_url("assets/plugins/jquery.hotkeys-master") ?>/jquery.hotkeys.js"></script>
 <script type="text/javascript">
   var table;
@@ -98,6 +114,7 @@
       "processing": true,
       "serverSide": true,
       "order": [
+        [4, 'desc'],
         [3, 'desc']
       ],
       "scrollX": true,
@@ -118,6 +135,10 @@
         {
           "width": "10%",
           "targets": -1
+        },
+        {
+          "visible": false,
+          "targets": 7
         },
         {
           'targets': 0,
@@ -159,6 +180,9 @@
         $.each(data, (ind, obj) => {
           $('.modal-body').find("#" + ind).val(obj);
         });
+        if (data.visit_id) {
+          $('.modal-body').find("#tipe_patient").val(1);
+        }
         $("select[class*='select2']").trigger("change");
       }, 'json');
     });
@@ -167,19 +191,23 @@
   function checkout_pasien(noresep) {
     $(".loading-checkout").show();
     $.post('<?php echo base_url() ?>sale/checkout_pasien', {
-      noresep: noresep
+      noresep: noresep,
+      unit_id: $("#unit_id_depo").val(),
+      asal_resep: $("#asal_resep").val(),
     }, function(data) {
       alert(data.message);
       $(".loading-checkout").hide();
+      $('#nomor_resep_co').focus();
       $('#nomor_resep_co').val('');
+      $('#nomor_resep_co').focus();
       table.draw();
       return false;
     }, 'json');
   }
 
-  function deleteRow(id) {
+  function deleteRow(id,rcp_id) {
     if (confirm("Anda yakin akan menghapus data ini?")) {
-      $.get('sale/delete_row/' + id, (data) => {
+      $.get('sale/delete_row/' + id+'/'+ rcp_id, (data) => {
         alert(data.message);
         location.reload();
       }, 'json');

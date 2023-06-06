@@ -2,16 +2,15 @@
 
 class M_laporan_penjualan  extends CI_Model {
 
-	public function get_jenis_layanan()
-	{
-		$data = $this->db->query("
-        select distinct a3.catunit_id, a3.nama from admin.v_employee_in_unit a1
-        inner join admin.ms_unit a2 on a1.unit_id = a2.unit_id
-        inner join admin.ms_category_unit a3 on a3.catunit_id = a2.unit_type
-        inner join yanmed.category_unit_yanmed a4 on a4.catunit_id = a3.parent_id and a4.jmlanak > 0
-			")->result();
-		return $data;
-	}
+	public function get_jenis_layanan(){
+		$sql = "select distinct a3.catunit_id, a3.nama from admin.v_employee_in_unit a1
+				inner join admin.ms_unit a2 on a1.unit_id = a2.unit_id
+				inner join admin.ms_category_unit a3 on a3.catunit_id = a2.unit_type
+				inner join yanmed.category_unit_yanmed a4 on a4.catunit_id = a3.parent_id and a4.jmlanak > 0
+				";
+		$result = $this->db->query($sql)->result();
+		return $result;
+	}	
 
     public function get_unit_layanan($catunit_id)
 	{
@@ -22,27 +21,11 @@ class M_laporan_penjualan  extends CI_Model {
 		return $data;
 	}
 
-	public function get_unit($idEmpl){
-		$sql = "select
-		vf.unit_id,
-		vf.unit_name
-		from
-		farmasi.v_unit_farmasi vf
-		/*inner join hr.employee e
-		on e.employee_id = u.employee_id
-		inner join hr.employee_on_unit eu
-		on eu.employee_id = e.employee_id
-		inner join farmasi.v_unit_farmasi vf
-		on vf.unit_id = eu.unit_id*/
-		where /*e.employee_id = $idEmpl
-		and*/ cat_unit_code = '0504' and unit_active = 't' ";
-		$result = $this->db->query($sql);
-		return $result;
-	}
+	
 
     public function get_item($term)
 	{
-		$data = $this->db->query("select *,item_name as value from admin.ms_item where lower(item_name) like '%".strtolower($term)."%'")->result();
+		$data = $this->db->query("select *,item_name as value from admin.ms_item where lower(item_name) like '%".strtolower($term)."%' AND comodity_id in (1,2) ")->result();
 
 		return $data;
     }
@@ -86,6 +69,14 @@ class M_laporan_penjualan  extends CI_Model {
 			$unit = rtrim($all_unit,','); 
 		 }
 
+		 if($kepemilikan !=null){
+			$own_all = "";
+			foreach ($kepemilikan as $key => $value) {
+				$own_all .= $value.",";
+			}
+			$own_id = rtrim($own_all,','); 
+		 }
+
 		 if($unit_layanan !=null){
 			$all_layanan = "";
 			foreach ($unit_layanan as $key => $value) {
@@ -99,11 +90,11 @@ class M_laporan_penjualan  extends CI_Model {
 		if (!empty($unit)) {
 			$where .= "AND sale.unit_id in ($unit)";
 		}
-		if($sale_type){
+		if($sale_type !==''){
 			$where .= " AND sale.sale_type = '$sale_type'";
 		}
-		if($kepemilikan){
-			$where .= "and sale.own_id = $kepemilikan";
+		if(!empty($own_id)){
+			$where .= "and sale.own_id in ($own_id)";
 		}		
 		if ($surety) {
 			$where .= " AND sale.surety_id = '$surety'";
@@ -143,7 +134,7 @@ class M_laporan_penjualan  extends CI_Model {
 		return $result;
 	}
 
-    public function get_sale_by_doctor($unit_penjualan,$surety,$sale_type,$unit_layanan,$date)
+    public function get_sale_by_doctor($unit_penjualan,$kepemilikan,$surety,$sale_type,$unit_layanan,$date)
 	{
 		if($unit_penjualan !=null){
 			$all_unit = "";
@@ -151,6 +142,14 @@ class M_laporan_penjualan  extends CI_Model {
 				$all_unit .= $value.",";
 			}
 			$unit = rtrim($all_unit,','); 
+		 }
+
+		 if($kepemilikan !=null){
+			$own_all = "";
+			foreach ($kepemilikan as $key => $value) {
+				$own_all .= $value.",";
+			}
+			$own_id = rtrim($own_all,','); 
 		 }
 
 		 if($unit_layanan !=null){
@@ -164,6 +163,9 @@ class M_laporan_penjualan  extends CI_Model {
 		$where = "";
 		if (!empty($unit)) {
 			$where .= "AND x.unit_id in ($unit)";
+		}
+		if(!empty($own_id)){
+			$where .= "and x.own_id in ($own_id)";
 		}
 
 		if ($surety) {
@@ -201,7 +203,7 @@ class M_laporan_penjualan  extends CI_Model {
 		return $data;
 	}
 
-    public function get_sale_by_visit($unit_penjualan,$surety,$sale_type,$unit_layanan,$date,$visit_id)
+    public function get_sale_by_visit($unit_penjualan,$kepemilikan,$surety,$sale_type,$unit_layanan,$date,$visit_id)
 	{
 		if($unit_penjualan !=null){
 			$all_unit = "";
@@ -209,6 +211,13 @@ class M_laporan_penjualan  extends CI_Model {
 				$all_unit .= $value.",";
 			}
 			$unit = rtrim($all_unit,','); 
+		 }
+		 if($kepemilikan !=null){
+			$own_all = "";
+			foreach ($kepemilikan as $key => $value) {
+				$own_all .= $value.",";
+			}
+			$own_id = rtrim($own_all,','); 
 		 }
 		 if($unit_layanan !=null){
 			$all_layanan = "";
@@ -221,6 +230,9 @@ class M_laporan_penjualan  extends CI_Model {
 		$where = "";
 		if (!empty($unit)) {
 			$where .= "AND s.unit_id in ($unit)";
+		}
+		if(!empty($own_id)){
+			$where .= "and s.own_id in ($own_id)";
 		}
 
 		if ($surety) {
@@ -267,6 +279,13 @@ class M_laporan_penjualan  extends CI_Model {
 			}
 			$unit = rtrim($all_unit,','); 
 		 }
+		 if($kepemilikan !=null){
+			$own_all = "";
+			foreach ($kepemilikan as $key => $value) {
+				$own_all .= $value.",";
+			}
+			$own_id = rtrim($own_all,','); 
+		 }
 
 		 if($unit_layanan !=null){
 			$all_layanan = "";
@@ -277,8 +296,8 @@ class M_laporan_penjualan  extends CI_Model {
 		 }
 
 		$where = "";	
-        if ($kepemilikan) {
-			$this->db->where('s.surety_id',$kepemilikan);
+		if(!empty($own_id)){
+			$where .= "and s.own_id in ($own_id)";
 		}
         if ($item_id) {
             $item_id = substr_replace( $item_id, "", - 2 );
@@ -338,6 +357,15 @@ class M_laporan_penjualan  extends CI_Model {
 			$unit = rtrim($all_unit,','); 
 		 }
 
+		 if($kepemilikan !=null){
+			$own_all = "";
+			foreach ($kepemilikan as $key => $value) {
+				$own_all .= $value.",";
+			}
+			$own_id = rtrim($own_all,','); 
+		 }
+		 
+
 		 if($unit_layanan !=null){
 			$all_layanan = "";
 			foreach ($unit_layanan as $key => $value) {
@@ -351,8 +379,8 @@ class M_laporan_penjualan  extends CI_Model {
 			//$this->db->where("a.unit_id in ('$unit')");
 			$where = " a.unit_id in ($unit)";
 		}
-		if ($kepemilikan) {
-			$this->db->where('a.own_id',$kepemilikan);
+		if(!empty($own_id)){
+			$where .= "and a.own_id in ($own_id)";
 		}		
 		if ($surety) {
 			$where = " a.surety_id = '$surety'";
@@ -398,7 +426,7 @@ class M_laporan_penjualan  extends CI_Model {
 						 	group by saledetail_id
 						 	) d','b.saledetail_id = d.saledetail_id','left')
 						 ->join('farmasi.v_obat c','b.item_id = c.item_id')
-						 ->select("c.item_code,c.item_name,c.item_unitofitem as satuan,b.sale_qty,b.sale_price::numeric as harga, (b.sale_price::numeric * b.sale_qty) as subtotal,d.qty_return,d.total_return::numeric,b.racikan_id",false)
+						 ->select("c.item_code,c.item_name,c.item_unitofitem as satuan,b.sale_qty,b.sale_price::numeric as harga, (b.sale_price::numeric+(b.sale_price::numeric*b.percent_profit::numeric)) as subtotal,d.qty_return,d.total_return::numeric,b.racikan_id,b.percent_profit::numeric",false)
 						 ->get('farmasi.sale a')
 						 ->result();
 		if (count($data) > 0) {
@@ -417,6 +445,13 @@ class M_laporan_penjualan  extends CI_Model {
 			}
 			$unit = rtrim($all_unit,','); 
 		 }
+		 if($kepemilikan !=null){
+			$own_all = "";
+			foreach ($kepemilikan as $key => $value) {
+				$own_all .= $value.",";
+			}
+			$own_id = rtrim($own_all,','); 
+		 }
 
 		 if($unit_layanan !=null){
 			$all_layanan = "";
@@ -427,9 +462,9 @@ class M_laporan_penjualan  extends CI_Model {
 		 }
 
 		$where = "";
-		if ($kepemilikan) {
-			$this->db->where('s.own_id',$kepemilikan);
-		}
+		if(!empty($own_id)){
+			$where .= "and s.own_id in ($own_id)";
+		}	
 
 		if ($item_id) {
             $item_id = substr_replace( $item_id, "", - 2 );

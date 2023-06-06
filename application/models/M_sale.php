@@ -6,13 +6,13 @@ class M_sale extends CI_Model
 	public function get_data($sLimit, $sWhere, $sOrder, $aColumns)
 	{
 		$data = $this->db->query("
-				select " . implode(',', $aColumns) . ",x.id_key,x.sale_type 
+				select " . implode(',', $aColumns) . ",x.id_key,x.sale_type,x.rcp_id 
 				from (select 
-				sl.surety_id,sale_type,sale_num,sale_date,concat (patient_name,' (',patient_norm,')') as nama,sale_total,
+				sl.date_act,sl.surety_id,sale_type,sale_num,sale_date,concat (patient_name,' (',patient_norm,')') as patient_name,sale_total,sl.rcp_id,
 				sale_status,surety_name,doctor_name,cash_id,patient_norm,sale_id AS id_key 
 				from farmasi.sale sl
 				left join yanmed.ms_surety su on sl.surety_id = su.surety_id	
-				where to_char(sale_date,'YYYY') = '2022' $sWhere $sOrder $sLimit) x
+				where /* sl.sale_id > 1388206 */ 0=0 $sWhere $sOrder $sLimit) x
 			")->result_array();
 		return $data;
 	}
@@ -21,22 +21,23 @@ class M_sale extends CI_Model
 	{
 		$data = $this->db->query("
 		select " . implode(',', $aColumns) . ",x.id_key 
-		from (select 
-		sl.surety_id,sale_type,sale_num,sale_date,concat (patient_name,' (',patient_norm,')') as nama,sale_total,
+		from (select sl.date_act,
+		sl.surety_id,sale_type,sale_num,sale_date,concat (patient_name,' (',patient_norm,')') as patient_name,sale_total,
 		sale_status,surety_name,doctor_name,cash_id,patient_norm,sale_id AS id_key 
 		from farmasi.sale sl
 		left join yanmed.ms_surety su on sl.surety_id = su.surety_id	
-		where to_char(sale_date,'YYYY') = '2022' $sWhere) x
+		where /* sl.sale_id > 1388206 */ 0=0 $sWhere) x
 			")->num_rows();
 		return $data;
 	}
 
 	public function get_column()
 	{
-		$col = [
+		$col = ["patient_norm",
 			"sale_num",
+			"date_act",
 			"sale_date",
-			"nama",
+			"patient_name",
 			"sale_status",
 			"surety_name",
 			"doctor_name",
@@ -54,6 +55,13 @@ class M_sale extends CI_Model
 						$label = '<label class="label label-primary">Piutang</label>';
 					} else {
 						$label = '<label class="label label-danger">Belum Terbayar</label>';
+					}
+					if ($a["sale_status"] == 1) {
+						$label .= '|<label class="label label-success">Paid</label>';
+					}elseif($a["sale_status"] == 2) {
+						$label .= '|<label class="label label-danger">Checkout</label>';
+					}else{
+						$label .= '|<label class="label label-warning">Proccess</label>';
 					}
 					return $label;
 				}
@@ -87,6 +95,7 @@ class M_sale extends CI_Model
 			"patient_name" => "trim",
 			"kronis" => "trim",
 			"user_id" => "trim|integer",
+			"sale_type" => "trim|integer",
 			"sale_status" => "trim|integer",
 			"service_id" => "trim|integer",
 			"surety_id" => "trim|integer",
@@ -170,7 +179,7 @@ class M_sale extends CI_Model
 				JOIN ADMIN.ms_unit mu ON mu.unit_id = s.unit_id
 				LEFT JOIN hr.employee emp ON s.par_id = emp.employee_id 
 			WHERE
-				s.unit_id NOT IN ( 45, 105, 12 ) 
+				mu.unit_type in (21,22,23,42,9)
 				AND (date(v.visit_end_date)>='".date('Y-m-d',strtotime("- 3 days"))."' OR v.visit_end_date is null) 
 				AND v.visit_status NOT IN (35,60,70) $where
 			order by s.srv_date desc
@@ -203,7 +212,7 @@ class M_sale extends CI_Model
 	}
 	function get_detail_patient($sale_id)
 	{
-		$result = $this->db->query("select ul.unit_name as poli,yv.srv_type,u.unit_name,to_char(fs.sale_date, 'dd-mm-YYYY HH24:MI:SS')tanggal,sr.surety_name,v.pxsurety_no,v.sep_no,fs.* 
+		$result = $this->db->query("select ul.unit_name as poli,yv.srv_type,u.unit_name,to_char(fs.date_act, 'dd-mm-YYYY HH24:MI:SS')tanggal,sr.surety_name,v.pxsurety_no,v.sep_no,fs.* 
 						from farmasi.sale fs 
 						inner join admin.ms_unit u on fs.unit_id = u.unit_id
 						inner join yanmed.ms_surety sr on sr.surety_id = fs.surety_id
@@ -215,7 +224,7 @@ class M_sale extends CI_Model
 		$data = array(
 			"tanggal" => $result->tanggal,
 			"noresep" => $result->sale_num,
-			"namapasien" => $result->patient_name,
+			"namapasien" => $result->patient_name.'/'.$result->patient_norm,
 			"kepemilikan" => $result->surety_name,
 			"doctor_name" => $result->doctor_name,
 			"unit_name" => $result->unit_name,
@@ -245,13 +254,14 @@ class M_sale extends CI_Model
 		$query_racik = $this->db->query("SELECT
 			c.racikan_id,
 			sale_qty,
-			(c.sale_price+(c.sale_price*C.percent_profit))sale_price,
+			(c.sale_price+(c.sale_price*COALESCE(C.percent_profit,0)))sale_price,
 			c.dosis,
 			mt.item_name,
 			a.sale_services,
 			a.embalase_item_sale,
 			a.sale_embalase,
-			c.subtotal
+			(c.sale_price*sale_qty+(c.sale_price*sale_qty*COALESCE(percent_profit,0)))
+ as subtotal
 			FROM
 			farmasi.sale a
 			JOIN farmasi.sale_detail C ON a.sale_id = c.sale_id

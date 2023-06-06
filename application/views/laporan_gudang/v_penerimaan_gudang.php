@@ -78,10 +78,12 @@
 						<?=create_inputDaterange("tanggal",["locale"=>["format"=>"YYYY-MM-DD","separator"=>"/"]])?>
 					</div>
 				</div>
-                <?= form_close() ?>
 			<div class="box-footer">
-				<button class="btn btn-primary" type="button" onclick="$('#formlaporan').submit()">Tampilkan</button>
+				<button class="btn btn-primary" type="submit" onclick="$('#formlaporan').submit()">Tampilkan</button>
+				<input class="btn btn-success" id="excel" type="submit" name="submit" value="excel" onclick="$('#formlaporan').submit()">
 			</div>
+			<?= form_close() ?>
+
             </div>
     </section>
 </div>

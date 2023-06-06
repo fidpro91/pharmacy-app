@@ -37,12 +37,12 @@ class M_price extends CI_Model {
 		$col = [
 				"item_name"=>["label"=>"Obat"],
 				"own_name"=>["label"=>"Kepemilikan"],
-				"price_buy"=>["label"=>"Harga Jual",
+				"price_buy"=>["label"=>"Harga Beli",
 					"custom"=> function($a) {
 						return convert_currency($a);
 					}
 				],
-				"price_sell"=>["label"=>"Harga Beli",
+				"price_sell"=>["label"=>"Harga Jual",
 					"custom"=> function($a) {
 						return convert_currency($a);
 					}
@@ -88,5 +88,10 @@ class M_price extends CI_Model {
 	public function find_one($where)
 	{
 		return $this->db->get_where("farmasi.price",$where)->row();
+	}
+
+	public function get_item($input)
+	{
+		return $this->db->query("SELECT *, item_name as value FROM admin.ms_item i where lower(item_name) like '%$input%'")->result();
 	}
 }

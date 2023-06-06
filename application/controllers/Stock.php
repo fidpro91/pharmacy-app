@@ -16,7 +16,7 @@ class Stock extends MY_Generator {
 	public function index()
 	{
 		$this->load->model("m_ms_unit");
-		foreach ($this->m_ms_unit->get_ms_unit() as $key => $value) {
+		foreach ($this->m_ms_unit->get_ms_unit(["employee_id" => $this->session->employee_id]) as $key => $value) {
 			$kat[$value->unit_id] = $value->unit_name;
 		}
 		$this->load->model("m_ownership");
@@ -40,6 +40,7 @@ class Stock extends MY_Generator {
 		if ($attr['own_id'] != ' ') {
 			$filter = array_merge($filter, ["s.own_id" => $attr['own_id']]);
 		}
+		
 		$data 	= $this->datatable->get_data($fields,$filter,'m_stock',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 

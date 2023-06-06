@@ -60,7 +60,13 @@
 				</tr>
 				<tr>
 					<td align="right" style="font-size:11px">Nomor Permintaan </td>
-					<td align="left" style="font-size:11px"> : <?php echo $row->mutation_no; ?></td>
+					<td align="left" style="font-size:11px"> : <?php
+						if (!empty($row->mutation_no)){
+							echo $row->mutation_no;
+						}else{
+							echo $row->bon_no;
+						}
+						?></td>
 				</tr>
 			</table>
 			<p style="height:5px">&nbsp;</p>

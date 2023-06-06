@@ -16,9 +16,14 @@ class Laporan_permintaan_gudang extends MY_Generator
     }
 
 	public function show_laporan()
-	{
+	{ //
+		if ($this->input->post('submit') == 'excel'){
+			header("Content-type: application/vnd-ms-excel");
+			header("Content-Disposition: attachment; filename= Laporan Permintaan Gudang.xls");
+		}
 
 		$jenis_laporan = $this->input->post('jenis_laporan');
+		//print_R($jenis_laporan);die;
 		if ($jenis_laporan != 3){
 			$this->lap_penerimaan($this->input->post());
 		}else{

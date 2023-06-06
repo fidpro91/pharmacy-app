@@ -23,7 +23,6 @@
                 <?= form_hidden("visit_id") ?>
                 <?= form_hidden("service_id") ?>
                 <?= form_hidden("px_id") ?>
-                <?= form_hidden("unit_id") ?>
                 <?= create_select([
                     "attr"         => ["name" => "tipe_patient=Tipe Penjualan", "id" => "tipe_patient", "class" => "form-control"],
                     "option"    => [
@@ -73,13 +72,14 @@
                     ],
                 ]) ?>
                 <?= create_select([
-                    "attr"         => ["name" => "kronis=Kronis", "id" => "kronis", "class" => "form-control"],
+                    "attr"         => ["name" => "kronis=Kronis", "id" => "kronis", "class" => "form-control","required"  => true],
                     "option"    => [
                         ["id" => "t", "text" => "Ya"], ["id" => "f", "text" => "Tidak"]
                     ]
                 ]) ?>
+                
                 <?= create_select([
-                    "attr" => ["name" => "own_id=Kepemilikan", "id" => "own_id", "class" => "form-control"],
+                    "attr" => ["name" => "own_id=Kepemilikan", "id" => "own_id", "class" => "form-control","required"  => true],
                     "model" => [
                         "m_surety_ownership" => ["get_kepemilikan", ["0" => '0']],
                         "column"  => ["own_id", "own_name"]
@@ -125,7 +125,7 @@
                 $("#"+ind).val(obj).trigger('change');
             });
         }
-        $("#px_norm").focus();
+        $("#patient_norm").focus();
 	});
 
     $("body").on("focus", "#patient_norm", function() {
@@ -133,6 +133,7 @@
             source: "<?php echo site_url('sale/get_no_rm/norm'); ?>/"+$("#tipe_patient").val(),
             autoFocus: true,
             minLength:4,
+            maxShowItems: 5,
             select: function(event, ui) {
                 $("#btn-history").attr("disabled",false);
                 $('#patient_norm').val(ui.item.px_norm); 
@@ -145,7 +146,6 @@
                     $('#service_id').val(ui.item.srv_id);
                     $('#doctor_name').val(ui.item.par_name);
                     $('#unit_id_lay').val(ui.item.unit_id);
-                    $('#unit_id').val(ui.item.unit_id);  
                     $('#sep').val(ui.item.sep_no);                   
                     if (ui.item.surety_id) {
                         $('#surety_id').val(ui.item.surety_id);
@@ -162,7 +162,7 @@
         }).data("ui-autocomplete")._renderItem = function(ul, item) {
             if ($("#tipe_patient").val() == 1) {
                 return $("<li>")
-                .append("<div class='comment-text'><span class=\"username\"><b>" +
+                .append("<div style='color: black;' class='comment-text'><span class=\"username\"><b>" +
                     item.px_norm + "|" + item.px_name +
                     "</b><span class=\"text-muted pull-right\">" + item.unit_name + "</span></span><p>" +
                     "<span>Tanggal Kunjung : <span class=\"text-muted pull-right\">" + (item.srv_date) + "</span></span><br>" +
@@ -172,7 +172,7 @@
                 .appendTo(ul);
             }else{
                 return $("<li>")
-                .append("<div class='comment-text'><span class=\"username\"><b>" +
+                .append("<div style='color: black' class='comment-text'><span class=\"username\"><b>" +
                     item.px_norm + "|" + item.px_name +
                     "</b><span class=\"text-muted pull-right\">Atas permintaan Sendiri(APS)</span></span><p>" +
                     "<span>NO Telp : <span class=\"text-muted pull-right\">" + (item.telepon) + "</span></span><br>" +
@@ -202,7 +202,6 @@
                 $('#service_id').val(ui.item.srv_id);
                 $('#doctor_name').val(ui.item.par_name);
                 $('#unit_id_lay').val(ui.item.unit_id);
-                $('#unit_id').val(ui.item.unit_id);
                 $('#kronis').val(ui.item.kronis);
                 if (ui.item.surety_id) {
                     $('#surety_id').val(ui.item.surety_id);
@@ -232,16 +231,13 @@
     });
 
     function changeSurety() {
-
         var sale_type = $("#surety_id").val();
         if (sale_type == 1 || sale_type == 33) {
-            $('#sale_type option[value="0"]').attr('selected', true);
+            $('#sale_type').val(0);
 
         } else {
-            $('#sale_type option[value="1"]').attr('selected', true);
-
+            $('#sale_type').val(1);
         }
-
     }
     
     $('#form_pasien').on("submit",function(){
@@ -267,6 +263,9 @@
                     $("#margin_profit").val(data.profit);
                     $("#tno_rm").html($("#no_rm").val());
                     $("#tpx_name").html($("#nama").val());
+                    $(".list_obat_nonracikan2, .list_obat_racikan").empty();
+                    $(".footer-kanan, .footer-kiri").find('a').attr('isi',0);
+                    $(".footer-kanan, .footer-kiri").find('a').text(0);
                     $("#modal_pasien").modal('hide');
                 }
             });

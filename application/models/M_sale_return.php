@@ -10,7 +10,7 @@ class M_sale_return extends CI_Model
 				left join admin.ms_unit u on st.unit_id = u.unit_id
 				left join farmasi.ownership o on st.own_id = o.own_id
 				left join yanmed.ms_surety s on st.surety_id = s.surety_id
-				where 0=0 $sWhere $sOrder $sLimit
+				where st.sr_id > 214929 $sWhere $sOrder $sLimit
 			")->result_array();
 		return $data;
 	}
@@ -22,9 +22,47 @@ class M_sale_return extends CI_Model
 				left join admin.ms_unit u on st.unit_id = u.unit_id
 				left join farmasi.ownership o on st.own_id = o.own_id
 				left join yanmed.ms_surety s on st.surety_id = s.surety_id				
-				where 0=0 $sWhere
+				where st.sr_id > 214929 $sWhere
 			")->num_rows();
 		return $data;
+	}
+
+	public function get_pasien_pelayanan($where, $select)
+	{
+		return $this->db->query("
+			SELECT  $select P
+				.px_id,
+				P.px_norm,
+				P.px_name,
+				P.px_address,
+				to_char( P.px_birthdate, 'DD-MM-YYYY' ) tgl_lahir,
+				concat ( '(', COALESCE ( P.px_phone, lpad('0', 12, '0') ), ')' ) telepon,
+				v.visit_id,
+				s.srv_id,
+				s.srv_date,
+				s.unit_id,
+				mu.unit_name,
+				s.surety_id,
+				s.par_id,
+				concat ( emp.employee_ft, emp.employee_name, emp.employee_bt ) par_name,
+				v.sep_no,
+				case when s.srv_status = 30 then 'Dilayani' 
+				when s.srv_status = 35 then 'batal'
+				when s.srv_status = 20 then 'chekout'
+				when s.srv_status = 10 then 'Pulang'
+				 else 'Belum Dilayani' end as status_kunjungan
+			FROM
+				yanmed.patient
+				P JOIN yanmed.visit v ON v.px_id = P.px_id
+				JOIN yanmed.services s ON v.visit_id = s.visit_id
+				JOIN ADMIN.ms_unit mu ON mu.unit_id = s.unit_id
+				LEFT JOIN hr.employee emp ON s.par_id = emp.employee_id 
+			WHERE
+				mu.unit_type in (21,22,23,42,9)
+				AND v.visit_status NOT IN (35,60,70) $where
+			order by s.srv_date desc
+			LIMIT 25
+		")->result();
 	}
 
 	public function get_column()
@@ -89,7 +127,7 @@ class M_sale_return extends CI_Model
 			SELECT mi.item_code,mi.item_name,sd.sale_price::numeric as harga,sd.* FROM farmasi.sale_detail sd
 			JOIN farmasi.sale s on sd.sale_id = s.sale_id
 			JOIN admin.ms_item mi ON sd.item_id = mi.item_id
-			WHERE s.service_id = '$where' and coalesce(sd.sale_return,0) < sd.sale_qty
+			WHERE s.service_id = '$where' AND sd.sale_id > 1388206 and coalesce(sd.sale_return,0) < sd.sale_qty
 		")->result();
 	}
 

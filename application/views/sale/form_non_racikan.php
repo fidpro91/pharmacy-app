@@ -1,3 +1,8 @@
+<style>
+	.comment-text{
+		color: black !important;
+	}
+</style>
 <?= form_open("", ["method" => "post", "id" => "form_non_racikan"]) ?>
 <div class="row">
 	<div class="col-md-12">
@@ -58,6 +63,7 @@
 					return false;
 				}
 			});
+			// $("#modal_nonracikan").find(".modal-body").animate({ scrollTop: 300}, 1000);
 		});
 
 		$("#btn-save-non_racikan").click(()=>{
@@ -71,8 +77,8 @@
 					$(".list_obat_nonracikan2").append(data.html);
 					let total = parseFloat($.isNumeric($('#sub_total_nonracikan').attr('isi'))?$('#sub_total_nonracikan').attr('isi'):0);
 					let biayaNonracik = parseFloat($.isNumeric($('#total_biaya_nonracikan').attr('isi'))?$('#total_biaya_nonracikan').attr('isi'):0);
-            		total = total+data.total;
-            		biayaNonracik = biayaNonracik+data.embalase;
+            		total = data.total;
+            		biayaNonracik = data.embalase;
 					$("#total_biaya_nonracikan").text(formatMoney(biayaNonracik));
             		$("#total_biaya_nonracikan").attr("isi",biayaNonracik);
 					$("#sub_total_nonracikan").text(formatMoney(total));
@@ -84,6 +90,5 @@
 		});
 
 	});
-	
 	<?=$this->config->item('footerJS')?>
 </script>

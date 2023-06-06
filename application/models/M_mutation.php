@@ -151,13 +151,13 @@ class M_mutation extends CI_Model {
 		return $this->db->get_where("newfarmasi.mutation",$where)->row();
 	}
 
-	public function get_item_autocomplete($where)
+	public function get_item_autocomplete($where,$own_id,$unit_id)
 	{
 		return $this->db->query(
 			"SELECT  mi.item_id,mi.item_package,mi.item_name as value,mi.item_code,mi.item_unitofitem,
-			(sf.stock_summary) as total_stock
-			FROM newfarmasi.stock sf
-			JOIN admin.ms_item mi ON sf.item_id = mi.item_id
+			coalesce(sf.stock_summary,0) as total_stock
+			FROM farmasi.v_obat mi
+			JOIN newfarmasi.stock sf ON sf.item_id = mi.item_id and sf.own_id = '$own_id' and sf.unit_id = '$unit_id'
 			where 0=0 $where"
 		)->result();
 	}
@@ -170,6 +170,8 @@ class M_mutation extends CI_Model {
 								   ->get_where("newfarmasi.mutation m",$where)->row();
 		
 		$data["detail"] = $this->db->join("admin.ms_item mi","mi.item_id=md.item_id")
+								   ->join("newfarmasi.mutation m","m.mutation_id=md.mutation_id")
+								   ->join("newfarmasi.stock s","s.item_id=md.item_id AND s.unit_id = m.unit_sender AND s.own_id = m.own_id","left")
 								   ->get_where("newfarmasi.mutation_detail md",$where)
 								   ->result();
 		
@@ -201,7 +203,7 @@ class M_mutation extends CI_Model {
 		// 			WHERE 0=0 
 		// 			$sWhere 
 		// 			$sOrder $sLimit  ";
-		$sql = "SELECT mutation_id, mutation_date,mutation_no,u.unit_name as asal,u2.unit_name as tujuan,o.own_name, m.mutation_status
+		$sql = "SELECT mutation_id, mutation_date,mutation_no,u.unit_name as asal,u2.unit_name as tujuan,o.own_name, m.mutation_status,m.bon_no
 FROM newfarmasi.mutation m
 INNER JOIN admin.ms_unit u on m.unit_require = u.unit_id 
 INNER JOIN admin.ms_unit u2 on m.unit_sender = u2.unit_id

@@ -82,14 +82,20 @@
     "content"   => "Cancel"
 ])
 ]) ?>
+<style>
+  .merah > td {
+		background: #FF9999;
+	}
+</style>
 <script type="text/javascript">
   var table;
   var dataHibah=null;
+  var isEditing=false;
   $(document).ready(function() {
     table = $('#tb_receiving').DataTable({
       "processing": true,
       "serverSide": true,
-      "order": [[2,'desc']],
+      "order": [[2,'desc'],[4,'desc']],
       "scrollX": true,
       "ajax": {
         "url": "<?php echo site_url('receiving/get_data') ?>",
@@ -99,6 +105,13 @@
             f.own_id = $("#kepemilikan_id").val();
         }
       },
+      "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+				if ( aData[3] == null)
+				{
+          $(nRow).addClass('merah');
+				}
+				
+			},
       'columnDefs': [{
           'targets': [0, 1, -1],
           'searchable': false,
@@ -124,6 +137,7 @@
   });
 
   $("#btn-add-pembelian").click(function() {
+    isEditing = false;
     $("#form_receiving").show();
     $("#form_receiving").load("receiving/show_form");
   });
@@ -135,6 +149,7 @@
 
   function set_val(id) {
     $("#form_receiving").show();
+    isEditing = true;
     $.get('receiving/find_one/' + id+"/update", (data) => {
       if (typeof(data.message) != "undefined" && data.message !== null) {
           alert(data.message);

@@ -20,11 +20,16 @@ class Receiving extends MY_Generator {
 
 	public function save()
 	{
-		$data = $this->input->post(); //print_r($data);
+		$data = $this->input->post(); //print_r($data);die;
 		// if ($this->m_receiving->validation()) {
 			$input = [];
 			foreach ($this->m_receiving->rules() as $key => $value) { 
 				$input[$key] = !empty($data[$key])?$data[$key]:null;
+			}
+			if ($data['rec_id']) {
+				$input['po_id'] = $this->db->select("po_id")->get_where("newfarmasi.receiving",[
+					"rec_id" => $data['rec_id']
+				])->row('po_id');
 			}
 			$dataPo = $this->db->get_where("farmasi.po",["po_id"=>$input['po_id']])->row();
 			$input['supplier_id'] = $dataPo->supplier_id; 
@@ -43,12 +48,8 @@ class Receiving extends MY_Generator {
 
 			$data['own_id'] = $dataPo->own_id;
 			$sukses=$this->insert_recdet($data);
-			$poComplete=$this->db->where("(po_qtyreceived != po_qtyunit)",null)
-								 ->get_where("farmasi.po_detail",[
-									"po_id" => $dataPo->po_id
-								 ])->num_rows();
 
-			if ($poComplete === 0) {
+			if ($data["jns_penerimaan"] == "2") {
 				$this->db->where("po_id",$dataPo->po_id)->update("farmasi.po",[
 					"po_status"	=> 1
 				]);
@@ -132,10 +133,10 @@ class Receiving extends MY_Generator {
 
 	public function validasi_act($id)
 	{
-		$data=$this->db->get_where("newfarmasi.stock_fifo",["rec_id"=>$id])->result();
+		$data=$this->db->get_where("newfarmasi.receiving_detail",["rec_id"=>$id])->result();
 		$allow=true;
 		foreach ($data as $key => $value) {
-			if ($value->stock_in > $value->stock_saldo) {
+			if ($value->is_usage == 't') {
 				$allow=false;
 				break;
 			}
@@ -160,12 +161,15 @@ class Receiving extends MY_Generator {
 		$this->load->model('m_receiving_detail');
 		$stockku=[];
 		$sukses=false;
+		//print_r($data);die;
+	
 		foreach ($data['div_detail'] as $x => $value) {
+		
 			if (empty($value['podet_id'])) {
 				continue;
 			}
 			$dataPo=$this->db->get_where("farmasi.po_detail",["podet_id"=>$value['podet_id']])->row();
-			// print_r($value);die;
+		
 			foreach ($this->m_receiving_detail->rules() as $r => $v) {
 				$detail[$x][$r] = isset($value[$r])?$value[$r]:null;
 			}
@@ -173,11 +177,12 @@ class Receiving extends MY_Generator {
 			$detail[$x]['item_id'] = $dataPo->item_id;
 			$detail[$x]['item_pack'] = $dataPo->po_pack;
 			$detail[$x]['item_unit'] = $dataPo->po_unititem;
-			$detail[$x]['price_pack'] = $dataPo->po_pricepack;
+			$detail[$x]['price_pack'] = ($dataPo->po_qtyunit/$dataPo->po_qtypack)*$value['price_item'];
 			// $detail[$x]['price_total'] = $dataPo->po_pricepack;
 			$detail[$x]['qty_pack'] 	= $value['qty_unit']/$dataPo->po_qtyunit*$dataPo->po_qtypack;
 			$detail[$x]['podet_id'] 	= $dataPo->podet_id;
-			$detail[$x]['hpp'] 			= $value['price_item']+($value['price_item']*($data['ppn']/100));
+			$hargaAfterDiskon			= $value['price_item'] - ($value['disc_value']/$value['qty_unit']);
+			$detail[$x]['hpp'] 			= $hargaAfterDiskon+($hargaAfterDiskon*($data['ppn']/100));
 			$detail[$x]['rec_id'] 		= $data['rec_id'];
 			$detail[$x]['expired_date'] = date('Y-m-d',strtotime($value['expired_date']));
 			$this->db->insert("newfarmasi.receiving_detail",$detail[$x]);
@@ -187,6 +192,30 @@ class Receiving extends MY_Generator {
 			$this->db->where("podet_id",$dataPo->podet_id)->update("farmasi.po_detail",[
 				"po_qtyreceived"=>($detail[$x]['qty_unit']+$dataPo->po_qtyreceived)
 			]);
+
+			//cek price
+			$price = $this->db->get_where("farmasi.price",[
+				"item_id"	=> $dataPo->item_id,
+				"own_id"	=> $data['own_id']
+			]);
+			if ($price->num_rows()<1) {
+				$this->db->insert("farmasi.price",[
+					"item_id"	=> $dataPo->item_id,
+					"own_id"	=> $data['own_id'],
+					"price_sell"=> $detail[$x]['hpp'],
+					"price_buy"	=> $detail[$x]['price_item']
+				]);
+			}
+
+			//cek update harga
+			$update = $value['update']; 
+			if ($update == 2) {
+				$this->db->where(["item_id"	=> $dataPo->item_id,"own_id"=> $data['own_id']])
+						->update("farmasi.price",[
+							"price_sell"	=> $detail[$x]['hpp'],
+							"price_buy"		=> $detail[$x]['price_item']
+						]);
+			} 
 			
 			//insert stock
 			$stockku[$x]["recdet_id"] = $recdetid;
@@ -199,18 +228,6 @@ class Receiving extends MY_Generator {
 			$stockku[$x]["expired_date"] = $detail[$x]['expired_date'];
 			$this->db->insert("newfarmasi.stock_fifo",$stockku[$x]);
 			$sukses=true;
-		}
-
-		//update po header komplete
-		$totalItem = $this->db->get_where("farmasi.po_detail",[
-			"po_qtyunit < coalesce(po_qtyreceived,0)"	=> null,
-			"po_id"		=> $data["po_id"]
-		])->num_rows();
-		
-		if ($totalItem === 0) {
-			$this->db->where(["po_id" => $data["po_id"]])->update("farmasi.po",[
-				"po_status"	=> "1"
-			]);
 		}
 		
 		return $sukses;
@@ -246,6 +263,20 @@ class Receiving extends MY_Generator {
 			$stockku[$x]["total_price"] = $detail[$x]['price_total'];
 			$stockku[$x]["expired_date"] = $detail[$x]['expired_date'];
 			$this->db->insert("newfarmasi.stock_fifo",$stockku[$x]);
+
+			//cek price
+			$price = $this->db->get_where("farmasi.price",[
+				"item_id"	=> $detail[$x]['item_id'],
+				"own_id"	=> $data['own_id']
+			]);
+			if ($price->num_rows()<1) {
+				$this->db->insert("farmasi.price",[
+					"item_id"	=> $detail[$x]['item_id'],
+					"own_id"	=> $data['own_id'],
+					"price_sell"	=> $detail[$x]['price_item'],
+					"price_buy"		=> $detail[$x]['price_item']
+				]);
+			}
 		
 			$sukses=true;
 		}

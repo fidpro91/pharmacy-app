@@ -67,7 +67,7 @@ class M_po_detail extends CI_Model {
 	{
 		return $this->db
 					->join("admin.ms_item mi"," pd.item_id = mi.item_id")
-					->select("*,(pd.po_pricepack/pd.po_qtyunit)price_item")
+					->select("*,(pd.po_pricepack/((pd.po_qtyunit/pd.po_qtypack)))price_item")
 					->get_where("farmasi.po_detail pd",$where)
 					->result();
 	}

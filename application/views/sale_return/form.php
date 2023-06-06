@@ -83,7 +83,7 @@
             }
         }).data("ui-autocomplete")._renderItem = function(ul, item) {
             return $("<li>")
-			.append("<div class='comment-text'><span class=\"username\"><b>" +
+			.append("<div style='color: black' class='comment-text'><span class=\"username\"><b>" +
 				item.px_norm + "|" + item.px_name +
 				"</b><span class=\"text-muted pull-right\">" + item.unit_name + "</span></span><p>" +
 				"<span>Tanggal Kunjung : <span class=\"text-muted pull-right\">" + (item.srv_date) + "</span></span><br>" +
@@ -119,8 +119,9 @@
 
 	function grandTotal(total) {
 		let embalase = total/100;
-		embalase = Math.abs(Math.ceil(embalase)-embalase)*100;
-		total = total+embalase;
+		embalase = (parseFloat(Math.abs(Math.ceil(embalase)-embalase)).toFixed(2))*100;
+		total = Math.ceil(total+embalase);
+		console.log(total);
 		$("#embalase").val(embalase);
 		$("#total_return").val(total);
 	}

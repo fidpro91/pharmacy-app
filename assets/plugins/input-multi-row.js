@@ -223,11 +223,11 @@
 				.find(".row_" + nama + "")
 				.each(function (index) {
 					// $(this).find("td:first").html(index+1);
-					var prefix = "" + nama + "[" + index + "]";
+					var prefix = "[" + index + "]";
 					$(this)
 						.find("textarea, select, input")
 						.each(function () {
-							this.name = this.name.replace(/dt\[\d+\]/, prefix);
+							this.name = this.name.replace(/\[\d+\]/, prefix);
 						});
 				});
 		});

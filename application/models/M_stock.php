@@ -8,6 +8,7 @@ class M_stock extends CI_Model {
 				select * from (
 					select ".implode(',', $aColumns).",id as id_key,sum(coalesce(sf.stock_saldo,0))total_stock_fifo 
 					from newfarmasi.stock s
+					left join farmasi.price p on p.item_id = s.item_id and p.own_id = s.own_id
 					left join newfarmasi.stock_fifo sf on s.item_id = sf.item_id and s.own_id = sf.own_id and s.unit_id = sf.unit_id 
 					join admin.ms_unit mu on mu.unit_id = s.unit_id
 					join farmasi.ownership ow on ow.own_id = s.own_id
@@ -24,6 +25,7 @@ class M_stock extends CI_Model {
 	{
 		$data = $this->db->query("
 				select distinct ".implode(',', $aColumns).",id as id_key from newfarmasi.stock s
+				left join farmasi.price p on p.item_id = s.item_id and p.own_id = s.own_id
 				left join newfarmasi.stock_fifo sf on s.item_id = sf.item_id and s.own_id = sf.own_id and s.unit_id = sf.unit_id 
 				join admin.ms_unit mu on mu.unit_id = s.unit_id
 				join farmasi.ownership ow on ow.own_id = s.own_id
@@ -43,6 +45,16 @@ class M_stock extends CI_Model {
 				"item_name",
 				"item_unitofitem",
 				"own_name",
+				"price_buy" => [
+					"custom" => function($a){
+						return str_replace('$','',$a['price_buy']);
+					}
+				],
+				"price_sell" => [
+					"custom" => function($a){
+						return str_replace('$','',$a['price_sell']);
+					}
+				],
 				"stock_summary",
 				"stock_summary"=>[
 					"custom" => function($a){
@@ -100,7 +112,7 @@ class M_stock extends CI_Model {
 	{
 		$data = $this->db->query("
 			SELECT mi.item_id,mi.item_name,mi.item_unitofitem,
-			json_agg((so.unit_id,so.stock_summary))detail
+			json_agg((so.unit_id,so.stock_summary))detail,sum(so.stock_summary) as jumlah
 			FROM admin.ms_item mi
 			LEFT JOIN newfarmasi.stock so ON mi.item_id = so.item_id and so.own_id = '$own_id'
 			WHERE comodity_id in (1,2)
