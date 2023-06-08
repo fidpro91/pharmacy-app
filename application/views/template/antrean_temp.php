@@ -315,9 +315,6 @@
 			loadAntrean = setInterval(() => {
 				racikanredy();
 				nonracikanredy();
-				// noResepNonRacikanReady();
-				// noResepRacikanPrepare();
-				// noResepNonRacikanPrepare();
 			}, 10000)
 		}
 
@@ -422,128 +419,6 @@
 				}
 			})
 		}
-
-
-
-
-
-		//function noracikanredyolde() {
-		//	$.ajax({
-		//		type: "post",
-		//		url: "<?//= base_url() ?>//antrean_recipe/noracikanredy",
-		//		dataType: "json",
-		//		data: {
-		//			unit_id: $("#unit_id_depo").val()
-		//		},
-		//		success: function(response) {
-		//			console.log(response.noResepRacikanReady);
-		//			if (response.noResepRacikanReady) {
-		//				$("#rcp_racikan_ready").text(response.noResepRacikanReady)
-		//			} else {
-		//				$("#rcp_racikan_ready").text(0)
-		//			}
-		//		}
-		//	})
-		//}
-		//
-		//function noResepNonRacikanReady() {
-		//	$.ajax({
-		//		type: "post",
-		//		url: "<?//= base_url() ?>//antrean_recipe/noResepNonRacikanReady",
-		//		dataType: "json",
-		//		data: {
-		//			unit_id: $("#unit_id_depo").val()
-		//		},
-		//		success: function(response) {
-		//			console.log(response.noResepNonRacikanReady);
-		//			if (response.noResepNonRacikanReady) {
-		//				$("#rcp_non_racikan_ready").text(response.noResepNonRacikanReady)
-		//			} else {
-		//				$("#rcp_non_racikan_ready").text(0)
-		//			}
-		//		}
-		//	})
-		//}
-		//
-		//function noResepRacikanPrepare() {
-		//	$.ajax({
-		//		type: "post",
-		//		url: "<?//= base_url() ?>//antrean_recipe/noResepRacikanPrepare",
-		//		dataType: "json",
-		//		data: {
-		//			unit_id: $("#unit_id_depo").val()
-		//		},
-		//		success: function(response) {
-		//			console.log(response.noResepRacikanPrepare);
-		//			if (response.noResepRacikanPrepare) {
-		//				$("#rcp_racikan_prepare").text(response.noResepRacikanPrepare)
-		//			} else {
-		//				$("#rcp_racikan_prepare").text(0)
-		//			}
-		//		}
-		//	})
-		//}
-		//
-		//function noResepNonRacikanPrepare() {
-		//	$.ajax({
-		//		type: "post",
-		//		url: "<?//= base_url() ?>//antrean_recipe/noResepNonRacikanPrepare",
-		//		dataType: "json",
-		//		data: {
-		//			unit_id: $("#unit_id_depo").val()
-		//		},
-		//		success: function(response) {
-		//			console.log(response.noResepNonRacikanPrepare);
-		//			if (response.noResepNonRacikanPrepare) {
-		//				$("#rcp_non_racikan_prepare").text(response.noResepNonRacikanPrepare)
-		//			} else {
-		//				$("#rcp_non_racikan_prepare").text(0)
-		//			}
-		//
-		//		}
-		//	})
-		//}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		// $(document).ready(() => {
-		//   $.fn.dataTable.ext.errMode = 'none';
-		//   get_antrean();
-		//
-		//   // setInterval(() => {
-		//   //   get_antrean();
-		//   // }, 6000);
-		// });
-
-		// $("#unit_id_depo").change(() => {
-		// 	table.draw();
-		//   // get_antrean();
-		// });
-
-		// function get_antrean() {
-		//   $.get("antrean_recipe/get_data/" + $("#unit_id_depo").val(), function(resp) {
-		//     $("#data_antrian").html(resp.html);
-		//     $("#rcp_racikan_ready").text(resp.noResepRacikanReady);
-		//     $("#rcp_non_racikan_ready").text(resp.noResepNonRacikanReady);
-		//     $("#rcp_racikan_prepare").text(resp.noResepRacikanPrepare);
-		//     $("#rcp_non_racikan_prepare").text(resp.noResepNonRacikanPrepare);
-		//   }, 'json');
-		// }
 	</script>
 
 
