@@ -32,7 +32,6 @@ class Panggilan extends MY_Generator
 			$filter = array_merge($filter, ["s.unit_id" => $attr['unit_id']]);
 		}
 
-
 		$data 	= $this->datatable->get_data($fields,$filter,'m_panggilan',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start'];
