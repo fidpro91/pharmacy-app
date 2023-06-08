@@ -55,10 +55,11 @@
 			},
 			'columnDefs': [
 				{
-					'targets': [0,1,-1],
+					'targets': [0,1,-1,-2],
 					'searchable': false,
 					'orderable': false,
 				},
+
 				{ "width": "8%", "targets": -1 },
 				{
 					'targets': 0,
@@ -66,6 +67,10 @@
 					"visible" : false
 				}],
 		});
+
+		setInterval(() => {
+			table.draw();
+		}, 50000)
 	});
 
 	$("#unit_id_depo").change(() => {

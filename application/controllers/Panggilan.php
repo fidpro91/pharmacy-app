@@ -27,9 +27,11 @@ class Panggilan extends MY_Generator
 		$attr 	= $this->input->post();
 		$fields = $this->m_panggilan->get_column();
 		$filter = [];
+
 		if ($attr['unit_id'] !='') {
 			$filter = array_merge($filter, ["s.unit_id" => $attr['unit_id']]);
 		}
+
 
 		$data 	= $this->datatable->get_data($fields,$filter,'m_panggilan',$attr);
 		$records["aaData"] = array();
@@ -89,7 +91,7 @@ class Panggilan extends MY_Generator
 			$insert = $this->db->insert('yanmed.antrian_farmasi2',$input);
 
 		}else{
-			$update = $this->db->set('status',1)
+			$update = $this->db->set(['status'=>1,'tgl_panggil'=>date('Y-m-d h:i:s')])
 				->where('sale_id',$sale_id)
 				->update('yanmed.antrian_farmasi2');
 		}

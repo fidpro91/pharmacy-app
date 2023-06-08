@@ -231,17 +231,10 @@
 	<script src="<?= site_url("assets") ?>/dist/js/adminlte.min.js"></script>
 	<!-- AdminLTE for demo purposes -->
 	<script src="<?= site_url("assets") ?>/dist/js/demo.js"></script>
+
+	<audio id="tingtung" src="<?= site_url("assets") ?>/audio/tingtung.mp3"></audio>
+
 	<script>
-		/*$(function () {
-		  $('#example1').DataTable({
-			  'scroller':       true,
-			  'scrollY':        220,
-			  'scrollCollapse': true,
-			  'paging'      : false,
-			  'searching'   : false,
-			  'info'        : true,
-		  })
-	  })*/
 
 		var table;
 		var speak = false;
@@ -331,6 +324,7 @@
 		// rcp_racikan_ready
 
 		function racikanredy() {
+
 			$.ajax({
 				type: "post",
 				url: "<?= base_url() ?>antrean_recipe/noracikanredy",
@@ -349,15 +343,23 @@
 						}
 
 						if (response.noResepRacikanReady.status == 1) {
-							responsiveVoice.speak(
-								"NAMA . " + response.noResepRacikanReady.patient_name + ". DARI " + response.noResepRacikanReady.unit_name + " silahkan menuju ke "+response.noResepRacikanReady.depo, "Indonesian Female", {
-									pitch: 1,
-									rate: 1,
-									volume: 2,
-									// onstart: voiceStartCallback,
-									// onend: voiceEndCallback(no_urut, counter, 7100, queue_id)
-								}
-							);
+
+							var bell = document.getElementById('tingtung');
+							bell.pause();
+							bell.currentTime = 0;
+							bell.play();
+							durasi_bell = bell.duration * 770;
+							setTimeout(function() {
+								responsiveVoice.speak(
+									response.noResepRacikanReady.patient_name + ". DARI " + response.noResepRacikanReady.unit_name + " silahkan menuju ke "+response.noResepRacikanReady.depo, "Indonesian Female", {
+										pitch: 1,
+										rate: 1,
+										volume: 2,
+										// onstart: voiceStartCallback,
+										// onend: voiceEndCallback(no_urut, counter, 7100, queue_id)
+									}
+								);
+							},durasi_bell)
 							update_status(response.noResepRacikanReady.sale_id);
 						}
 					} else {
@@ -394,15 +396,23 @@
 						$("#rcp_non_racikan_ready").text(response.noResepNonRacikanReady.patient_name)
 						$("#unti_name_racika").text(response.noResepNonRacikanReady.unit_name)
 						if (response.noResepNonRacikanReady.status == 1) {
-							responsiveVoice.speak(
-								"NAMA . " + response.noResepNonRacikanReady.patient_name + ". DARI " + response.noResepNonRacikanReady.unit_name + " silahkan menuju ke "+response.noResepNonRacikanReady.depo, "Indonesian Female", {
-									pitch: 1,
-									rate: 1,
-									volume: 2,
-									// onstart: voiceStartCallback,
-									// onend: voiceEndCallback(no_urut, counter, 7100, queue_id)
-								}
-							);
+							var bell = document.getElementById('tingtung');
+							bell.pause();
+							bell.currentTime = 0;
+							bell.play();
+							durasi_bell = bell.duration * 770;
+							setTimeout(function() {
+								responsiveVoice.speak(
+									response.noResepNonRacikanReady.patient_name + ". DARI " + response.noResepNonRacikanReady.unit_name + " silahkan menuju ke "+response.noResepNonRacikanReady.depo, "Indonesian Female", {
+										pitch: 1,
+										rate: 1,
+										volume: 2,
+										// onstart: voiceStartCallback,
+										// onend: voiceEndCallback(no_urut, counter, 7100, queue_id)
+									}
+								);
+							},durasi_bell)
+
 							update_status(response.noResepNonRacikanReady.sale_id);
 						}
 					} else {
