@@ -72,6 +72,7 @@ class M_ms_item extends CI_Model {
 					"atc_ood" => "trim",
 					"item_dosis" => "trim",
 					"item_form" => "trim|integer",
+					"label_item_id" => "trim|integer",
 				];
 		return $data;
 	}

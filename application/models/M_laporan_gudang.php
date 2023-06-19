@@ -676,23 +676,52 @@ ORDER BY
 		if( empty($unit_id) ) {
 			$unit_id = 0;
 		}
-		$where = " AND r.receiver_unit != '$unit_id' AND r.sender_unit = '$unit_id' AND r.receiver_date between '$tgl_awal' AND '$tgl_akhir'";
+		$where = " AND r.unit_require != '$unit_id' AND r.unit_sender = '$unit_id' AND r.mutation_date between '$tgl_awal' AND '$tgl_akhir'";
 		if ($own_id != "semua") {
-			$where .= " AND r.own_id = '$own_id'";
+			$where .= " AND p.own_id = '$own_id'";
 		}
 		$data = $this->db->query("
-        SELECT mu.unit_id,mu.unit_name,rec.detail FROM admin.ms_unit mu
-LEFT JOIN (
-  SELECT x.receiver_unit,json_agg((x.bulan,x.total) ORDER BY x.bulan)detail FROM (
-    SELECT r.receiver_unit,EXTRACT('month' FROM r.rec_date)bulan,sum(COALESCE(rd.price_total,0))total FROM newfarmasi.receiving r
-    INNER JOIN newfarmasi.receiving_detail rd ON r.rec_id = rd.rec_id
-    where 0=0 $where
-    GROUP BY r.receiver_unit,EXTRACT('month' FROM r.rec_date)
-  )x
-  GROUP BY x.receiver_unit
-) rec ON mu.unit_id = rec.receiver_unit
-WHERE mu.unit_active = 't'
-ORDER BY mu.unit_type,mu.unit_name ASC")->result();
+		SELECT mu.unit_id,
+		mu.unit_name,
+		rec.detail 
+		FROM
+			ADMIN.ms_unit mu
+			LEFT JOIN (
+			SELECT
+				y.unit_require,
+				json_agg (( y.bulan, y.total )  ORDER BY y.bulan ) detail 
+			FROM
+				(
+				SELECT  x.unit_require,		
+			 x.bulan,
+			 sum(x.jml_qty * x.total ) as total
+			 from (
+				SELECT
+					r.unit_require,
+					EXTRACT ( 'month' FROM r.mutation_date ) bulan,
+					P.price_sell :: NUMERIC AS total,
+					SUM ( rd.qty_send ) jml_qty 
+				FROM
+					newfarmasi.mutation r
+					INNER JOIN newfarmasi.mutation_detail rd ON r.mutation_id = rd.mutation_id
+					JOIN farmasi.price P ON rd.item_id = P.item_id 
+				WHERE 0=0
+					$where
+				GROUP BY
+					r.unit_require,
+					P.price_sell,
+					EXTRACT ( 'month' FROM r.mutation_date ) 
+				) x 
+				GROUP BY x.unit_require,x.bulan
+				) y
+			GROUP BY
+				y.unit_require 
+			) rec ON mu.unit_id = rec.unit_require 
+		WHERE
+			mu.unit_active = 't' 
+		ORDER BY
+			mu.unit_type,
+			mu.unit_name ASC")->result();
 
 		if (count($data)>0) {
 			return $data;

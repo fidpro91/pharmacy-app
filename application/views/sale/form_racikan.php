@@ -1,6 +1,6 @@
 <div class="row">
     <?= form_open("", ["method" => "post", "id" => "form_racikan"]) ?>
-    <div class="col-md-4">
+    <div class="col-md-3">
         <?= create_input("nama_racikan",[
             "required" => true
         ]) ?>
@@ -9,9 +9,13 @@
         <?= create_input("signa") ?>
     </div>
     <div class="col-md-2">
-        <?= create_input("qty_racikan") ?>
+        <?= create_input("qty_racikan") ?>        
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2">
+         <?=create_input("ed_obat=BUD",["readonly"=>true]) ?>       
+    </div>
+
+    <div class="col-md-2">
         <?php
             $biayaRacik = $this->db->get_where("newfarmasi.setting_app",[
                 "setting_id"   => 3
@@ -39,7 +43,7 @@ $(document).ready(()=>{
                     'async': false,
                     'type': "GET",
                     'dataType': 'json',
-                    'url': "sale/show_multiRows",
+                    'url': "sale/show_multiRowsRacikan",
                     'success': function (data) {
                         dataku = data;
 						// const sub_total_racikan = $("#sub_total_racikan").text();
@@ -54,11 +58,12 @@ $(document).ready(()=>{
             "data": dataItemSale
     });
 });
-
 function setHotkey() {
     $('input').unbind('keydown', 'ctrl+a');
     $('input').bind('keydown', 'ctrl+a', addItemRacikan);
 }
+
+
 
 $("body").on("change", ".tb_list_item_racikan", function() {
 	$('.tb_list_item_racikan > tbody  > tr').each(function() {
@@ -91,6 +96,15 @@ $("body").on("change", ".tb_list_item_racikan", function() {
 $("#btn-save-racikan").click(()=>{
     $("#form_racikan").submit();
 });
+
+
+    $("#ed_obat").datepicker({
+							format: "dd-mm-yyyy",							
+							autoclose : true
+						});
+
+
+
 
 $("#form_racikan").on("submit",()=>{
     $("#form_racikan").data("validator").settings.submitHandler = function (form) {

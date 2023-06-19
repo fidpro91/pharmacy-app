@@ -67,9 +67,10 @@ if (isset($button) && $button=="excel") {
 		$totalSemua=0;
 		foreach ($data as $key => $r) {
 			echo "<tr>
-							<td class=\"text-left\">$r->unit_name</td>";
+				 <td class=\"text-left\">$r->unit_name</td>";
 			$ardat = json_decode($r->detail);
 			$total_s = 0;
+			
 			foreach ($bulan as $x => $b) {
 				$nilai[$x][$key]=0;
 				if ($ardat) {
