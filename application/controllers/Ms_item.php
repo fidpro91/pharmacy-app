@@ -186,6 +186,23 @@ class Ms_item extends MY_Generator {
 		echo json_encode($respond);
 	}
 
+	public function get_nama_generic()
+	{
+		$this->load->library("curls");
+		$term = $this->input->get('term');
+		$respond= $this->curls->api_sregep("GET","get_obat_generic/$term");
+		$item=[];
+		if ($respond["metaData"]["code"] == 200) {
+			foreach ($respond["response"]["list"] as $key => $value) {
+				$item[] = [
+					"code"	=> $value["kode"],
+					"name"	=> $value["nama"],
+				];
+			}
+		}
+		echo json_encode($item);
+	}
+
 	public function get_satuan()
 	{
 		$term 	= $this->input->get('term', true);

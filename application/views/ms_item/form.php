@@ -1,6 +1,7 @@
     <div class="col-md-12">
       			<?=form_open("ms_item/save",["method"=>"post","class"=>"form-vertical","id"=>"fm_ms_item"],$model)?>
 		<?=form_hidden("item_id")?>
+		<?=form_hidden("kode_generic_bpjs")?>
 		<div class="row">
 			<div class="col-md-3">
 				<?=create_input("item_code=Kode Item")?>
@@ -39,6 +40,7 @@
 						],
 				]) ?>
 			<?=create_input("item_strength=Kekuatan")?>
+			<?=create_input("nama_generic_bpjs")?>
 			<?= create_select([
 					"attr" => ["name" => "is_formularium=Golongan Obat", "id" => "is_formularium", "class" => "form-control", 'required' => true, "onchange" => "getVal(this)"],
 					"option" => [["id" => 'f', "text" => "Non Formularium"], ["id" => 't', "text" => "Formularium"]],
@@ -104,6 +106,7 @@ $(document).ready(function () {
                })
 		}
 	})
+
 	$("#item_unitofitem").autocomplete({
 		source: function( request, response ) {
 			$.ajax( {
@@ -122,6 +125,33 @@ $(document).ready(function () {
 
                     }
                })
+		}
+	})
+
+	$("#nama_generic_bpjs").autocomplete({
+		source: function( request, response ) {
+			$.ajax( {
+                    url: "ms_item/get_nama_generic/",
+                    dataType: "json",
+                    data: {
+                        term: request.term
+                    },
+                    success: function( data ) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.name,
+                                value: item.name,
+								isi : item.code
+                            };
+                        }));
+
+                    }
+               })
+		},
+		autoFocus: true,
+		minLength: 3,
+		select: function(event, ui) {
+			$("#kode_generic_bpjs").val(ui.item.isi);
 		}
 	})
 

@@ -60,6 +60,8 @@ class M_ms_item extends CI_Model {
 					"item_code" => "trim|required",
 					"item_name" => "trim|required",
 					"item_desc" => "trim",
+					"kode_generic_bpjs" => "trim",
+					"nama_generic_bpjs" => "trim",
 					"comodity_id" => "trim|integer",
 					"classification_id" => "trim|integer",
 					"item_unitofitem" => "trim",
