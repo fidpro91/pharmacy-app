@@ -212,12 +212,13 @@ class M_sale extends CI_Model
 	}
 	function get_detail_patient($sale_id)
 	{
-		$result = $this->db->query("select ul.unit_name as poli,yv.srv_type,u.unit_name,to_char(fs.date_act, 'dd-mm-YYYY HH24:MI:SS')tanggal,sr.surety_name,v.pxsurety_no,v.sep_no,fs.* 
+		$result = $this->db->query("select ul.unit_name as poli,yv.srv_type,u.unit_name,px_birthdate,to_char(fs.date_act, 'dd-mm-YYYY HH24:MI:SS')tanggal,sr.surety_name,v.pxsurety_no,v.sep_no,fs.* 
 						from farmasi.sale fs 
 						inner join admin.ms_unit u on fs.unit_id = u.unit_id
 						inner join yanmed.ms_surety sr on sr.surety_id = fs.surety_id
 						left join yanmed.services yv on yv.visit_id = fs.visit_id and fs.service_id = yv.srv_id
 						LEFT JOIN yanmed.visit v ON v.visit_id = yv.visit_id
+						left join yanmed.patient p on v.px_id = p.px_id
 						LEFT JOIN admin.ms_unit ul ON yv.unit_id = ul.unit_id
 						where fs.sale_id = " . $sale_id)->row();
 
@@ -227,6 +228,7 @@ class M_sale extends CI_Model
 			"namapasien" => $result->patient_name.'/'.$result->patient_norm,
 			"kepemilikan" => $result->surety_name,
 			"doctor_name" => $result->doctor_name,
+			"px_birthdate"=> $result->px_birthdate,
 			"unit_name" => $result->unit_name,
 			"sale_id" => $result->sale_id,
 			"sale_total" => $result->sale_total,
@@ -297,6 +299,5 @@ class M_sale extends CI_Model
 		$data	=	$query->result();
 		return $data;
 	}
-	
 	
 }

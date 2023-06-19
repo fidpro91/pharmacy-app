@@ -3,7 +3,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
 require FCPATH . 'vendor/autoload.php';
 class Sale extends MY_Generator
 {
-
 	public function __construct()
 	{
 		parent::__construct();
@@ -15,7 +14,6 @@ class Sale extends MY_Generator
 		$this->load->model('m_sale');
 		$this->load->model('m_sale_detail');
 	}
-
 	public function index()
 	{
 		// session_destroy();
@@ -24,7 +22,7 @@ class Sale extends MY_Generator
 		]); */
 		$this->unset_ses();
 		$this->load->model("m_ms_unit");
-		foreach ($this->m_ms_unit->get_ms_unit_penjualan(["employee_id" => $this->session->employee_id]) as $key => $value) {
+		foreach ($this->m_ms_unit->get_ms_unit_depo(["employee_id" => $this->session->employee_id]) as $key => $value) {
 			$kat[$value->unit_id] = $value->unit_name;
 		}
 		$data['unit'] = $kat;
@@ -60,7 +58,7 @@ class Sale extends MY_Generator
 		$input['sale_app'] = 'HEAPY';
 		$input['user_id'] = ($this->session->user_id ? $this->session->user_id : 21);
 		$input['sale_num'] = $this->get_no_sale($data['unit_id']);
-		$this->db->insert("newfarmasi.nomor_sale", [
+		$this->db->insert("newfarmasi.nomor_sale",[
 			"sale_num" 	=> $input['sale_num'],
 			"unit_id"	=> $data['unit_id']
 		]);
@@ -87,7 +85,7 @@ class Sale extends MY_Generator
 		if ($err["message"]) {
 			echo json_encode([
 				"code" 		=> "202",
-				"message"	=> "table sale : " . $err["message"],
+				"message"	=> "table sale : ".$err["message"],
 			]);
 			exit();
 		}
@@ -122,13 +120,13 @@ class Sale extends MY_Generator
 			exit;
 		}
 		$sukses = true;
-		foreach ($saleDetail as $row) {
+		foreach ($saleDetail as $row){
 			$cek = $this->db->query("SELECT s.*,i.item_name FROM newfarmasi.stock s
          	join admin.ms_item i on s.item_id = i.item_id
-			WHERE s.item_id = " . $row['item_id'] . "
-			AND own_id = " . $input['own_id'] . "
-			AND unit_id = " . $input['unit_id'])->row();
-			if ($cek->stock_summary < $row['sale_qty']) {
+			WHERE s.item_id = ".$row['item_id']."
+			AND own_id = ".$input['own_id']."
+			AND unit_id = ".$input['unit_id'])->row();
+			if ($cek->stock_summary<$row['sale_qty']){
 				echo json_encode([
 					"code" 		=> "204",
 					"message"	=> "Stock item $cek->item_name kurang dari jumlah penjualan",
@@ -138,7 +136,7 @@ class Sale extends MY_Generator
 			}
 		}
 
-		if ($sukses == false) {
+		if ($sukses == false){
 			$this->db->where([
 				"sale_id" => $saleId
 			])->delete("farmasi.sale");
@@ -295,10 +293,10 @@ class Sale extends MY_Generator
 		foreach ($post['list_obat_edited'] as $x => $v) {
 			$cek = $this->db->query("SELECT s.*,i.item_name FROM newfarmasi.stock s
          	join admin.ms_item i on s.item_id = i.item_id
-			WHERE s.item_id = " . $v['item_id'] . "
-			AND own_id = " . $input['own_id'] . "
-			AND unit_id = " . $input['unit_id'])->row();
-			if ($cek->stock_summary < $v['sale_qty']) {
+			WHERE s.item_id = ".$v['item_id']."
+			AND own_id = ".$input['own_id']."
+			AND unit_id = ".$input['unit_id'])->row();
+			if ($cek->stock_summary<$v['sale_qty']){
 				echo json_encode([
 					"code" 		=> "204",
 					"message"	=> "Stock item $cek->item_name kurang dari jumlah penjualan",
@@ -367,17 +365,17 @@ class Sale extends MY_Generator
 		echo json_encode($data);
 	}
 
-	public function delete_row($id, $rcp_id = null)
+	public function delete_row($id,$rcp_id=null)
 	{
 		if (!empty($rcp_id)) {
-			$cekResep = $this->db->get_where("farmasi.sale", ["rcp_id" => $rcp_id])->num_rows();
-			if ($cekResep > 1) {
+			$cekResep = $this->db->get_where("farmasi.sale",["rcp_id"=>$rcp_id])->num_rows();
+			if ($cekResep>1) {
 				$this->db->where([
 					"rcp_id"	=> $rcp_id
 				])->update("newfarmasi.recipe", [
 					"rcp_status" => 2
 				]);
-			} else {
+			}else{
 				$this->db->where([
 					"rcp_id"	=> $rcp_id
 				])->update("newfarmasi.recipe", [
@@ -535,10 +533,88 @@ class Sale extends MY_Generator
 		$this->load->view("sale/form_non_racikan", $data);
 	}
 
+	public function get_dose()
+	{
+		$term = $this->input->get('term');
+		print_r($term);die;
+
+		$where = " AND (
+			lower(dose_name) like lower('%$term%')
+		)";
+		//$select=" mi.item_name as value,";
+		echo json_encode($this->m_sale->get_dose($where));
+	}
+
 	public function show_multiRows($update = false, $sale_id = 0)
 	{
 		$this->load->model("m_sale_detail");
 		$data = $this->m_sale_detail->get_column_multiple($update);
+		$colauto = ["item_id" => "Nama Barang"];
+		foreach ($data as $key => $value) {
+			if (array_key_exists($value, $colauto)) {
+				$row[] = [
+					"id" => $value,
+					"label" => $colauto[$value],
+					"type" => 'autocomplete',
+					"width" => '30%',
+				];
+			}elseif ($value == "sale_price" || $value == "stock") {
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"width" => '10%',
+					"attr" => [
+						"readonly" => 'readonly',
+						"data-inputmask" => "'alias': 'IDR'"
+					]
+				];
+			} elseif ($value == "price_total") {
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"width" => "17%",
+					"attr" => [
+						"readonly" => "readonly",
+						"data-inputmask" => "'alias': 'IDR'"
+					]
+				];
+			} elseif ($value == "racikan_id") {
+				$racikan = $this->db->query(
+					"select distinct coalesce(racikan_id,'') as id,racikan_id as text from farmasi.sale_detail sd where sale_id = '$sale_id'"
+				)->result();
+				$row[] = [
+					"id" => $value,
+					"label" => "Racikan",
+					"type" => 'select',
+					"width" => '15%',
+					"data" => $racikan
+				];
+			} elseif ($value == "ed_obat") {
+				$row[] = [
+					"id" => $value,
+					"label" => "BUD",
+					"type" => 'text',
+					"width" => "13%",
+
+				];
+			} else {
+				$row[] = [
+					"id" => $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),
+					"type" => 'text',
+					"width" => '10%',
+				];
+			}
+		}
+		echo json_encode($row);
+	}
+
+	public function show_multiRowsRacikan($update = false, $sale_id = 0)
+	{
+		$this->load->model("m_sale_detail");
+		$data = $this->m_sale_detail->get_column_racikan($update);
 		$colauto = ["item_id" => "Nama Barang"];
 		foreach ($data as $key => $value) {
 			if (array_key_exists($value, $colauto)) {
@@ -564,7 +640,7 @@ class Sale extends MY_Generator
 					"id" => $value,
 					"label" => ucwords(str_replace('_', ' ', $value)),
 					"type" => 'text',
-					"width" => "30%",
+					"width" => "25%",
 					"attr" => [
 						"readonly" => "readonly",
 						"data-inputmask" => "'alias': 'IDR'"
@@ -581,7 +657,7 @@ class Sale extends MY_Generator
 					"width" => '15%',
 					"data" => $racikan
 				];
-			} else {
+			}else {
 				$row[] = [
 					"id" => $value,
 					"label" => ucwords(str_replace('_', ' ', $value)),
@@ -616,6 +692,7 @@ class Sale extends MY_Generator
 			$itemRacik[$x]['own_id'] = $header['pasien']['own_id'];
 			$itemRacik[$x]['percent_profit'] = $header['profit'];
 			$itemRacik[$x]['racikan_id'] = $post['nama_racikan'];
+			$itemRacik[$x]['ed_obat'] = $post['ed_obat'];
 			$itemRacik[$x]['racikan_qty'] = $post['qty_racikan'];
 			$itemRacik[$x]['racikan_dosis'] = $post['signa'];
 			$price_total = ($v['price_total'] * $header['profit']) + $v['price_total'];
@@ -688,7 +765,7 @@ class Sale extends MY_Generator
 		$this->session->set_userdata('itemNonRacik', $session);
 		$resp = [
 			'total' 		=> $session['total'],
-			'tester'		=> $totalOld . '-' . $harga,
+			'tester'		=> $totalOld.'-'.$harga,
 			'embalase'		=> (count($session['detail']) * $this->session->penjualan["embalaseItem"]),
 		];
 		echo json_encode($resp);
@@ -699,7 +776,7 @@ class Sale extends MY_Generator
 		if (!$post) {
 			$post = $this->input->post();
 		}
-		//		var_dump($post);die();
+				//var_dump($post);die();
 		$html = "";
 		$total = 0;
 		$item = "";
@@ -721,10 +798,9 @@ class Sale extends MY_Generator
 			$price_total = ($v['price_total'] * $header['profit']) + $v['price_total'];
 			$itemNonRacikan[$x]['subtotal'] = $price_total;
 			$total += $price_total;
-
 			$item = $v['autocom_item_id'] . "(" . $v['sale_qty'] . ")";
 			$html .= "
-			<div class='comment-text itemNonracikan'>
+				<div class='comment-text itemNonracikan'>
 				<span class='comment-text'>
 					<b>" . $item . "</b>
 					<span class=\"text-muted pull-right\">
@@ -734,24 +810,27 @@ class Sale extends MY_Generator
 						" . convert_currency(($price_total)) . "
 					</span>
 					<p>" . $v['dosis'] . "</p>
+					
 				</span>
 			</div>
 			";
 		}
 
 		$nonRacikan['detail'] = $itemNonRacikan;
-		$nonRacikan['total'] = array_sum(array_column($itemNonRacikan, 'subtotal'));
+		$nonRacikan['total'] = array_sum(array_column($itemNonRacikan,'subtotal'));
 		if (!empty($this->session->userdata('itemNonRacik'))) {
 			$itemNonRacikOld = $this->session->userdata('itemNonRacik');
-			$nonRacikan['detail'] = array_unique(array_merge($itemNonRacikan, $itemNonRacikOld['detail']), SORT_REGULAR);
-			$nonRacikan['total'] = array_sum(array_column($nonRacikan['detail'], 'subtotal'));
+			$nonRacikan['detail'] = array_unique(array_merge($itemNonRacikan, $itemNonRacikOld['detail']),SORT_REGULAR);
+			$nonRacikan['total'] = array_sum(array_column($nonRacikan['detail'],'subtotal'));
 		}
 		$this->session->set_userdata('itemNonRacik', $nonRacikan);
+
 		$resp = [
 			'total' 	=> $nonRacikan['total'],
 			'embalase' 	=> (count($nonRacikan['detail']) * $this->session->penjualan["embalaseItem"]),
 			'html'		=> $html
 		];
+
 		echo json_encode($resp);
 	}
 
@@ -857,9 +936,37 @@ class Sale extends MY_Generator
 		$detailpasien 				=  $this->m_sale->get_detail_patient($sale_id);
 		$data['detailrs'] 			= $detailrs;
 		$data['detailcetak'] 		= $detailpasien;
-
-		$data['listresep'] = $this->m_sale->resep_dijual($sale_id);
+		//print_R($detailpasien);die;
+		//$data['listresep'] = $this->m_sale->resep_dijual($sale_id);
 		$data['pencetak'] =  $this->m_sale->get_employee($this->session->employee_id);
-		$this->load->view('sale/v_cetakanetiket', $data);
+		$data['listresep'] = $this->db->query("
+		SELECT sale_num,item_name,sale_qty,dosis,ed_obat,expired_date,reff_name
+		FROM farmasi.sale_detail sd
+		join farmasi.sale s on sd.sale_id = s.sale_id
+		JOIN ADMIN.ms_item i ON sd.item_id = i.item_id
+		left join admin.ms_reff rr on i.label_item_id = rr.reff_id
+		join newfarmasi.sale_fifo n on sd.saledetail_id = n.saledet_id 
+		join newfarmasi.stock_fifo sf on n.stock_id = sf.stock_id
+		WHERE sd.sale_id =  $sale_id and racikan_id is null 
+		order by sd.saledetail_id asc ")->result();
+		$data['racik'] = $this->db->query("		
+		SELECT sale_num,string_agg(concat(item_name),' , ') as item_name,			
+		racikan_qty,dosis,ed_obat,racikan_dosis,reff_name,racikan_id
+		FROM
+		farmasi.sale_detail sd
+		JOIN farmasi.sale s ON sd.sale_id = s.sale_id
+		JOIN ADMIN.ms_item i ON sd.item_id = i.item_id
+		left join admin.ms_reff rr on i.label_item_id = rr.reff_id
+		JOIN newfarmasi.sale_fifo n ON sd.saledetail_id = n.saledet_id
+		JOIN newfarmasi.stock_fifo sf ON n.stock_id = sf.stock_id 
+		WHERE sd.sale_id = $sale_id  and racikan_id IS NOT NULL
+		GROUP BY sale_num,racikan_qty,dosis,ed_obat,racikan_dosis,reff_name,racikan_id
+		")->result();
+		//print_r($data);die;
+		//$mpdf = new \Mpdf\Mpdf();
+		$this->load->view('sale/v_cetakanetiket',$data);
+
 	}
+
+
 }
