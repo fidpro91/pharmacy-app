@@ -58,6 +58,14 @@
 					"attr" => ["name" => "item_active=Status", "id" => "item_active", "class" => "form-control", 'required' => true],
 					"option" => [["id" => 't', "text" => "Aktif"], ["id" => 'f', "text" => "Non Aktif"]],
 			]) ?>
+
+			<?= create_select([
+					"attr" => ["name" => "label_item_id=Label_item", "id" => "label_item_id", "class" => "form-control", 'required' => true],
+					"model" => [
+							"m_ms_reff" => ["get_ms_reff", ["refcat_id" => '39']],
+							"column" => ["reff_id", "reff_name"]
+					],
+			]) ?>		
 			</div>
 			<div class="col-md-6">
 				<div class="list_item">

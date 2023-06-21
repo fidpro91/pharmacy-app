@@ -240,12 +240,14 @@ class Receiving extends MY_Generator {
 		$sukses=false;
 		// print_r($data);die;
 		foreach ($data['list_item'] as $x => $value) {
+			
 			/* if (empty($value['item_id'])) {
 				continue;
 			} */
 			foreach ($this->m_receiving_detail->rules() as $r => $v) {
 				$detail[$x][$r] = isset($value[$r])?$value[$r]:null;
 			}
+			
 			$detail[$x]['price_pack'] = $value['price_total'];
 			$detail[$x]['price_total'] = $value['price_total'];
 			$detail[$x]['rec_id'] 		= $data['rec_id'];
@@ -276,6 +278,24 @@ class Receiving extends MY_Generator {
 					"price_sell"	=> $detail[$x]['price_item'],
 					"price_buy"		=> $detail[$x]['price_item']
 				]);
+			}
+			
+			//update harga
+			$update = $value['update_harga']; 
+			$kepemilikan = $data['own_id'];
+			if ($update == 1 && $kepemilikan == 2) {
+				$this->db->where(["item_id"	=> $detail[$x]['item_id'],"own_id"=> $data['own_id']])
+						->update("farmasi.price",[
+							"price_sell"	=> 0,
+							"price_buy"		=> $detail[$x]['price_item']
+						]);
+			}else if($update == 1 && $kepemilikan != 2){
+				$this->db->where(["item_id"	=> $detail[$x]['item_id'],"own_id"=> $data['own_id']])
+				->update("farmasi.price",[
+					"price_sell"	=> $detail[$x]['price_item'],
+					"price_buy"		=> $detail[$x]['price_item']
+				]);
+
 			}
 		
 			$sukses=true;
@@ -454,6 +474,7 @@ class Receiving extends MY_Generator {
 		$this->load->model("m_receiving_detail");
 		$data = $this->m_receiving_detail->get_column_multiple();
 		$colauto = ["item_id"=>"Nama Barang"];
+		$update_harga = ["update_harga"];
 		foreach ($data as $key => $value) {
 			if (array_key_exists($value, $colauto)) {
 				$row[] = [
@@ -462,6 +483,15 @@ class Receiving extends MY_Generator {
 					"type" => 'autocomplete',
 					"width" => '20%',
 				];
+			}elseif (in_array($value,$update_harga)){
+				$row[] = [
+					"id" 	=> $value,
+					"label" => ucwords(str_replace('_', ' ', $value)),					
+					"type" => 'select',
+					"width" => '5%',
+					"data" => [["id"=>1,"text"=>"Ya"],["id"=>0,"text"=>"Tidak"]]
+				];
+
 			}else{
 				$row[] = [
 					"id" => $value,

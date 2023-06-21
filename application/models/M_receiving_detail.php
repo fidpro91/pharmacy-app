@@ -63,9 +63,9 @@ class M_receiving_detail extends CI_Model {
 					"disc_value" => "trim|numeric",
 					"disc_extra" => "trim|numeric",
 					"qty_stock" => "trim|integer",
-										"price_item" => "trim|numeric",
+					"price_item" => "trim|numeric",
 					"hpp" => "trim|numeric",
-										"consignment_status" => "trim",
+					"consignment_status" => "trim",
 
 				];
 		return $data;
@@ -99,6 +99,7 @@ class M_receiving_detail extends CI_Model {
 	public function get_column_multiple()
 	{
 		$col = [
+				"update_harga",
 				"item_id",
 				"item_pack",
 				"item_unit",

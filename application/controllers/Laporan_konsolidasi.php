@@ -42,8 +42,12 @@ class Laporan_konsolidasi extends MY_Generator
         // }else{
         //     $where .= " and mi.gol='$gol'";
         // }
-
-        $data['data'] = $this->M_lap_konsolidasi->get_new_konsolidasi($where, $where2, $unit, $kepemilikan, $where3);  //print_r($data);die;
+        if($unit !=55){
+            $data['data'] = $this->M_lap_konsolidasi->get_new_konsolidasi($where, $where2, $unit, $kepemilikan, $where3);
+        }else{
+            $data['data'] = $this->M_lap_konsolidasi->konsolidasi_gudang($where, $where2, $unit, $kepemilikan, $where3);
+        }
+          //print_r($data);die;
         $this->load->view("laporan_konsolidasi/v_laporan_konsolidasi", $data);
     }
 }
