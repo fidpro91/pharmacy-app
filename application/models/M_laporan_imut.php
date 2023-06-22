@@ -12,6 +12,12 @@ class M_laporan_imut extends CI_Model
 //		}else{
 //			return array();
 //		}
+
+		if (count($data) > 0) {
+			return $data;
+		}else{
+			return array();
+		}
 	}
 
 	public function get_data_lap($where)

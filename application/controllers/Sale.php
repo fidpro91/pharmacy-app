@@ -87,7 +87,7 @@ class Sale extends MY_Generator
 		if ($err["message"]) {
 			echo json_encode([
 				"code" 		=> "202",
-				"message"	=> "table sale : ".$err["message"],
+				"message"	=> "table sale : " . $err["message"],
 			]);
 			exit();
 		}
@@ -122,13 +122,13 @@ class Sale extends MY_Generator
 			exit;
 		}
 		$sukses = true;
-		foreach ($saleDetail as $row){
+		foreach ($saleDetail as $row) {
 			$cek = $this->db->query("SELECT s.*,i.item_name FROM newfarmasi.stock s
          	join admin.ms_item i on s.item_id = i.item_id
-			WHERE s.item_id = ".$row['item_id']."
-			AND own_id = ".$input['own_id']."
-			AND unit_id = ".$input['unit_id'])->row();
-			if ($cek->stock_summary<$row['sale_qty']){
+			WHERE s.item_id = " . $row['item_id'] . "
+			AND own_id = " . $input['own_id'] . "
+			AND unit_id = " . $input['unit_id'])->row();
+			if ($cek->stock_summary < $row['sale_qty']) {
 				echo json_encode([
 					"code" 		=> "204",
 					"message"	=> "Stock item $cek->item_name kurang dari jumlah penjualan",
@@ -138,7 +138,7 @@ class Sale extends MY_Generator
 			}
 		}
 
-		if ($sukses == false){
+		if ($sukses == false) {
 			$this->db->where([
 				"sale_id" => $saleId
 			])->delete("farmasi.sale");
@@ -181,7 +181,7 @@ class Sale extends MY_Generator
 		$user = $this->session->user_id;
 		$this->db->set('finish_time', 'now()', false);
 		if ($this->input->post('asal_resep')) {
-			$this->db->where("unit_id_lay",$this->input->post('asal_resep'));
+			$this->db->where("unit_id_lay", $this->input->post('asal_resep'));
 		}
 		$this->db->where([
 			"unit_id"			=> $this->input->post('unit_id'),
@@ -208,7 +208,7 @@ class Sale extends MY_Generator
 		$this->load->library('datatable');
 		$attr 	= $this->input->post();
 		$fields = $this->m_sale->get_column();
-		$filter=[];
+		$filter = [];
 		$filter["unit_id"] = $attr['unit_id'];
 		if ($attr["sale_type"] != '') {
 			$filter = array_merge($filter, ["sale_type" => $attr['sale_type']]);
@@ -295,10 +295,10 @@ class Sale extends MY_Generator
 		foreach ($post['list_obat_edited'] as $x => $v) {
 			$cek = $this->db->query("SELECT s.*,i.item_name FROM newfarmasi.stock s
          	join admin.ms_item i on s.item_id = i.item_id
-			WHERE s.item_id = ".$v['item_id']."
-			AND own_id = ".$input['own_id']."
-			AND unit_id = ".$input['unit_id'])->row();
-			if ($cek->stock_summary<$v['sale_qty']){
+			WHERE s.item_id = " . $v['item_id'] . "
+			AND own_id = " . $input['own_id'] . "
+			AND unit_id = " . $input['unit_id'])->row();
+			if ($cek->stock_summary < $v['sale_qty']) {
 				echo json_encode([
 					"code" 		=> "204",
 					"message"	=> "Stock item $cek->item_name kurang dari jumlah penjualan",
@@ -327,9 +327,8 @@ class Sale extends MY_Generator
 			$price_total = ($v['price_total'] * $post['profit']) + $v['price_total'];
 			$detail[$x]['subtotal'] = $price_total;
 			$totalAll += $price_total;
-			
 		}
-		if ($sukses == false){
+		if ($sukses == false) {
 			$this->db->trans_rollback();
 			exit();
 		}
@@ -368,20 +367,20 @@ class Sale extends MY_Generator
 		echo json_encode($data);
 	}
 
-	public function delete_row($id,$rcp_id=null)
+	public function delete_row($id, $rcp_id = null)
 	{
 		if (!empty($rcp_id)) {
-			$cekResep = $this->db->get_where("farmasi.sale",["rcp_id"=>$rcp_id])->num_rows();
-			if ($cekResep>1) {
+			$cekResep = $this->db->get_where("farmasi.sale", ["rcp_id" => $rcp_id])->num_rows();
+			if ($cekResep > 1) {
 				$this->db->where([
 					"rcp_id"	=> $rcp_id
-				])->update("newfarmasi.recipe",[
+				])->update("newfarmasi.recipe", [
 					"rcp_status" => 2
 				]);
-			}else{
+			} else {
 				$this->db->where([
 					"rcp_id"	=> $rcp_id
-				])->update("newfarmasi.recipe",[
+				])->update("newfarmasi.recipe", [
 					"rcp_status" => 0
 				]);
 			}
@@ -707,7 +706,7 @@ class Sale extends MY_Generator
 		$total = $total;
 		if (!empty($this->session->userdata('itemRacik'))) {
 			$itemRacikOld = $this->session->userdata('itemRacik');
-			$itemRacikan['detail'] 		= array_unique(array_merge($itemRacik, $itemRacikOld['detail']),SORT_REGULAR);
+			$itemRacikan['detail'] 		= array_unique(array_merge($itemRacik, $itemRacikOld['detail']), SORT_REGULAR);
 			$itemRacikan['biaya_racik']	= $itemRacikOld['biaya_racik'] + $post['biaya_racikan'];
 			$itemRacikan['total']			= $itemRacikOld['total'] + $total;
 		} else {
@@ -768,7 +767,7 @@ class Sale extends MY_Generator
 		$this->session->set_userdata('itemNonRacik', $session);
 		$resp = [
 			'total' 		=> $session['total'],
-			'tester'		=> $totalOld.'-'.$harga,
+			'tester'		=> $totalOld . '-' . $harga,
 			'embalase'		=> (count($session['detail']) * $this->session->penjualan["embalaseItem"]),
 		];
 		echo json_encode($resp);
@@ -823,8 +822,8 @@ class Sale extends MY_Generator
 		$nonRacikan['total'] = array_sum(array_column($itemNonRacikan,'subtotal'));
 		if (!empty($this->session->userdata('itemNonRacik'))) {
 			$itemNonRacikOld = $this->session->userdata('itemNonRacik');
-			$nonRacikan['detail'] = array_unique(array_merge($itemNonRacikan, $itemNonRacikOld['detail']),SORT_REGULAR);
-			$nonRacikan['total'] = array_sum(array_column($nonRacikan['detail'],'subtotal'));
+			$nonRacikan['detail'] = array_unique(array_merge($itemNonRacikan, $itemNonRacikOld['detail']), SORT_REGULAR);
+			$nonRacikan['total'] = array_sum(array_column($nonRacikan['detail'], 'subtotal'));
 		}
 		$this->session->set_userdata('itemNonRacik', $nonRacikan);
 		
@@ -901,7 +900,7 @@ class Sale extends MY_Generator
 	public function get_no_sale($id)
 	{
 		$nickName = $this->db->get_where("admin.ms_unit", ["unit_id" => $id])->row("unit_nickname");
-		
+
 		$nomor = generate_code_transaksi([
 			// "text"	=> "S/$nickName/NOMOR/" . date("d.m.Y"),
 			"text"	=> "$nickName/NOMOR/" . date("m.Y"),

@@ -14,6 +14,7 @@ class C_laporan_imut extends MY_Generator
 	{
 		$idEmpl=$this->session->user_id;
 		$data['data'] = [];
+		$data['unit'] = $this->m_laporan_penjualan->get_unit($idEmpl)->result();
 		$this->theme('laporan_imutu/v_laporan_imut',$data);
 	}
 

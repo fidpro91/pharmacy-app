@@ -5,40 +5,78 @@ class M_antrean_recipe extends CI_Model
 
     public function get_data($sLimit, $sWhere, $sOrder, $aColumns)
     {
-        $data = $this->db->query("
+        $data = $this->db->query("select " . implode(',', $aColumns) . ",x.sale_id AS id_key from (
+			SELECT
+				COALESCE(unit_name,'APS') as unit_name,
+				patient_name,
+				sale_id,
+				CASE
+						
+						WHEN COALESCE ( s.sale_status, 0 ) = 0 
+						OR COALESCE ( s.sale_status, 0 ) = 1 THEN
+							'Proses' ELSE'Selesai' 
+							END AS status_resep 
+					FROM
+						farmasi.sale s
+						LEFT JOIN newfarmasi.recipe r ON r.rcp_id = s.rcp_id
+						LEFT JOIN yanmed.services srv on s.service_id =  srv.srv_id
+						LEFT JOIN admin.ms_unit mu on srv.unit_id = mu.unit_id 
+					WHERE
+						0 = 0
+						$sWhere 
+						-- AND s.unit_id = '18' 
+						AND DATE ( sale_date ) = DATE (
+						now()) 
+						AND s.finish_time IS NULL 
+					ORDER BY
+					s.date_act ASC ) x ")->result_array();
+
+        /*$data = $this->db->query("
 				select " . implode(',', $aColumns) . ",recdet_id as id_key  from public.receiving_detail where 0=0 $sWhere $sOrder $sLimit
-			")->result_array();
+			")->result_array();*/
         return $data;
     }
 
     public function get_total($sWhere, $aColumns)
     {
-        $data = $this->db->query("
+        $data = $this->db->query("select " . implode(',', $aColumns) . ",x.sale_id AS id_key from (
+		SELECT
+				COALESCE(unit_name,'APS') as unit_name,
+				patient_name,
+				sale_id,
+				CASE
+						
+						WHEN COALESCE ( s.sale_status, 0 ) = 0 
+						OR COALESCE ( s.sale_status, 0 ) = 1 THEN
+							'Proses' ELSE'Selesai' 
+							END AS status_resep 
+					FROM
+						farmasi.sale s
+						LEFT JOIN newfarmasi.recipe r ON r.rcp_id = s.rcp_id
+						LEFT JOIN yanmed.services srv on s.service_id =  srv.srv_id
+						LEFT JOIN admin.ms_unit mu on srv.unit_id = mu.unit_id 
+					WHERE
+						0 = 0
+						$sWhere 
+						-- AND s.unit_id = '18' 
+						AND DATE ( sale_date ) = DATE (
+						now()) 
+						AND s.finish_time IS NULL 
+					ORDER BY
+					s.date_act ASC ) x
+		")->num_rows();
+        /*$data = $this->db->query("
 				select " . implode(',', $aColumns) . ",recdet_id as id_key  from public.receiving_detail where 0=0 $sWhere
-			")->num_rows();
+			")->num_rows();*/
         return $data;
     }
 
     public function get_column()
     {
         $col = [
-            "recdet_id",
-            "rec_id",
-            "item_id",
-            "expired_date",
-            "item_pack",
-            "qty_pack",
-            "item_unit",
-            "qty_unit",
-            "unit_per_pack",
-            "price_pack",
-            "price_total",
-            "disc_percent",
-            "disc_value",
-            "disc_extra",
-            "qty_retur",
-            "price_item",
-            "hpp"
+            "unit_name",
+            "patient_name",
+            "status_resep"
         ];
         return $col;
     }
@@ -86,8 +124,6 @@ class M_antrean_recipe extends CI_Model
     {
         $col = [
             "item_id",
-            // "item_pack",
-            // "item_unit",
             "expired_date",
             "qty_pack",
             "unit_per_pack",

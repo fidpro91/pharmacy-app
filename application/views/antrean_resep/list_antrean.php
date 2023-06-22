@@ -38,6 +38,12 @@
             "pageLength": 20,
             "lengthChange": false,
             "filter"    : false
+			'scroller':       true,
+			'scrollY':        220,
+			'scrollCollapse': true,
+			'paging'      : false,
+			'searching'   : false,
+			'info'        : true,
         });
     })
 </script>
