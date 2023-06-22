@@ -1,5 +1,8 @@
 <?php
+<<<<<<< HEAD
 session_start();
+=======
+>>>>>>> 69c182403eaafe8d4e00f7a4c96ce3574bfa1109
 date_default_timezone_set('Asia/Jakarta');
 /**
  * CodeIgniter
@@ -55,7 +58,11 @@ date_default_timezone_set('Asia/Jakarta');
  *
  * NOTE: If you change these, also change the error_reporting() code below
  */
+<<<<<<< HEAD
 	define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'production');
+=======
+	define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
+>>>>>>> 69c182403eaafe8d4e00f7a4c96ce3574bfa1109
 
 /*
  *---------------------------------------------------------------
