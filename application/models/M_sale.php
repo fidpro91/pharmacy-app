@@ -167,6 +167,7 @@ class M_sale extends CI_Model
 				s.par_id,
 				concat ( emp.employee_ft, emp.employee_name, emp.employee_bt ) par_name,
 				v.sep_no,
+				v.visit_prb,
 				case when s.srv_status = 30 then 'Dilayani' 
 				when s.srv_status = 35 then 'batal'
 				when s.srv_status = 20 then 'chekout'

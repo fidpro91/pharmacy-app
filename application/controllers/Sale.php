@@ -39,7 +39,6 @@ class Sale extends MY_Generator
 	public function save()
 	{
 		$data = $this->input->post();
-		
 		$sess = $this->session->userdata('penjualan')['pasien'];
 		if (empty($sess)) {
 			echo json_encode([
@@ -147,6 +146,18 @@ class Sale extends MY_Generator
 		// $saleDetail = array_unique($saleDetail,SORT_REGULAR);
 		$this->db->trans_begin();
 		$this->db->insert_batch("farmasi.sale_detail", $saleDetail);
+		// insert into PRB
+		if ($sess["resep_prb"] == "t") {
+			$prb=$this->insert_resep_prb($saleDetail,$input);
+			if ($prb["code"] !== "200") {
+				$this->db->trans_rollback();
+				$this->db->where([
+					"sale_id" => $saleId
+				])->delete("farmasi.sale");
+				echo json_encode($prb);
+				exit();
+			}
+		}
 		$err = $this->db->error();
 		if ($this->db->trans_status() === false) {
 			$this->db->trans_rollback();
@@ -173,6 +184,61 @@ class Sale extends MY_Generator
 		echo json_encode($resp);
 		// redirect('sale');
 
+	}
+
+	private function insert_resep_prb($saleDetail,$sale) {
+		//CEK TABEL SRB
+		$srb = $this->db->get_where("yanmed.tabel_srb",[
+			"visit_id"	=> $sale["visit_id"],
+			"srv_id"	=> $sale["service_id"]
+		])->row();
+		if (empty($srb->srb_id)) {
+			$resp = [
+				"code"		=> "203",
+				"message"	=> "Data SRB tidak ditemukan"
+			];
+			return $resp;
+		}
+		$obatPrb=[];
+		foreach ($saleDetail as $row) {
+			$item = $this->db->get_where("admin.ms_item",[
+				"item_id"	=> $row["item_id"]
+			])->row();
+			$obatPrb[] = [
+				"kdObat"	=> $item->kode_generic_bpjs,
+				"signa1"	=> $row["dosis"],
+				"signa2"	=> $row["dosis"],
+				"jmlObat"	=> $row["sale_qty"]
+			];
+		}
+		if (empty($obatPrb)) {
+			$resp = [
+				"code"		=> "204",
+				"message"	=> "Item PRB tidak ditemukan"
+			];
+			return $resp;
+		}
+		$obatPrb = json_encode($obatPrb);
+		$this->db->where([
+			"visit_id"	=> $sale["visit_id"],
+			"srv_id"	=> $sale["service_id"]
+		])->update("yanmed.tabel_srb",[
+			"obat"	=> $obatPrb
+		]);
+		if ($this->db->trans_status() !== false) {
+			$resp = [
+				"code"		=> "200",
+				"message"	=> "OK"
+			];
+		}else{
+			$err = $this->db->error();
+			$resp = [
+				"code"		=> "202",
+				"message"	=> "Gagal Insert PRB",
+				"error"		=>  $err['message']
+			];
+		}
+		return $resp;
 	}
 
 	public function checkout_pasien()
