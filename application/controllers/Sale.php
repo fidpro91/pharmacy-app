@@ -38,12 +38,15 @@ class Sale extends MY_Generator
 
 	public function save()
 	{
+		$kodeBoking = $this->db->query("select * from yanmed.antrean_online_bpjs where visit_id = 1099440 and status_antrean is null;")->row('kodebooking');
+		var_dump($kodeBoking);die();
 		$data = $this->input->post();
 		$sess = $this->session->userdata('penjualan')['pasien'];
+
 		if (empty($sess)) {
 			echo json_encode([
-				"code" 		=> "207",
-				"message"	=> "Mohon dilengkapi data pasien!",
+				"code" => "207",
+				"message" => "Mohon dilengkapi data pasien!",
 			]);
 			exit();
 		}
@@ -58,9 +61,9 @@ class Sale extends MY_Generator
 		$input['sale_app'] = 'HEAPY';
 		$input['user_id'] = ($this->session->user_id ? $this->session->user_id : 21);
 		$input['sale_num'] = $this->get_no_sale($data['unit_id']);
-		$this->db->insert("newfarmasi.nomor_sale",[
-			"sale_num" 	=> $input['sale_num'],
-			"unit_id"	=> $data['unit_id']
+		$this->db->insert("newfarmasi.nomor_sale", [
+			"sale_num" => $input['sale_num'],
+			"unit_id" => $data['unit_id']
 		]);
 		$racikan = $this->session->userdata('itemRacik');
 		$nonRacikan = $this->session->userdata('itemNonRacik');
@@ -75,17 +78,17 @@ class Sale extends MY_Generator
 		$embalase = $grandtotal / 100;
 		$embalase = abs(ceil($embalase) - $embalase) * 100;
 		$input['sale_total'] = $grandtotal + $embalase + $data["embalase_item"];
-		$input['sale_embalase'] 	 = $embalase;
+		$input['sale_embalase'] = $embalase;
 		$input['embalase_item_sale'] = $data["embalase_item"];
 		$input['sale_services'] = $totalService;
-		$input['date_act'] 	= date('Y-m-d H:i:s');
+		$input['date_act'] = date('Y-m-d H:i:s');
 		$this->db->insert("farmasi.sale", $input);
 		$saleId = $this->db->query("select currval('public.sale_id_seq')seq")->row('seq');
 		$err = $this->db->error();
 		if ($err["message"]) {
 			echo json_encode([
-				"code" 		=> "202",
-				"message"	=> "table sale : ".$err["message"],
+				"code" => "202",
+				"message" => "table sale : " . $err["message"],
 			]);
 			exit();
 		}
@@ -105,6 +108,12 @@ class Sale extends MY_Generator
 				return $arr + ['sale_id' => $saleId];
 			}, $racikan['detail']);
 			$saleDetail = array_merge($saleDetail, $racikan['detail']);
+		}
+
+		if ($saleDetail[0]['racikan'] == 'f'){
+			$jenisresep = "non racikan";
+		}else{
+			$jenisresep = "racikan";
 		}
 
 		//insert sale detail
@@ -157,6 +166,20 @@ class Sale extends MY_Generator
 			];
 		} else {
 			$this->db->trans_commit();
+			//kode antrian farmasi vclaim
+			$kodeBoking = $this->db->query("select * from yanmed.antrean_online_bpjs where visit_id = $sess[visit_id] and status_antrean is null;")->row('kodebooking');
+			if (!empty($kodeBoking)){
+				$this->load->library('vclaim');
+				$url = 'tambah_antrean_farmasi';
+				$method = "post";
+				$param = [
+					"kode_booking"=>$kodeBoking,
+					"jenisresep"=>$jenisresep,
+					"nomorantrean"=>intval(explode('/', $this->get_no_sale($data['unit_id']))[1])
+				];
+				$kirim=$this->vclaim->connect($url,$method,$param);
+			}
+
 			/* $this->db->query("
 			REFRESH MATERIALIZED VIEW CONCURRENTLY newfarmasi.v_antrean_apotek;"); */
 			$resp = [
@@ -172,6 +195,8 @@ class Sale extends MY_Generator
 		// redirect('sale');
 
 	}
+
+
 
 	public function checkout_pasien()
 	{
