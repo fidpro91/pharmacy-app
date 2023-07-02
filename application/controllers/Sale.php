@@ -241,6 +241,41 @@ class Sale extends MY_Generator
 		return $resp;
 	}
 
+	public function cetak_prb($sale_id) {
+		$this->load->library("curls");
+		$prb = $this->db->join("farmasi.sale s","s.service_id = sr.srv_id and s.visit_id=sr.visit_id")
+						->join("yanmed.visit v","v.visit_id=s.visit_id")
+						->join("hr.employee e","e.employee_id=v.visit_end_doctor_id")
+						->select("sr.*,e.kodehfis,v.pxsurety_no,v.px_address")
+						->get_where("yanmed.tabel_srb sr",[
+							"s.sale_id"	=> $sale_id
+						])->row();
+		if ($prb->srb_id) {
+			$programprb = explode("-",$prb->program_prb);
+			$param = [
+				"noSep"			=> $prb->no_sep,
+				"noKartu"		=> $prb->pxsurety_no,
+				"alamat"		=> $prb->px_address,
+				"email"			=> "$prb->pxsurety_no@mail.com",
+				"programPRB"	=> $programprb[0],
+				"kodeDPJP"		=> $prb->kodehfis,
+				"keterangan"	=> $prb->keterangan,
+				"saran"			=> $prb->saran,
+				"user"			=> 123456,
+				"obat"			=> json_decode($prb->obat,true)
+			];
+			$resp=$this->curls->api_sregep("POST","insert_prb",$param);
+			if ($resp["metaData"]["code"] == "200") {
+				$this->db->where("srb_id",$prb->srb_id)->update("yanmed.tabel_srb",[
+					"no_srb"	=> $resp["response"]["noSRB"]
+				]);
+			}else{
+				echo $resp["metaData"]["message"];
+				exit();
+			}
+		}
+	}
+
 	public function checkout_pasien()
 	{
 		$nomorRm = $this->input->post('noresep');
