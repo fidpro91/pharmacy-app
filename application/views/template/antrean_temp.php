@@ -94,7 +94,7 @@
 				</style>
 				<section class="content">
 					<div class="row">
-						<div class="col-md-6">
+						<div class="col-md-4">
 							<div class="box box-primary box-solid" style="height: 420px">
 								<div class="box-body" style="text-align: center !important; min-height:8em !important;">
 									<iframe width="100%" height="400" src="https://www.youtube.com/embed/ldZnaV0SRSU?playlist=ldZnaV0SRSU&loop=1&autoplay=1&mute=1">
@@ -105,10 +105,10 @@
 							</div>
 						</div>
 
-						<div class="col-md-6">
+						<div class="col-md-8">
 							<div class="box box-primary box-solid" style="height: 420px">
 								<div class="box-body" style="text-align: center !important; min-height:8em !important;">
-									<div class="box-body">
+									<div class="box-body" style="font-size: 20px">
 										<div class="table-responsive">
 											<?= create_table("tb_antrian", "M_antrean_recipe", ["class" => "table table-bordered table-striped tb_antrian", "style" => "width:100% !important;"]) ?>
 										</div>
@@ -146,8 +146,8 @@
 													<h3 class="box-title">NOMOR RESEP RACIKAN</h3>
 												</div>
 												<div class="box-body" style="min-height:8em; text-align: center">
-													<h3 id="rcp_racikan_ready">0</h3>
-													<h3 id="unit_name">-</h3>
+													<h1 id="rcp_racikan_ready" style=" font-weight: bold;">0</h1>
+													<h2 id="unit_name">-</h2>
 												</div>
 												<!-- /.box-body -->
 											</div>
@@ -158,8 +158,8 @@
 													<h3 class="box-title">NOMOR RESEP NON RACIKAN</h3>
 												</div>
 												<div class="box-body" style="min-height:8em; text-align: center">
-													<h3 id="rcp_non_racikan_ready">0</h3>
-													<h3 id="unti_name_racika">-</h3>
+													<h1 id="rcp_non_racikan_ready" style=" font-weight: bold;">0</h1>
+													<h2 id="unti_name_racika">-</h2>
 												</div>
 												<!-- /.box-body -->
 											</div>
