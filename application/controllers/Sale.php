@@ -702,6 +702,14 @@ class Sale extends MY_Generator
 					"width" => "13%",				
 					
 				];
+			}elseif ($value == "qty_prb") {
+				$row[] = [
+					"id" => $value,
+					"label" => "qty_prb",
+					"type" => 'text',
+					"width" => "10%",				
+					
+				];
 			} else {
 				$row[] = [
 					"id" => $value,
@@ -893,7 +901,7 @@ class Sale extends MY_Generator
 					$itemNonRacikan[$x][$key] = (isset($v[$key]) ? $v[$key] : null);
 				}
 			}
-			
+			 
 			$itemNonRacikan[$x]['kronis'] = $header['pasien']['kronis'];
 			$itemNonRacikan[$x]['own_id'] = $header['pasien']['own_id'];
 			$itemNonRacikan[$x]['racikan'] = 'f';
