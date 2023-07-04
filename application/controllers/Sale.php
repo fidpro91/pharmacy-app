@@ -208,7 +208,7 @@ class Sale extends MY_Generator
 				"kdObat"	=> $item->kode_generic_bpjs,
 				"signa1"	=> $row["dosis"],
 				"signa2"	=> $row["dosis"],
-				"jmlObat"	=> $row["sale_qty"]
+				"jmlObat"	=> $row["qty_prb"]
 			];
 		}
 		if (empty($obatPrb)) {

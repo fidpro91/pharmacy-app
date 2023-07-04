@@ -150,10 +150,10 @@
                 $('#px_id').val(ui.item.px_id);
                 $('#alamat').val(ui.item.px_address);
                 if ($("#tipe_patient").val() == 1) {
-                    // if (ui.item.visit_prb == 't') {
+                    if (ui.item.visit_prb == 't') {
                         $(".info-pasien").text("PASIEN PRB");
-                    // }
-                    $("#resep_prb").val(ui.item.visit_prb);
+                        $("#resep_prb").val(ui.item.visit_prb);
+                    }
                     $('#visit_id').val(ui.item.visit_id);
                     $('#doctor_id').val(ui.item.par_id);
                     $('#service_id').val(ui.item.srv_id);
