@@ -37,7 +37,7 @@
         $("table").DataTable({
             "pageLength": 20,
             "lengthChange": false,
-            "filter"    : false
+            "filter"    : false,
 			'scroller':       true,
 			'scrollY':        220,
 			'scrollCollapse': true,

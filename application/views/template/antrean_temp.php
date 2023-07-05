@@ -46,6 +46,9 @@
 		.dataTables_scrollBody {
 			overflow-y: auto;
 		}
+		#tb_antrian td {
+			font-size: 24pt !important;
+		}
 	</style>
 </head>
 <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
@@ -94,7 +97,7 @@
 				</style>
 				<section class="content">
 					<div class="row">
-						<div class="col-md-6">
+						<div class="col-md-4">
 							<div class="box box-primary box-solid" style="height: 420px">
 								<div class="box-body" style="text-align: center !important; min-height:8em !important;">
 									<iframe width="100%" height="400" src="https://www.youtube.com/embed/ldZnaV0SRSU?playlist=ldZnaV0SRSU&loop=1&autoplay=1&mute=1">
@@ -105,13 +108,11 @@
 							</div>
 						</div>
 
-						<div class="col-md-6">
+						<div class="col-md-8">
 							<div class="box box-primary box-solid" style="height: 420px">
 								<div class="box-body" style="text-align: center !important; min-height:8em !important;">
-									<div class="box-body">
-										<div class="table-responsive">
-											<?= create_table("tb_antrian", "M_antrean_recipe", ["class" => "table table-bordered table-striped tb_antrian", "style" => "width:100% !important;"]) ?>
-										</div>
+									<div class="box-body" style="font-size: 20px">
+										<?= create_table("tb_antrian", "M_antrean_recipe", ["class" => "table table-bordered table-striped tb_antrian", "style" => "width:100% !important;"]) ?>
 									</div>
 								</div>
 								<!-- /.box-body -->
@@ -146,8 +147,8 @@
 													<h3 class="box-title">NOMOR RESEP RACIKAN</h3>
 												</div>
 												<div class="box-body" style="min-height:8em; text-align: center">
-													<h3 id="rcp_racikan_ready">0</h3>
-													<h3 id="unit_name">-</h3>
+													<h1 id="rcp_racikan_ready" style=" font-weight: bold;">0</h1>
+													<h2 id="unit_name">-</h2>
 												</div>
 												<!-- /.box-body -->
 											</div>
@@ -158,8 +159,8 @@
 													<h3 class="box-title">NOMOR RESEP NON RACIKAN</h3>
 												</div>
 												<div class="box-body" style="min-height:8em; text-align: center">
-													<h3 id="rcp_non_racikan_ready">0</h3>
-													<h3 id="unti_name_racika">-</h3>
+													<h1 id="rcp_non_racikan_ready" style=" font-weight: bold;">0</h1>
+													<h2 id="unti_name_racika">-</h2>
 												</div>
 												<!-- /.box-body -->
 											</div>
@@ -231,17 +232,10 @@
 	<script src="<?= site_url("assets") ?>/dist/js/adminlte.min.js"></script>
 	<!-- AdminLTE for demo purposes -->
 	<script src="<?= site_url("assets") ?>/dist/js/demo.js"></script>
+
+	<audio id="tingtung" src="<?= site_url("assets") ?>/audio/tingtung.mp3"></audio>
+
 	<script>
-		/*$(function () {
-		  $('#example1').DataTable({
-			  'scroller':       true,
-			  'scrollY':        220,
-			  'scrollCollapse': true,
-			  'paging'      : false,
-			  'searching'   : false,
-			  'info'        : true,
-		  })
-	  })*/
 
 		var table;
 		var speak = false;
@@ -253,8 +247,7 @@
 				'scrollCollapse': false,
 				'paging': false,
 				'searching': false,
-				'info': true,
-
+				'info': false,
 				"processing": true,
 				"serverSide": true,
 				"order": [
@@ -305,7 +298,7 @@
 				console.log('sb' + sb);
 				$el.animate({
 					scrollTop: st < sb / 2 ? sb : 0
-				}, 500000, anim);
+				}, 150000, anim);
 			}
 
 			function stop() {
@@ -322,15 +315,13 @@
 			loadAntrean = setInterval(() => {
 				racikanredy();
 				nonracikanredy();
-				// noResepNonRacikanReady();
-				// noResepRacikanPrepare();
-				// noResepNonRacikanPrepare();
 			}, 10000)
 		}
 
 		// rcp_racikan_ready
 
 		function racikanredy() {
+
 			$.ajax({
 				type: "post",
 				url: "<?= base_url() ?>antrean_recipe/noracikanredy",
@@ -349,15 +340,23 @@
 						}
 
 						if (response.noResepRacikanReady.status == 1) {
-							responsiveVoice.speak(
-								"NAMA . " + response.noResepRacikanReady.patient_name + ". DARI " + response.noResepRacikanReady.unit_name + " silahkan menuju ke "+response.noResepRacikanReady.depo, "Indonesian Female", {
-									pitch: 1,
-									rate: 1,
-									volume: 2,
-									// onstart: voiceStartCallback,
-									// onend: voiceEndCallback(no_urut, counter, 7100, queue_id)
-								}
-							);
+
+							var bell = document.getElementById('tingtung');
+							bell.pause();
+							bell.currentTime = 0;
+							bell.play();
+							durasi_bell = bell.duration * 770;
+							setTimeout(function() {
+								responsiveVoice.speak(
+									response.noResepRacikanReady.patient_name + ". DARI " + response.noResepRacikanReady.unit_name + " silahkan menuju ke "+response.noResepRacikanReady.depo, "Indonesian Female", {
+										pitch: 1,
+										rate: 1,
+										volume: 2,
+										// onstart: voiceStartCallback,
+										// onend: voiceEndCallback(no_urut, counter, 7100, queue_id)
+									}
+								);
+							},durasi_bell)
 							update_status(response.noResepRacikanReady.sale_id);
 						}
 					} else {
@@ -394,15 +393,23 @@
 						$("#rcp_non_racikan_ready").text(response.noResepNonRacikanReady.patient_name)
 						$("#unti_name_racika").text(response.noResepNonRacikanReady.unit_name)
 						if (response.noResepNonRacikanReady.status == 1) {
-							responsiveVoice.speak(
-								"NAMA . " + response.noResepNonRacikanReady.patient_name + ". DARI " + response.noResepNonRacikanReady.unit_name + " silahkan menuju ke "+response.noResepNonRacikanReady.depo, "Indonesian Female", {
-									pitch: 1,
-									rate: 1,
-									volume: 2,
-									// onstart: voiceStartCallback,
-									// onend: voiceEndCallback(no_urut, counter, 7100, queue_id)
-								}
-							);
+							var bell = document.getElementById('tingtung');
+							bell.pause();
+							bell.currentTime = 0;
+							bell.play();
+							durasi_bell = bell.duration * 770;
+							setTimeout(function() {
+								responsiveVoice.speak(
+									response.noResepNonRacikanReady.patient_name + ". DARI " + response.noResepNonRacikanReady.unit_name + " silahkan menuju ke "+response.noResepNonRacikanReady.depo, "Indonesian Female", {
+										pitch: 1,
+										rate: 1,
+										volume: 2,
+										// onstart: voiceStartCallback,
+										// onend: voiceEndCallback(no_urut, counter, 7100, queue_id)
+									}
+								);
+							},durasi_bell)
+
 							update_status(response.noResepNonRacikanReady.sale_id);
 						}
 					} else {
@@ -412,128 +419,6 @@
 				}
 			})
 		}
-
-
-
-
-
-		//function noracikanredyolde() {
-		//	$.ajax({
-		//		type: "post",
-		//		url: "<?//= base_url() ?>//antrean_recipe/noracikanredy",
-		//		dataType: "json",
-		//		data: {
-		//			unit_id: $("#unit_id_depo").val()
-		//		},
-		//		success: function(response) {
-		//			console.log(response.noResepRacikanReady);
-		//			if (response.noResepRacikanReady) {
-		//				$("#rcp_racikan_ready").text(response.noResepRacikanReady)
-		//			} else {
-		//				$("#rcp_racikan_ready").text(0)
-		//			}
-		//		}
-		//	})
-		//}
-		//
-		//function noResepNonRacikanReady() {
-		//	$.ajax({
-		//		type: "post",
-		//		url: "<?//= base_url() ?>//antrean_recipe/noResepNonRacikanReady",
-		//		dataType: "json",
-		//		data: {
-		//			unit_id: $("#unit_id_depo").val()
-		//		},
-		//		success: function(response) {
-		//			console.log(response.noResepNonRacikanReady);
-		//			if (response.noResepNonRacikanReady) {
-		//				$("#rcp_non_racikan_ready").text(response.noResepNonRacikanReady)
-		//			} else {
-		//				$("#rcp_non_racikan_ready").text(0)
-		//			}
-		//		}
-		//	})
-		//}
-		//
-		//function noResepRacikanPrepare() {
-		//	$.ajax({
-		//		type: "post",
-		//		url: "<?//= base_url() ?>//antrean_recipe/noResepRacikanPrepare",
-		//		dataType: "json",
-		//		data: {
-		//			unit_id: $("#unit_id_depo").val()
-		//		},
-		//		success: function(response) {
-		//			console.log(response.noResepRacikanPrepare);
-		//			if (response.noResepRacikanPrepare) {
-		//				$("#rcp_racikan_prepare").text(response.noResepRacikanPrepare)
-		//			} else {
-		//				$("#rcp_racikan_prepare").text(0)
-		//			}
-		//		}
-		//	})
-		//}
-		//
-		//function noResepNonRacikanPrepare() {
-		//	$.ajax({
-		//		type: "post",
-		//		url: "<?//= base_url() ?>//antrean_recipe/noResepNonRacikanPrepare",
-		//		dataType: "json",
-		//		data: {
-		//			unit_id: $("#unit_id_depo").val()
-		//		},
-		//		success: function(response) {
-		//			console.log(response.noResepNonRacikanPrepare);
-		//			if (response.noResepNonRacikanPrepare) {
-		//				$("#rcp_non_racikan_prepare").text(response.noResepNonRacikanPrepare)
-		//			} else {
-		//				$("#rcp_non_racikan_prepare").text(0)
-		//			}
-		//
-		//		}
-		//	})
-		//}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		// $(document).ready(() => {
-		//   $.fn.dataTable.ext.errMode = 'none';
-		//   get_antrean();
-		//
-		//   // setInterval(() => {
-		//   //   get_antrean();
-		//   // }, 6000);
-		// });
-
-		// $("#unit_id_depo").change(() => {
-		// 	table.draw();
-		//   // get_antrean();
-		// });
-
-		// function get_antrean() {
-		//   $.get("antrean_recipe/get_data/" + $("#unit_id_depo").val(), function(resp) {
-		//     $("#data_antrian").html(resp.html);
-		//     $("#rcp_racikan_ready").text(resp.noResepRacikanReady);
-		//     $("#rcp_non_racikan_ready").text(resp.noResepNonRacikanReady);
-		//     $("#rcp_racikan_prepare").text(resp.noResepRacikanPrepare);
-		//     $("#rcp_non_racikan_prepare").text(resp.noResepNonRacikanPrepare);
-		//   }, 'json');
-		// }
 	</script>
 
 
