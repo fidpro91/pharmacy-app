@@ -1,9 +1,8 @@
 .DS_Store
-.gitignore
 
 application/cache/*
 !application/cache/index.html
-
+application/config/*
 application/logs/*
 !application/logs/index.html
 
@@ -12,17 +11,15 @@ application/logs/*
 composer.lock
 
 user_guide_src/build/*
+
 user_guide_src/cilexer/build/*
 user_guide_src/cilexer/dist/*
 user_guide_src/cilexer/pycilexer.egg-info/*
-/vendor/
-application/config/*
-system/*
 # IDE Files
 #-------------------------
 /nbproject/
 .idea/*
-/index.php
+
 
 ## Sublime Text cache files
 *.tmlanguage.cache
@@ -30,9 +27,12 @@ system/*
 *.stTheme.cache
 *.sublime-workspace
 *.sublime-project
+
 /tests/tests/
 /tests/results/
-/system
-indexphp7.php
-/.vscode
-
+vendor/*
+datacache/*
+application/config/*
+assets/*
+system/*
+/index.php

@@ -40,10 +40,13 @@ class M_dose extends CI_Model {
 	public function rules()
 	{
 		$data = [
-										"dose_code" => "trim",
-					"dose_name" => "trim",
+					"dose_code" 		=> "trim",
+					"dose_name" 		=> "trim",
+					"dose_qty" 			=> "trim",
+					"dose_frequency" 	=> "trim",
+					"dose_rule" 		=> "trim",
 					"dose_active" => "trim",
-
+					"dose_time" => "trim",
 				];
 		return $data;
 	}

@@ -5,6 +5,9 @@
     .ui-menu-item div.ui-state-active {
         background-color: #46fadc !important;
     }
+    .info-pasien {
+        font-size: 14pt !important;
+    }
 </style>
 
 <div class="row">
@@ -59,7 +62,13 @@
                         ["id" => "0", "text" => "Tunai"], ["id" => "1", "text" => "Kredit"]
                     ]
                 ]) ?>
-
+                <?= create_select([
+                    "attr"         => ["name" => "resep_prb", "id" => "resep_prb", "class" => "form-control"],
+                    "option"    => [
+                        ["id" => "t", "text" => "Ya"], ["id" => "f", "text" => "Tidak"]
+                    ],
+                    "selected" => "f"
+                ]) ?>
             </div>
             <div class="col-md-6">
                 <?= create_select2([
@@ -141,6 +150,10 @@
                 $('#px_id').val(ui.item.px_id);
                 $('#alamat').val(ui.item.px_address);
                 if ($("#tipe_patient").val() == 1) {
+                    if (ui.item.visit_prb == 't') {
+                        $(".info-pasien").text("PASIEN PRB");
+                        $("#resep_prb").val(ui.item.visit_prb);
+                    }
                     $('#visit_id').val(ui.item.visit_id);
                     $('#doctor_id').val(ui.item.par_id);
                     $('#service_id').val(ui.item.srv_id);

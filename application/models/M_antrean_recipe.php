@@ -6,7 +6,7 @@ class M_antrean_recipe extends CI_Model
     public function get_data($sLimit, $sWhere, $sOrder, $aColumns)
     {
         $data = $this->db->query("select " . implode(',', $aColumns) . ",x.sale_id AS id_key from (
-			SELECT
+			SELECT split_part(s.sale_num, '/', 2) as sale_num,
 				COALESCE(unit_name,'APS') as unit_name,
 				patient_name,
 				sale_id,
@@ -41,6 +41,7 @@ class M_antrean_recipe extends CI_Model
     {
         $data = $this->db->query("select " . implode(',', $aColumns) . ",x.sale_id AS id_key from (
 		SELECT
+				split_part(s.sale_num, '/', 2) as sale_num,
 				COALESCE(unit_name,'APS') as unit_name,
 				patient_name,
 				sale_id,
@@ -74,8 +75,12 @@ class M_antrean_recipe extends CI_Model
     public function get_column()
     {
         $col = [
-            "unit_name",
-            "patient_name",
+            "sale_num" => [
+                "label" => "NO ANTRIAN"
+            ],
+            "patient_name" => [
+                "label" => "nama pasien"
+            ],
             "status_resep"
         ];
         return $col;

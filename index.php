@@ -1,6 +1,23 @@
 <?php
-session_start();
-date_default_timezone_set('Asia/Jakarta');
+
+/* use phpseclib\Net\SSH2;
+
+require 'vendor/autoload.php';
+$host = '172.104.42.237';
+$port = 64000;
+$username = 'ariefse1';
+$password = '6HvM)wBm5-N50y';
+$command = 'psql -U postgres';
+
+$ssh = new SSH2($host,$port);
+   if (!$ssh->login($username, $password)) {
+	   $output ='Login Failed';
+   }
+   else{
+	   $output = $ssh->exec($command);
+}
+print_r($output);
+die; */
 /**
  * CodeIgniter
  *
@@ -70,7 +87,6 @@ switch (ENVIRONMENT)
 	case 'development':
 		error_reporting(-1);
 		ini_set('display_errors', 1);
-		ini_set('display_startup_errors', 1);
 	break;
 
 	case 'testing':

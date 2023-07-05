@@ -19,7 +19,7 @@ class Curls
     
     public function api_sregep($method,$url,$data = array()){
         $ch = curl_init(); 
-        $base_url = "http://192.168.1.21/sregep/api/api_vclaim/";
+        $base_url = "http://localhost:88/apmall/api/api_vclaim/";
         $url = $base_url.$url;
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HTTPHEADER,array("Content-Type: application/json"));

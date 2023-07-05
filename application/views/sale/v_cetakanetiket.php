@@ -88,8 +88,8 @@
         <tr style="border-left: 1px solid black; border-right: 1px solid black; font-weight:bold;">
             <td>Aturan Pakai</td>
             <td>:</td>
-            <td style="text-transform:uppercase;font-size: 16px">&nbsp;<?php echo $row->dosis ?></td>
-            <td style="text-transform:uppercase;font-size: 16px"></td>
+            <td style="text-transform:uppercase;font-size: 12px">&nbsp;<?php echo $row->dosis ?></td>
+            <td style="text-transform:uppercase;font-size: 12px"></td>
         </tr>
         <tr style="border-left: 1px solid black; border-right: 1px solid black;  border-bottom: 1px solid black; font-weight:bold;">
             <td>Jenis Obat</td>
