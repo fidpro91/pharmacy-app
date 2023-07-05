@@ -1,22 +1,22 @@
 <?php
-class M_lap_konsolidasi  extends CI_Model
-{
+class M_lap_konsolidasi  extends CI_Model {
 
-    public function get_golongan()
-    {
-        $data = $this->db->query("
+	public function get_golongan()
+	{
+		$data = $this->db->query("
         SELECT distinct(gol) as gol from admin.ms_item 
         where gol is not null and gol !=''
         order by gol asc
 			")->result();
-        return $data;
-    }
-    public function get_new_konsolidasi($where, $where2, $unit, $kepemilikan, $where3)
+		return $data;
+	}
+    public function get_new_konsolidasi($where,$where2,$unit,$kepemilikan,$where3)
     {
-        if (!empty($unit)) {
+        if(!empty($unit)){
             $unit = "AND s.unit_id = $unit";
+
         }
-        if (!empty($kepemilikan)) {
+        if(!empty($kepemilikan)){
             $kepemilikan = "AND s.own_id = $kepemilikan";
         }
        $data =  $this->db->query("SELECT vo.item_code,vo.item_name,ow.own_name,coalesce(y.stock_awal,0)stock_awal,coalesce(y.harga_awal,0)harga_awal,s.item_id,s.own_id,s.unit_id,(p.price_sell)::numeric harga,(coalesce(x.masuk,0))masuk,(coalesce(x.keluar,0))keluar,coalesce(z.stock_op,0)stock_op,coalesce(z.harga_so,0)harga_so FROM newfarmasi.stock s
@@ -100,7 +100,7 @@ class M_lap_konsolidasi  extends CI_Model
                        0 = 0 $unit $kepemilikan
                    ORDER BY
                        vo.item_name ASC")->result();
-       
+
         return $data;
     }
 }

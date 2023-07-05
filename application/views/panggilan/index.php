@@ -3,7 +3,7 @@
 	<!-- Content Header (Page header) -->
 	<section class="content-header">
 		<h1>
-			<?=ucwords('Stock')?>
+			<?=ucwords('Panggilan')?>
 		</h1>
 		<ol class="breadcrumb">
 			<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -40,7 +40,6 @@
 	var table;
 	$(document).ready(function() {
 		table = $('#tb_panggilan').DataTable({
-			dom: 'Bfrtip',
 			"pageLength":100,
 			"processing": true,
 			"serverSide": true,
@@ -55,17 +54,22 @@
 			},
 			'columnDefs': [
 				{
-					'targets': [0,1,-1],
+					'targets': [0,1,-1,-2],
 					'searchable': false,
 					'orderable': false,
 				},
+
 				{ "width": "8%", "targets": -1 },
 				{
-					'targets': 0,
+					'targets': [0,-2],
 					'className': 'dt-body-center',
 					"visible" : false
 				}],
 		});
+
+		setInterval(() => {
+			table.draw();
+		}, 50000)
 	});
 
 	$("#unit_id_depo").change(() => {
