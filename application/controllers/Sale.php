@@ -38,8 +38,8 @@ class Sale extends MY_Generator
 
 	public function save()
 	{
-		$kodeBoking = $this->db->query("select * from yanmed.antrean_online_bpjs where visit_id = 1099440 and status_antrean is null;")->row('kodebooking');
-		var_dump($kodeBoking);die();
+		// $kodeBoking = $this->db->query("select * from yanmed.antrean_online_bpjs where visit_id = 1099440 and status_antrean is null;")->row('kodebooking');
+		// var_dump($kodeBoking);die();
 		$data = $this->input->post();
 		$sess = $this->session->userdata('penjualan')['pasien'];
 
