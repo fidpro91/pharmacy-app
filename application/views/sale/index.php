@@ -259,5 +259,14 @@
     window.open(url, "Struk E-tiket", "width=600, height=400, top=" + top + ", left=" + left + ",scrollbars=yes");
   }
 
+  function cetak_prb(id) {
+    var url = "<?php echo base_url() ?>sale/cetak_prb/" + id;
+    var left = ($(window).width() / 2) - (800 / 2);
+    var top = ($(window).height() / 2) - (400 / 2);
+    window.open(url, "SURAT RUJUK BALIK", "width=800, height=400, top=" + top + ", left=" + left);
+  }
+
+
+
   <?= $this->config->item('footerJS') ?>
 </script>
