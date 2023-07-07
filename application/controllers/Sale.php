@@ -203,7 +203,7 @@ class Sale extends MY_Generator
 		foreach ($saleDetail as $row) {
 			$item = $this->db->get_where("admin.ms_item",[
 				"item_id"	=> $row["item_id"]
-			])->row();
+			])->row();			
 			$obatPrb[] = [
 				"kdObat"	=> $item->kode_generic_bpjs,
 				"signa1"	=> $row["dosis"],
@@ -243,13 +243,19 @@ class Sale extends MY_Generator
 
 	public function cetak_prb($sale_id) {
 		$this->load->library("curls");
-		$prb = $this->db->join("farmasi.sale s","s.service_id = sr.srv_id and s.visit_id=sr.visit_id")
+		$prb = $this->db->group_by('srb_id,e.kodehfis,v.pxsurety_no,v.px_address,patient_name,px_birthdate')
+						 ->join("farmasi.sale s","s.service_id = sr.srv_id and s.visit_id=sr.visit_id")
+						->join("farmasi.sale_detail sd","sd.sale_id = s.sale_id")
+						->join("admin.ms_item i","sd.item_id = i.item_id")
 						->join("yanmed.visit v","v.visit_id=s.visit_id")
+						->join("yanmed.patient p","v.px_id=p.px_id")
 						->join("hr.employee e","e.employee_id=v.visit_end_doctor_id")
-						->select("sr.*,e.kodehfis,v.pxsurety_no,v.px_address")
+						->select("sr.*,e.kodehfis,v.pxsurety_no,v.px_address,patient_name,px_birthdate,json_agg((nama_generic_bpjs,sale_qty,dosis)) as item")
 						->get_where("yanmed.tabel_srb sr",[
 							"s.sale_id"	=> $sale_id
-						])->row();
+						]
+						)->row();
+								
 		if ($prb->srb_id) {
 			$programprb = explode("-",$prb->program_prb);
 			$param = [
@@ -264,16 +270,36 @@ class Sale extends MY_Generator
 				"user"			=> 123456,
 				"obat"			=> json_decode($prb->obat,true)
 			];
-			$resp=$this->curls->api_sregep("POST","insert_prb",$param);
+		if($prb->no_srb == null){
+			$resp=$this->curls->api_sregep("POST","insert_prb",$param);			
 			if ($resp["metaData"]["code"] == "200") {
 				$this->db->where("srb_id",$prb->srb_id)->update("yanmed.tabel_srb",[
 					"no_srb"	=> $resp["response"]["noSRB"]
 				]);
+				
 			}else{
 				echo $resp["metaData"]["message"];
 				exit();
 			}
+			
 		}
+
+		}		
+		$diagnosa = explode("-",$prb->program_prb);
+				$data['param']=[			
+				  "noka" => $param['noKartu'],
+				  "nama" => $prb->patient_name,			
+				  "prb" => $diagnosa[1],
+				  "tgl_lahir" => $prb->px_birthdate,
+				  "keterangan"=>$param['keterangan'],
+				  "obat" => json_decode($prb->item),
+				  "tgl_srb" => $prb->tgl_srb,
+				  "no_srb" => $prb->no_srb,
+				  "saran" => $prb->saran		
+				];			  
+			
+			$html = $this->load->view('sale/v_cetak_prb',$data);
+			
 	}
 
 	public function checkout_pasien()
@@ -353,6 +379,12 @@ class Sale extends MY_Generator
 						"btn-act" => "cetak_etiket('" . $row['id_key'] . "')",
 						"btn-icon" => "fa fa-bookmark",
 						"btn-class" => "btn-default",
+					],
+					"Cetak PRB" =>
+					[
+						"btn-act" => "cetak_prb('" . $row['id_key'] . "')",
+						"btn-icon" => "fa fa-eye",
+						"btn-class" => "btn-warning",
 					]
 				], $row['id_key']);
 			} else {
@@ -366,6 +398,12 @@ class Sale extends MY_Generator
 					"Cetak E-Tiket" =>
 					[
 						"btn-act" => "cetak_etiket('" . $row['id_key'] . "')",
+						"btn-icon" => "fa fa-bookmark",
+						"btn-class" => "btn-default",
+					],
+					"Cetak PRB" =>
+					[
+						"btn-act" => "cetak_prb('" . $row['id_key'] . "')",
 						"btn-icon" => "fa fa-bookmark",
 						"btn-class" => "btn-default",
 					]
