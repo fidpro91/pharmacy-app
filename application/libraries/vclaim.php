@@ -12,7 +12,8 @@ class vclaim
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		$response = curl_exec($ch);
 		curl_close($ch);
-	var_dump($response);die();
+//		var_dump(json_decode($response));die;
+		return $response;
 
 
 	}

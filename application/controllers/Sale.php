@@ -38,8 +38,6 @@ class Sale extends MY_Generator
 
 	public function save()
 	{
-		$kodeBoking = $this->db->query("select * from yanmed.antrean_online_bpjs where visit_id = 1099440 and status_antrean is null;")->row('kodebooking');
-		var_dump($kodeBoking);die();
 		$data = $this->input->post();
 		$sess = $this->session->userdata('penjualan')['pasien'];
 
@@ -167,6 +165,8 @@ class Sale extends MY_Generator
 		} else {
 			$this->db->trans_commit();
 			//kode antrian farmasi vclaim
+			//$kodeBoking = $this->db->query("select * from yanmed.antrean_online_bpjs where visit_id = 1099440 and status_antrean is null limit 1;")->row('kodebooking');
+
 			$kodeBoking = $this->db->query("select * from yanmed.antrean_online_bpjs where visit_id = $sess[visit_id] and status_antrean is null;")->row('kodebooking');
 			if (!empty($kodeBoking)){
 				$this->load->library('vclaim');
@@ -178,6 +178,14 @@ class Sale extends MY_Generator
 					"nomorantrean"=>intval(explode('/', $this->get_no_sale($data['unit_id']))[1])
 				];
 				$kirim=$this->vclaim->connect($url,$method,$param);
+				$respon = json_decode($kirim);
+				$insert=[
+					"param"=>$kirim,
+					"code"=>$respon->metadata->code,
+					"keterangan"=>$respon->metadata->message,
+					"kodebooking"=>$kodeBoking,
+				];
+				$this->db->insert('yanmed.antrean_farmasi_bpjs', $insert);
 			}
 
 			/* $this->db->query("

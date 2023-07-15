@@ -24,7 +24,6 @@ class M_antrean_recipe extends CI_Model
 					WHERE
 						0 = 0
 						$sWhere 
-						-- AND s.unit_id = '18' 
 						AND DATE ( sale_date ) = DATE (
 						now()) 
 						AND s.finish_time IS NULL 
@@ -59,7 +58,6 @@ class M_antrean_recipe extends CI_Model
 					WHERE
 						0 = 0
 						$sWhere 
-						-- AND s.unit_id = '18' 
 						AND DATE ( sale_date ) = DATE (
 						now()) 
 						AND s.finish_time IS NULL 
