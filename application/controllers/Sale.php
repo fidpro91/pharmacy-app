@@ -389,8 +389,8 @@ class Sale extends MY_Generator
 					"Cetak PRB" =>
 					[
 						"btn-act" => "cetak_prb('" . $row['id_key'] . "')",
-						"btn-icon" => "fa fa-eye",
-						"btn-class" => "btn-warning",
+						"btn-icon" => "fa fa-newspaper-o",
+						"btn-class" => "btn-success",
 					]
 				], $row['id_key']);
 			} else {

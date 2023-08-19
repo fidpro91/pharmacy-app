@@ -45,15 +45,13 @@ class M_ms_unit extends CI_Model {
 	public function rules()
 	{
 		$data = [
-										"unit_code" => "trim",
+					"unit_code" => "trim",
 					"unit_name" => "trim|required",
-					"unit_nickname" => "trim",
-																																								"ut_id" => "trim|integer",
+					"unit_nickname" => "trim",																			"ut_id" => "trim|integer",
 					"kodeaskes" => "trim",
 					"inap" => "trim|integer",
-															"group_finder" => "trim",
+					"group_finder" => "trim",
 					"show_pm" => "trim",
-
 				];
 		return $data;
 	}
