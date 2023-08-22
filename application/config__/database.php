@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') or exit('No direct script access allowed');
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 /*
 | -------------------------------------------------------------------
@@ -74,25 +74,25 @@ $active_group = 'default';
 $query_builder = TRUE;
 
 $db['default'] = array(
-	'dsn' => '',
-	// 'hostname' => 'localhost',
-	// 'username' => 'postgres',
-	// 'password' => 'postgres',
-	// 'database' => 'db_ehos',
-	// 'hostname' => 'localhost',
-	// 'username' => 'postgres',
-	// 'password' => '1sampai8',
-	// 'database' => 'ehos',
-//	'hostname' => '103.94.120.133',
-	'hostname' => '192.168.1.235',
-	'username' => 'postgres',
+	'dsn'	=> '',
+	'hostname' => '36.95.219.205',
+	//'hostname' => '192.168.1.235',
+	//'hostname' => 'localhost',
+	////'username' => 'ariefse1_postgres',
+	//'port' => '5432',
+	//'password' => '1Sampai8',
+	//'password' => 'postgres',
+	//'database' => 'ariefse1_siakad',
+	 //'hostname' => 'localhost',
+	 'username' => 'postgres',
+	// 'password' => 'root',
 	'password' => 'digitalsense',
 	'database' => 'ehos_live',
+	//'database' => 'ehos_baru',
 	'dbdriver' => 'postgre',
-	'port' => '5432',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
-	'db_debug' => (ENVIRONMENT !== 'production'),//production
+	'db_debug' => (ENVIRONMENT !== 'development'),
 	'cache_on' => true,
 	'cachedir' => '/datacache/',
 	'char_set' => 'utf8',

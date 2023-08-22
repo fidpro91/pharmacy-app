@@ -30,10 +30,7 @@ defined('FILE_READ_MODE')  OR define('FILE_READ_MODE', 0644);
 defined('FILE_WRITE_MODE') OR define('FILE_WRITE_MODE', 0666);
 defined('DIR_READ_MODE')   OR define('DIR_READ_MODE', 0755);
 defined('DIR_WRITE_MODE')  OR define('DIR_WRITE_MODE', 0755);
-define('SISTEM_NAME', 'HEAPY');
-define('SISTEM_LOGOS', '<b>HEAPY-</b>RSIS');
-define('FOOT_NOTE', 'Copyright &copy; 2022 <a href="#">UNIT TI</a>.</strong> All rights
-reserved.');
+define('SISTEM_NAME', 'PAYROLL-APP');
 /*
 |--------------------------------------------------------------------------
 | File Stream Modes
