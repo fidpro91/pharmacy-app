@@ -83,70 +83,71 @@
 							<!-- Add the bg color to the header using any of the bg-* classes -->
 							<div class="pull-right">
 								<div class="widget-user-header bg-aqua-active">
-									<?= create_select([
-										"attr" => ["name" => "unit_id=UNIT FARMASI", "id" => "unit_id", "class" => "form-control"],
-										"model" => [
-											"m_ms_unit" => ["get_ms_unit_farmasi", ["0" => "0"]],
-											"column"  => ["unit_id", "unit_name"]
-										]
-									]) ?>
+									<h3 style="font-weight: bold;">DASHBOARD ANTRIAN OBAT</h3>
+									<h4 id="clock"></h4>
 								</div>
 							</div>
 							<div class="widget-user-header bg-aqua-active">
-								<h2 style="font-weight: bold;">DASHBOARD ANTRIAN OBAT</h2>
-								<h4 id="clock"></h4>
+								<h3 style="font-weight: bold;">RSUD IBNU SINA KABUPATEN GRESIK</h3>
+								<p>Jl. DR. Wahidin Sudiro Husodo No.243B, Kembangan, Klangonan<br> Kec. Kebomas, Kabupaten Gresik, Jawa Timur 61124</p>
 							</div>
 							<div class="widget-user-image">
 								<img class="img-circle" src="<?= base_url("assets") ?>/images/logors2.png" alt="User Avatar">
 							</div>
 							<div class="box-footer">
 								<div class="row">
-									<div class="col-sm-12">
+									<div class="col-sm-6">
 										<h4 style="font-weight: bold;"><i class="fa fa-bullhorn"></i> INFORMASI <i class="fa fa-bullhorn"></i></h4>
 										<marquee behavior="" direction="">
-											<h2 style="font-weight: bold; margin:0px !important; padding:0px !important;">
-												Resep Obat Racikan dan Obat Kronis Membutuhkan Waktu Lebih Lama * 
-												<span class="bg-red">Mohon Menunggu Dengan Sabar</span>
-											</h2>
+											<h4>
+												Resep Obat Racikan dan Obat Kronis Membutuhkan Waktu Lebih Lama * Mohon Menunggu Dengan Sabar
+											</h4>
 										</marquee>
+										<?= create_select([
+											"attr" => ["name" => "unit_id=Unit Farmasi", "id" => "unit_id", "class" => "form-control"],
+											"model" => [
+												"m_ms_unit" => ["get_ms_unit_farmasi", ["0" => "0"]],
+												"column"  => ["unit_id", "unit_name"]
+											]
+										]) ?>
 										<!-- /.description-block -->
 									</div>
-									<!-- <div class="col-md-6">
-										<div class="box box-primary box-solid">
-											<div class="box-header text-center">
-												PANGGILAN ANTRIAN
+									<div class="col-md-6">
+									<div class="box box-primary box-solid">
+									<div class="box-header text-center">
+										PANGGILAN ANTRIAN
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-md-6">
+										<div class="info-box">
+											<span class="info-box-icon bg-aqua" style="width: 50% !important; font-size:22pt !important; font-weight:bold">
+												RACIKAN
+											</span>
+											<div class="info-box-content">
+												<span class="info-box-number text-center">
+													<h2 id="rcp_racikan_ready" style=" font-weight: bold; margin:0px; font-size:3em">000</h2>
+													<small style="margin: 0px;" id="unit_name"> -
+													</small>
+												</span>
 											</div>
 										</div>
-										<div class="row">
-											<div class="col-md-6">
-												<div class="info-box">
-													<span class="info-box-icon bg-aqua" style="width: 50% !important; font-size:22pt !important; font-weight:bold">
-														RACIKAN
-													</span>
-													<div class="info-box-content">
-														<span class="info-box-number text-center">
-															<h2 id="rcp_racikan_ready" style=" font-weight: bold; margin:0px; font-size:3em">000</h2>
-															<small style="margin: 0px;" id="unit_name"> -
-															</small>
-														</span>
-													</div>
-												</div>
-											</div>
-											<div class="col-md-6">
-												<div class="info-box">
-													<span class="info-box-icon bg-aqua" style="width: 50% !important; font-size:22pt !important; font-weight:bold">
-														STANDAR
-													</span>
-													<div class="info-box-content">
-														<span class="info-box-number text-center">
-															<h2 id="rcp_non_racikan_ready" style=" font-weight: bold; margin:0px; font-size:3em">000</h2>
-															<small style="margin: 0px;" id="unti_name_racika">-</small>
-														</span>
-													</div>
-												</div>
+									</div>
+									<div class="col-md-6">
+										<div class="info-box">
+											<span class="info-box-icon bg-aqua" style="width: 50% !important; font-size:22pt !important; font-weight:bold">
+												STANDAR
+											</span>
+											<div class="info-box-content">
+												<span class="info-box-number text-center">
+													<h2 id="rcp_non_racikan_ready" style=" font-weight: bold; margin:0px; font-size:3em">000</h2>
+													<small style="margin: 0px;" id="unti_name_racika">-</small>
+												</span>
 											</div>
 										</div>
-									</div> -->
+									</div>
+								</div>
+									</div>
 									<!-- /.col -->
 								</div>
 								<!-- /.row -->
@@ -156,7 +157,7 @@
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<div class="box box-primary box-solid">
+						<div class="box box-primary box-solid" style="min-height: 800px !important">
 							<div class="box-header text-center">
 								ANTRIAN RESEP DILAYANI
 							</div>
@@ -169,7 +170,7 @@
 						</div>
 					</div>
 					<div class="col-md-6">
-						<div class="box box-primary box-solid">
+						<div class="box box-primary box-solid" style="min-height: 800px !important">
 							<div class="box-header text-center">
 								ANTRIAN RESEP SELESAI
 							</div>
@@ -240,11 +241,11 @@
 				return; // Antrian kosong, tidak ada yang dipanggil
 			}
 			var data = callQueue[0]; // Ambil data panggilan pertama dari antrian
-			/* if (data.kronis == 't') {
+			if (data.kronis == 't') {
 				$("#rcp_racikan_ready").text(data.nomor);
 			} else {
 				$("#rcp_non_racikan_ready").text(data.nomor);
-			} */
+			}
 
 			var nomorantrean = data.nomor.split("").join(". ");
 			var pasien = data.pasien.inisial + " " + data.pasien.nama;
@@ -271,7 +272,7 @@
 		$(document).ready(function() {
 			table = $('#tb_antrian').DataTable({
 				'scroller': false,
-				'scrollY': '550px',
+				'scrollY': '800px',
 				'scrollCollapse': false,
 				'paging': false,
 				'searching': false,
@@ -307,7 +308,7 @@
 
 			table2 = $('#tb_antrian2').DataTable({
 				'scroller': false,
-				'scrollY': '550px',
+				'scrollY': '800px',
 				'scrollCollapse': false,
 				'paging': false,
 				'searching': false,
