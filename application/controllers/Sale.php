@@ -29,6 +29,29 @@ class Sale extends MY_Generator
 		$this->theme('sale/index', $data, get_class($this));
 	}
 
+	public function panggil_antrian($sale_id) {
+		$this->load->library("pusher");
+		$sale = $this->db->select("s.*,mu.unit_name,split_part(s.sale_num, '/', 2) as antrian")
+				->join("admin.ms_unit as mu","mu.unit_id = s.unit_id_lay","left")
+				->get_where("farmasi.sale s",[
+					"sale_id"	=> $sale_id
+				])->row();
+		
+		$this->db->set("finish_time","coalesce(finish_time,'".date("Y-m-d H:i:s")."')",false);
+		$this->db->where("sale_id",$sale_id)->update("farmasi.sale",[
+			"sale_status"		=> "2",
+			"finish_user_id"	=> $this->session->user_id
+		]);
+		$resp = [
+			"nomor"  	=> $sale->antrian,
+			"unit_id"  	=> $sale->unit_id,
+			"kronis"  	=> $sale->kronis,
+			"pasien"	=> $sale->patient_name,
+			"unit_layanan"	=> $sale->unit_name
+		];
+		$this->pusher->call_antrian($resp);
+	}
+
 	public function unset_ses()
 	{
 		unset($_SESSION['penjualan']);
@@ -224,7 +247,7 @@ class Sale extends MY_Generator
 		foreach ($saleDetail as $row) {
 			$item = $this->db->get_where("admin.ms_item",[
 				"item_id"	=> $row["item_id"]
-			])->row();
+			])->row();			
 			$obatPrb[] = [
 				"kdObat"	=> $item->kode_generic_bpjs,
 				"signa1"	=> $row["dosis"],
@@ -264,13 +287,19 @@ class Sale extends MY_Generator
 
 	public function cetak_prb($sale_id) {
 		$this->load->library("curls");
-		$prb = $this->db->join("farmasi.sale s","s.service_id = sr.srv_id and s.visit_id=sr.visit_id")
+		$prb = $this->db->group_by('srb_id,e.kodehfis,v.pxsurety_no,v.px_address,patient_name,px_birthdate')
+						 ->join("farmasi.sale s","s.service_id = sr.srv_id and s.visit_id=sr.visit_id")
+						->join("farmasi.sale_detail sd","sd.sale_id = s.sale_id")
+						->join("admin.ms_item i","sd.item_id = i.item_id")
 						->join("yanmed.visit v","v.visit_id=s.visit_id")
+						->join("yanmed.patient p","v.px_id=p.px_id")
 						->join("hr.employee e","e.employee_id=v.visit_end_doctor_id")
-						->select("sr.*,e.kodehfis,v.pxsurety_no,v.px_address")
+						->select("sr.*,e.kodehfis,v.pxsurety_no,v.px_address,patient_name,px_birthdate,json_agg((nama_generic_bpjs,sale_qty,dosis)) as item")
 						->get_where("yanmed.tabel_srb sr",[
 							"s.sale_id"	=> $sale_id
-						])->row();
+						]
+						)->row();
+								
 		if ($prb->srb_id) {
 			$programprb = explode("-",$prb->program_prb);
 			$param = [
@@ -285,16 +314,36 @@ class Sale extends MY_Generator
 				"user"			=> 123456,
 				"obat"			=> json_decode($prb->obat,true)
 			];
-			$resp=$this->curls->api_sregep("POST","insert_prb",$param);
+		if($prb->no_srb == null){
+			$resp=$this->curls->api_sregep("POST","insert_prb",$param);			
 			if ($resp["metaData"]["code"] == "200") {
 				$this->db->where("srb_id",$prb->srb_id)->update("yanmed.tabel_srb",[
 					"no_srb"	=> $resp["response"]["noSRB"]
 				]);
+				
 			}else{
 				echo $resp["metaData"]["message"];
 				exit();
 			}
+			
 		}
+
+		}		
+		$diagnosa = explode("-",$prb->program_prb);
+				$data['param']=[			
+				  "noka" => $param['noKartu'],
+				  "nama" => $prb->patient_name,			
+				  "prb" => $diagnosa[1],
+				  "tgl_lahir" => $prb->px_birthdate,
+				  "keterangan"=>$param['keterangan'],
+				  "obat" => json_decode($prb->item),
+				  "tgl_srb" => $prb->tgl_srb,
+				  "no_srb" => $prb->no_srb,
+				  "saran" => $prb->saran		
+				];			  
+			
+			$html = $this->load->view('sale/v_cetak_prb',$data);
+			
 	}
 
 	public function checkout_pasien()
@@ -336,7 +385,8 @@ class Sale extends MY_Generator
 			$filter = array_merge($filter, ["sale_type" => $attr['sale_type']]);
 		}
 		// $filter["sale_type"] = $attr['sale_type'];
-		$filter["custom"] = " to_char(sale_date,'MM-YYYY')='" . $attr['bulan'] . "'";
+		list($tanggal1,$tanggal2) = explode('/',$attr['tanggal']);
+		$filter["custom"] = " (to_char(sale_date,'YYYY-MM-DD') between '" . $tanggal1 . "' and '" . $tanggal2 . "')";
 
 		$data 	= $this->datatable->get_data($fields, $filter, 'm_sale', $attr);
 		$records["aaData"] = array();
@@ -374,6 +424,12 @@ class Sale extends MY_Generator
 						"btn-act" => "cetak_etiket('" . $row['id_key'] . "')",
 						"btn-icon" => "fa fa-bookmark",
 						"btn-class" => "btn-default",
+					],
+					"Cetak PRB" =>
+					[
+						"btn-act" => "cetak_prb('" . $row['id_key'] . "')",
+						"btn-icon" => "fa fa-newspaper-o",
+						"btn-class" => "btn-success",
 					]
 				], $row['id_key']);
 			} else {
@@ -387,6 +443,12 @@ class Sale extends MY_Generator
 					"Cetak E-Tiket" =>
 					[
 						"btn-act" => "cetak_etiket('" . $row['id_key'] . "')",
+						"btn-icon" => "fa fa-bookmark",
+						"btn-class" => "btn-default",
+					],
+					"Cetak PRB" =>
+					[
+						"btn-act" => "cetak_prb('" . $row['id_key'] . "')",
 						"btn-icon" => "fa fa-bookmark",
 						"btn-class" => "btn-default",
 					]

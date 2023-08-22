@@ -16,7 +16,8 @@ class Antrean_recipe extends CI_Controller
 			$kat[$value->unit_id] = $value->unit_name;
 		}
 		$data['unit'] = $kat;
-		$this->load->view('template/antrean_temp', $data);
+		// $this->load->view('template/antrean_temp', $data);
+		$this->load->view('template/antrian_recipe2', $data);
 	}
 
 	public function get_data()
@@ -29,6 +30,11 @@ class Antrean_recipe extends CI_Controller
 		$filter = [];
 
 		$filter['custom'] = " s.unit_id = '" . $attr['unit_id'] . "'";
+		if (isset($attr['sale_status'])) {
+			$filter["sale_status"] = $attr['sale_status'];
+		}else{
+			$filter['custom'] .= " AND sale_status != 2";
+		}
 		$data 	= $this->datatable->get_data($fields, $filter, 'm_antrean_recipe', $attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start'];
