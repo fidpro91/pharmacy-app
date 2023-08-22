@@ -45,17 +45,6 @@ class M_ms_unit extends CI_Model {
 	public function rules()
 	{
 		$data = [
-<<<<<<< HEAD
-										"unit_code" => "trim",
-					"unit_name" => "trim|required",
-					"unit_nickname" => "trim",
-																																								"ut_id" => "trim|integer",
-					"kodeaskes" => "trim",
-					"inap" => "trim|integer",
-															"group_finder" => "trim",
-					"show_pm" => "trim",
-
-=======
 					"unit_code" => "trim",
 					"unit_name" => "trim|required",
 					"unit_nickname" => "trim",																			"ut_id" => "trim|integer",
@@ -63,7 +52,6 @@ class M_ms_unit extends CI_Model {
 					"inap" => "trim|integer",
 					"group_finder" => "trim",
 					"show_pm" => "trim",
->>>>>>> 7c58defc30d62b25cef3a7b376edffbfcb12d7fe
 				];
 		return $data;
 	}
