@@ -9,7 +9,7 @@ class M_sale extends CI_Model
 				select " . implode(',', $aColumns) . ",x.id_key,x.sale_type,x.rcp_id 
 				from (select 
 				sl.date_act,sl.surety_id,sale_type,sale_num,sale_date,concat (patient_name,' (',patient_norm,')') as patient_name,sale_total,sl.rcp_id,
-				sale_status,surety_name,doctor_name,cash_id,patient_norm,sale_id AS id_key 
+				sale_status,surety_name,doctor_name,cash_id,patient_norm,sale_id AS id_key,sl.sale_id
 				from farmasi.sale sl
 				left join yanmed.ms_surety su on sl.surety_id = su.surety_id	
 				where /* sl.sale_id > 1388206 */ 0=0 $sWhere $sOrder $sLimit) x
@@ -23,7 +23,7 @@ class M_sale extends CI_Model
 		select " . implode(',', $aColumns) . ",x.id_key 
 		from (select sl.date_act,
 		sl.surety_id,sale_type,sale_num,sale_date,concat (patient_name,' (',patient_norm,')') as patient_name,sale_total,
-		sale_status,surety_name,doctor_name,cash_id,patient_norm,sale_id AS id_key 
+		sale_status,surety_name,doctor_name,cash_id,patient_norm,sale_id AS id_key,sl.sale_id
 		from farmasi.sale sl
 		left join yanmed.ms_surety su on sl.surety_id = su.surety_id	
 		where /* sl.sale_id > 1388206 */ 0=0 $sWhere) x
@@ -34,7 +34,7 @@ class M_sale extends CI_Model
 	public function get_column()
 	{
 		$col = [
-			"id_key" => [
+			"sale_id" => [
 				"label" 	=> "#",
 				"custom"	=> function($a){
 					$button = '<a title="panggil antrian" href="javascript:void(0)" class="btn btn-xs btn-success" onclick="panggil_antrian('.$a["id_key"].')"><i class="fa fa-youtube-play"></i></a>';

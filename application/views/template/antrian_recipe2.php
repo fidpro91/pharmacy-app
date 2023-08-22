@@ -103,10 +103,9 @@
 								<div class="row">
 									<div class="col-sm-12">
 										<h4 style="font-weight: bold;"><i class="fa fa-bullhorn"></i> INFORMASI <i class="fa fa-bullhorn"></i></h4>
-										<marquee behavior="" direction="">
+										<marquee behavior="" direction="" class="bg-red">
 											<h2 style="font-weight: bold; margin:0px !important; padding:0px !important;">
-												Resep Obat Racikan dan Obat Kronis Membutuhkan Waktu Lebih Lama * 
-												<span class="bg-red">Mohon Menunggu Dengan Sabar</span>
+												Resep Obat Racikan dan Obat Kronis Membutuhkan Waktu Lebih Lama * Mohon Menunggu Dengan Sabar
 											</h2>
 										</marquee>
 										<!-- /.description-block -->
@@ -250,7 +249,7 @@
 			var pasien = data.pasien.inisial + " " + data.pasien.nama;
 			var unitApotek = $("#unit_id option:selected").text();
 			responsiveVoice.speak(
-				"" + data.pasien + ". DARI KLINIK MATA menuju ke " + unitApotek, "Indonesian Female", {
+				data.pasien + ", DARI "+data.unit_layanan+". menuju ke " + unitApotek, "Indonesian Female", {
 					pitch: 1,
 					rate: 1.05,
 					volume: 5,

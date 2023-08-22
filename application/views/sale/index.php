@@ -129,7 +129,7 @@
         },
         {
           "visible": false,
-          "targets": 7
+          "targets": [8,3]
         },
         {
           'targets': 0,
