@@ -82,7 +82,7 @@ class M_antrean_recipe extends CI_Model
                     return $a["patient_name"]."<br><small class=\"txt_small\">(".$a["unit_name"].")</small";
                 }
             ],
-            "kronis" => [
+            /* "kronis" => [
                 "label"     => "Jenis",
                 "custom"    => function($a){
                     if ($a["kronis"] == "t") {
@@ -92,7 +92,7 @@ class M_antrean_recipe extends CI_Model
                     }
                     return $label;
                 }
-            ],
+            ], */
             "status_resep" => [
                 "label" => "Status"
             ]

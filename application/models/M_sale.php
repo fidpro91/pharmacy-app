@@ -33,7 +33,15 @@ class M_sale extends CI_Model
 
 	public function get_column()
 	{
-		$col = ["patient_norm",
+		$col = [
+			"id_key" => [
+				"label" 	=> "#",
+				"custom"	=> function($a){
+					$button = '<a title="panggil antrian" href="javascript:void(0)" class="btn btn-xs btn-success" onclick="panggil_antrian('.$a["id_key"].')"><i class="fa fa-youtube-play"></i></a>';
+					return $button;
+				}
+			],
+			"patient_norm",
 			"sale_num",
 			"date_act",
 			"sale_date",

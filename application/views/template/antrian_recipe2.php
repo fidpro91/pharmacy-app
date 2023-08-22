@@ -64,12 +64,14 @@
 			font-size: 10pt !important;
 			font-style: italic !important;
 		}
+
 		/* #tb_antrian td {
 			font-size: 24pt !important;
 		} */
 	</style>
 </head>
 <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+
 <body class="hold-transition skin-blue layout-top-nav">
 	<div class="wrapper">
 		<!-- Full Width Column -->
@@ -77,47 +79,38 @@
 			<section class="content">
 				<div class="row">
 					<div class="col-md-12">
-						<!-- Nav tabs -->
-						<ul class="nav nav-tabs nav-tabs-primary">
-							<li class="active"><a href="#tab1" data-toggle="tab">
-									<h3 style="font-weight: bold;">DASHBOARD ANTRIAN OBAT</h3>
-									<h4 id="clock"></h4>
-								</a>
-							</li>
-							<li style="margin-left:3.5vw;">
-								<div class="callout callout-warning" style="margin-top:10px !important;">
-									<h4 style="font-weight: bold;"><i class="fa fa-bullhorn"></i> INFORMASI <i class="fa fa-bullhorn"></i></h4>
-									<marquee behavior="" direction="">
-										<h4>
-											Resep Obat Racikan dan Obat Kronis Membutuhkan Waktu Lebih Lama * Mohon Menunggu Dengan Sabar
-										</h4>
-									</marquee>
+						<div class="box box-widget widget-user">
+							<!-- Add the bg color to the header using any of the bg-* classes -->
+							<div class="pull-right">
+								<div class="widget-user-header bg-aqua-active">
+									<?= create_select([
+										"attr" => ["name" => "unit_id=Unit Farmasi", "id" => "unit_id", "class" => "form-control"],
+										"model" => [
+											"m_ms_unit" => ["get_ms_unit_farmasi", ["0" => "0"]],
+											"column"  => ["unit_id", "unit_name"]
+										]
+									]) ?>
 								</div>
-							</li>
-						</ul>
-						<div class="tab-content">
-							<div class="tab-pane active" id="tab1">
+							</div>
+							<div class="widget-user-header bg-aqua-active">
+								<h2 style="font-weight: bold;">DASHBOARD ANTRIAN OBAT</h2>
+								<h4 id="clock"></h4>
+							</div>
+							<div class="widget-user-image">
+								<img class="img-circle" src="<?= base_url("assets") ?>/images/logors2.png" alt="User Avatar">
+							</div>
+							<div class="box-footer">
 								<div class="row">
-									<div class="col-md-5">
-										<div class="d-flex align-items-center">
-											<div class="pull-left image mr-5">
-												<img width="75px" class="user-image" src="<?=base_url("assets")?>/images/logors.png" alt="">
-											</div>
-											<h3 style="font-weight: bold;">RSUD IBNU SINA KABUPATEN GRESIK</h3>
-											<p>Jl. DR. Wahidin Sudiro Husodo No.243B, Kembangan, Klangonan, Kec. Kebomas, Kabupaten Gresik, Jawa Timur 61124</p>
-										</div>
-										<div class="col-md-12">
-											<?= create_select([
-												"attr" => ["name" => "unit_id=Unit Farmasi", "id" => "unit_id", "class" => "form-control"],
-												"model" => [
-													"m_ms_unit" => ["get_ms_unit_farmasi", ["0" => "0"]],
-													"column"  => ["unit_id", "unit_name"]
-												]
-											]) ?>
-										</div>
+									<div class="col-sm-12">
+										<h4 style="font-weight: bold;"><i class="fa fa-bullhorn"></i> INFORMASI <i class="fa fa-bullhorn"></i></h4>
+										<marquee behavior="" direction="">
+											<h2 style="font-weight: bold; margin:0px !important; padding:0px !important;">
+												Resep Obat Racikan dan Obat Kronis Membutuhkan Waktu Lebih Lama * Mohon Menunggu Dengan Sabar
+											</h2>
+										</marquee>
+										<!-- /.description-block -->
 									</div>
-									<div class="col-md-2"></div>
-									<div class="col-md-5">
+									<!-- <div class="col-md-6">
 										<div class="box box-primary box-solid">
 											<div class="box-header text-center">
 												PANGGILAN ANTRIAN
@@ -126,22 +119,22 @@
 										<div class="row">
 											<div class="col-md-6">
 												<div class="info-box">
-													<span class="info-box-icon bg-aqua">
-														RC
+													<span class="info-box-icon bg-aqua" style="width: 50% !important; font-size:22pt !important; font-weight:bold">
+														RACIKAN
 													</span>
 													<div class="info-box-content">
 														<span class="info-box-number text-center">
 															<h2 id="rcp_racikan_ready" style=" font-weight: bold; margin:0px; font-size:3em">000</h2>
 															<small style="margin: 0px;" id="unit_name"> -
-														</small>
+															</small>
 														</span>
 													</div>
 												</div>
 											</div>
 											<div class="col-md-6">
 												<div class="info-box">
-													<span class="info-box-icon bg-aqua">
-														ST
+													<span class="info-box-icon bg-aqua" style="width: 50% !important; font-size:22pt !important; font-weight:bold">
+														STANDAR
 													</span>
 													<div class="info-box-content">
 														<span class="info-box-number text-center">
@@ -152,27 +145,21 @@
 												</div>
 											</div>
 										</div>
-									</div>
+									</div> -->
+									<!-- /.col -->
 								</div>
+								<!-- /.row -->
 							</div>
 						</div>
-						<!-- <div class="callout callout-warning">
-							<marquee behavior="" direction="">
-								<h4>
-									<i class="fa fa-bullhorn"></i>
-									Resep Obat Racikan dan Obat Kronis Membutuhkan Waktu Lebih Lama * Mohon Menunggu Dengan Sabar
-								</h4>
-							</marquee>
-						</div> -->
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-6">
-						<div class="box box-primary box-solid" style="min-height: 420px !important">
+						<div class="box box-primary box-solid" style="min-height: 800px !important">
 							<div class="box-header text-center">
 								ANTRIAN RESEP DILAYANI
 							</div>
-							<div class="box-body" style="text-align: center !important; min-height:8em !important;">
+							<div class="box-body" style="text-align: center !important;">
 								<div class="box-body" style="font-size: 20px">
 									<?= create_table("tb_antrian", "M_antrean_recipe", ["class" => "table table-bordered table-striped tb_antrian", "style" => "width:100% !important;"]) ?>
 								</div>
@@ -181,11 +168,11 @@
 						</div>
 					</div>
 					<div class="col-md-6">
-						<div class="box box-primary box-solid" style="min-height: 420px !important">
+						<div class="box box-primary box-solid" style="min-height: 800px !important">
 							<div class="box-header text-center">
 								ANTRIAN RESEP SELESAI
 							</div>
-							<div class="box-body" style="text-align: center !important; min-height:8em !important;">
+							<div class="box-body" style="text-align: center !important;">
 								<div class="box-body" style="font-size: 20px">
 									<?= create_table("tb_antrian2", "M_antrean_recipe", ["class" => "table table-bordered table-striped tb_antrian", "style" => "width:100% !important;"]) ?>
 								</div>
@@ -227,20 +214,63 @@
 	<script src="<?= site_url("assets") ?>/dist/js/adminlte.min.js"></script>
 	<!-- AdminLTE for demo purposes -->
 	<script src="<?= site_url("assets") ?>/dist/js/demo.js"></script>
+	<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 
 	<audio id="tingtung" src="<?= site_url("assets") ?>/audio/tingtung.mp3"></audio>
-<script>
-	$.extend(true, $.fn.dataTable.defaults, {
-      error: false, // Nonaktifkan pesan error
-    });
-</script>
+	<script>
+		// Enable pusher logging - don't include this in production
+		Pusher.logToConsole = true;
+		var pusher = new Pusher('2c006c80922871a2eef0', {
+			cluster: 'ap1'
+		});
+		var callQueue = [];
+		var channel = pusher.subscribe('my-channel');
+		channel.bind('my-event', function(data) {
+			if (data.response.unit_id === $("#unit_id").val()) {
+				callQueue.push(data.response); // Tambahkan data panggilan ke antrian
+				if (callQueue.length === 1) {
+					panggil_antrean();
+				}
+			}
+		});
+
+		function panggil_antrean() {
+			if (callQueue.length === 0) {
+				return; // Antrian kosong, tidak ada yang dipanggil
+			}
+			var data = callQueue[0]; // Ambil data panggilan pertama dari antrian
+			/* if (data.kronis == 't') {
+				$("#rcp_racikan_ready").text(data.nomor);
+			} else {
+				$("#rcp_non_racikan_ready").text(data.nomor);
+			} */
+
+			var nomorantrean = data.nomor.split("").join(". ");
+			var pasien = data.pasien.inisial + " " + data.pasien.nama;
+			var unitApotek = $("#unit_id option:selected").text();
+			responsiveVoice.speak(
+				"" + data.pasien + ". DARI KLINIK MATA menuju ke " + unitApotek, "Indonesian Female", {
+					pitch: 1,
+					rate: 1.05,
+					volume: 5,
+					// onstart: voiceStartCallback,
+					onend: function() {
+						callQueue.shift(); // Hapus data panggilan pertama dari antrian
+						table.draw();
+						table2.draw();
+						panggil_antrean(); // Panggil antrian berikutnya
+					}
+				}
+			);
+		}
+	</script>
 	<script>
 		var table;
 		var speak = false;
 		$(document).ready(function() {
 			table = $('#tb_antrian').DataTable({
 				'scroller': false,
-				'scrollY': '300px',
+				'scrollY': '800px',
 				'scrollCollapse': false,
 				'paging': false,
 				'searching': false,
@@ -273,9 +303,10 @@
 					}
 				],
 			});
+
 			table2 = $('#tb_antrian2').DataTable({
 				'scroller': false,
-				'scrollY': '300px',
+				'scrollY': '800px',
 				'scrollCollapse': false,
 				'paging': false,
 				'searching': false,
@@ -310,149 +341,23 @@
 				],
 			});
 
+			$('#tb_antrian, #tb_antrian2').on('draw.dt', function() {
+                var $scrollBody = $(table.table().node()).parent();
+      			$scrollBody.scrollTop($scrollBody.get(0).scrollHeight);
+                var $scrollBody2 = $(table2.table().node()).parent();
+      			$scrollBody2.scrollTop($scrollBody2.get(0).scrollHeight);
+            });
+
 			$("#unit_id").change(() => {
 				table.draw();
 				table2.draw();
-				// ambil_antrean();
 			});
 
 			setInterval(() => {
 				table.draw();
 				table2.draw();
 			}, 50000);
-
-
-			var $el = $(".dataTables_scrollBody");
-
-			function anim() {
-				var st = $el.scrollTop();
-				var sb = $el.prop("scrollHeight") - $el.innerHeight();
-				/* console.log('st' + st);
-				console.log('sb' + sb); */
-				$el.animate({
-					scrollTop: st < sb / 2 ? sb : 0
-				}, 150000, anim);
-			}
-
-			function stop() {
-				$el.stop();
-			}
-			anim();
-			$el.hover(stop, anim);
 		})
-
-		var loadAntrean;
-
-		function ambil_antrean() {
-			clearInterval(loadAntrean);
-			loadAntrean = setInterval(() => {
-				racikanredy();
-				nonracikanredy();
-			}, 10000)
-		}
-
-		// rcp_racikan_ready
-
-		function racikanredy() {
-			$.ajax({
-				type: "post",
-				url: "<?= base_url() ?>antrean_recipe/noracikanredy",
-				dataType: "json",
-				data: {
-					unit_id: $("#unit_id_depo").val()
-				},
-				success: function(response) {
-					console.log(response.noResepRacikanReady);
-					if (response.noResepRacikanReady) {
-						$("#rcp_racikan_ready").text(response.noResepRacikanReady.patient_name)
-						if (response.noResepRacikanReady.unit_name != '') {
-							$("#unit_name").text(response.noResepRacikanReady.unit_name)
-						} else {
-							$("#unit_name").text('-')
-						}
-
-						if (response.noResepRacikanReady.status == 1) {
-
-							var bell = document.getElementById('tingtung');
-							bell.pause();
-							bell.currentTime = 0;
-							bell.play();
-							durasi_bell = bell.duration * 770;
-							setTimeout(function() {
-								responsiveVoice.speak(
-									response.noResepRacikanReady.patient_name + ". DARI " + response.noResepRacikanReady.unit_name + " silahkan menuju ke " + response.noResepRacikanReady.depo, "Indonesian Female", {
-										pitch: 1,
-										rate: 1,
-										volume: 2,
-										// onstart: voiceStartCallback,
-										// onend: voiceEndCallback(no_urut, counter, 7100, queue_id)
-									}
-								);
-							}, durasi_bell)
-							update_status(response.noResepRacikanReady.sale_id);
-						}
-					} else {
-						$("#rcp_racikan_ready").text(0)
-						$("#unit_name").text("-")
-					}
-				}
-			})
-		}
-
-		function update_status(sale_id) {
-			$.ajax({
-				type: "post",
-				url: "<?= base_url() ?>antrean_recipe/update_antrian",
-				datatype: "json",
-				data: {
-					sale_id
-				},
-				success: function(param) {
-					console.log(param)
-				}
-			})
-		}
-
-		function nonracikanredy() {
-			$.ajax({
-				type: "post",
-				url: "<?= base_url() ?>antrean_recipe/noResepNonRacikanReady",
-				dataType: "json",
-				data: {
-					unit_id: $("#unit_id_depo").val()
-				},
-				success: function(response) {
-					console.log(response.noResepNonRacikanReady);
-					if (response.noResepNonRacikanReady) {
-						$("#rcp_non_racikan_ready").text(response.noResepNonRacikanReady.patient_name)
-						$("#unti_name_racika").text(response.noResepNonRacikanReady.unit_name)
-						if (response.noResepNonRacikanReady.status == 1) {
-							var bell = document.getElementById('tingtung');
-							bell.pause();
-							bell.currentTime = 0;
-							bell.play();
-							durasi_bell = bell.duration * 770;
-							setTimeout(function() {
-								responsiveVoice.speak(
-									response.noResepNonRacikanReady.patient_name + ". DARI " + response.noResepNonRacikanReady.unit_name + " silahkan menuju ke " + response.noResepNonRacikanReady.depo, "Indonesian Female", {
-										pitch: 1,
-										rate: 1,
-										volume: 2,
-										// onstart: voiceStartCallback,
-										// onend: voiceEndCallback(no_urut, counter, 7100, queue_id)
-									}
-								);
-							}, durasi_bell)
-
-							update_status(response.noResepNonRacikanReady.sale_id);
-						}
-					} else {
-						$("#rcp_non_racikan_ready").text(0)
-						$("#unti_name_racika").text("-")
-					}
-				}
-			})
-		}
 	</script>
 
 	<script>

@@ -29,6 +29,26 @@ class Sale extends MY_Generator
 		$this->theme('sale/index', $data, get_class($this));
 	}
 
+	public function panggil_antrian($sale_id) {
+		$this->load->library("pusher");
+		$sale = $this->db->select("*,split_part(s.sale_num, '/', 2) as antrian")
+				->get_where("farmasi.sale s",[
+					"sale_id"	=> $sale_id
+				])->row();
+		$this->db->where("sale_id",$sale_id)->update("farmasi.sale",[
+			"sale_status"		=> "2",
+			"finish_time"		=> date("Y-m-d H:i:s"),
+			"finish_user_id"	=> $this->session->user_id
+		]);
+		$resp = [
+			"nomor"  	=> $sale->antrian,
+			"unit_id"  	=> $sale->unit_id,
+			"kronis"  	=> $sale->kronis,
+			"pasien"	=> $sale->patient_name
+		];
+		$this->pusher->call_antrian($resp);
+	}
+
 	public function unset_ses()
 	{
 		unset($_SESSION['penjualan']);
@@ -347,7 +367,8 @@ class Sale extends MY_Generator
 			$filter = array_merge($filter, ["sale_type" => $attr['sale_type']]);
 		}
 		// $filter["sale_type"] = $attr['sale_type'];
-		$filter["custom"] = " to_char(sale_date,'MM-YYYY')='" . $attr['bulan'] . "'";
+		list($tanggal1,$tanggal2) = explode('/',$attr['tanggal']);
+		$filter["custom"] = " (to_char(sale_date,'YYYY-MM-DD') between '" . $tanggal1 . "' and '" . $tanggal2 . "')";
 
 		$data 	= $this->datatable->get_data($fields, $filter, 'm_sale', $attr);
 		$records["aaData"] = array();
