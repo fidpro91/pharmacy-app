@@ -119,7 +119,7 @@
         }
       },
       'columnDefs': [{
-          'targets': [0, 1, -1],
+          'targets': [0,1,2,-1],
           'searchable': false,
           'orderable': false,
         },
