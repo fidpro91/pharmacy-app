@@ -33,7 +33,7 @@ class Curls
     
     public function api_farmasi($method,$url,$data = array()){
         $ch = curl_init(); 
-        $base_url = "http://192.168.1.21/pharmacy_app/api/api_push/";
+        $base_url = "http://192.168.1.21/pharmacy-app/api/api_push/";
         $url = $base_url.$url;
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HTTPHEADER,array("Content-Type: application/json"));
