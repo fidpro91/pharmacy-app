@@ -30,4 +30,18 @@ class Curls
         curl_close($ch);
         return json_decode($result,true);
     }
+    
+    public function api_farmasi($method,$url,$data = array()){
+        $ch = curl_init(); 
+        $base_url = "http://192.168.1.21/pharmacy_app/api/api_push/";
+        $url = $base_url.$url;
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER,array("Content-Type: application/json"));
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return json_decode($result,true);
+    }
 }
