@@ -39,8 +39,23 @@ class Curls
         curl_setopt($ch, CURLOPT_HTTPHEADER,array("Content-Type: application/json"));
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 15);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
         $result = curl_exec($ch);
+        $error_msg = curl_error($ch);
+        if ($error_msg) {
+            $data = [
+                "metaData" => [
+                    "code"      => "400",
+                    "message"   => $error_msg
+                ],
+                "response" => null
+            ];
+            curl_close($ch);
+            print_r($data);
+            return false;
+        }
         curl_close($ch);
         return json_decode($result,true);
     }
