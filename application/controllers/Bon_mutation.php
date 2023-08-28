@@ -271,7 +271,7 @@ class Bon_mutation extends MY_Generator {
 	public function konfirmasi_distribusi()
 	{
 		// print_r($this->input->post());die;
-		if ($this->input->post('button-konfirm') === '2') {
+		if ($this->input->post('button-konfirm') == '2') {
 			$this->batal_terima();
 		}else{
 			$this->konfirm_terima();
