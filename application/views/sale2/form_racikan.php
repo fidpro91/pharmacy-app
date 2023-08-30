@@ -46,7 +46,7 @@
                     'async': false,
                     'type': "GET",
                     'dataType': 'json',
-                    'url': "sale/show_multiRowsRacikan",
+                    'url': "sale2/show_multiRowsRacikan",
                     'success': function(data) {
                         dataku = data;
                         // const sub_total_racikan = $("#sub_total_racikan").text();
@@ -66,7 +66,7 @@
                 'async': false,
                 'type': "post",
                 'data': $("#fm_sale").serialize(),
-                'url': "sale/set_item_racikan",
+                'url': "sale2/set_item_racikan",
                 'dataType':'json',
                 'success': function (data) {
                     $("#form_racikan").find("input[name!='biaya_racikan']").val('');
@@ -122,7 +122,7 @@
     function removeRacikan(a, b, biaya, total) {
 		$.ajax({
 			'type': "get",
-			'url': "sale/remove_item_racikan/" + b + "/" + biaya + "/" + total,
+			'url': "sale2/remove_item_racikan/" + b + "/" + biaya + "/" + total,
 			'dataType': 'json',
 			'success': function(data) {
 				$(a).closest('div').remove();

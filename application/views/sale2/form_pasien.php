@@ -139,7 +139,7 @@
 
     $("body").on("focus", "#patient_norm", function() {
         $(this).autocomplete({
-            source: "<?php echo site_url('sale/get_no_rm/norm'); ?>/"+$("#tipe_patient").val(),
+            source: "<?php echo site_url('sale2/get_no_rm/norm'); ?>/"+$("#tipe_patient").val(),
             autoFocus: true,
             minLength:4,
             maxShowItems: 5,
@@ -201,7 +201,7 @@
 
     $("body").on("focus", "#patient_name", function() {
         $(this).autocomplete({
-            source: "<?php echo site_url('sale/get_no_rm/name'); ?>",
+            source: "<?php echo site_url('sale2/get_no_rm/name'); ?>",
             autoFocus: true,
             minLength:4,
             select: function(event, ui) {
@@ -258,7 +258,7 @@
             $.ajax({
                 'type': "post",
                 'data': $(form).serialize(),
-                'url': "sale/set_data_pasien",
+                'url': "sale2/set_data_pasien",
                 'dataType' : 'json',
                 'success': function(data) {
                     if (data.code !== '200') {
@@ -286,7 +286,7 @@
     });
 
     $('#modal_history').on('show.bs.modal', function () {
-        $(this).find(".modal-body").load("sale/show_history_px");
+        $(this).find(".modal-body").load("sale2/show_history_px");
     });
     <?= $this->config->item('footerJS') ?>
 </script>

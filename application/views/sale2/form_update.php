@@ -1,7 +1,7 @@
 <style>
     .ui-autocomplete { z-index:2147483647; }
 </style>
-<?= form_open("sale/update_data", ["method" => "post", "id" => "form_update_sale"]) ?>
+<?= form_open("sale2/update_data", ["method" => "post", "id" => "form_update_sale"]) ?>
 <div class="row">
     <div class="col-md-4">
         <div class="col-md-6">
@@ -110,7 +110,7 @@
                     'async': false,
                     'type': "GET",
                     'dataType': 'json',
-                    'url': "sale/show_multiRows/true/<?=$sale_id?>",
+                    'url': "sale2/show_multiRows/true/<?=$sale_id?>",
                     'success': function (data) {
                         dataku = data;
                     }
@@ -150,7 +150,7 @@
 
     $("body").on("focus", ".autocom_item_id", function() {
 	    $(this).autocomplete({
-            source: "<?php echo site_url('sale/get_item');?>/"+$("#unit_id_depo").val(),
+            source: "<?php echo site_url('sale2/get_item');?>/"+$("#unit_id_depo").val(),
 			autoFocus: true,
             select: function (event, ui) {
 				$('tr[class*="list_obat"]').each(function(i,a){
@@ -183,7 +183,7 @@
             $.ajax({
                 'type': "post",
                 'data': $(form).serialize(),
-                'url': "sale/update_data",
+                'url': "sale2/update_data",
                 'dataType' : 'json',
                 'success': function(data) {
                     $.unblockUI();

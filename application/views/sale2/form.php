@@ -5,7 +5,7 @@
 </style>
 <script src="<?= base_url("assets/plugins/autocompletescroll/jquery.ui.autocomplete.scroll.min.js") ?>"></script>
 <div class="row">
-	<?= form_open("sale/save", ["method" => "post", "id" => "fm_sale_h"], $model) ?>
+	<?= form_open("sale2/save", ["method" => "post", "id" => "fm_sale_h"], $model) ?>
 	<?= form_hidden("sale_id") ?>
 	<div class="col-md-12">
 		<div class="box">
@@ -209,7 +209,7 @@
 
 	$("body").on("focus", ".autocom_item_id", function() {
 		$(this).autocomplete({
-			source: "<?php echo site_url('sale/get_item'); ?>/" + $("#unit_id_depo").val(),
+			source: "<?php echo site_url('sale2/get_item'); ?>/" + $("#unit_id_depo").val(),
 			autoFocus: true,
 			minLength: 3,
 			select: function(event, ui) {
@@ -240,7 +240,7 @@
 	function removeRacikan(a, b, biaya, total) {
 		$.ajax({
 			'type': "get",
-			'url': "sale/remove_item_racikan/" + b + "/" + biaya + "/" + total,
+			'url': "sale2/remove_item_racikan/" + b + "/" + biaya + "/" + total,
 			'dataType': 'json',
 			'success': function(data) {
 				$(a).closest('div').remove();
@@ -256,7 +256,7 @@
 	function removeNonRacikan(a, b, biaya) {
 		$.ajax({
 			'type': "get",
-			'url': "sale/remove_item_nonracikan/" + b + "/" + biaya,
+			'url': "sale2/remove_item_nonracikan/" + b + "/" + biaya,
 			'dataType': 'json',
 			'success': function(data) {
 				$(a).closest('div').remove();
@@ -304,7 +304,7 @@
 				'type': "post",
 				'data': $(this).serialize() + "&unit_id=" + $("#unit_id_depo").val() + "&embalase_item=" + $("#total_biaya_nonracikan").attr('isi'),
 				'dataType': 'json',
-				'url': "sale/save",
+				'url': "sale2/save",
 				'success': function(data) {
 					$.unblockUI();
 					leavePage = false;

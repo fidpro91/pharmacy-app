@@ -96,7 +96,7 @@
 <script type="text/javascript">
   var table;
   $(document).ready(function() {
-    // $("#form_sale").load("sale/show_form");
+    // $("#form_sale").load("sale2/show_form");
     $(document).bind('keydown', 'f1', function assets() {
       $("#btn-add").click();
       return false;
@@ -110,7 +110,7 @@
       ],
       "scrollX": true,
       "ajax": {
-        "url": "<?php echo site_url('sale/get_data') ?>",
+        "url": "<?php echo site_url('sale2/get_data') ?>",
         "type": "POST",
         "data": function(f) {
           f.unit_id = $("#unit_id_depo").val();
@@ -161,17 +161,17 @@
   $("#btn-add").click(function() {
     $("#form_sale").show();
     $("#data_sale").hide();
-    $("#form_sale").load("sale/show_form/" + $("#unit_id_depo").val());
+    $("#form_sale").load("sale2/show_form/" + $("#unit_id_depo").val());
   });
 
   function panggil_antrian(id){
-    $.get('sale/panggil_antrian/' + id);
+    $.get('sale2/panggil_antrian/' + id);
   }
 
   function set_val(id) {
     $("#modal_update").modal('show');
-    $("#modal_update").find('.modal-body').load('sale/show_form_update/' + id, function() {
-      $.get('sale/find_one/' + id, (data) => {
+    $("#modal_update").find('.modal-body').load('sale2/show_form_update/' + id, function() {
+      $.get('sale2/find_one/' + id, (data) => {
         $.each(data, (ind, obj) => {
           $('.modal-body').find("#" + ind).val(obj);
         });
@@ -185,7 +185,7 @@
 
   function checkout_pasien(noresep) {
     $(".loading-checkout").show();
-    $.post('<?php echo base_url() ?>sale/checkout_pasien', {
+    $.post('<?php echo base_url() ?>sale2/checkout_pasien', {
       noresep: noresep,
       unit_id: $("#unit_id_depo").val(),
       asal_resep: $("#asal_resep").val(),
@@ -202,7 +202,7 @@
 
   function deleteRow(id,rcp_id) {
     if (confirm("Anda yakin akan menghapus data ini?")) {
-      $.get('sale/delete_row/' + id+'/'+ rcp_id, (data) => {
+      $.get('sale2/delete_row/' + id+'/'+ rcp_id, (data) => {
         alert(data.message);
         location.reload();
       }, 'json');
@@ -231,7 +231,7 @@
       return false;
     }
     if (confirm("Anda yakin akan menghapus data ini?")) {
-      $.post('sale/delete_multi', {
+      $.post('sale2/delete_multi', {
         data: searchIDs
       }, (resp) => {
         alert(resp.message);
@@ -241,21 +241,21 @@
   });
 
   function cetak_resep(id, type) {
-    var url = "<?php echo base_url() ?>sale/strukapotikresep/" + id + '/' + $('#unit_id_depo').val() + '/' + type;
+    var url = "<?php echo base_url() ?>sale2/strukapotikresep/" + id + '/' + $('#unit_id_depo').val() + '/' + type;
     var left = ($(window).width() / 2) - (1200 / 2);
     var top = ($(window).height() / 2) - (800 / 2);
     window.open(url, "Struk Pembayaran Apotik", "width=1200, height=800, top=" + top + ", left=" + left);
   }
 
   function cetak_etiket(id) {
-    var url = "<?php echo base_url() ?>sale/struketiket/" + id;
+    var url = "<?php echo base_url() ?>sale2/struketiket/" + id;
     var left = ($(window).width() / 2) - (600 / 2);
     var top = ($(window).height() / 2) - (400 / 2);
     window.open(url, "Struk E-tiket", "width=600, height=400, top=" + top + ", left=" + left + ",scrollbars=yes");
   }
 
   function cetak_prb(id) {
-    var url = "<?php echo base_url() ?>sale/cetak_prb/" + id;
+    var url = "<?php echo base_url() ?>sale2/cetak_prb/" + id;
     var left = ($(window).width() / 2) - (800 / 2);
     var top = ($(window).height() / 2) - (400 / 2);
     window.open(url, "SURAT RUJUK BALIK", "width=800, height=400, top=" + top + ", left=" + left);

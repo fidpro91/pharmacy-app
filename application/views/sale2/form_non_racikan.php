@@ -25,7 +25,7 @@
 						'async': false,
 						'type': "GET",
 						'dataType': 'json',
-						'url': "sale/show_multiRows",
+						'url': "sale2/show_multiRows",
 						'success': function (data) {
 							dataku = data;
 						}
@@ -78,7 +78,7 @@
 				'async': false,
 				'type': "post",
 				'data': $("#form_non_racikan").serialize()+"&embalase_item="+$("#labelEmbalase").text(),
-				'url': "sale/set_item_nonracikan",
+				'url': "sale2/set_item_nonracikan",
 				'dataType':'json',
 				'success': function (data) {
 					$(".list_obat_nonracikan2").append(data.html);

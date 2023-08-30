@@ -104,7 +104,7 @@
     var dataPatient;
     $("body").on("focus", "#patient_norm", function() {
         $(this).autocomplete({
-            source: "<?php echo site_url('sale/get_no_rm/norm'); ?>/"+$("#tipe_patient").val(),
+            source: "<?php echo site_url('sale2/get_no_rm/norm'); ?>/"+$("#tipe_patient").val(),
             autoFocus: true,
             minLength:4,
             maxShowItems: 5,
@@ -168,7 +168,7 @@
 
     $("body").on("focus", "#patient_name", function() {
         $(this).autocomplete({
-            source: "<?php echo site_url('sale/get_no_rm/name'); ?>",
+            source: "<?php echo site_url('sale2/get_no_rm/name'); ?>",
             autoFocus: true,
             minLength:4,
             select: function(event, ui) {
@@ -219,13 +219,13 @@
             $('#sale_type').val(1);
         }
 
-        $.get("sale/get_own_surety/"+$("#own_id").val()+'/'+$("#surety_id").val(),function(data){
+        $.get("sale2/get_own_surety/"+$("#own_id").val()+'/'+$("#surety_id").val(),function(data){
             $("#margin_profit").val(data.percent_profit);
         },'json');
     }
 
     $('#modal_history').on('show.bs.modal', function () {
-        $(this).find(".modal-body").load("sale/show_history_px");
+        $(this).find(".modal-body").load("sale2/show_history_px");
     });
 
 	<?= $this->config->item('footerJS') ?>

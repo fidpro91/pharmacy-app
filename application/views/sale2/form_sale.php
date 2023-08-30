@@ -1,5 +1,5 @@
 <div class="col-md-12">
-	<?= form_open("sale/save", ["method" => "post", "id" => "fm_sale"], $model) ?>
+	<?= form_open("sale2/save", ["method" => "post", "id" => "fm_sale"], $model) ?>
 	<?= form_hidden("sale_id") ?>
 	<?= form_hidden("profit") ?>
 	<?= form_hidden("margin_profit") ?>
@@ -15,7 +15,7 @@
 		</div>
 		<div class="box-body">
 			<?php
-				$this->load->view("sale/patient");
+				$this->load->view("sale2/patient");
 			?>
 		</div>
 	</div>
@@ -31,12 +31,12 @@
 				<div class="tab-content">
 					<div class="tab-pane active" id="tab1">
 						<?php
-							$this->load->view("sale/nonracikan");
+							$this->load->view("sale2/nonracikan");
 						?>
 					</div>
 					<div class="tab-pane" id="tab2">
 						<?php
-							$this->load->view("sale/form_racikan");
+							$this->load->view("sale2/form_racikan");
 						?>
 					</div>
 				</div>
@@ -82,7 +82,7 @@
 <script type="text/javascript">
 	$("body").on("focus", ".autocom_item_id", function() {
 		$(this).autocomplete({
-			source: "<?php echo site_url('sale/get_item'); ?>/" + $("#unit_id_depo").val(),
+			source: "<?php echo site_url('sale2/get_item'); ?>/" + $("#unit_id_depo").val(),
 			autoFocus: true,
 			minLength: 3,
 			select: function(event, ui) {
@@ -171,7 +171,7 @@
 					'type': "post",
 					'data': $(form).serialize() + "&unit_id=" + $("#unit_id_depo").val() + "&embalase_item=" + $("#total_biaya_nonracikan").attr('isi')+ "&grand_total=" + $("#grand_total").attr('isi')+ "&pembulatan=" + $("#pembulatan_biaya").attr('isi')+ "&biaya_racikan=" + $("#total_biaya_racikan").attr('isi'),
 					'dataType': 'json',
-					'url': "sale/save2",
+					'url': "sale2/save2",
 					'success': function(data) {
 						$.unblockUI();
 						leavePage = false;

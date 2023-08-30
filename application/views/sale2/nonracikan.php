@@ -83,7 +83,6 @@
         $("#sub_total_nonracikan").attr('isi',totalAll);
         $("#sub_total_nonracikan").text(formatMoney(totalAll));
         grandTotal();
-        console.log(callback);
         if (typeof callback === "function") {
             callback();
         }
