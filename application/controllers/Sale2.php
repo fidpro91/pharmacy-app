@@ -50,7 +50,6 @@ class Sale2 extends MY_Generator
 			$input[$key] = (!empty($data[$key]) ? $data[$key] : null);
 		}
 		
-		$input['doctor_name'] 	= 'xxx';
 		$input['unit_id'] 		= $data['unit_id'];
 		$input['sale_type'] 	= $data['sale_type'];
 		$input['sale_app'] 		= 'HEAPY';
