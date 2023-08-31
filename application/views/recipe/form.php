@@ -71,8 +71,9 @@
 				</div>
 			</div>
 		</div>
-		<div class="list_recipe">
-		</div>
+	</div>
+	<div class="col-md-12">
+		<div class="list_recipe"></div>
 	</div>
 	<?= form_close() ?>
 	<div class="col-md-12">
