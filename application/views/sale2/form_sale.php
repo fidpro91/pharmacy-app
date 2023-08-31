@@ -169,7 +169,7 @@
 				$.blockUI();
 				$.ajax({
 					'type': "post",
-					'data': $(form).serialize() + "&unit_id=" + $("#unit_id_depo").val() + "&embalase_item=" + $("#total_biaya_nonracikan").attr('isi')+ "&grand_total=" + $("#grand_total").attr('isi')+ "&pembulatan=" + $("#pembulatan_biaya").attr('isi')+ "&biaya_racikan=" + $("#total_biaya_racikan").attr('isi'),
+					'data': $(form).serialize() + "&unit_id=" + $("#unit_id_depo").val() + "&embalase_item=" + $("#total_biaya_nonracikan").attr('isi')+ "&grand_total=" + $("#grand_total").attr('isi')+ "&pembulatan=" + $("#pembulatan_biaya").attr('isi')+ "&biaya_racikan=" + $("#total_biaya_racikan").attr('isi')+ "&doctor_name=" + $("#doctor_id").find('option:selected').text(),
 					'dataType': 'json',
 					'url': "sale2/save2",
 					'success': function(data) {
