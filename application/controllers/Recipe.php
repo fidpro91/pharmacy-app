@@ -100,8 +100,14 @@ class Recipe extends MY_Generator
 		$embalase = abs(ceil($embalase) - $embalase) * 100;
 		$totalAll = $totalAll + $embalase;
 		
+		//dokter
+		$dokter = $this->db->get_where("hr.employee",[
+			"e.employee_id"	=> $data["par_id"]
+		])->row();
+
 		$saleInput = [
-			"sale_num" => $this->get_no_sale($data["unit_id"]),
+			"sale_num" 	=> $this->get_no_sale($data["unit_id"]),
+			"date_act"	=> date("Y-m-d H:i:s"),
 			"sale_date" => $data["rcp_date"],
 			"unit_id" => $data["unit_id"],
 			"visit_id" => $data["visit_id"],
@@ -115,6 +121,7 @@ class Recipe extends MY_Generator
 			"service_id" => $data["services_id"],
 			"surety_id" => $data["surety_id"],
 			"doctor_id" => $data["par_id"],
+			"doctor_name" => ($dokter->employee_ft.$dokter->employee_name.$dokter->employee_bt),
 			"own_id" => $data["own_id"],
 			"sale_total" => $totalAll,
 			"embalase_item_sale" => $embalaseNonRacikan,
