@@ -2,53 +2,11 @@
 	.ui-autocomplete {
 		z-index: 2147483647;
 	}
+	.comment-text{
+		color: black !important;
+	}
 </style>
 <?= form_open("recipe/save", ["method" => "post", "id" => "fm_recipe"], $model) ?>
-<div class="row">
-	<div class="col-md-12">
-	<div class="box box-widget widget-user-2">
-        <div class="widget-user-header bg-aqua-active">
-			<div class="pull-right">
-				<h3 class="widget-user-username">
-					<i class="fa fa-stethoscope"></i>
-					<span class="unit_layanan"></span>
-				</h3>
-				<h3 class="widget-user-username">
-					<i class="fa fa-user-md"></i>
-					<span class="dpjp_layan"></span>
-				</h3>
-			</div>
-          <div class="widget-user-image">
-            <img class="img-circle" src="https://via.placeholder.com/128" alt="User Avatar">
-          </div>
-          <h3 class="widget-user-username px_norm">John Doe</h3>
-          <h4 class="widget-user-username px_name">John Doe</h4>
-        </div>
-        <div class="box-footer">
-          <div class="row">
-            <div class="col-sm-4 border-right">
-              <div class="description-block">
-                <h5 class="description-header">Cara Bayar</h5>
-                <span class="description-text cara_bayar">215</span>
-              </div>
-            </div>
-            <div class="col-sm-4 border-right">
-              <div class="description-block">
-                <h5 class="description-header">No Kartu</h5>
-                <span class="description-text noka">150</span>
-              </div>
-            </div>
-            <div class="col-sm-4">
-              <div class="description-block">
-                <h5 class="description-header">No SEP</h5>
-                <span class="description-text nosep">34</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-	</div>
-</div>
 <div class="row">
 	<div class="col-md-2">
 		<?= form_hidden("rcp_id") ?>
@@ -84,7 +42,7 @@
 			"selected" => 1
 		]) ?>
 	</div>
-	<div class="col-md-10">
+	<div class="col-md-3">
 		<div class="box box-primary">
 			<div class="box-header">
 				TELAAH RESEP
@@ -93,30 +51,82 @@
 				<div style="border:1px solid #000;">
 					<table class="table">
 						<?php
-						$col = 4;
-						$brs = count($kelengkapan) / $col;
-						$clear = [];
-						for ($i = 0; $i < $brs; $i++) {
-							echo "<tr>";
-							for ($j = 0; $j < $col; $j++) {
-								$ii = ($j * $brs) + $i;
-								if (!in_array($kelengkapan[$ii]['reff_name'], $clear)) {
-									$checked = "";
-									if (isset($kelengkapan[$ii]['revrcp_id'])) {
-										$checked = "checked";
+							/* $col = 4;
+							$brs = count($kelengkapan) / $col;
+							$clear = [];
+							for ($i = 0; $i < $brs; $i++) {
+								echo "<tr>";
+								for ($j = 0; $j < $col; $j++) {
+									$ii = ($j * $brs) + $i;
+									if (!in_array($kelengkapan[$ii]['reff_name'], $clear)) {
+										$checked = "";
+										if (isset($kelengkapan[$ii]['revrcp_id'])) {
+											$checked = "checked";
+										}
+										echo "<td> <label><input $checked type=\"checkbox\" name=\"cek_kelengkapan[]\" value=\"" . $kelengkapan[$ii]['reff_id'] . "\"/> " . $kelengkapan[$ii]['reff_name'] . "</label></td>\n";
 									}
-									echo "<td> <label><input $checked type=\"checkbox\" name=\"cek_kelengkapan[]\" value=\"" . $kelengkapan[$ii]['reff_id'] . "\"/> " . $kelengkapan[$ii]['reff_name'] . "</label></td>\n";
+									$clear[] = $kelengkapan[$ii]['reff_name'];
 								}
-								$clear[] = $kelengkapan[$ii]['reff_name'];
+								echo "</tr>";
+							} */
+							$row="";
+							foreach ($kelengkapan as $key => $value) {
+								$checked = "";
+								if (isset($value['revrcp_id'])) {
+									$checked = "checked";
+								}
+								$row .= "<tr><td> <label><input $checked type=\"checkbox\" name=\"cek_kelengkapan[]\" value=\"" . $value["reff_id"] . "\"/> " . $value['reff_name'] . "</label></td></tr>\n";
 							}
-							echo "</tr>";
-						}
+							echo $row;
 						?>
 					</table>
 				</div>
 			</div>
 		</div>
 	</div>
+	<div class="col-md-7">
+		<div class="box box-widget widget-user-2">
+				<div class="widget-user-header bg-aqua-active">
+					<div class="pull-right">
+						<h3 class="widget-user-username">
+							<i class="fa fa-stethoscope"></i>
+							<span class="unit_layanan"></span>
+						</h3>
+						<h3 class="widget-user-username">
+							<i class="fa fa-user-md"></i>
+							<span class="dpjp_layan"></span>
+						</h3>
+					</div>
+				<div class="widget-user-image">
+					<img class="img-circle" src="https://via.placeholder.com/128" alt="User Avatar">
+				</div>
+				<h3 class="widget-user-username px_norm">John Doe</h3>
+				<h4 class="widget-user-username px_name">John Doe</h4>
+				</div>
+				<div class="box-footer">
+				<div class="row">
+					<div class="col-sm-4 border-right">
+					<div class="description-block">
+						<h5 class="description-header">Cara Bayar</h5>
+						<span class="description-text cara_bayar">215</span>
+					</div>
+					</div>
+					<div class="col-sm-4 border-right">
+					<div class="description-block">
+						<h5 class="description-header">No Kartu</h5>
+						<span class="description-text noka">150</span>
+					</div>
+					</div>
+					<div class="col-sm-4">
+					<div class="description-block">
+						<h5 class="description-header">No SEP</h5>
+						<span class="description-text nosep">34</span>
+					</div>
+					</div>
+				</div>
+				</div>
+			</div>
+		</div>
 	<div class="col-md-12">
 		<div class="list_recipe"></div>
 	</div>
