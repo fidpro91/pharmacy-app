@@ -102,7 +102,7 @@ class Recipe extends MY_Generator
 		
 		//dokter
 		$dokter = $this->db->get_where("hr.employee",[
-			"e.employee_id"	=> $data["par_id"]
+			"employee_id"	=> $data["par_id"]
 		])->row();
 
 		$saleInput = [
@@ -405,11 +405,15 @@ class Recipe extends MY_Generator
 	public function find_one($id)
 	{
 		$data = $this->db->where('rcp_id', $id)
-			->join("yanmed.visit v", "v.visit_id=r.visit_id")
-			->join("yanmed.services s", "s.srv_id=r.services_id")
-			->join("farmasi.surety_ownership so", "so.surety_id=v.surety_id and so.own_id=1")
-			->select("r.*,so.*,r.doctor_id as par_id,s.unit_id as unit_id_lay")
-			->get("newfarmasi.recipe r")->row();
+				->join("yanmed.visit v", "v.visit_id=r.visit_id")
+				->join("yanmed.patient p", "p.px_id=v.px_id")
+				->join("hr.employee e", "e.employee_id=r.doctor_id")
+				->join("yanmed.services s", "s.srv_id=r.services_id")
+				->join("admin.ms_unit mu", "s.unit_id=mu.unit_id")
+				->join("yanmed.ms_surety sur", "sur.surety_id=v.surety_id")
+				->join("farmasi.surety_ownership so", "so.surety_id=v.surety_id and so.own_id=1")
+				->select("r.*,so.*,r.doctor_id as par_id,s.unit_id as unit_id_lay,e.*,p.px_norm,p.px_name,p.px_address,mu.unit_name,sur.surety_name,v.pxsurety_no,v.sep_no")
+				->get("newfarmasi.recipe r")->row();
 
 		echo json_encode($data);
 	}

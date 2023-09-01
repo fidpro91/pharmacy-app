@@ -147,6 +147,13 @@
           $.each(data, (ind, obj) => {
             $('.modal-body').find("#" + ind).val(obj);
           });
+          $('.modal-body').find(".px_name").text(data.px_name);
+          $('.modal-body').find(".px_norm").text(data.px_norm);
+          $('.modal-body').find(".unit_layanan").text(data.unit_name);
+          $('.modal-body').find(".cara_bayar").text(data.surety_name);
+          $('.modal-body').find(".noka").text(data.pxsurety_no);
+          $('.modal-body').find(".nosep").text(data.sep_no);
+          $('.modal-body').find(".dpjp_layan").text(data.employee_ft+data.employee_name+data.employee_bt);
           $("#modal_recipe").find("select[class*='select2']").trigger("change");
         }, 'json');
       });

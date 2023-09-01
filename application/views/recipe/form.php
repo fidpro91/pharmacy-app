@@ -5,6 +5,51 @@
 </style>
 <?= form_open("recipe/save", ["method" => "post", "id" => "fm_recipe"], $model) ?>
 <div class="row">
+	<div class="col-md-12">
+	<div class="box box-widget widget-user-2">
+        <div class="widget-user-header bg-aqua-active">
+			<div class="pull-right">
+				<h3 class="widget-user-username">
+					<i class="fa fa-stethoscope"></i>
+					<span class="unit_layanan"></span>
+				</h3>
+				<h3 class="widget-user-username">
+					<i class="fa fa-user-md"></i>
+					<span class="dpjp_layan"></span>
+				</h3>
+			</div>
+          <div class="widget-user-image">
+            <img class="img-circle" src="https://via.placeholder.com/128" alt="User Avatar">
+          </div>
+          <h3 class="widget-user-username px_norm">John Doe</h3>
+          <h4 class="widget-user-username px_name">John Doe</h4>
+        </div>
+        <div class="box-footer">
+          <div class="row">
+            <div class="col-sm-4 border-right">
+              <div class="description-block">
+                <h5 class="description-header">Cara Bayar</h5>
+                <span class="description-text cara_bayar">215</span>
+              </div>
+            </div>
+            <div class="col-sm-4 border-right">
+              <div class="description-block">
+                <h5 class="description-header">No Kartu</h5>
+                <span class="description-text noka">150</span>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="description-block">
+                <h5 class="description-header">No SEP</h5>
+                <span class="description-text nosep">34</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+	</div>
+</div>
+<div class="row">
 	<div class="col-md-2">
 		<?= form_hidden("rcp_id") ?>
 		<?= form_hidden("px_id") ?>
@@ -50,19 +95,19 @@
 						<?php
 						$col = 4;
 						$brs = count($kelengkapan) / $col;
-						$clear=[];
+						$clear = [];
 						for ($i = 0; $i < $brs; $i++) {
 							echo "<tr>";
-							for ($j=0; $j < $col; $j++) {
+							for ($j = 0; $j < $col; $j++) {
 								$ii = ($j * $brs) + $i;
-								if (!in_array($kelengkapan[$ii]['reff_name'],$clear)) {
-									$checked="";
+								if (!in_array($kelengkapan[$ii]['reff_name'], $clear)) {
+									$checked = "";
 									if (isset($kelengkapan[$ii]['revrcp_id'])) {
 										$checked = "checked";
 									}
-									echo "<td> <label><input $checked type=\"checkbox\" name=\"cek_kelengkapan[]\" value=\"".$kelengkapan[$ii]['reff_id']."\"/> " . $kelengkapan[$ii]['reff_name'] . "</label></td>\n";
+									echo "<td> <label><input $checked type=\"checkbox\" name=\"cek_kelengkapan[]\" value=\"" . $kelengkapan[$ii]['reff_id'] . "\"/> " . $kelengkapan[$ii]['reff_name'] . "</label></td>\n";
 								}
-								$clear[]=$kelengkapan[$ii]['reff_name'];
+								$clear[] = $kelengkapan[$ii]['reff_name'];
 							}
 							echo "</tr>";
 						}
@@ -112,7 +157,7 @@
 	$("body").on("change", ".tb_list_recipe", function() {
 		$('.tb_list_recipe > tbody  > tr').each(function() {
 			const jumlah_barang = $(this).find(".qty").val();
-			const harga_satuan = (valid_numeric($(this).find(".sale_price").val()) + (valid_numeric($(this).find(".sale_price").val())*valid_numeric($("#percent_profit").val())));
+			const harga_satuan = (valid_numeric($(this).find(".sale_price").val()) + (valid_numeric($(this).find(".sale_price").val()) * valid_numeric($("#percent_profit").val())));
 			const total_item = jumlah_barang * harga_satuan;
 			$(this).find('.price_total').val(total_item);
 		});
@@ -168,14 +213,16 @@
 
 	$('#fm_recipe').on("submit", function() {
 		$(this).data("validator").settings.submitHandler = function(form) {
-			$('#modal_recipe').find('.modal-body').block({ message: "<h1>Processing</h1>" })
+			$('#modal_recipe').find('.modal-body').block({
+				message: "<h1>Processing</h1>"
+			})
 			$.ajax({
 				'type': "post",
 				'data': $(form).serialize() + "&unit_id=" + $("#unit_id_depo").val(),
 				'url': "recipe/save",
 				'dataType': 'json',
 				'success': function(data) {
-					$('#modal_recipe').find('.modal-body').unblock(); 
+					$('#modal_recipe').find('.modal-body').unblock();
 					alert(data.message);
 					if (data.code !== '200') {
 						return false;
@@ -213,7 +260,7 @@
 		}, 'json').then(function() {
 			$('.tb_list_recipe > tbody  > tr').each(function() {
 				const jumlah_barang = $(this).find(".qty").val();
-				const harga_satuan = valid_numeric($(this).find(".sale_price").val()) + ( valid_numeric($(this).find(".sale_price").val())*valid_numeric($("#percent_profit").val()));
+				const harga_satuan = valid_numeric($(this).find(".sale_price").val()) + (valid_numeric($(this).find(".sale_price").val()) * valid_numeric($("#percent_profit").val()));
 				const total_item = jumlah_barang * harga_satuan;
 				$(this).find('.price_total').val(total_item);
 				// $(this).find('.price_total').inputmask("IDR");
