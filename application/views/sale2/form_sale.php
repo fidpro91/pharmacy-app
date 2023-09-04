@@ -82,7 +82,7 @@
 <script type="text/javascript">
 	$("body").on("focus", ".autocom_item_id", function() {
 		$(this).autocomplete({
-			source: "<?php echo site_url('sale2/get_item'); ?>/" + $("#unit_id_depo").val(),
+			source: "<?php echo site_url('sale2/get_item'); ?>/" + $("#unit_id_depo").val() +"/"+ + $("#own_id").val(),
 			autoFocus: true,
 			minLength: 3,
 			select: function(event, ui) {
