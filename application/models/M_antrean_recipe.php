@@ -5,11 +5,12 @@ class M_antrean_recipe extends CI_Model
 
     public function get_data($sLimit, $sWhere, $sOrder, $aColumns)
     {
-        $data = $this->db->query("select " . implode(',', $aColumns) . ",x.sale_id AS id_key from (
+        $data = $this->db->query("select " . implode(',', $aColumns) . ",x.unit_name,x.sale_id AS id_key from (
 			SELECT split_part(s.sale_num, '/', 2) as sale_num,
 				COALESCE(unit_name,'APS') as unit_name,
 				patient_name,
 				sale_id,
+                s.kronis,
 				CASE
 						
 						WHEN COALESCE ( s.sale_status, 0 ) = 0 
@@ -23,11 +24,9 @@ class M_antrean_recipe extends CI_Model
 						LEFT JOIN admin.ms_unit mu on srv.unit_id = mu.unit_id 
 					WHERE
 						0 = 0
-						$sWhere 
-						-- AND s.unit_id = '18' 
+						$sWhere
 						AND DATE ( sale_date ) = DATE (
-						now()) 
-						AND s.finish_time IS NULL 
+						now())
 					ORDER BY
 					s.date_act ASC ) x ")->result_array();
 
@@ -45,6 +44,7 @@ class M_antrean_recipe extends CI_Model
 				COALESCE(unit_name,'APS') as unit_name,
 				patient_name,
 				sale_id,
+                s.kronis,
 				CASE
 						
 						WHEN COALESCE ( s.sale_status, 0 ) = 0 
@@ -59,10 +59,8 @@ class M_antrean_recipe extends CI_Model
 					WHERE
 						0 = 0
 						$sWhere 
-						-- AND s.unit_id = '18' 
 						AND DATE ( sale_date ) = DATE (
-						now()) 
-						AND s.finish_time IS NULL 
+						now())
 					ORDER BY
 					s.date_act ASC ) x
 		")->num_rows();
@@ -76,12 +74,28 @@ class M_antrean_recipe extends CI_Model
     {
         $col = [
             "sale_num" => [
-                "label" => "NO ANTRIAN"
+                "label" => "NO"
             ],
             "patient_name" => [
-                "label" => "nama pasien"
+                "label"     => "nama pasien",
+                "custom"    => function($a){
+                    return $a["patient_name"]."<br><small class=\"txt_small\">(".$a["unit_name"].")</small";
+                }
             ],
-            "status_resep"
+            /* "kronis" => [
+                "label"     => "Jenis",
+                "custom"    => function($a){
+                    if ($a["kronis"] == "t") {
+                        $label = "<span class=\"label label-warning\">RACIKAN</span>";
+                    }else{
+                        $label = "<span class=\"label label-info\">NON RACIKAN</span>";
+                    }
+                    return $label;
+                }
+            ], */
+            "status_resep" => [
+                "label" => "Status"
+            ]
         ];
         return $col;
     }

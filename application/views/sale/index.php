@@ -35,17 +35,8 @@
         </div>
       </div>
       <div class="box-body">
-        <div class="col-md-3">
-          <?= create_inputDate("filter_bulan=bulan penjualan", [
-            "format"    => "mm-yyyy",
-            "viewMode"    => "year",
-            "minViewMode"  => "year",
-            "autoclose"    => true
-          ], [
-            "value"     => date('m-Y'),
-            "readonly"  => true
-          ])
-          ?>
+        <div class="col-md-4">
+            <?=create_inputDaterange("filter_tanggal",["locale"=>["format"=>"YYYY-MM-DD","separator"=>"/"]])?>
         </div>
         <div class="col-md-3">
           <?= create_select([
@@ -123,7 +114,7 @@
         "type": "POST",
         "data": function(f) {
           f.unit_id = $("#unit_id_depo").val();
-          f.bulan = $("#filter_bulan").val();
+          f.tanggal = $("#filter_tanggal").val();
           f.sale_type = $("#filter_pembayaran").val();
         }
       },
@@ -138,7 +129,7 @@
         },
         {
           "visible": false,
-          "targets": 7
+          "targets": [8,3]
         },
         {
           'targets': 0,
@@ -163,8 +154,8 @@
     });
   });
 
-  $("#unit_id_depo, #sale_type, #filter_pembayaran").change(() => {
-    table.draw();
+  $("#unit_id_depo, #sale_type, #filter_pembayaran, #filter_tanggal").change(() => {
+      table.draw();
   });
 
   $("#btn-add").click(function() {
@@ -172,6 +163,10 @@
     $("#data_sale").hide();
     $("#form_sale").load("sale/show_form/" + $("#unit_id_depo").val());
   });
+
+  function panggil_antrian(id){
+    $.get('sale/panggil_antrian/' + id);
+  }
 
   function set_val(id) {
     $("#modal_update").modal('show');
