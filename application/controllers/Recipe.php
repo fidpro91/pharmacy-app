@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
-
+require FCPATH . 'vendor/autoload.php';
 class Recipe extends MY_Generator
 {
 
@@ -360,8 +360,15 @@ class Recipe extends MY_Generator
 						"btn-act" => "set_val('" . $row['id_key'] . "')",
 						"btn-icon" => "fa fa-cart-plus",
 						"btn-class" => "btn-default",
+					],
+					"cetak_eresep" =>
+					[
+						"btn-act" => "cetak_eresep('" . $row['id_key'] . "')",
+						"btn-icon" => "fa fa-print",
+						"btn-class" => "btn-warning",
 					]
 				], $row['id_key']);
+				
 			} elseif ($row["rcp_status"] == "2") {
 				$obj[] = create_btnAction([
 					"Checkin" =>
@@ -434,5 +441,40 @@ class Recipe extends MY_Generator
 			$resp['message'] = 'Data berhasil dihapus';
 		}
 		echo json_encode($resp);
+	}
+
+	public function cetak_eresep($id){
+		$data['resep']= $this->db->query("SELECT
+		r.rcp_id,qty,racikan_qty,rcp_date,
+		racikan_id,dosis,racikan_dosis,item_name		
+	FROM
+		newfarmasi.recipe r
+		JOIN newfarmasi.recipe_detail rd ON r.rcp_id = rd.rcp_id
+		JOIN ADMIN.ms_item i ON rd.item_id = i.item_id	
+	WHERE
+		r.rcp_id = $id")->result();
+
+		$data['pasien']= $this->db->query("SELECT	
+		concat(employee_ft,employee_name,employee_bt) as dokter,unit_name ,
+		px_norm,px_name,to_char(rcp_date,'dd-mm-yyyy') as tgl_resep,surety_name,
+		date(px_birthdate) as tgl_lahir,px_address
+	FROM
+		newfarmasi.recipe r
+		join admin.ms_unit u on r.unit_id = u.unit_id
+		join yanmed.patient p on r.px_id = p.px_id
+		JOIN hr.employee e ON r.doctor_id = e.employee_id 
+		join yanmed.ms_surety s on r.surety_id = s.surety_id
+	WHERE
+		r.rcp_id = $id")->row();
+			$mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => [214, 108]]);
+					
+			$lebar_kertas = 214; // Misalnya, 214 mm
+			$tinggi_kertas = 108; // Misalnya, 108 mm			
+			//$mpdf->AddPage(['mode' => 'utf-8', 'format' => [90, 50]]);	
+			$mpdf->SetMargins(10, 10, 0, 0);		
+			$html = $this->load->view("recipe/cetak_eresep", $data, true);
+			$mpdf->WriteHTML($html);			
+			$mpdf->Output();
+
 	}
 }
