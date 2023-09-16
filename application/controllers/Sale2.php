@@ -95,6 +95,11 @@ class Sale2 extends MY_Generator
 				return $arr + ['sale_id' => $saleId];
 			}, $racikan['detail']);
 			$saleDetail = array_merge($saleDetail, $racikan['detail']);
+			$this->db->where([
+				"sale_id" => $saleId
+			])->update("farmasi.sale",[
+				"has_racikan"	=> "t"
+			]);
 		}
 
 		//insert sale detail
