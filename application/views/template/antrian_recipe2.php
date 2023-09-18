@@ -99,10 +99,20 @@
 							<div class="widget-user-image">
 								<img class="img-circle" src="<?= base_url("assets") ?>/images/logors2.png" alt="User Avatar">
 							</div>
-							<div class="box-footer">
+							<div class="box-footer" style="padding-top: 0px !important;">
 								<div class="row">
 									<div class="col-sm-12">
-										<h4 style="font-weight: bold;"><i class="fa fa-bullhorn"></i> INFORMASI <i class="fa fa-bullhorn"></i></h4>
+										<div class="user-panel">
+											<div class="pull-right">
+												<h4 style="font-weight: bold;"><i class="fa fa-bullhorn"></i> INFORMASI <i class="fa fa-bullhorn"></i></h4>
+											</div>
+											<div class="pull-left image">
+												<img src="<?= base_url("assets") ?>/images/call-center.png" class="img-circle" alt="">
+											</div>
+											<div class="pull-left info">
+												<h3 style="font-weight: bold; color:brown !important; font-size:2em; margin:0px;"><span id="namaPasien" style="text-decoration: underline;">.....</span></h3>
+											</div>
+										</div>
 										<marquee behavior="" direction="" class="bg-red">
 											<h2 style="font-weight: bold; margin:0px !important; padding:0px !important;">
 												Resep Obat Racikan dan Obat Kronis Membutuhkan Waktu Lebih Lama * Mohon Menunggu Dengan Sabar
@@ -246,8 +256,8 @@
 			} */
 
 			var nomorantrean = data.nomor.split("").join(". ");
-			var pasien = data.pasien.inisial + " " + data.pasien.nama;
 			var unitApotek = $("#unit_id option:selected").text();
+			$("#namaPasien").text(data.pasien+'-'+data.unit_layanan);
 			responsiveVoice.speak(
 				data.pasien + ", DARI "+data.unit_layanan+". menuju ke " + unitApotek, "Indonesian Female", {
 					pitch: 1,

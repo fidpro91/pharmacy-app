@@ -34,4 +34,5 @@ vendor/*
 datacache/*
 assets/*
 system/*
+/system2
 /index.php

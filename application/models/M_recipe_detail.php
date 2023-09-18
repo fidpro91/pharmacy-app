@@ -42,6 +42,7 @@ class M_recipe_detail extends CI_Model {
 				"racikan_id",
 				"qty",
 				"racikan_qty",
+				"racikan_dosis",
 				"stock",			
 				"sale_price",
 				"dosis",

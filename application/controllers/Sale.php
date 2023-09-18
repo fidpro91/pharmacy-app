@@ -30,26 +30,8 @@ class Sale extends MY_Generator
 	}
 
 	public function panggil_antrian($sale_id) {
-		$this->load->library("pusher");
-		$sale = $this->db->select("s.*,mu.unit_name,split_part(s.sale_num, '/', 2) as antrian")
-				->join("admin.ms_unit as mu","mu.unit_id = s.unit_id_lay","left")
-				->get_where("farmasi.sale s",[
-					"sale_id"	=> $sale_id
-				])->row();
-		
-		$this->db->set("finish_time","coalesce(finish_time,'".date("Y-m-d H:i:s")."')",false);
-		$this->db->where("sale_id",$sale_id)->update("farmasi.sale",[
-			"sale_status"		=> "2",
-			"finish_user_id"	=> $this->session->user_id
-		]);
-		$resp = [
-			"nomor"  	=> $sale->antrian,
-			"unit_id"  	=> $sale->unit_id,
-			"kronis"  	=> $sale->kronis,
-			"pasien"	=> $sale->patient_name,
-			"unit_layanan"	=> $sale->unit_name
-		];
-		$this->pusher->call_antrian($resp);
+		$this->load->library("curls");
+		$this->curls->api_farmasi("GET","set_push/$sale_id/".$this->session->user_id);
 	}
 
 	public function unset_ses()
@@ -61,6 +43,7 @@ class Sale extends MY_Generator
 
 	public function save()
 	{
+		$kodeBoking = $this->db->query("select * from yanmed.antrean_online_bpjs where visit_id = 1099440 and status_antrean is null;")->row('kodebooking');
 		$data = $this->input->post();
 		$sess = $this->session->userdata('penjualan')['pasien'];
 
@@ -129,12 +112,11 @@ class Sale extends MY_Generator
 				return $arr + ['sale_id' => $saleId];
 			}, $racikan['detail']);
 			$saleDetail = array_merge($saleDetail, $racikan['detail']);
-		}
-
-		if ($saleDetail[0]['racikan'] == 'f'){
-			$jenisresep = "non racikan";
-		}else{
-			$jenisresep = "racikan";
+			$this->db->where([
+				"sale_id" => $saleId
+			])->update("farmasi.sale",[
+				"has_racikan"	=> "t"
+			]);
 		}
 
 		//insert sale detail
@@ -199,6 +181,20 @@ class Sale extends MY_Generator
 			];
 		} else {
 			$this->db->trans_commit();
+			//kode antrian farmasi vclaim
+			// $kodeBoking = $this->db->query("select * from yanmed.antrean_online_bpjs where visit_id = $sess[visit_id] and status_antrean is null;")->row('kodebooking');
+			// if (!empty($kodeBoking)){
+			// 	$this->load->library('vclaim');
+			// 	$url = 'tambah_antrean_farmasi';
+			// 	$method = "post";
+			// 	$param = [
+			// 		"kode_booking"=>$kodeBoking,
+			// 		"jenisresep"=>$jenisresep,
+			// 		"nomorantrean"=>intval(explode('/', $this->get_no_sale($data['unit_id']))[1])
+			// 	];
+			// 	$kirim=$this->vclaim->connect($url,$method,$param);
+			// }
+
 			/* $this->db->query("
 			REFRESH MATERIALIZED VIEW CONCURRENTLY newfarmasi.v_antrean_apotek;"); */
 			$resp = [
