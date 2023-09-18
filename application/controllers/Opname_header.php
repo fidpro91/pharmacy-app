@@ -45,16 +45,6 @@ class Opname_header extends MY_Generator {
 						"readonly"	=> true
 					]
 				];
-			}elseif($value=='exp_date'){
-				$row[] = [
-					"id" => $value,
-					"label" => "ED",
-					"type" => 'text',
-					"attr" => [
-						"readonly"	=> true
-					]
-				];
-
 			}else{
 				$row[] = [
 					"id" => $value,
@@ -132,8 +122,7 @@ class Opname_header extends MY_Generator {
 				"opname_id" => $opname_id,
 				"stock_in"		=> $value["qty_opname"],
 				"stock_saldo"	=> $value["qty_opname"],
-				"total_price"	=> ($value["qty_opname"]*$value["item_price"]),
-				"expired_date" => $value['exp_date']
+				"total_price"	=> ($value["qty_opname"]*$value["item_price"])
 			];
 			$this->db->insert("newfarmasi.stock_fifo",$stockBaru[$x]);
 			$err = $this->db->error();
@@ -196,8 +185,7 @@ class Opname_header extends MY_Generator {
 		$data = $this->db->where('opname_header_id',$id)->get("newfarmasi.opname_header")->row();
 		$data->detail = $this->db
 							 ->join("admin.ms_item mi","mi.item_id=op.item_id")
-							 ->join("newfarmasi.stock_fifo sf","op.opname_id=sf.opname_id")
-							 ->select("mi.item_name as label_item_id,mi.item_id,sf.expired_date as exp_date,op.*")
+							 ->select("mi.item_name as label_item_id,mi.item_id,op.*")
 							 ->get_where("newfarmasi.opname op",[
 								"opname_header_id" => $id
 							 ])->result();

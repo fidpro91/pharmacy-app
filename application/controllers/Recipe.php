@@ -457,7 +457,7 @@ class Recipe extends MY_Generator
 		$data['pasien']= $this->db->query("SELECT	
 		concat(employee_ft,employee_name,employee_bt) as dokter,unit_name ,
 		px_norm,px_name,to_char(rcp_date,'dd-mm-yyyy') as tgl_resep,surety_name,
-		date(px_birthdate) as tgl_lahir,px_address
+		date(px_birthdate) as tgl_lahir,px_address,rcp_no
 	FROM
 		newfarmasi.recipe r
 		join admin.ms_unit u on r.unit_id = u.unit_id

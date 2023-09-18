@@ -37,7 +37,7 @@
   <tr>
     <td width="15%">Nomor Resep</td>
     <td width="1%">:</td>
-    <td width="50%"><?php echo "001213";?></td>
+    <td width="50%"><?php echo $pasien->rcp_no;?></td>
     <td width="15%">Tanggal Resep</td>
     <td width="1%">:</td>
     <td width="34%"><?php echo $pasien->tgl_resep;?></td>
@@ -69,10 +69,10 @@
   <tr>
     <td>Riwayat Alergi</td>
     <td>:</td>
-    <td>-</td>    
+    <td></td>    
     <td>Berat Badan</td>
     <td>:</td>
-    <td>3 Kg</td>
+    <td></td>
   </tr>
 </table>
 
