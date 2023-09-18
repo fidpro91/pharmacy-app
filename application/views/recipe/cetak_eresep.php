@@ -18,7 +18,7 @@
         font-size:11px;
     }
     body {
-        font-size: 8px; /* Gaya font untuk seluruh dokumen */
+        font-size: 11px; /* Gaya font untuk seluruh dokumen */
     }
     
 </style>
@@ -104,34 +104,65 @@
         ?>        
     </table>
 <br>
-    <table width="70%" style="border-collapse: collapse; border: 0px solid black;" border="0">
-    <tr>
-            <td colspan="4" ><b>RACIKAN</b></td>
-        </tr>
-        <tr>
-            <td>No</td>
-            <td>Nama Obat</td>
-            <td>Aturan Pakai</td>
-            <td>Dosis Racik</td>
-            <td>Jumlah Racik</td>          
-        </tr>
+
 <?php
-$no=1;
-        foreach ($resep as $key => $res){
-            if($res->racikan_qty != null){
-                echo "<tr>
-                <td>".$no++."</td>
-                <td>".$res->item_name."</td>
-                <td>".$res->dosis."</td>
-                <td>".$res->racikan_dosis."</td>
-                <td>".$res->racikan_qty."</td>
-            
-            </tr>";
-            }
-           
+$no = 1;
+$groupedData = array(); // Inisialisasi array groupedData
+
+foreach ($resep as $key => $res) {
+    if ($res->racikan_qty != null) {
+        $racikanQty = $res->racikan_qty;
+        if (!isset($groupedData[$racikanQty])) {
+            $groupedData[$racikanQty] = array();
         }
+        $groupedData[$racikanQty][] = array(
+            "no" => $no++,
+            "item_name" => $res->item_name,
+            "dosis" => $res->dosis,
+            "racikan_dosis" => $res->racikan_dosis,
+            "racikan_qty" => $res->racikan_qty
+        );
+    }
+}
+
+// Cek apakah ada data yang sesuai dengan kondisi
+$dataExists = false;
+foreach ($groupedData as $racikanQty => $group) {
+    if (!empty($group)) {
+        $dataExists = true;
+        break;
+    }
+}
+
+if ($dataExists) {
+    echo '<table width="70%" style="border-collapse: collapse; border: 0px solid black;" border="0">';
+    echo '<tr>';
+    echo '<td colspan="5"><b>RACIKAN</b></td>';
+    echo '</tr>';
+    echo '<tr>';
+    echo '<td>No</td>';
+    echo '<td>Nama Obat</td>';
+    echo '<td>Aturan Pakai</td>';
+    echo '<td>Dosis Racik</td>';
+    echo '<td>Jumlah Racik</td>';
+    echo '</tr>';
+
+    foreach ($groupedData as $racikanQty => $group) {
+        foreach ($group as $item) {
+            echo '<tr>';
+            echo '<td>' . $item["no"] . '</td>';
+            echo '<td>' . $item["item_name"] . '</td>';
+            echo '<td>' . $item["dosis"] . '</td>';
+            echo '<td>' . $item["racikan_dosis"] . '</td>';
+            echo '</tr>';
+        }
+        echo '<td colspan="5">' . $racikanQty . '</td>';
+    }
+
+    echo '</table>';
+}
 ?>
-    </table>  
+
    
     <div class="table-container">
     <table  style="text-align: center; border-collapse: collapse; border: 1px solid blac;" border="1">

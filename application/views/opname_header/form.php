@@ -85,6 +85,7 @@
                 $(this).closest('tr').find('.item_id').val(ui.item.item_id);
                 $(this).closest('tr').find('.qty_data').val(ui.item.total_stock);
                 $(this).closest('tr').find('.item_price').val(ui.item.harga);
+				$(this).closest('tr').find('.exp_date').val(ui.item.expired_date);
             }
         }).data("ui-autocomplete")._renderItem = function (ul, item) {
             return $("<li>")
