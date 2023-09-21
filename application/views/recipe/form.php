@@ -41,8 +41,11 @@
 			],
 			"selected" => 1
 		]) ?>
+		
 	</div>
+	
 	<div class="col-md-3">
+	
 		<div class="box box-primary">
 			<div class="box-header">
 				TELAAH RESEP
@@ -75,15 +78,21 @@
 								if (isset($value['revrcp_id'])) {
 									$checked = "checked";
 								}
-								$row .= "<tr><td> <label><input $checked type=\"checkbox\" name=\"cek_kelengkapan[]\" value=\"" . $value["reff_id"] . "\"/> " . $value['reff_name'] . "</label></td></tr>\n";
+								$row .= "<tr><td> <label><input $checked type=\"checkbox\" name=\"cek_kelengkapan[]\" value=\"" . $value["reff_id"] . "\"/> " . $value['reff_name'] . "</label></td>
+								</tr>\n";
+								
 							}
 							echo $row;
+							
 						?>
+						
 					</table>
 				</div>
 			</div>
 		</div>
+		<?=create_textarea("note_recipe=catatan telaah")?>
 	</div>
+	
 	<div class="col-md-7">
 		<div class="box box-widget widget-user-2">
 				<div class="widget-user-header bg-aqua-active">

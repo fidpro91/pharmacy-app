@@ -49,7 +49,7 @@
 				<td class="text-left" 	style="font-size: 12px;"><?php echo $data->item_name?></td>
 				<td class="text-center" style="font-size: 12px;"><?php echo $data->satuan ?></td>
 				<td class="text-center"  style="font-size: 12px;"><?php echo $data->jml_qty?></td>
-				<td class="text-right" style="font-size: 12px;"><?php echo number_format($data->harga,2,".",",")?></td>
+				<td class="text-right" style="font-size: 12px;"><?php echo number_format($data->harga,2,",",",")?></td>
 				<td class="text-right" style="font-size: 12px;"><?php $tot= $data->jml_qty * $data->harga; echo $tot ?></td>
 			</tr>
 		<?php $jml_tot +=$tot; endforeach;?>

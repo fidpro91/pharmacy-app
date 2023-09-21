@@ -27,7 +27,7 @@ class Recipe extends MY_Generator
 
 	public function save()
 	{
-		$data = $this->input->post();
+		$data = $this->input->post();				
 		$totalAll = 0;
 		$saleDetailInput = [];
 		$embalaseNonRacikan = 0;
@@ -156,7 +156,8 @@ class Recipe extends MY_Generator
 		$this->db->where([
 			"rcp_id"	=> $data["rcp_id"]
 		])->update("newfarmasi.recipe", [
-			"rcp_status" => $data["jns_resep"]
+			"rcp_status" => $data["jns_resep"],
+			"note_recipe" => $data["note_recipe"]
 		]);
 
 		//telaah resep
@@ -390,6 +391,12 @@ class Recipe extends MY_Generator
 						"btn-icon" => "fa fa-list-alt",
 						"btn-class" => "btn-success",
 					],
+					"cetak_eresep" =>
+					[
+						"btn-act" => "cetak_eresep('" . $row['id_key'] . "')",
+						"btn-icon" => "fa fa-print",
+						"btn-class" => "btn-warning",
+					]
 				], $row['id_key']);
 			} elseif ($row["rcp_status"] == "1") {
 				$obj[] = create_btnAction([
@@ -398,6 +405,12 @@ class Recipe extends MY_Generator
 						"btn-act" => "deleteRow('" . $row['id_key'] . "')",
 						"btn-icon" => "fa fa-list-alt",
 						"btn-class" => "btn-success",
+					],
+					"cetak_eresep" =>
+					[
+						"btn-act" => "cetak_eresep('" . $row['id_key'] . "')",
+						"btn-icon" => "fa fa-print",
+						"btn-class" => "btn-warning",
 					]
 				], $row['id_key']);
 			}

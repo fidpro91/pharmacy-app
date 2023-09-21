@@ -91,6 +91,7 @@ class M_recipe extends CI_Model {
 					"racikan_txt" => "trim",
 					"px_id" => "trim|integer",
 					"visit_id" => "trim|integer",
+					"note_recipe" => "trim",
 
 				];
 		return $data;
