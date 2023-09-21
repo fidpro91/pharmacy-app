@@ -481,13 +481,14 @@ class Recipe extends MY_Generator
 		$data['pasien']= $this->db->query("SELECT	
 		concat(employee_ft,employee_name,employee_bt) as dokter,unit_name ,
 		px_norm,px_name,to_char(rcp_date,'dd-mm-yyyy') as tgl_resep,surety_name,
-		date(px_birthdate) as tgl_lahir,px_address,rcp_no
-	FROM
+		date(px_birthdate) as tgl_lahir,px_address,rcp_no,bb
+		FROM
 		newfarmasi.recipe r
 		join admin.ms_unit u on r.unit_id = u.unit_id
 		join yanmed.patient p on r.px_id = p.px_id
 		JOIN hr.employee e ON r.doctor_id = e.employee_id 
 		join yanmed.ms_surety s on r.surety_id = s.surety_id
+		left join yanmed.anamnese a on r.services_id = a.srv_id
 	WHERE
 		r.rcp_id = $id")->row();
 			$mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => [214, 108]]);

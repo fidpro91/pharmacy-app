@@ -72,7 +72,7 @@
     <td></td>    
     <td>Berat Badan</td>
     <td>:</td>
-    <td></td>
+    <td><?php echo $pasien->bb;?> Kg</td>
   </tr>
 </table>
 
