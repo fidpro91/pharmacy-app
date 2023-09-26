@@ -129,10 +129,10 @@
 															<td><?=$data_detail_sm[3]?></td>
 															<td><?=$data_detail_sm[8]?></td>
 															<td><?=$data_detail_sm[4]?></td>
-															<td><?=number_format($data_detail_sm[5],2,".",",")?></td>
+															<td><?=number_format($data_detail_sm[5],2,",",",")?></td>
 															<td><?=$data_detail_sm[6]?></td>
 															<td><?=$data_detail[4]?></td>
-															<td class="text-right"><?=number_format($data_detail_sm[7],2,".",",")?></td>
+															<td class="text-right"><?=number_format($data_detail_sm[7],2,",",",")?></td>
 														</tr>
 														<?php
 														$num++;
@@ -141,26 +141,26 @@
 													<tr>
 														<td colspan="7"></td>
 														<td colspan="2" class="text-right">Total</td>
-														<td class="text-right"><?=number_format($total,2,".",",")?></td>
+														<td class="text-right"><?=number_format($total,2,",",",")?></td>
 													</tr>
 													<tr>
 														<td colspan="7"></td>
 														<td colspan="2" class="text-right">Total Diskon</td>
-														<td class="text-right"><?=number_format($total_disk,2,".",",")?></td>
+														<td class="text-right"><?=number_format($total_disk,2,",",",")?></td>
 													</tr>
 													<tr>
 														<td colspan="7"></td>
 														<td colspan="2" class="text-right">Total PPN</td>
 														<td class="text-right"><?php 
 														// $ppn = $data_detail[4]/100*($data_detail[5]); 
-														echo number_format($data_detail[6],2,".",",")?></td>
+														echo number_format($data_detail[6],2,",",",")?></td>
 													</tr>
 													<tr>
 														<td colspan="7"></td>
 														<td colspan="2" class="text-right">Total Pembelian</td>
 														<td class="text-right"><?php 
 														// $hasil= $total-($total_disk)+$ppn; 
-														$grand_total += $data_detail[5]; echo number_format($data_detail[5],2,".",",");?></td>
+														$grand_total += $data_detail[5]; echo number_format($data_detail[5],2,",",",");?></td>
 													</tr>
 												</table>
 											</td>
@@ -180,7 +180,7 @@
 					<tr>
 						<td width="80%" class="text-right" style="text-align: right">Total Transaksi Pembelian</td>
 						<td width="2%">:</td>
-						<td class="text-right" style="text-align: right"><b><?=number_format($grand_total,2,".",",")?></b></td>
+						<td class="text-right" style="text-align: right"><b><?=number_format($grand_total,2,",",",")?></b></td>
 					</tr>
 				</table>
 			</td>

@@ -190,5 +190,13 @@
           },'json');
         }
     });
+
+    function cetak_eresep(id){
+      
+      var url = "<?php echo base_url() ?>recipe/cetak_eresep/" + id;
+    var left = ($(window).width() / 2) - (1200 / 2);
+    var top = ($(window).height() / 2) - (800 / 2);
+    window.open(url, "Struk Pembayaran Apotik", "width=1200, height=800, top=" + top + ", left=" + left);
+    }
     <?= $this->config->item('footerJS') ?>
 </script>

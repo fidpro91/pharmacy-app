@@ -112,12 +112,11 @@ class Sale extends MY_Generator
 				return $arr + ['sale_id' => $saleId];
 			}, $racikan['detail']);
 			$saleDetail = array_merge($saleDetail, $racikan['detail']);
-		}
-
-		if ($saleDetail[0]['racikan'] == 'f'){
-			$jenisresep = "non racikan";
-		}else{
-			$jenisresep = "racikan";
+			$this->db->where([
+				"sale_id" => $saleId
+			])->update("farmasi.sale",[
+				"has_racikan"	=> "t"
+			]);
 		}
 
 		//insert sale detail
@@ -431,8 +430,8 @@ class Sale extends MY_Generator
 					"Cetak PRB" =>
 					[
 						"btn-act" => "cetak_prb('" . $row['id_key'] . "')",
-						"btn-icon" => "fa fa-bookmark",
-						"btn-class" => "btn-default",
+						"btn-icon" => "fa fa-fa fa-eye",
+						"btn-class" => "btn-warning",
 					]
 				], $row['id_key']);;
 			}

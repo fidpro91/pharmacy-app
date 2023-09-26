@@ -11,6 +11,7 @@ class M_antrean_recipe extends CI_Model
 				patient_name,
 				sale_id,
                 s.kronis,
+                s.has_racikan,
 				CASE
 						
 						WHEN COALESCE ( s.sale_status, 0 ) = 0 
@@ -30,9 +31,6 @@ class M_antrean_recipe extends CI_Model
 					ORDER BY
 					s.date_act ASC ) x ")->result_array();
 
-        /*$data = $this->db->query("
-				select " . implode(',', $aColumns) . ",recdet_id as id_key  from public.receiving_detail where 0=0 $sWhere $sOrder $sLimit
-			")->result_array();*/
         return $data;
     }
 
@@ -45,6 +43,7 @@ class M_antrean_recipe extends CI_Model
 				patient_name,
 				sale_id,
                 s.kronis,
+                s.has_racikan,
 				CASE
 						
 						WHEN COALESCE ( s.sale_status, 0 ) = 0 
@@ -64,9 +63,6 @@ class M_antrean_recipe extends CI_Model
 					ORDER BY
 					s.date_act ASC ) x
 		")->num_rows();
-        /*$data = $this->db->query("
-				select " . implode(',', $aColumns) . ",recdet_id as id_key  from public.receiving_detail where 0=0 $sWhere
-			")->num_rows();*/
         return $data;
     }
 
@@ -82,17 +78,17 @@ class M_antrean_recipe extends CI_Model
                     return $a["patient_name"]."<br><small class=\"txt_small\">(".$a["unit_name"].")</small";
                 }
             ],
-            /* "kronis" => [
+            "has_racikan" => [
                 "label"     => "Jenis",
                 "custom"    => function($a){
-                    if ($a["kronis"] == "t") {
+                    if ($a["has_racikan"] == "t") {
                         $label = "<span class=\"label label-warning\">RACIKAN</span>";
                     }else{
                         $label = "<span class=\"label label-info\">NON RACIKAN</span>";
                     }
                     return $label;
                 }
-            ], */
+            ],
             "status_resep" => [
                 "label" => "Status"
             ]

@@ -188,7 +188,7 @@ order by cb.supplier_name asc ")->result();
 			$where .= "AND lower(vp.estimate_resource) like lower('".$param['sumber_anggaran']."')";
 		}
 
-		$sql    = "	SELECT 
+		$sql    = "	SELECT
 						* 
 					FROM 
 					newfarmasi.v_penerimaan vp

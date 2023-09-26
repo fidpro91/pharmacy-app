@@ -95,10 +95,10 @@
 											<td><?=$data_detail[3]?></td>
 											<td><?=$data_detail[4]?></td>
 											<td><?=$data_detail[2]?></td>
-											<td><?=number_format($data_detail[5],2,".",",")?></td>
+											<td><?=number_format($data_detail[5],2,",",",")?></td>
 											<td><?=$data_detail[6]?></td>
 											<td><?=$res->po_ppn?></td>
-											<td class="text-right"><?=number_format($data_detail[8],2,",",".")?></td>
+											<td class="text-right"><?=number_format($data_detail[8],2,",",",")?></td>
 										</tr>
 										<?php
 										$num++;
@@ -107,25 +107,25 @@
 									<tr>
 										<td colspan="7"></td>
 										<td colspan="2" class="text-right">Total</td>
-										<td class="text-right"><?=number_format($total,2,",",".")?></td>
+										<td class="text-right"><?=number_format($total,2,",",",")?></td>
 									</tr>
 									<tr>
 										<td colspan="7"></td>
 										<td colspan="2" class="text-right">Total Diskon</td>
-										<td class="text-right"><?=number_format($total_disk,2,",",".")?></td>
+										<td class="text-right"><?=number_format($total_disk,2,",",",")?></td>
 									</tr>
 									<tr>
 										<td colspan="7"></td>
 										<td colspan="2" class="text-right">Total PPN</td>
 										<td class="text-right"><?php //var_dump($res->po_ppn)
 											// $ppn = $res->po_ppn/100*($res->grand_total);
-										echo number_format($res->rec_taxes,2,",",".")?></td>
+										echo number_format($res->rec_taxes,2,",",",")?></td>
 									</tr>
 									<tr>
 										<td colspan="7"></td>
 										<td colspan="2" class="text-right">Total Pembelian</td>
 										<td class="text-right"><?php 
-										$grand_total += $res->grand_total; echo number_format($res->grand_total,2,",",".");
+										$grand_total += $res->grand_total; echo number_format($res->grand_total,2,",",",");
 											?></td>
 									</tr>
 								</table>

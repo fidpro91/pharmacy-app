@@ -281,6 +281,7 @@ class Bon_mutation extends MY_Generator {
 
 	public function konfirm_terima()
 	{
+		
 		$this->db->trans_begin();
 		$dataMutation = $this->db->get_where("newfarmasi.mutation",[
 			"mutation_id" => $this->input->post("mutation_id")

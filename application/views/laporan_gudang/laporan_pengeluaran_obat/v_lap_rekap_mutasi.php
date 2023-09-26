@@ -81,11 +81,11 @@ if (isset($button) && $button=="excel") {
 						}
 					}
 				}
-				echo "<td>".number_format($nilai[$x][$key],2,'.',',')."</td>";
+				echo "<td>".number_format($nilai[$x][$key],2,',',',')."</td>";
 				$total_s += $nilai[$x][$key];
 			}
 			$totalSemua += $total_s;
-			echo "<td>".number_format($total_s,2,".",',')."</td></tr>";
+			echo "<td>".number_format($total_s,2,",",',')."</td></tr>";
 		}
 		?>
 		<tr>
@@ -96,9 +96,9 @@ if (isset($button) && $button=="excel") {
 				foreach($st as $value) {
 					$total = $total + $value;
 				}
-				echo '<td align="right"> <b>'.number_format($total,2,".",",").'</b></td>';
+				echo '<td align="right"> <b>'.number_format($total,2,",",",").'</b></td>';
 			}
-			echo "<td><b>".number_format($totalSemua,2,".",",")."</b></td>";
+			echo "<td><b>".number_format($totalSemua,2,",",",")."</b></td>";
 			?>
 		</tr>
 	</table>
