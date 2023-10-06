@@ -175,11 +175,12 @@
         foreach ($groupedData as $racikanQty => $group) {
            
             echo '<div class="item">'.'Nama Racikan :<b>'.$group[0]['racikan_id'].'</b>  '.'  JML = ' . $racikanQty . '</div>';
+            echo '<div class="item"><i><b>Aturan Pakai  ' . $group[0]['dosis']. '</b><i></div>';
 
             foreach ($group as $item) {
                 echo '<div class="item">';
                 echo '<div class="item">' . $item["item_name"] . ' Jml (' . $item["racikan_dosis"] . ')</div>';
-                echo '<div class="item"><i><b>Aturan ' . $item["dosis"] . '</b></i></div>';
+                
                 echo '</div>';
             }
             echo '</div>'; // Tutup racikan-group
