@@ -1,29 +1,7 @@
-
-<script type="text/javascript" src="<?php echo base_url()?>assets/global/plugins/jquery.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url()?>assets/global/plugins/jquery-barcode/jquery-barcode.js"></script>
-<script>
-    jQuery(document).ready(function() {
-        $("#bcTarget").barcode("<?php echo $detailcetak['noresep'];?>", "code128",{barWidth: 2,
-        barHeight: 30,fontSize: 8});
-    });
-</script>
 <style>
- .table-container {
-        position: absolute;
-        top: 135px; /* Ubah jarak dari atas sesuai kebutuhan Anda */
-        right: 55px; /* Ubah jarak dari kanan sesuai kebutuhan Anda */
-        width: 20%;
-        text-align: center;
-        border: 0px solid black;
-        font-size:11px;
-    }
-    body {
-        font-size: 11px; /* Gaya font untuk seluruh dokumen */
-    }
-    
+   
+
 </style>
-<page>
-<body>
 <table width="100%" border="0" cellpadding="2" cellspacing="1" style="font:12px; border-bottom: 1px solid black;">
     <tr>
         <td colspan="3" align="left" style="line-height:16px;">
@@ -43,12 +21,12 @@
     <td width="34%"><?php echo $pasien->tgl_resep;?></td>
   </tr>
   <tr>
-    <td style="vertical-align: top;">Nama Pasien</td>
+    <td style="vertical-align: top;">Nama Pasien/No.RM</td>
     <td style="vertical-align: top;">:</td>
-    <td style="vertical-align: top;"><?php echo $pasien->px_name;?></td>
-    <td>No.Rm</td>
+    <td style="vertical-align: top;"><?php echo $pasien->px_name.' ('.$pasien->px_norm.')';?></td>
+    <td>No.sep</td>
     <td>:</td>
-    <td><?php echo $pasien->px_norm;?></td>
+    <td><?php echo $pasien->sep_no;?></td>
   </tr>
   <tr>
     <td>Tgl.lahir</td>
@@ -94,8 +72,6 @@
     ?></td>
   </tr>
 </table>
-
-<br/>
 <div class="table-container">
     <table  style="text-align: center; border-collapse: collapse; border: 1px solid blac;" border="1">
         <tr>
@@ -149,101 +125,66 @@
         </tr> 
     </table> 
     </div> 
- 
-<table width="40%" style="border-collapse: collapse; border: 0px solid black;" border="0">
-        <tr>
-            <td colspan="2" ><b>NON RACIKAN</b></td>
-        </tr>
-
+<div class="container">
+    <div class="left-div">
+        <div class="item"><b>Non Racikan</b></div>
         <?php
         $no = 1;
-        foreach ($resep as $key => $res){
-            if($res->racikan_qty==null){
-                echo "<tr>                   
-                    <td>".$res->item_name.' Jml ('.$res->qty.')'.'<br>'.'<i>Aturan '.$res->dosis.'</i>'."</td>
-                     </tr>";
+        foreach ($resep as $key => $res) {
+            if ($res->racikan_qty == null) {
+                echo '<div class="item">' . $res->item_name . ' Jml (' . $res->qty . ')' . '<br>' . '<i><b>Aturan ' . $res->dosis . '</b></i>' . '</div>';
             }
         }
-        ?>        
-    </table>
-<br>
+        ?>
+    </div>
 
-<?php
-$no = 1;
-$groupedData = array(); // Inisialisasi array groupedData
-
-foreach ($resep as $key => $res) {
-    if ($res->racikan_qty != null) {
-        $racikanQty = $res->racikan_qty;
-        if (!isset($groupedData[$racikanQty])) {
-            $groupedData[$racikanQty] = array();
+    <?php
+    // Div 2: Obat Racikan
+    $no = 1;
+    $groupedData = array(); // Inisialisasi array groupedData
+    foreach ($resep as $key => $res) {
+        if ($res->racikan_qty != null) {
+            $racikanQty = $res->racikan_qty;
+            if (!isset($groupedData[$racikanQty])) {
+                $groupedData[$racikanQty] = array();
+            }
+            $groupedData[$racikanQty][] = array(
+                "no" => $no++,
+                "item_name" => $res->item_name,
+                "dosis" => $res->dosis,
+                "racikan_dosis" => $res->racikan_dosis,
+                "racikan_qty" => $racikanQty,
+                "racikan_id" => $res->racikan_id
+            );
         }
-        $groupedData[$racikanQty][] = array(
-            "no" => $no++,
-            "item_name" => $res->item_name,
-            "dosis" => $res->dosis,
-            "racikan_dosis" => $res->racikan_dosis,
-            "racikan_qty" => $res->racikan_qty,
-            "racikan_id" => $res->racikan_id
-        );
     }
-}
 
-// Cek apakah ada data yang sesuai dengan kondisi
-$dataExists = false;
-foreach ($groupedData as $racikanQty => $group) {
-    if (!empty($group)) {
-        $dataExists = true;
-        break;
-    }
-}
-
-if ($dataExists) {
-    echo '<table width="60%" style="border-collapse: collapse; border: 0px solid black;" border="0">';
-    echo '<tr>';
-    echo '<td colspan="3"><b>RACIKAN</b></td>';
-    echo '</tr>';
-    echo '<tr>';
-
-   
-   
-    echo '</tr>';
-
+    // Cek apakah ada data yang sesuai dengan kondisi
+    $dataExists = false;
     foreach ($groupedData as $racikanQty => $group) {
-        echo '<tr>'; 
-       
-        echo '<td>'.$group[0]["racikan_id"]. '</td>';
-        echo'<td></td>';
-        echo '<td>' . $racikanQty . '</td>';
-        echo'</tr>';
-        
-        foreach ($group as $item) {
-            echo '<tr>';           
-            
-            echo '<td></td>';
-            echo '<td>' .$item["item_name"].' Jml ('.$item["racikan_dosis"].' )'.'<br>'.' <i>Atruan '.$item["dosis"].'</i>'.'</td>';
-           
-            echo '</tr>';
+        if (!empty($group)) {
+            $dataExists = true;
+            break;
         }
-        
-       
     }
 
-    echo '</table>';
-}
-?>
+    if ($dataExists) {
+        echo '<div class="right-div">';
+        echo '<div class="item"><b>Racikan</b></div>';
 
-   
-   
-    </body>   
-</page>
+        foreach ($groupedData as $racikanQty => $group) {
+           
+            echo '<div class="item">'.'Nama Racikan :<b>'.$group[0]['racikan_id'].'</b>  '.'  JML = ' . $racikanQty . '</div>';
 
-<script type="text/JavaScript">
-function cetak(tombol){
-  tombol.style.visibility='collapse';
-  if(tombol.style.visibility=='collapse'){
-    window.print();
-    window.close();
-  }
-}
-</script>
+            foreach ($group as $item) {
+                echo '<div class="item">';
+                echo '<div class="item">' . $item["item_name"] . ' Jml (' . $item["racikan_dosis"] . ')</div>';
+                echo '<div class="item"><i><b>Aturan ' . $item["dosis"] . '</b></i></div>';
+                echo '</div>';
+            }
+            echo '</div>'; // Tutup racikan-group
+        }
+        echo '</div>'; // Tutup div Obat Racikan
+    }
+    ?>
+</div>

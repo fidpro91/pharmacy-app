@@ -470,7 +470,7 @@ class Recipe extends MY_Generator
 	public function cetak_eresep($id){
 		$data['resep']= $this->db->query("SELECT
 		r.rcp_id,qty,racikan_qty,rcp_date,
-		racikan_id,dosis,racikan_dosis,item_name		
+		racikan_id,dosis,racikan_dosis,item_name,racikan_desc		
 	FROM
 		newfarmasi.recipe r
 		JOIN newfarmasi.recipe_detail rd ON r.rcp_id = rd.rcp_id
@@ -479,25 +479,80 @@ class Recipe extends MY_Generator
 		r.rcp_id = $id")->result();
 
 		$data['pasien']= $this->db->query("SELECT	
-		concat(employee_ft,employee_name,employee_bt) as dokter,unit_name ,
+		concat(employee_ft,employee_name,employee_bt) as dokter,u.unit_name ,
 		px_norm,px_name,to_char(rcp_date,'dd-mm-yyyy') as tgl_resep,surety_name,
-		date(px_birthdate) as tgl_lahir,px_address,rcp_no,bb
+		date(px_birthdate) as tgl_lahir,p.px_address,rcp_no,bb,u1.unit_name as asal_layanan,
+		jenis_resep,sep_no
 		FROM
 		newfarmasi.recipe r
+		join yanmed.visit v on r.visit_id = v.visit_id
 		join admin.ms_unit u on r.unit_id = u.unit_id
 		join yanmed.patient p on r.px_id = p.px_id
 		JOIN hr.employee e ON r.doctor_id = e.employee_id 
 		join yanmed.ms_surety s on r.surety_id = s.surety_id
 		left join yanmed.anamnese a on r.services_id = a.srv_id
+		join admin.ms_unit u1 on r.unit_id_layanan = u1.unit_id
 	WHERE
 		r.rcp_id = $id")->row();
-			$mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => [214, 108]]);
+			
+				
+			$html = $this->load->view("recipe/resep_2", $data, true);
+			$html .= '
+			<style>
+			.container {
+				display: flex;
+			}
+		
+			.left-div {
+				flex: 1;
+				padding: 1px;
+				width: 40%;
+				border: 0px solid #000;
+			}
+		
+			.right-div {
+				flex: 1;
+				padding: 1px;
+				width: 40%;
+				border: 0px solid #000;
+			}
+			
+			.item {
+			   font-size : 10px
+			}
+		
+			.table-container {
+				position: absolute;
+				top: 135px; /* Ubah jarak dari atas sesuai kebutuhan Anda */
+				right: 55px; /* Ubah jarak dari kanan sesuai kebutuhan Anda */
+				width: 20%;
+				text-align: center;
+				border: 0px solid black;
+				font-size:11px;
+			}.mama {
+			font-size: 10px;
+			}
+			.table-container {
+				position: absolute;
+				top: 135px; /* Ubah jarak dari atas sesuai kebutuhan Anda */
+				right: 55px; /* Ubah jarak dari kanan sesuai kebutuhan Anda */
+				width: 20%;
+				text-align: center;
+				border: 0px solid black;
+				font-size:11px;
+			}
+			body {
+				font-size: 11px; /* Gaya font untuk seluruh dokumen */
+			} </style>
+';
+
+			$mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => [214, 108]]);	
 					
 			$lebar_kertas = 214; // Misalnya, 214 mm
 			$tinggi_kertas = 108; // Misalnya, 108 mm			
 			//$mpdf->AddPage(['mode' => 'utf-8', 'format' => [90, 50]]);	
-			$mpdf->SetMargins(10, 10, 0, 0);		
-			$html = $this->load->view("recipe/cetak_eresep", $data, true);
+			$mpdf->SetMargins(10, 10, 0, 0);	
+			$mpdf->WriteHTML($html,1);
 			$mpdf->WriteHTML($html);			
 			$mpdf->Output();
 
