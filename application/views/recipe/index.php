@@ -61,7 +61,8 @@
                   "option"    => [
                       ["id" => "0", "text" => "Request"], 
                       ["id" => "1", "text" => "Dilayani Penuh"],
-                      ["id" => "2", "text" => "Dilayani Sebagian"]
+                      ["id" => "2", "text" => "Dilayani Sebagian"],
+                      ["id" => "3", "text" => "Resep sudah dicetak"]
                   ]
               ]) ?>
           </div>
@@ -112,6 +113,7 @@
 
             },
             "fnRowCallback": function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+             
               if ( aData[10].includes("Request") && lastNotice < aData[2])
               {
           			audio.play();
@@ -191,9 +193,9 @@
         }
     });
 
-    function cetak_eresep(id){
-      
-      var url = "<?php echo base_url() ?>recipe/cetak_eresep/" + id;
+    function cetak_eresep(id,type){
+    
+    var url = "<?php echo base_url() ?>recipe/cetak_eresep/" + id+'/'+type;
     var left = ($(window).width() / 2) - (1200 / 2);
     var top = ($(window).height() / 2) - (800 / 2);
     window.open(url, "Struk Pembayaran Apotik", "width=1200, height=800, top=" + top + ", left=" + left);

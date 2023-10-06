@@ -57,6 +57,8 @@ class M_recipe extends CI_Model {
 							$label = "<span class=\"label label-success\">Dilayani Penuh</span>";
 						}elseif ($a=="2") {
 							$label = "<span class=\"label label-warning\">Dilayani Sebagian</span>";
+						}elseif ($a=="3") {
+							$label = "<span class=\"label label-info\">Resep Tercetak</span>";
 						}
 						return $label;
 					}

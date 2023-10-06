@@ -371,7 +371,7 @@ class Recipe extends MY_Generator
 					],
 					"cetak_eresep" =>
 					[
-						"btn-act" => "cetak_eresep('" . $row['id_key'] . "')",
+						"btn-act" => "cetak_eresep('" . $row['id_key'] ."','" . $row['rcp_status'] . "')",
 						"btn-icon" => "fa fa-print",
 						"btn-class" => "btn-warning",
 					]
@@ -381,7 +381,7 @@ class Recipe extends MY_Generator
 				$obj[] = create_btnAction([
 					"Checkin" =>
 					[
-						"btn-act" => "set_val('" . $row['id_key'] . "')",
+						"btn-act" => "set_val('" . $row['id_key'] ."')",
 						"btn-icon" => "fa fa-cart-plus",
 						"btn-class" => "btn-default",
 					],
@@ -393,7 +393,7 @@ class Recipe extends MY_Generator
 					],
 					"cetak_eresep" =>
 					[
-						"btn-act" => "cetak_eresep('" . $row['id_key'] . "')",
+						"btn-act" => "cetak_eresep('" . $row['id_key'] ."','" . $row['rcp_status'] . "')",
 						"btn-icon" => "fa fa-print",
 						"btn-class" => "btn-warning",
 					]
@@ -408,7 +408,22 @@ class Recipe extends MY_Generator
 					],
 					"cetak_eresep" =>
 					[
-						"btn-act" => "cetak_eresep('" . $row['id_key'] . "')",
+						"btn-act" => "cetak_eresep('" . $row['id_key'] ."','" . $row['rcp_status'] . "')",
+						"btn-icon" => "fa fa-print",
+						"btn-class" => "btn-warning",
+					]
+				], $row['id_key']);
+			}elseif($row["rcp_status"]== "3"){
+				$obj[] = create_btnAction([
+					"Checkin" =>
+					[
+						"btn-act" => "set_val('" . $row['id_key'] . "')",
+						"btn-icon" => "fa fa-cart-plus",
+						"btn-class" => "btn-default",
+					],
+					"cetak_eresep" =>
+					[
+						"btn-act" => "cetak_eresep('" . $row['id_key'] ."','" . $row['rcp_status'] . "')",
 						"btn-icon" => "fa fa-print",
 						"btn-class" => "btn-warning",
 					]
@@ -467,7 +482,12 @@ class Recipe extends MY_Generator
 		echo json_encode($resp);
 	}
 
-	public function cetak_eresep($id){
+	public function cetak_eresep($id,$type){
+		if($type==0){
+			$this->db->where("rcp_id",$id)
+					 ->set("rcp_status","3")
+					 ->update("newfarmasi.recipe");
+		}
 		$data['resep']= $this->db->query("SELECT
 		r.rcp_id,qty,racikan_qty,rcp_date,
 		racikan_id,dosis,racikan_dosis,item_name,racikan_desc		
