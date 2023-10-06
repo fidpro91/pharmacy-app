@@ -1,26 +1,31 @@
-
-<script type="text/javascript" src="<?php echo base_url()?>assets/global/plugins/jquery.min.js"></script>
-<script type="text/javascript" src="<?php echo base_url()?>assets/global/plugins/jquery-barcode/jquery-barcode.js"></script>
+<script type="text/javascript" src="<?php echo base_url() ?>assets/global/plugins/jquery.min.js"></script>
+<script type="text/javascript" src="<?php echo base_url() ?>assets/global/plugins/jquery-barcode/jquery-barcode.js"></script>
 <script>
     jQuery(document).ready(function() {
-        $("#bcTarget").barcode("<?php echo $detailcetak['noresep'];?>", "code128",{barWidth: 2,
-        barHeight: 30,fontSize: 8});
+        $("#bcTarget").barcode("<?php echo $detailcetak['noresep']; ?>", "code128", {
+            barWidth: 2,
+            barHeight: 30,
+            fontSize: 8
+        });
     });
 </script>
 <style>
- .table-container {
+    .table-container {
         position: absolute;
-        top: 135px; /* Ubah jarak dari atas sesuai kebutuhan Anda */
-        right: 55px; /* Ubah jarak dari kanan sesuai kebutuhan Anda */
+        top: 135px;
+        /* Ubah jarak dari atas sesuai kebutuhan Anda */
+        right: 55px;
+        /* Ubah jarak dari kanan sesuai kebutuhan Anda */
         width: 20%;
         text-align: center;
         border: 0px solid black;
-        font-size:11px;
+        font-size: 11px;
     }
+
     body {
-        font-size: 11px; /* Gaya font untuk seluruh dokumen */
+        font-size: 11px;
+        /* Gaya font untuk seluruh dokumen */
     }
-    
 </style>
 <page>
 <body>
@@ -189,14 +194,14 @@ foreach ($resep as $key => $res) {
     }
 }
 
-// Cek apakah ada data yang sesuai dengan kondisi
-$dataExists = false;
-foreach ($groupedData as $racikanQty => $group) {
-    if (!empty($group)) {
-        $dataExists = true;
-        break;
-    }
-}
+    <body>
+        <table width="100%" border="0" cellpadding="2" cellspacing="1" style="font:12px; border-bottom: 1px solid black;">
+            <tr>
+                <td colspan="3" align="left" style="line-height:16px;">
+                    <h3 style="padding:0px;margin:0px">E RESEP RSUD IBNUSINA GRESIK</h3>
+                </td>
+            </tr>
+        </table>
 
 if ($dataExists) {
     echo '<table width="60%" style="border-collapse: collapse; border: 0px solid black;" border="0">';
@@ -239,7 +244,7 @@ if ($dataExists) {
 </page>
 
 <script type="text/JavaScript">
-function cetak(tombol){
+    function cetak(tombol){
   tombol.style.visibility='collapse';
   if(tombol.style.visibility=='collapse'){
     window.print();
