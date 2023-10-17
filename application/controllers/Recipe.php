@@ -546,22 +546,25 @@ class Recipe extends MY_Generator
 			} </style>
 ';
 
-			$mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => [214, 108]]);	
+			$mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => [105, 214]]);	
 					
 			$lebar_kertas = 214; // Misalnya, 214 mm
 			$tinggi_kertas = 108; // Misalnya, 108 mm			
 			//$mpdf->AddPage(['mode' => 'utf-8', 'format' => [90, 50]]);	
-			$mpdf->SetMargins(10, 10, 0, 0);	
+			// $mpdf->SetMargins(5, 5, 5, 5);	
+			$css = '
+				@page {
+					margin: 5mm 5mm 5mm 5mm; /* Atur margin atas, kanan, bawah, dan kiri */
+				}
+				.tabel_telaah td {
+					font-size: 7pt !important;
+				}
+			';
+
+			// Tambahkan CSS ke mPDF
+			$mpdf->WriteHTML($css, \Mpdf\HTMLParserMode::HEADER_CSS);
 			$mpdf->WriteHTML($html,1);
 			$mpdf->WriteHTML($html);			
 			$mpdf->Output();
-
-		$lebar_kertas = 214; // Misalnya, 214 mm
-		$tinggi_kertas = 108; // Misalnya, 108 mm			
-		//$mpdf->AddPage(['mode' => 'utf-8', 'format' => [90, 50]]);	
-		$mpdf->SetMargins(10, 10, 0, 0);
-		$html = $this->load->view("recipe/cetak_eresep", $data, true);
-		$mpdf->WriteHTML($html);
-		$mpdf->Output();
 	}
 }
