@@ -482,7 +482,7 @@ class Recipe extends MY_Generator
 		concat(employee_ft,employee_name,employee_bt) as dokter,u.unit_name ,
 		px_norm,px_name,to_char(rcp_date,'dd-mm-yyyy') as tgl_resep,surety_name,
 		date(px_birthdate) as tgl_lahir,p.px_address,rcp_no,bb,u1.unit_name as asal_layanan,
-		jenis_resep,sep_no
+		jenis_resep,sep_no,v.pxsurety_no
 		FROM
 		newfarmasi.recipe r
 		join yanmed.visit v on r.visit_id = v.visit_id
@@ -518,7 +518,7 @@ class Recipe extends MY_Generator
 			}
 			
 			.item {
-			   font-size : 10px
+			   font-size : 10px;
 			}
 		
 			.table-container {
@@ -556,8 +556,17 @@ class Recipe extends MY_Generator
 				@page {
 					margin: 5mm 5mm 5mm 5mm; /* Atur margin atas, kanan, bawah, dan kiri */
 				}
+
 				.tabel_telaah td {
 					font-size: 7pt !important;
+				}
+
+				.table_identitas td {
+					font-size: 8pt !important;
+				}
+
+				.table_identitas td p {
+					margin:10px !important;
 				}
 			';
 

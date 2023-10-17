@@ -7,52 +7,47 @@
 </table>
 
 <br>
-<table width="100%" border="0" cellpadding="5" cellspacing="0" style="border-collapse: collapse; line-height: 0.8;">
+<table width="100%" border="0" class="table_identitas" cellpadding="5" cellspacing="0" style="border-collapse: collapse; line-height: 0.8;">
     <tr>
         <td width="15%">Nomor</td>
         <td width="1%"> : </td>
-        <td width="50%"><?php echo $pasien->rcp_no; ?></td>
+        <td width="30%"><?php echo $pasien->rcp_no; ?></td>
         <td width="15%">Tanggal</td>
         <td width="1%"> : </td>
-        <td width="34%"><?php echo $pasien->tgl_resep; ?></td>
+        <td width="30%"><?php echo $pasien->tgl_resep; ?></td>
     </tr>
     <tr>
-        <td style="vertical-align: top;">Nama/No.RM</td>
-        <td style="vertical-align: top;"> : </td>
-        <td style="vertical-align: top;"><?php echo $pasien->px_name . ' (' . $pasien->px_norm . ')'; ?></td>
-        <td>No.sep</td>
-        <td> : </td>
-        <td><?php echo $pasien->sep_no; ?></td>
+        <td colspan="3" style="vertical-align: top;">Nama/No.RM : <br>
+        <?php echo $pasien->px_name . ' (' . $pasien->px_norm . ')'; ?></td>
+        <td colspan="3">No.sep : <br> <?php echo $pasien->sep_no; ?></td>
     </tr>
     <tr>
         <td>Tgl.lahir</td>
         <td> : </td>
         <td><?php echo $pasien->tgl_lahir; ?></td>
-        <td>Pelayanan</td>
-        <td> : </td>
-        <td><?= $pasien->unit_name ?></td>
+        <td colspan="3">
+            <p>No. Penjamin : </p> 
+            <p><?= $pasien->pxsurety_no."($pasien->surety_name)" ?></p>
+        </td>
     </tr>
     <tr>
-        <td>Alamat</td>
-        <td> : </td>
-        <td><?php echo $pasien->px_address; ?></td>
-        <td>Dokter</td>
-        <td> : </td>
-        <td><?php echo $pasien->dokter; ?></td>
+        <td colspan="3">Alamat : <br>
+            <?php echo $pasien->px_address; ?>
+        </td>
+        <td colspan="3">Dokter : <br> <?php echo ucwords(strtolower($pasien->dokter)); ?></td>
     </tr>
     <tr>
-        <td>Riwayat Alergi</td>
-        <td> : </td>
-        <td></td>
-        <td>Berat Badan</td>
+        <td colspan="3">Riwayat Alergi : <br>
+
+        </td>
+        <td>BB</td>
         <td> : </td>
         <td><?php echo $pasien->bb; ?> Kg</td>
     </tr>
 
     <tr>
-        <td>Unit Asal</td>
-        <td> : </td>
-        <td><?php echo $pasien->asal_layanan; ?> </td>
+        <td colspan="3">Unit Asal : <br> 
+        <?php echo $pasien->asal_layanan; ?> </td>
         <td>Status Resep</td>
         <td> : </td>
         <td><?php
@@ -67,6 +62,11 @@
             }
             ?></td>
     </tr>
+    <tr>
+        <td>Pelayanan</td>
+        <td> : </td>
+        <td><?= $pasien->unit_name ?></td>
+    </tr>
 </table>
 
 <table style="width: 100%;">
@@ -79,7 +79,8 @@
                     $no = 1;
                     foreach ($resep as $key => $res) {
                         if ($res->racikan_qty == null) {
-                            echo '<div class="item">' . $res->item_name . ' Jml (' . $res->qty . ')' . '<br>' . '<i> signa(&fnof;) ' . $res->dosis . '</i>' . '</div>';
+                            echo '<div class="item">' . $res->item_name . ' Jml (' . $res->qty . ')' . '<br>' . '<i> signa(&fnof;) ' . $res->dosis . '</i>' . '</div>
+                            <br>';
                         }
                     }
                     ?>
