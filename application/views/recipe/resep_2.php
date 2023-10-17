@@ -121,16 +121,14 @@
 
                     foreach ($groupedData as $racikanQty => $group) {
 
-                        echo '<div class="item">' . 'Nama Racikan :<b>' . $group[0]['racikan_id'] . '</b>  ' . '  JML = ' . $racikanQty . '</div>';
-                        echo '<div class="item"><i>Aturan Pakai  ' . $group[0]['dosis'] . '<i></div>';
-
+                        echo '<div class="item">';
+                        echo '<div class="item">' . '<b>' . $group[0]['racikan_id'] . '</b>  ' . '  JML = ' . $racikanQty . '</div>';
+                        echo '<div class="item"><i>signa(&fnof;) ' . $group[0]['dosis'] . '<i></div>';
+                        
                         foreach ($group as $item) {
-                            echo '<div class="item">';
-                            echo '<div class="item">' . $item["item_name"] . ' Jml (' . $item["racikan_dosis"] . ')</div>';
-
-                            echo '</div>';
+                            echo '<div class="item-racikan">&nbsp;&nbsp;&nbsp;&nbsp;' . $item["item_name"] . ' Jml (' . $item["racikan_dosis"] . ')</div>';
                         }
-                        echo '</div>'; // Tutup racikan-group
+                        echo '<br><br></div>';
                     }
                     echo '</div>'; // Tutup div Obat Racikan
                 }

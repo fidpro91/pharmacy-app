@@ -568,6 +568,10 @@ class Recipe extends MY_Generator
 				.table_identitas td p {
 					margin:10px !important;
 				}
+				
+				.item-racikan {
+					padding-left : 10px !important;
+				}
 			';
 
 			// Tambahkan CSS ke mPDF
