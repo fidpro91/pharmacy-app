@@ -483,6 +483,10 @@ class Recipe extends MY_Generator
 
 	public function cetak_eresep($id)
 	{
+
+		$this->db->where("rcp_id",$id)
+				 ->set("rcp_status","3")
+				 ->update("newfarmasi.recipe");
 		$data['resep'] = $this->db->query("SELECT
 		r.rcp_id,qty,racikan_qty,rcp_date,
 		racikan_id,dosis,racikan_dosis,item_name,racikan_desc		

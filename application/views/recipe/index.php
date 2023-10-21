@@ -63,7 +63,8 @@
             "option"    => [
               ["id" => "0", "text" => "Request"],
               ["id" => "1", "text" => "Dilayani Penuh"],
-              ["id" => "2", "text" => "Dilayani Sebagian"]
+              ["id" => "2", "text" => "Dilayani Sebagian"],
+              ["id" => "3", "text" => "Sudah diprint"]
             ]
           ]) ?>
         </div>
