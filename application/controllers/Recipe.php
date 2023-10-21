@@ -27,7 +27,7 @@ class Recipe extends MY_Generator
 
 	public function save()
 	{
-		$data = $this->input->post();				
+		$data = $this->input->post();
 		$totalAll = 0;
 		$saleDetailInput = [];
 		$embalaseNonRacikan = 0;
@@ -99,9 +99,9 @@ class Recipe extends MY_Generator
 		$embalase = $totalAll / 100;
 		$embalase = abs(ceil($embalase) - $embalase) * 100;
 		$totalAll = $totalAll + $embalase;
-		
+
 		//dokter
-		$dokter = $this->db->get_where("hr.employee",[
+		$dokter = $this->db->get_where("hr.employee", [
 			"employee_id"	=> $data["par_id"]
 		])->row();
 
@@ -121,7 +121,7 @@ class Recipe extends MY_Generator
 			"service_id" => $data["services_id"],
 			"surety_id" => $data["surety_id"],
 			"doctor_id" => $data["par_id"],
-			"doctor_name" => ($dokter->employee_ft.$dokter->employee_name.$dokter->employee_bt),
+			"doctor_name" => ($dokter->employee_ft . $dokter->employee_name . $dokter->employee_bt),
 			"own_id" => $data["own_id"],
 			"sale_total" => $totalAll,
 			"embalase_item_sale" => $embalaseNonRacikan,
@@ -376,7 +376,6 @@ class Recipe extends MY_Generator
 						"btn-class" => "btn-warning",
 					]
 				], $row['id_key']);
-				
 			} elseif ($row["rcp_status"] == "2") {
 				$obj[] = create_btnAction([
 					"Checkin" =>
@@ -440,15 +439,15 @@ class Recipe extends MY_Generator
 	public function find_one($id)
 	{
 		$data = $this->db->where('rcp_id', $id)
-				->join("yanmed.visit v", "v.visit_id=r.visit_id")
-				->join("yanmed.patient p", "p.px_id=v.px_id")
-				->join("hr.employee e", "e.employee_id=r.doctor_id")
-				->join("yanmed.services s", "s.srv_id=r.services_id")
-				->join("admin.ms_unit mu", "s.unit_id=mu.unit_id")
-				->join("yanmed.ms_surety sur", "sur.surety_id=v.surety_id")
-				->join("farmasi.surety_ownership so", "so.surety_id=v.surety_id and so.own_id=1")
-				->select("r.*,so.*,r.doctor_id as par_id,s.unit_id as unit_id_lay,e.*,p.px_norm,p.px_name,p.px_address,mu.unit_name,sur.surety_name,v.pxsurety_no,v.sep_no")
-				->get("newfarmasi.recipe r")->row();
+			->join("yanmed.visit v", "v.visit_id=r.visit_id")
+			->join("yanmed.patient p", "p.px_id=v.px_id")
+			->join("hr.employee e", "e.employee_id=r.doctor_id")
+			->join("yanmed.services s", "s.srv_id=r.services_id")
+			->join("admin.ms_unit mu", "s.unit_id=mu.unit_id")
+			->join("yanmed.ms_surety sur", "sur.surety_id=v.surety_id")
+			->join("farmasi.surety_ownership so", "so.surety_id=v.surety_id and so.own_id=1")
+			->select("r.*,so.*,r.doctor_id as par_id,s.unit_id as unit_id_lay,e.*,p.px_norm,p.px_name,p.px_address,mu.unit_name,sur.surety_name,v.pxsurety_no,v.sep_no")
+			->get("newfarmasi.recipe r")->row();
 
 		echo json_encode($data);
 	}
@@ -482,13 +481,9 @@ class Recipe extends MY_Generator
 		echo json_encode($resp);
 	}
 
-	public function cetak_eresep($id,$type){
-		if($type==0){
-			$this->db->where("rcp_id",$id)
-					 ->set("rcp_status","3")
-					 ->update("newfarmasi.recipe");
-		}
-		$data['resep']= $this->db->query("SELECT
+	public function cetak_eresep($id)
+	{
+		$data['resep'] = $this->db->query("SELECT
 		r.rcp_id,qty,racikan_qty,rcp_date,
 		racikan_id,dosis,racikan_dosis,item_name,racikan_desc		
 	FROM
@@ -502,7 +497,7 @@ class Recipe extends MY_Generator
 		concat(employee_ft,employee_name,employee_bt) as dokter,u.unit_name ,
 		px_norm,px_name,to_char(rcp_date,'dd-mm-yyyy') as tgl_resep,surety_name,
 		date(px_birthdate) as tgl_lahir,p.px_address,rcp_no,bb,u1.unit_name as asal_layanan,
-		jenis_resep,sep_no
+		jenis_resep,sep_no,v.pxsurety_no
 		FROM
 		newfarmasi.recipe r
 		join yanmed.visit v on r.visit_id = v.visit_id
@@ -538,7 +533,7 @@ class Recipe extends MY_Generator
 			}
 			
 			.item {
-			   font-size : 10px
+			   font-size : 10px;
 			}
 		
 			.table-container {
@@ -566,15 +561,33 @@ class Recipe extends MY_Generator
 			} </style>
 ';
 
-			$mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => [214, 108]]);	
-					
-			$lebar_kertas = 214; // Misalnya, 214 mm
-			$tinggi_kertas = 108; // Misalnya, 108 mm			
-			//$mpdf->AddPage(['mode' => 'utf-8', 'format' => [90, 50]]);	
-			$mpdf->SetMargins(10, 10, 0, 0);	
+			$mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => [105, 214]]);	
+			$css = '
+				@page {
+					margin: 5mm 5mm 5mm 5mm; /* Atur margin atas, kanan, bawah, dan kiri */
+				}
+
+				.tabel_telaah td {
+					font-size: 7pt !important;
+				}
+
+				.table_identitas td {
+					font-size: 8pt !important;
+				}
+
+				.table_identitas td p {
+					margin:10px !important;
+				}
+				
+				.item-racikan {
+					padding-left : 10px !important;
+				}
+			';
+
+			// Tambahkan CSS ke mPDF
+			$mpdf->WriteHTML($css, \Mpdf\HTMLParserMode::HEADER_CSS);
 			$mpdf->WriteHTML($html,1);
 			$mpdf->WriteHTML($html);			
 			$mpdf->Output();
-
 	}
 }
