@@ -62,7 +62,19 @@ class M_recipe extends CI_Model {
 						}
 						return $label;
 					}
-				]
+
+				],
+				"jenis_resep" => [
+					"custom" => function($a){
+						if ($a=="1") {
+							$label = "<span class=\"label label-primary\">Pulang</span>";
+						}elseif($a=="2"){
+							$label = "<span class=\"label label-danger\">Cito</span>";
+						}elseif ($a=="3") {
+							$label = "<span class=\"label label-warning\">Pelayanan</span>";
+						}
+						return $label;
+					}]
 				/* "unit_id",
 				"rcp_no",
 				"diagnosa_id",
