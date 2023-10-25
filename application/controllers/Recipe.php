@@ -489,7 +489,7 @@ class Recipe extends MY_Generator
 				 ->update("newfarmasi.recipe");
 		$data['resep'] = $this->db->query("SELECT
 		r.rcp_id,qty,racikan_qty,rcp_date,
-		racikan_id,dosis,racikan_dosis,item_name,racikan_desc		
+		racikan_id,dosis,racikan_dosis,item_name,racikan_desc,alergi		
 	FROM
 		newfarmasi.recipe r
 		JOIN newfarmasi.recipe_detail rd ON r.rcp_id = rd.rcp_id

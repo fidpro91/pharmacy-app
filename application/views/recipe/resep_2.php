@@ -85,54 +85,49 @@
                     }
                     ?>
                 </div>
-                <?php
-                // Div 2: Obat Racikan
-                $no = 1;
-                $groupedData = array(); // Inisialisasi array groupedData
-                foreach ($resep as $key => $res) {
-                    if ($res->racikan_qty != null) {
-                        $racikanQty = $res->racikan_qty;
-                        if (!isset($groupedData[$racikanQty])) {
-                            $groupedData[$racikanQty] = array();
+                                        <?php
+                        $groupedData = array(); // Inisialisasi array groupedData
+
+                        foreach ($resep as $key => $res) {
+                            if ($res->racikan_qty != null) {
+                                $racikanId = $res->racikan_id;
+                                if (!isset($groupedData[$racikanId])) {
+                                    $groupedData[$racikanId] = array();
+                                }
+                                $groupedData[$racikanId][] = array(
+                                    "item_name" => $res->item_name,
+                                    "dosis" => $res->dosis,
+                                    "racikan_dosis" => $res->racikan_dosis,
+                                    "racikan_qty" => $res->racikan_qty
+                                );
+                            }
                         }
-                        $groupedData[$racikanQty][] = array(
-                            "no" => $no++,
-                            "item_name" => $res->item_name,
-                            "dosis" => $res->dosis,
-                            "racikan_dosis" => $res->racikan_dosis,
-                            "racikan_qty" => $racikanQty,
-                            "racikan_id" => $res->racikan_id
-                        );
-                    }
-                }
 
-                // Cek apakah ada data yang sesuai dengan kondisi
-                $dataExists = false;
-                foreach ($groupedData as $racikanQty => $group) {
-                    if (!empty($group)) {
-                        $dataExists = true;
-                        break;
-                    }
-                }
-
-                if ($dataExists) {
-                    echo '<div class="right-div">';
-                    echo '<div class="item"><b>Racikan</b></div>';
-
-                    foreach ($groupedData as $racikanQty => $group) {
-
-                        echo '<div class="item">';
-                        echo '<div class="item">' . '<b>' . $group[0]['racikan_id'] . '</b>  ' . '  JML = ' . $racikanQty . '</div>';
-                        echo '<div class="item"><i>signa(&fnof;) ' . $group[0]['dosis'] . '<i></div>';
-                        
-                        foreach ($group as $item) {
-                            echo '<div class="item-racikan">&nbsp;&nbsp;&nbsp;&nbsp;' . $item["item_name"] . ' Jml (' . $item["racikan_dosis"] . ')</div>';
+                        // Cek apakah ada data yang sesuai dengan kondisi
+                        $dataExists = false;
+                        foreach ($groupedData as $racikanId => $group) {
+                            if (!empty($group)) {
+                                $dataExists = true;
+                                break;
+                            }
                         }
-                        echo '<br><br></div>';
-                    }
-                    echo '</div>'; // Tutup div Obat Racikan
-                }
-                ?>
+
+                        if ($dataExists) {
+                            echo '<div class="right-div">';
+                            echo '<div class="item"><b>Racikan</b></div>';
+                            foreach ($groupedData as $racikanId => $group) {
+                                echo '<div class="item-racikan">' . '<b>' . $racikanId . '</b>  ' . '  JML = ' . $group[0]['racikan_qty'] . '</div>';
+                                echo '<div class="item"><b>Dosis</b> : <i>signa(&fnof;) ' . $group[0]['dosis'] . '<i></div>';
+                                echo '<ul>';
+                                foreach ($group as $item) {                         
+                                    
+                                    echo '<li class="item"> ' .$item["item_name"] . ' Jml (' . $item["racikan_dosis"] . ')</li>';
+                                }
+                                echo '</ul>';
+                            }
+                            echo '</div>';
+                        }
+                        ?>
             </div>
         </td>
         <td>
