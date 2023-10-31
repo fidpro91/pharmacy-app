@@ -3,6 +3,9 @@
         <td colspan="3" align="left" style="line-height:16px;">
             <h3 style="padding:0px;margin:0px">E RESEP RSUD IBNUSINA GRESIK</h3>
         </td>
+        <td colspan="3" align="right" style="line-height:16px;">
+           Iterasi : <?= $pasien->iterasi ?> x
+        </td>
     </tr>
 </table>
 
@@ -113,17 +116,17 @@
                         }
 
                         if ($dataExists) {
-                            echo '<div class="right-div">';
+                            echo '<div class="right-div" >';
                             echo '<div class="item"><b>Racikan</b></div>';
                             foreach ($groupedData as $racikanId => $group) {
-                                echo '<div class="item-racikan">' . '<b>' . $racikanId . '</b>  ' . '  JML = ' . $group[0]['racikan_qty'] . '</div>';
-                                echo '<div class="item"><b>Dosis</b> : <i>signa(&fnof;) ' . $group[0]['dosis'] . '<i></div>';
-                                echo '<ul>';
+                                echo '<div class="item">' . '<b>' . $racikanId . '</b>  ' . '  JML = ' . $group[0]['racikan_qty'] . '</div>';
+                                echo '<div class="item"><b>Dosis</b> : <i>signa(&fnof;) ' . $group[0]['dosis'] . '<i></div> <br>';
+                               
                                 foreach ($group as $item) {                         
                                     
-                                    echo '<li class="item"> ' .$item["item_name"] . ' Jml (' . $item["racikan_dosis"] . ')</li>';
+                                    echo '<div class="item"> ' .$item["item_name"] . ' Jml (' . $item["racikan_dosis"] . ')'.'</div> <br> ';
                                 }
-                                echo '</ul>';
+                              
                             }
                             echo '</div>';
                         }

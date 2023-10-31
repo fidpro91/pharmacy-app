@@ -501,7 +501,7 @@ class Recipe extends MY_Generator
 		concat(employee_ft,employee_name,employee_bt) as dokter,u.unit_name ,
 		px_norm,px_name,to_char(rcp_date,'dd-mm-yyyy') as tgl_resep,surety_name,
 		date(px_birthdate) as tgl_lahir,p.px_address,rcp_no,bb,u1.unit_name as asal_layanan,
-		jenis_resep,sep_no,v.pxsurety_no
+		jenis_resep,sep_no,v.pxsurety_no,iterasi
 		FROM
 		newfarmasi.recipe r
 		join yanmed.visit v on r.visit_id = v.visit_id
