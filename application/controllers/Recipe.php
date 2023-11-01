@@ -507,7 +507,7 @@ class Recipe extends MY_Generator
 		join yanmed.visit v on r.visit_id = v.visit_id
 		join admin.ms_unit u on r.unit_id = u.unit_id
 		join yanmed.patient p on r.px_id = p.px_id
-		JOIN hr.employee e ON r.doctor_id = e.employee_id 
+		left JOIN hr.employee e ON r.doctor_id = e.employee_id 
 		join yanmed.ms_surety s on r.surety_id = s.surety_id
 		left join yanmed.anamnese a on r.services_id = a.srv_id
 		join admin.ms_unit u1 on r.unit_id_layanan = u1.unit_id

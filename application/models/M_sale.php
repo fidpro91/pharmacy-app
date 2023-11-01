@@ -243,6 +243,7 @@ class M_sale extends CI_Model
 			"sale_total" => $result->sale_total,
 			"sep_no" => $result->sep_no,
 			"pxsurety_no" => $result->pxsurety_no,
+			"sale_date" => $result->sale_date
 		);
 
 		if ($result->srv_type == 'RJ') {
