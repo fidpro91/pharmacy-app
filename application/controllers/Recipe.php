@@ -374,6 +374,12 @@ class Recipe extends MY_Generator
 						"btn-act" => "cetak_eresep('" . $row['id_key'] ."','" . $row['rcp_status'] . "')",
 						"btn-icon" => "fa fa-print",
 						"btn-class" => "btn-warning",
+					],
+					"preview resep" =>
+					[
+						"btn-act" => "preview('" . $row['id_key'] ."','" . $row['rcp_status'] . "')",
+						"btn-icon" => "fa fa-eye",
+						"btn-class" => "btn-success",
 					]
 				], $row['id_key']);
 			} elseif ($row["rcp_status"] == "2") {
@@ -480,10 +486,25 @@ class Recipe extends MY_Generator
 		}
 		echo json_encode($resp);
 	}
+	private function ttd_resep($id){
+		$sql = $this->db->query("select user_id from newfarmasi.recipe 								
+								where rcp_id = $id ")->row();
+		$this->load->library("curls");
+		$url = "api/external/user/get-ttd?user_id=".$sql->user_id;
+		$data=$this->curls->api_erm("GET",$url,null);
+		$resp = [
+			"code" => $data['status'],
+			"message" => $data['message'],
+			"ttd" => $data['url']
+		];
+		return $resp;
 
-	public function cetak_eresep($id)
-	{
+	}
 
+	public function preview($id){
+
+		$hasil['ttek']= $this->ttd_resep($id);
+		$data['ttd']= $hasil['ttek']['ttd'];		
 		$this->db->where("rcp_id",$id)
 				 ->set("rcp_status","3")
 				 ->update("newfarmasi.recipe");
@@ -501,7 +522,44 @@ class Recipe extends MY_Generator
 		concat(employee_ft,employee_name,employee_bt) as dokter,u.unit_name ,
 		px_norm,px_name,to_char(rcp_date,'dd-mm-yyyy') as tgl_resep,surety_name,
 		date(px_birthdate) as tgl_lahir,p.px_address,rcp_no,bb,u1.unit_name as asal_layanan,
-		jenis_resep,sep_no,v.pxsurety_no,iterasi
+		jenis_resep,sep_no,v.pxsurety_no,iterasi,alergi
+		FROM
+		newfarmasi.recipe r
+		join yanmed.visit v on r.visit_id = v.visit_id
+		join admin.ms_unit u on r.unit_id = u.unit_id
+		join yanmed.patient p on r.px_id = p.px_id
+		left JOIN hr.employee e ON r.doctor_id = e.employee_id 
+		join yanmed.ms_surety s on r.surety_id = s.surety_id
+		left join yanmed.anamnese a on r.services_id = a.srv_id
+		join admin.ms_unit u1 on r.unit_id_layanan = u1.unit_id
+	WHERE
+		r.rcp_id = $id")->row();			
+			$html = $this->load->view("recipe/preview", $data);
+
+	}
+
+	public function cetak_eresep($id)
+	{
+		$hasil['ttek']= $this->ttd_resep($id);
+		$data['ttd']= $hasil['ttek']['ttd'];		
+		$this->db->where("rcp_id",$id)
+				 ->set("rcp_status","3")
+				 ->update("newfarmasi.recipe");
+		$data['resep'] = $this->db->query("SELECT
+		r.rcp_id,qty,racikan_qty,rcp_date,
+		racikan_id,dosis,racikan_dosis,item_name,racikan_desc,alergi		
+	FROM
+		newfarmasi.recipe r
+		JOIN newfarmasi.recipe_detail rd ON r.rcp_id = rd.rcp_id
+		JOIN ADMIN.ms_item i ON rd.item_id = i.item_id	
+	WHERE
+		r.rcp_id = $id")->result();
+
+		$data['pasien']= $this->db->query("SELECT	
+		concat(employee_ft,employee_name,employee_bt) as dokter,u.unit_name ,
+		px_norm,px_name,to_char(rcp_date,'dd-mm-yyyy') as tgl_resep,surety_name,
+		date(px_birthdate) as tgl_lahir,p.px_address,rcp_no,bb,u1.unit_name as asal_layanan,
+		jenis_resep,sep_no,v.pxsurety_no,iterasi,alergi
 		FROM
 		newfarmasi.recipe r
 		join yanmed.visit v on r.visit_id = v.visit_id

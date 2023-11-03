@@ -203,7 +203,7 @@
 
 	$("body").on("focus", ".autocom_item_id", function() {
 		$(this).autocomplete({
-			source: "<?php echo site_url('sale/get_item'); ?>/" + $("#unit_id_depo").val(),
+			source: "<?php echo site_url('sale/get_item'); ?>/" + $("#unit_id_depo").val()+'/'+$("#own_id").val(),
 			autoFocus: true,
 			select: function(event, ui) {
 				$('tr[class*="list_obat"]').each(function(i, a) {

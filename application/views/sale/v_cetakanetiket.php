@@ -126,7 +126,7 @@
                     <!-- <?php echo ucfirst($detailrs->hsp_address); ?> </p> -->
             </td>
             <td style="position: relative;">
-                <!-- <p style="position: absolute; right: 10px; top: 0px; width: 60px;"><?php echo date("d-m-y"); ?></p> -->
+                <p style="position: absolute; right: 10px; top: 0px; width: 60px;"><?php echo $detailcetak['sale_date']; ?></p> 
             </td>
         </tr>
         <tr style="border-left: 1px solid black; border-right: 1px solid black; border-top: 1px solid grey; font-weight:bold;">

@@ -1124,18 +1124,20 @@ class Sale extends MY_Generator
 		join newfarmasi.stock_fifo sf on n.stock_id = sf.stock_id
 		WHERE sd.sale_id =  $sale_id and racikan_id is null 
 		order by sd.saledetail_id asc ")->result();
-		$data['racik'] = $this->db->query("		
-		SELECT sale_num,string_agg(concat(item_name),' , ') as item_name,			
-		racikan_qty,dosis,ed_obat,racikan_dosis,reff_name,racikan_id
-		FROM
-		farmasi.sale_detail sd
-		JOIN farmasi.sale s ON sd.sale_id = s.sale_id
-		JOIN ADMIN.ms_item i ON sd.item_id = i.item_id
-		left join admin.ms_reff rr on i.label_item_id = rr.reff_id
-		JOIN newfarmasi.sale_fifo n ON sd.saledetail_id = n.saledet_id
-		JOIN newfarmasi.stock_fifo sf ON n.stock_id = sf.stock_id 
-		WHERE sd.sale_id = $sale_id  and racikan_id IS NOT NULL
-		GROUP BY sale_num,racikan_qty,dosis,ed_obat,racikan_dosis,reff_name,racikan_id
+		$data['racik'] = $this->db->query("SELECT
+			sale_num,
+			string_agg ( concat ( item_name,' / ', racikan_qty ), ' , ' ) AS item_name,	
+			ed_obat,racikan_dosis,reff_name,racikan_id 
+			FROM
+				farmasi.sale_detail sd
+				JOIN farmasi.sale s ON sd.sale_id = s.sale_id
+				JOIN ADMIN.ms_item i ON sd.item_id = i.item_id
+				LEFT JOIN ADMIN.ms_reff rr ON i.label_item_id = rr.reff_id
+				JOIN newfarmasi.sale_fifo n ON sd.saledetail_id = n.saledet_id
+				JOIN newfarmasi.stock_fifo sf ON n.stock_id = sf.stock_id 
+			WHERE sd.sale_id = $sale_id 
+				AND racikan_id IS NOT NULL 
+			GROUP BY sale_num,ed_obat,racikan_dosis,reff_name,racikan_id
 		")->result();
 		//print_r($data);die;
 		//$mpdf = new \Mpdf\Mpdf();
