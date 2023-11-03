@@ -6,7 +6,7 @@ class M_recipe extends CI_Model {
 	{
 		$data = $this->db->query("
 				select ".implode(',', $aColumns).",rcp_id as id_key from newfarmasi.recipe r
-				join admin.ms_unit mu on mu.unit_id = r.unit_id_layanan
+				left join admin.ms_unit mu on mu.unit_id = r.unit_id_layanan
 				left join hr.employee e on e.employee_id = r.doctor_id
 				left join yanmed.patient p on r.px_id = p.px_id
 				 where 0=0 $sWhere $sOrder $sLimit
@@ -18,7 +18,7 @@ class M_recipe extends CI_Model {
 	{
 		$data = $this->db->query("
 				select ".implode(',', $aColumns).",rcp_id as id_key  from newfarmasi.recipe r
-				join admin.ms_unit mu on mu.unit_id = r.unit_id_layanan
+				left join admin.ms_unit mu on mu.unit_id = r.unit_id_layanan
 				left join hr.employee e on e.employee_id = r.doctor_id
 				left join yanmed.patient p on r.px_id = p.px_id
 				where 0=0 $sWhere
