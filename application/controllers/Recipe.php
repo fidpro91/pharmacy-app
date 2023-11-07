@@ -447,7 +447,7 @@ class Recipe extends MY_Generator
 		$data = $this->db->where('rcp_id', $id)
 			->join("yanmed.visit v", "v.visit_id=r.visit_id")
 			->join("yanmed.patient p", "p.px_id=v.px_id")
-			->join("hr.employee e", "e.employee_id=r.doctor_id")
+			->JOIN("hr.employee e", "e.employee_id=r.doctor_id",'LEFT')
 			->join("yanmed.services s", "s.srv_id=r.services_id")
 			->join("admin.ms_unit mu", "s.unit_id=mu.unit_id")
 			->join("yanmed.ms_surety sur", "sur.surety_id=v.surety_id")
@@ -505,9 +505,7 @@ class Recipe extends MY_Generator
 
 		$hasil['ttek']= $this->ttd_resep($id);
 		$data['ttd']= $hasil['ttek']['ttd'];		
-		$this->db->where("rcp_id",$id)
-				 ->set("rcp_status","3")
-				 ->update("newfarmasi.recipe");
+		
 		$data['resep'] = $this->db->query("SELECT
 		r.rcp_id,qty,racikan_qty,rcp_date,
 		racikan_id,dosis,racikan_dosis,item_name,racikan_desc,alergi		
