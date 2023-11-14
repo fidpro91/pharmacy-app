@@ -43,7 +43,8 @@ class M_recipe_detail extends CI_Model {
 				"qty",
 				"racikan_qty",
 				"racikan_dosis",
-				"stock",			
+				"stock",
+				"ed_obat",			
 				"sale_price",
 				"dosis",
 				"kronis",
@@ -65,6 +66,7 @@ class M_recipe_detail extends CI_Model {
 					"racikan_qty" => "trim|integer",
 					"racikan_id" => "trim",
 					"racikan_dosis" => "trim",
+					"ed_obat" => "trim",
 
 				];
 		return $data;

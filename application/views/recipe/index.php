@@ -148,6 +148,7 @@
         $.each(data, (ind, obj) => {
           $('.modal-body').find("#" + ind).val(obj);
         });
+             
         $('.modal-body').find(".px_name").text(data.px_name);
         $('.modal-body').find(".px_norm").text(data.px_norm);
         $('.modal-body').find(".unit_layanan").text(data.unit_name);

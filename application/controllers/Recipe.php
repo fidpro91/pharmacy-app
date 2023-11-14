@@ -65,11 +65,12 @@ class Recipe extends MY_Generator
 			];
 
 			$saleDetailInput[$x]['percent_profit'] = $data['percent_profit'];
+			$saleDetailInput[$x]['ed_obat'] = $value['ed_obat'];
 			if ($value['racikan_id'] != 'null' && $value['racikan_id'] != '') {
 				$saleDetailInput[$x]['racikan_id'] = $value['racikan_id'];
 				$saleDetailInput[$x]['racikan_qty'] = $value['qty'];
 				$saleDetailInput[$x]['racikan_dosis'] = $value['dosis'];
-				$saleDetailInput[$x]['racikan'] = 't';
+				$saleDetailInput[$x]['racikan'] = 't';				
 			} else {
 				$embalaseNonRacikan += $this->db->get_where("farmasi.ownership", ["own_id" => $data["own_id"]])->row("profit_item");
 			}
@@ -139,8 +140,7 @@ class Recipe extends MY_Generator
 			return $arr + ['sale_id' => $saleId];
 		}, $saleDetailInput);
 
-		/* print_r($saleDetailInput);
-		die; */
+		
 		foreach ($saleDetailInput as $key => $value) {
 			$this->db->insert("farmasi.sale_detail", $value);
 			$saleDetailId = $this->db->insert_id();
@@ -310,12 +310,20 @@ class Recipe extends MY_Generator
 					"width" => '10%',
 					"data" => get_type_kronis()
 				];
+			}elseif ($value == "ed_obat") {
+				$row[] = [
+					"id" => $value,
+					"label" => "BUD",
+					"type" => 'text',
+					"width" => "10%",
+
+				];
 			} elseif ($value == "dosis") {
 				$row[] = [
 					"id" => $value,
 					"label" => ucwords(str_replace('_', ' ', $value)),
 					"type" => 'text',
-					"width" => '10%',
+					"width" => '7%',
 				];
 			} else {
 				$row[] = [
