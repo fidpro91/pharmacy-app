@@ -28,6 +28,7 @@ class Recipe extends MY_Generator
 	public function save()
 	{
 		$data = $this->input->post();
+		
 		$totalAll = 0;
 		$saleDetailInput = [];
 		$embalaseNonRacikan = 0;
@@ -102,10 +103,17 @@ class Recipe extends MY_Generator
 		$totalAll = $totalAll + $embalase;
 
 		//dokter
+		
+		if($data['par_id'] != $data['user_dokter'] || $data['par_id'] == null){
+			$id_dokter = $data["user_dokter"];
+			
+		}else{
+			$id_dokter = $data["par_id"];
+		}
 		$dokter = $this->db->get_where("hr.employee", [
-			"employee_id"	=> $data["par_id"]
+			"employee_id"	=> $id_dokter
 		])->row();
-
+		
 		$saleInput = [
 			"sale_num" 	=> $this->get_no_sale($data["unit_id"]),
 			"date_act"	=> date("Y-m-d H:i:s"),
@@ -121,7 +129,7 @@ class Recipe extends MY_Generator
 			"rcp_id" => $data["rcp_id"],
 			"service_id" => $data["services_id"],
 			"surety_id" => $data["surety_id"],
-			"doctor_id" => $data["par_id"],
+			"doctor_id" => $data["user_dokter"],
 			"doctor_name" => ($dokter->employee_ft . $dokter->employee_name . $dokter->employee_bt),
 			"own_id" => $data["own_id"],
 			"sale_total" => $totalAll,
@@ -456,11 +464,12 @@ class Recipe extends MY_Generator
 			->join("yanmed.visit v", "v.visit_id=r.visit_id")
 			->join("yanmed.patient p", "p.px_id=v.px_id")
 			->JOIN("hr.employee e", "e.employee_id=r.doctor_id",'LEFT')
+			->JOIN("admin.ms_user u", "u.user_id=r.user_id",'LEFT')
 			->join("yanmed.services s", "s.srv_id=r.services_id")
 			->join("admin.ms_unit mu", "s.unit_id=mu.unit_id")
 			->join("yanmed.ms_surety sur", "sur.surety_id=v.surety_id")
 			->join("farmasi.surety_ownership so", "so.surety_id=v.surety_id and so.own_id=1")
-			->select("r.*,so.*,r.doctor_id as par_id,s.unit_id as unit_id_lay,e.*,p.px_norm,p.px_name,p.px_address,mu.unit_name,sur.surety_name,v.pxsurety_no,v.sep_no")
+			->select("r.*,so.*,r.doctor_id as par_id,s.unit_id as unit_id_lay,e.*,p.px_norm,p.px_name,p.px_address,mu.unit_name,sur.surety_name,v.pxsurety_no,v.sep_no,person_name,u.employee_id as user_dokter")
 			->get("newfarmasi.recipe r")->row();
 
 		echo json_encode($data);
@@ -525,7 +534,7 @@ class Recipe extends MY_Generator
 		r.rcp_id = $id")->result();
 
 		$data['pasien']= $this->db->query("SELECT	
-		concat(employee_ft,employee_name,employee_bt) as dokter,u.unit_name ,
+		person_name as dokter,u.unit_name ,
 		px_norm,px_name,to_char(rcp_date,'dd-mm-yyyy') as tgl_resep,surety_name,
 		date(px_birthdate) as tgl_lahir,p.px_address,rcp_no,bb,u1.unit_name as asal_layanan,
 		jenis_resep,sep_no,v.pxsurety_no,iterasi,alergi
@@ -534,7 +543,7 @@ class Recipe extends MY_Generator
 		join yanmed.visit v on r.visit_id = v.visit_id
 		join admin.ms_unit u on r.unit_id = u.unit_id
 		join yanmed.patient p on r.px_id = p.px_id
-		left JOIN hr.employee e ON r.doctor_id = e.employee_id 
+		left JOIN admin.ms_user e ON r.user_id = e.user_id
 		join yanmed.ms_surety s on r.surety_id = s.surety_id
 		left join yanmed.anamnese a on r.services_id = a.srv_id
 		join admin.ms_unit u1 on r.unit_id_layanan = u1.unit_id
@@ -562,7 +571,7 @@ class Recipe extends MY_Generator
 		r.rcp_id = $id")->result();
 
 		$data['pasien']= $this->db->query("SELECT	
-		concat(employee_ft,employee_name,employee_bt) as dokter,u.unit_name ,
+		person_name as dokter,u.unit_name ,
 		px_norm,px_name,to_char(rcp_date,'dd-mm-yyyy') as tgl_resep,surety_name,
 		date(px_birthdate) as tgl_lahir,p.px_address,rcp_no,bb,u1.unit_name as asal_layanan,
 		jenis_resep,sep_no,v.pxsurety_no,iterasi,alergi
@@ -571,7 +580,7 @@ class Recipe extends MY_Generator
 		join yanmed.visit v on r.visit_id = v.visit_id
 		join admin.ms_unit u on r.unit_id = u.unit_id
 		join yanmed.patient p on r.px_id = p.px_id
-		left JOIN hr.employee e ON r.doctor_id = e.employee_id 
+		left JOIN admin.ms_user e ON r.user_id = e.user_id 
 		join yanmed.ms_surety s on r.surety_id = s.surety_id
 		left join yanmed.anamnese a on r.services_id = a.srv_id
 		join admin.ms_unit u1 on r.unit_id_layanan = u1.unit_id

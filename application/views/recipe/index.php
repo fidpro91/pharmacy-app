@@ -155,7 +155,12 @@
         $('.modal-body').find(".cara_bayar").text(data.surety_name);
         $('.modal-body').find(".noka").text(data.pxsurety_no);
         $('.modal-body').find(".nosep").text(data.sep_no);
-        $('.modal-body').find(".dpjp_layan").text(data.employee_ft + data.employee_name + data.employee_bt);
+        if(data.par_id != data.user_dokter || data.par_id == null){
+          $('.modal-body').find(".dpjp_layan").text(data.person_name);
+        }else{
+          $('.modal-body').find(".dpjp_layan").text(data.employee_ft + data.employee_name + data.employee_bt);
+        }
+        
         $("#modal_recipe").find("select[class*='select2']").trigger("change");
       }, 'json');
     });

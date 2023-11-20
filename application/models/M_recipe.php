@@ -7,7 +7,8 @@ class M_recipe extends CI_Model {
 		$data = $this->db->query("
 				select ".implode(',', $aColumns).",rcp_id as id_key from newfarmasi.recipe r
 				left join admin.ms_unit mu on mu.unit_id = r.unit_id_layanan
-				left join hr.employee e on e.employee_id = r.doctor_id
+				left JOIN admin.ms_user u ON r.user_id = u.user_id 
+				left JOIN hr.employee e ON r.doctor_id = e.employee_id  
 				left join yanmed.patient p on r.px_id = p.px_id
 				 where 0=0 $sWhere $sOrder $sLimit
 			")->result_array();
@@ -19,7 +20,8 @@ class M_recipe extends CI_Model {
 		$data = $this->db->query("
 				select ".implode(',', $aColumns).",rcp_id as id_key  from newfarmasi.recipe r
 				left join admin.ms_unit mu on mu.unit_id = r.unit_id_layanan
-				left join hr.employee e on e.employee_id = r.doctor_id
+				left JOIN admin.ms_user u ON r.user_id = u.user_id
+				left JOIN hr.employee e ON r.doctor_id = e.employee_id 
 				left join yanmed.patient p on r.px_id = p.px_id
 				where 0=0 $sWhere
 			")->num_rows();
@@ -35,7 +37,7 @@ class M_recipe extends CI_Model {
 				"px_norm",
 				"px_name",
 				"unit_name",
-				"employee_name",
+				"person_name"=>["label"=>"Dokter"],
 				"iterasi" => [
 					"custom" => function($a){
 						$label = null;

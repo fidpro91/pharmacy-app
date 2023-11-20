@@ -13,6 +13,7 @@
 		<?= form_hidden("px_id") ?>
 		<?= form_hidden("visit_id") ?>
 		<?= form_hidden("par_id") ?>
+		<?= form_hidden("user_dokter") ?>
 		<?= form_hidden("surety_id") ?>
 		<?= form_hidden("unit_id_lay") ?>
 		<?= form_hidden("services_id") ?>
