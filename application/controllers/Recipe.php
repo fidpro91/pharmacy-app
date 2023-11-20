@@ -104,16 +104,33 @@ class Recipe extends MY_Generator
 
 		//dokter
 		
-		if($data['par_id'] != $data['user_dokter'] || $data['par_id'] == null){
-			$id_dokter = $data["user_dokter"];
-			
-		}else{
-			$id_dokter = $data["par_id"];
+		if($data['par_id'] !=null || $data['par_id'] == null ){
+			if($data['user_dokter'] == null){
+				$id_dokter = $data['par_id'];
+			}
+			if($data['user_dokter'] !=null){
+				$id_dokter = $data['user_dokter'];
+			}		
 		}
-		$dokter = $this->db->get_where("hr.employee", [
-			"employee_id"	=> $id_dokter
-		])->row();
+		// kondisi 1 jika employee_id di tbl ms_user null maka akan di isikan employee_id dari tbl pegawai karena user bisa jadi di entri oleh ppds
+		// kondisi 2 jika employee_id di tbl ms_user tidak kosong maka akan di ambil.. jadi akan murni mengambil dari employee id dari user
 		
+		if(empty($id_dokter)){
+			if($data['user_dokter'] == null && $data['par_id'] == null){
+				$dokter->employee_name = 'DOKTER PPDS';			
+			}
+		}else{
+			$dokter = $this->db->get_where("hr.employee", [
+				"employee_id"	=> $id_dokter
+			])->row();
+		}
+			
+		
+	
+			
+		
+		
+		//($id_dokter) ? $id_dokter : 0;
 		$saleInput = [
 			"sale_num" 	=> $this->get_no_sale($data["unit_id"]),
 			"date_act"	=> date("Y-m-d H:i:s"),
@@ -129,7 +146,7 @@ class Recipe extends MY_Generator
 			"rcp_id" => $data["rcp_id"],
 			"service_id" => $data["services_id"],
 			"surety_id" => $data["surety_id"],
-			"doctor_id" => $data["user_dokter"],
+			"doctor_id" => ($id_dokter) ? $id_dokter : 0,
 			"doctor_name" => ($dokter->employee_ft . $dokter->employee_name . $dokter->employee_bt),
 			"own_id" => $data["own_id"],
 			"sale_total" => $totalAll,
