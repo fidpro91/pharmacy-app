@@ -28,7 +28,7 @@
           <?=create_select2(["attr"=>["name"=>"unit_name=DEPO","id"=>"unit_name","class"=>"form-control"],
 								"model"=>["m_ms_unit" => "get_farmasi_unit","column"=>["unit_id","unit_name"]]
 							])?>  
-           <?=create_select2(["attr"=>["name"=>"jenis_px=JENIS PASIEN","id"=>"jenis_px","class"=>"form-control"],
+           <?=create_select2(["attr"=>["name"=>"jenis_px=KATEGORI UNIT","id"=>"jenis_px","class"=>"form-control"],
 								"model"=>["m_laporan_penjualan" => "get_jenis_layanan","column"=>["catunit_id","nama"]]
 							])?> 
            <?= create_select2([
