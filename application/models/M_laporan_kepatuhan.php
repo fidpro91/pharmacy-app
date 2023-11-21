@@ -25,8 +25,9 @@ class M_laporan_kepatuhan  extends CI_Model {
 		  JOIN ADMIN.ms_unit u ON r.unit_id_layanan = u.unit_id
 		  JOIN ADMIN.ms_user us ON r.user_id = us.user_id
 		  LEFT JOIN admin.ms_reff rf on i.type_formularium = rf.reff_id	
-	  WHERE 0=0 $where
-		
+	  WHERE 0=0 
+	  and (i.comodity_id = 1 or i2.comodity_id = 1) 
+	  $where		
 	  GROUP BY
 		rcp_no,
 		  px_norm,

@@ -64,9 +64,14 @@ class Recipe extends MY_Generator
 				// "price_total" 	=> $value["price_total"],
 				"own_id" 		=> $data["own_id"],
 			];
-
+			if($value['ed_obat']=='undefined'){
+				$edobat = null;
+			}else{
+				$edobat = $value['ed_obat'];
+			}
+			
 			$saleDetailInput[$x]['percent_profit'] = $data['percent_profit'];
-			$saleDetailInput[$x]['ed_obat'] = $value['ed_obat'];
+			$saleDetailInput[$x]['ed_obat'] = $edobat;
 			if ($value['racikan_id'] != 'null' && $value['racikan_id'] != '') {
 				$saleDetailInput[$x]['racikan_id'] = $value['racikan_id'];
 				$saleDetailInput[$x]['racikan_qty'] = $value['qty'];
