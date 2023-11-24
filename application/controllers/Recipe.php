@@ -434,10 +434,10 @@ class Recipe extends MY_Generator
 						"btn-icon" => "fa fa-list-alt",
 						"btn-class" => "btn-success",
 					],
-					"cetak_eresep" =>
+					"preview resep" =>
 					[
-						"btn-act" => "cetak_eresep('" . $row['id_key'] ."','" . $row['rcp_status'] . "')",
-						"btn-icon" => "fa fa-print",
+						"btn-act" => "preview('" . $row['id_key'] ."','" . $row['rcp_status'] . "')",
+						"btn-icon" => "fa fa-eye",
 						"btn-class" => "btn-warning",
 					]
 				], $row['id_key']);
@@ -449,10 +449,10 @@ class Recipe extends MY_Generator
 						"btn-icon" => "fa fa-list-alt",
 						"btn-class" => "btn-success",
 					],
-					"cetak_eresep" =>
+					"preview resep" =>
 					[
-						"btn-act" => "cetak_eresep('" . $row['id_key'] ."','" . $row['rcp_status'] . "')",
-						"btn-icon" => "fa fa-print",
+						"btn-act" => "preview('" . $row['id_key'] ."','" . $row['rcp_status'] . "')",
+						"btn-icon" => "fa fa-eye",
 						"btn-class" => "btn-warning",
 					]
 				], $row['id_key']);
