@@ -571,7 +571,90 @@ class Recipe extends MY_Generator
 		join admin.ms_unit u1 on r.unit_id_layanan = u1.unit_id
 	WHERE
 		r.rcp_id = $id")->row();			
-			$html = $this->load->view("recipe/preview", $data);
+			$html = $this->load->view("recipe/preview", $data,true);
+			$html .= '
+			<style>
+			.container {
+				display: flex;
+			}
+		
+			.left-div {
+				flex: 1;
+				padding: 1px;
+				width: 40%;
+				border: 0px solid #000;
+			}
+		
+			.right-div {
+				flex: 1;
+				padding: 1px;
+				width: 40%;
+				border: 0px solid #000;
+			}
+			
+			.item {
+			   font-size : 10px;
+			}
+		
+			.table-container {
+				position: absolute;
+				top: 135px; /* Ubah jarak dari atas sesuai kebutuhan Anda */
+				right: 55px; /* Ubah jarak dari kanan sesuai kebutuhan Anda */
+				width: 20%;
+				text-align: center;
+				border: 0px solid black;
+				font-size:11px;
+			}.mama {
+			font-size: 10px;
+			}
+			.table-container {
+				position: absolute;
+				top: 135px; /* Ubah jarak dari atas sesuai kebutuhan Anda */
+				right: 55px; /* Ubah jarak dari kanan sesuai kebutuhan Anda */
+				width: 20%;
+				text-align: center;
+				border: 0px solid black;
+				font-size:11px;
+			}
+			body {
+				font-size: 11px; /* Gaya font untuk seluruh dokumen */
+			} </style>
+';
+
+			$mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => [105, 214]]);	
+			$css = '
+				@page {
+					margin: 5mm 5mm 5mm 5mm; /* Atur margin atas, kanan, bawah, dan kiri */
+				}
+
+				.tabel_telaah td {
+					font-size: 7pt !important;
+					font-family: "Arial Black", Arial, sans-serif;
+				}
+
+				.table_identitas td {
+					font-size: 8pt !important;
+					vertical-align: top;
+					line-height: 1.5;
+					font-family: "Arial Black", Arial, sans-serif;			
+					
+				}
+
+				.table_identitas td p {
+					margin:1px !important;
+								
+				}
+				
+				.item-racikan {
+					padding-left : 10px !important;
+				}
+			';
+
+			// Tambahkan CSS ke mPDF
+			$mpdf->WriteHTML($css, \Mpdf\HTMLParserMode::HEADER_CSS);
+			$mpdf->WriteHTML($html,1);
+			$mpdf->WriteHTML($html);			
+			$mpdf->Output();
 
 	}
 
@@ -668,14 +751,20 @@ class Recipe extends MY_Generator
 
 				.tabel_telaah td {
 					font-size: 7pt !important;
+					font-family: "Arial Black", Arial, sans-serif;
 				}
 
 				.table_identitas td {
 					font-size: 8pt !important;
+					vertical-align: top;
+					line-height: 1.5;
+					font-family: "Arial Black", Arial, sans-serif;			
+					
 				}
 
 				.table_identitas td p {
-					margin:10px !important;
+					margin:1px !important;
+								
 				}
 				
 				.item-racikan {
