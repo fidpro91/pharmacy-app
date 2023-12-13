@@ -95,19 +95,19 @@
                     <th>$rs->item_name</th>
                     <th>$rs->own_name</th>
                     <th>$rs->stock_awal</th>
-                    <th>".number_format($rs->harga_awal*1, 2, ',', ',')."</th>
-                    <th>".number_format($rs->stock_awal*$rs->harga_awal, 2, ',', ',')."</th>
+                    <th>".number_format($rs->harga_awal*1, 2, ',', '.')."</th>
+                    <th>".number_format($rs->stock_awal*$rs->harga_awal, 2, ',', '.')."</th>
                     <th>$rs->masuk</th>
-                    <th>".number_format($rs->harga*1, 2, ',', ',')."</th>
-                    <th>".number_format($rs->masuk*$rs->harga, 2, ',', ',')."</th>
+                    <th>".number_format($rs->harga*1, 2, ',', '.')."</th>
+                    <th>".number_format($rs->masuk*$rs->harga, 2, ',', '.')."</th>
                     <th>$rs->keluar</th>
-                    <th>".number_format($rs->harga*1, 2, ',', ',')."</th>
-                    <th>".number_format($rs->keluar*$rs->harga, 2, ',', ',')."</th>
+                    <th>".number_format($rs->harga*1, 2, ',', '.')."</th>
+                    <th>".number_format($rs->keluar*$rs->harga, 2, ',', '.')."</th>
                     <th>$rs->stock_op</th>
-                    <th>".number_format($rs->harga_so, 2, ',', ',')."</th>
-                    <th>".number_format($rs->stock_op*$rs->harga_so, 2, ',', ',')."</th>
+                    <th>".number_format($rs->harga_so, 2, ',', '.')."</th>
+                    <th>".number_format($rs->stock_op*$rs->harga_so, 2, ',', '.')."</th>
                     <th>".($rs->stock_awal+$rs->masuk-$rs->keluar-$rs->stock_op)."</th>
-                    <th>".number_format($rs->harga*1, 2, ',', ',')."</th>
+                    <th>".number_format($rs->harga*1, 2, ',', '.')."</th>
                     <th>".number_format(($rs->stock_awal+$rs->masuk-$rs->keluar-$rs->stock_op)*$rs->harga, 2, ',', '.')."</th>
                     <th></th>
                 </tr>";
