@@ -680,7 +680,8 @@ class Recipe extends MY_Generator
 		r.rcp_id = $id")->result();
 
 		$data['pasien'] = $this->db->query("SELECT	
-		person_name as dokter,u.unit_name ,
+		concat(em.employee_ft,em.employee_name,em.employee_bt) as dokter,
+		concat(em1.employee_ft,em1.employee_name,em1.employee_bt) as dpjp,u.unit_name ,
 		px_norm,px_name,to_char(rcp_date,'dd-mm-yyyy') as tgl_resep,surety_name,
 		date(px_birthdate) as tgl_lahir,p.px_address,rcp_no,bb,u1.unit_name as asal_layanan,
 		jenis_resep,sep_no,v.pxsurety_no,iterasi,alergi
@@ -690,6 +691,9 @@ class Recipe extends MY_Generator
 		join admin.ms_unit u on r.unit_id = u.unit_id
 		join yanmed.patient p on r.px_id = p.px_id
 		left JOIN admin.ms_user e ON r.user_id = e.user_id 
+		left join hr.employee em on e.employee_id = em.employee_id
+		left JOIN admin.ms_user e1 ON r.doctor_id = e1.employee_id
+		left join hr.employee em1 on e1.employee_id = em1.employee_id
 		join yanmed.ms_surety s on r.surety_id = s.surety_id
 		left join yanmed.anamnese a on r.services_id = a.srv_id
 		join admin.ms_unit u1 on r.unit_id_layanan = u1.unit_id
