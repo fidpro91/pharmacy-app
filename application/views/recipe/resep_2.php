@@ -70,10 +70,21 @@
         <td colspan="3">Unit Asal : <br>
             <?php echo $pasien->asal_layanan; ?> </td>
 
-        <td colspan="3">Dokter pembuat : <br> <?php echo ucwords(strtolower($pasien->dokter)); ?></td>
+        <td colspan="3">Dokter <br> <?php 
+        if(!empty($pasien->dokter)){
+            echo ucwords(strtolower($pasien->dokter));
+        }else{
+            echo ucwords(strtolower($pasien->person_name));
+        }
+        ?></td>
     </tr>
-    <tr>
-        <td colspan="4">Dokter Dpjp : <?php echo ucwords(strtolower($pasien->dpjp)); ?></td>
+
+     <tr>
+       <?php if($pasien->last_srv_status == 'RI'){
+        echo "<td colspan='6'><b>DPJP : <br> ".ucwords(strtolower($pasien->dpjp))."</b></td>";
+            }
+            ?> 
+    
     </tr>
 </table>
 
