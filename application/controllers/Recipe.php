@@ -525,10 +525,11 @@ class Recipe extends MY_Generator
 		}
 		echo json_encode($resp);
 	}
-	private function ttd_resep($id)
+	public function ttd_resep($id)
 	{
 		$sql = $this->db->query("select user_id from newfarmasi.recipe 								
 								where rcp_id = $id ")->row();
+								// print_r($sql);die;
 		$this->load->library("curls");
 		$url = "api/external/user/get-ttd?user_id=" . $sql->user_id;
 		$data = $this->curls->api_erm("GET", $url, null);
