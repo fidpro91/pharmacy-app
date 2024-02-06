@@ -75,6 +75,7 @@ class M_ms_item extends CI_Model {
 					"item_dosis" => "trim",
 					"item_form" => "trim|integer",
 					"label_item_id" => "trim|integer",
+					"kode_satusehat" => "trim"
 				];
 		return $data;
 	}

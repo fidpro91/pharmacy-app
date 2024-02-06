@@ -65,7 +65,8 @@
 							"m_ms_reff" => ["get_ms_reff", ["refcat_id" => '39']],
 							"column" => ["reff_id", "reff_name"]
 					],
-			]) ?>		
+			]) ?>
+			<?=create_input("kode_satusehat")?>		
 			</div>
 			<div class="col-md-6">
 				<div class="list_item">
