@@ -544,16 +544,21 @@ class Recipe extends MY_Generator
 
 	public function pdf_faktur($rcp){
 		$sale_id = $this->db->query("SELECT	sale_id FROM farmasi.sale s WHERE rcp_id = $rcp ")->row();
-		$detailrs 				= $this->m_sale->rumah_sakit();
+		$html = "";
+		if (!empty($sale_id)){
+			$detailrs 				= $this->m_sale->rumah_sakit();
 		$detailpasien 			= $this->m_sale->get_detail_patient($sale_id->sale_id);
 		$data['detailrs'] 		= $detailrs;
 		$data['detailcetak'] 	= $detailpasien;
 		$data['listresep'] 		= $this->m_sale->resep_dijual2($sale_id->sale_id);
 		$data['pencetak'] 		=  $this->m_sale->get_employee($this->session->employee_id);
 		
-		$html = $this->load->view('sale/v_cetakanresep3', $data, true);	
-		
+		$html = $this->load->view('sale/v_cetakanresep3', $data, true);			
 		return $html;
+		}else{
+			return $html;
+		}
+		
 
 	}
 
@@ -594,7 +599,7 @@ class Recipe extends MY_Generator
 		r.rcp_id = $id")->row();
 			
 		$html = $this->load->view("recipe/preview", $data, true);
-		$html_faktur = $this->pdf_faktur($id);
+		
 		$html .= '
 			<style>
 			.container {
@@ -678,12 +683,21 @@ class Recipe extends MY_Generator
 			';
 
 		// Tambahkan CSS ke mPDF
+		$html_faktur = $this->pdf_faktur($id);		
+		if(!empty($html_faktur)){
 		$mpdf->WriteHTML($css, \Mpdf\HTMLParserMode::HEADER_CSS);				
 		$mpdf->WriteHTML($html, 1);		
-		$mpdf->WriteHTML($html);
+		$mpdf->WriteHTML($html);		
 		$mpdf->AddPage('L');
-		$mpdf->WriteHTML($html_faktur);					
+		$mpdf->WriteHTML($html_faktur);				
 		$mpdf->Output();
+		}else{
+		$mpdf->WriteHTML($css, \Mpdf\HTMLParserMode::HEADER_CSS);				
+		$mpdf->WriteHTML($html, 1);		
+		$mpdf->WriteHTML($html);					
+		$mpdf->Output();
+		}
+		
 		
 			
 	}
