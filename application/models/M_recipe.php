@@ -131,4 +131,32 @@ class M_recipe extends CI_Model {
 	{
 		return $this->db->get_where("newfarmasi.recipe",$where)->row();
 	}
+
+	function faktur($rcp_id)
+	{
+		//$data	=	array();
+		$query_racik = $this->db->query("SELECT
+			c.racikan_id,
+			sale_qty,
+			(c.sale_price+(c.sale_price*COALESCE(C.percent_profit,0)))sale_price,
+			c.dosis,
+			mt.item_name,
+			a.sale_services,
+			a.embalase_item_sale,
+			a.sale_embalase,
+			(c.sale_price*sale_qty+(c.sale_price*sale_qty*COALESCE(percent_profit,0)))
+ as subtotal
+			FROM
+			farmasi.sale a
+			JOIN farmasi.sale_detail C ON a.sale_id = c.sale_id
+			JOIN admin.ms_item mt ON mt.item_id = c.item_id
+			WHERE
+			a.rcp_id = $rcp_id")
+		->result();
+		if (count($query_racik) < 1) {
+			$query_racik = array();
+		}
+
+		return $query_racik;
+	}
 }

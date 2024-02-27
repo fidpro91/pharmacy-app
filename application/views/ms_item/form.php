@@ -2,6 +2,7 @@
       			<?=form_open("ms_item/save",["method"=>"post","class"=>"form-vertical","id"=>"fm_ms_item"],$model)?>
 		<?=form_hidden("item_id")?>
 		<?=form_hidden("kode_generic_bpjs")?>
+		<?=form_hidden("kode_satusehat")?>
 		<div class="row">
 			<div class="col-md-3">
 				<?=create_input("item_code=Kode Item")?>
@@ -65,13 +66,18 @@
 							"m_ms_reff" => ["get_ms_reff", ["refcat_id" => '39']],
 							"column" => ["reff_id", "reff_name"]
 					],
-			]) ?>
-			<?=create_input("kode_satusehat")?>		
+			]) ?>				
 			</div>
+
+			<div class="col-md-6">
+			<?=create_input("obat_satusehat")?>	
+				</div>
+
 			<div class="col-md-6">
 				<div class="list_item">
 				</div>
 			</div>
+			
 		</div>
 
 
@@ -161,6 +167,33 @@ $(document).ready(function () {
 		minLength: 3,
 		select: function(event, ui) {
 			$("#kode_generic_bpjs").val(ui.item.isi);
+		}
+	})
+
+	$("#obat_satusehat").autocomplete({
+		source: function( request, response ) {
+			$.ajax( {
+                    url: "ms_item/get_kode_kfa/",
+                    dataType: "json",
+                    data: {
+                        term: request.term
+                    },
+                    success: function( data ) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.name,
+                                value: item.name,
+								isi : item.code
+                            };
+                        }));
+
+                    }
+               })
+		},
+		autoFocus: true,
+		minLength: 3,
+		select: function(event, ui) {
+			$("#kode_satusehat").val(ui.item.isi);
 		}
 	})
 

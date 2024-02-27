@@ -13,6 +13,7 @@ class Recipe extends MY_Generator
 			->lib_inputmask();
 
 		$this->load->model('m_recipe');
+		$this->load->model('m_sale');
 	}
 
 	public function index()
@@ -541,9 +542,23 @@ class Recipe extends MY_Generator
 		return $resp;
 	}
 
-	public function preview($id)
-	{
+	public function pdf_faktur($rcp){
+		$sale_id = $this->db->query("SELECT	sale_id FROM farmasi.sale s WHERE rcp_id = $rcp ")->row();
+		$detailrs 				= $this->m_sale->rumah_sakit();
+		$detailpasien 			= $this->m_sale->get_detail_patient($sale_id->sale_id);
+		$data['detailrs'] 		= $detailrs;
+		$data['detailcetak'] 	= $detailpasien;
+		$data['listresep'] 		= $this->m_sale->resep_dijual2($sale_id->sale_id);
+		$data['pencetak'] 		=  $this->m_sale->get_employee($this->session->employee_id);
+		
+		$html = $this->load->view('sale/v_cetakanresep3', $data, true);	
+		
+		return $html;
 
+	}
+
+	public function preview($id)
+	{	
 		$hasil['ttek'] = $this->ttd_resep($id);
 		$data['ttd'] = $hasil['ttek']['ttd'];
 
@@ -555,8 +570,7 @@ class Recipe extends MY_Generator
 		JOIN newfarmasi.recipe_detail rd ON r.rcp_id = rd.rcp_id
 		JOIN ADMIN.ms_item i ON rd.item_id = i.item_id	
 	WHERE
-		r.rcp_id = $id")->result();
-
+		r.rcp_id = $id")->result();		
 		$data['pasien'] = $this->db->query("SELECT	
 		person_name,
 		concat(em.employee_ft,em.employee_name,em.employee_bt) as dokter,
@@ -578,7 +592,9 @@ class Recipe extends MY_Generator
 		join admin.ms_unit u1 on r.unit_id_layanan = u1.unit_id
 	WHERE
 		r.rcp_id = $id")->row();
+			
 		$html = $this->load->view("recipe/preview", $data, true);
+		$html_faktur = $this->pdf_faktur($id);
 		$html .= '
 			<style>
 			.container {
@@ -629,6 +645,10 @@ class Recipe extends MY_Generator
 ';
 
 		$mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => [105, 214]]);
+		$pdf = new \Mpdf\Mpdf([
+			'format' => 'A4', // Atur format halaman, bisa 'A4', 'Letter', dll.
+'orientation' => 'P',
+		]);
 		$css = '
 				@page {
 					margin: 5mm 5mm 5mm 5mm; /* Atur margin atas, kanan, bawah, dan kiri */
@@ -658,10 +678,14 @@ class Recipe extends MY_Generator
 			';
 
 		// Tambahkan CSS ke mPDF
-		$mpdf->WriteHTML($css, \Mpdf\HTMLParserMode::HEADER_CSS);
-		$mpdf->WriteHTML($html, 1);
+		$mpdf->WriteHTML($css, \Mpdf\HTMLParserMode::HEADER_CSS);				
+		$mpdf->WriteHTML($html, 1);		
 		$mpdf->WriteHTML($html);
+		$mpdf->AddPage('L');
+		$mpdf->WriteHTML($html_faktur);					
 		$mpdf->Output();
+		
+			
 	}
 
 	public function cetak_eresep($id)

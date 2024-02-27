@@ -116,6 +116,16 @@ class M_ms_item extends CI_Model {
 		return $data;
 	}
 
+	public function get_item_kfa($where)
+	{
+		$data = $this->db->query(
+			"SELECT * from admin.ms_kfa a
+			WHERE lower(a.nama_kfa) like lower('%$where%')
+			limit 10"
+			)->result();
+		return $data;
+	}
+
 	public function get_item_stok($where)
 	{
 		$data = $this->db->query(

@@ -128,8 +128,15 @@ class Ms_item extends MY_Generator {
 	public function find_one($id)
 	{
 		$data = $this->db->where('item_id',$id)->get("admin.ms_item")->row();
-
+		
 		echo json_encode($data);
+	}
+
+	public function show_kode_kfa($id){
+		$data['nama'] = $this->db->query("select nama_kfa from admin.ms_item i 
+		join admin.ms_kfa a on i.kode_satusehat = a.code_kfa 
+		where item_id = $id ")->row();	
+		echo json_encode($data['nama']);
 	}
 
 	public function delete_row($id)
@@ -174,7 +181,7 @@ class Ms_item extends MY_Generator {
 	public function show_form()
 	{
 		$data['model'] = $this->m_ms_item->rules();
-		$data['own'] = $this->db->query("select own_id, own_name from farmasi.ownership where own_active = 't'")->result();
+		$data['own'] = $this->db->query("select own_id, own_name from farmasi.ownership where own_active = 't'")->result();		
 //		$respond= $this->m_item->get_item_by_id($id);
 		$this->load->view("ms_item/form",$data);
 	}
@@ -200,6 +207,21 @@ class Ms_item extends MY_Generator {
 				];
 			}
 		}
+		echo json_encode($item);
+	}
+
+	public function get_kode_kfa()
+	{		
+		$term = $this->input->get('term');
+		$respond= $this->m_ms_item->get_item_kfa($term);
+		$item=[];		
+			foreach ($respond as $key => $value) {
+				$item[] = [
+					"code"	=> $value->code_kfa,
+					"name"	=> $value->nama_kfa,
+				];
+			}
+		
 		echo json_encode($item);
 	}
 
