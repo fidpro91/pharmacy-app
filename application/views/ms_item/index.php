@@ -42,6 +42,7 @@
 <script type="text/javascript">
     var table;
 	var dataprice=null;
+ // var nama_kfa = null;
     $(document).ready(function() {
         table = $('#tb_ms_item').DataTable({
           dom: 'Bfrtip',
@@ -97,7 +98,7 @@
     });
     function set_val(id) {
       $("#form_ms_item").show();
-      $.get('ms_item/find_one/'+id,(data)=>{
+      $.get('ms_item/find_one/'+id,(data)=>{        
           $("#form_ms_item").load("ms_item/show_form",()=>{
             $.each(data,(ind,obj)=>{
                 $("#"+ind).val(obj);
@@ -110,6 +111,16 @@
 				  'url': "ms_item/find_price/json/" + id,
 				  'success': function (data) {
 					  dataprice = data;
+				  }
+			  });
+
+        $.ajax({
+				  'async': false,
+				  'type': "GET",
+				  'dataType': 'json',
+				  'url': "ms_item/show_kode_kfa/" + id,
+				  'success': function (data) {            
+					  $("#obat_satusehat").val(data.nama_kfa);
 				  }
 			  });
           });

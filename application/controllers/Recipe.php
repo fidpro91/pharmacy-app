@@ -13,6 +13,7 @@ class Recipe extends MY_Generator
 			->lib_inputmask();
 
 		$this->load->model('m_recipe');
+		$this->load->model('m_sale');
 	}
 
 	public function index()
@@ -28,6 +29,7 @@ class Recipe extends MY_Generator
 	public function save()
 	{
 		$data = $this->input->post();
+
 		$totalAll = 0;
 		$saleDetailInput = [];
 		$embalaseNonRacikan = 0;
@@ -63,8 +65,14 @@ class Recipe extends MY_Generator
 				// "price_total" 	=> $value["price_total"],
 				"own_id" 		=> $data["own_id"],
 			];
+			if ($value['ed_obat'] == 'undefined') {
+				$edobat = null;
+			} else {
+				$edobat = $value['ed_obat'];
+			}
 
 			$saleDetailInput[$x]['percent_profit'] = $data['percent_profit'];
+			$saleDetailInput[$x]['ed_obat'] = $edobat;
 			if ($value['racikan_id'] != 'null' && $value['racikan_id'] != '') {
 				$saleDetailInput[$x]['racikan_id'] = $value['racikan_id'];
 				$saleDetailInput[$x]['racikan_qty'] = $value['qty'];
@@ -101,10 +109,34 @@ class Recipe extends MY_Generator
 		$totalAll = $totalAll + $embalase;
 
 		//dokter
-		$dokter = $this->db->get_where("hr.employee", [
-			"employee_id"	=> $data["par_id"]
-		])->row();
 
+		if ($data['par_id'] != null || $data['par_id'] == null) {
+			if ($data['user_dokter'] == null) {
+				$id_dokter = $data['par_id'];
+			}
+			if ($data['user_dokter'] != null) {
+				$id_dokter = $data['user_dokter'];
+			}
+		}
+		// kondisi 1 jika employee_id di tbl ms_user null maka akan di isikan employee_id dari tbl pegawai karena user bisa jadi di entri oleh ppds
+		// kondisi 2 jika employee_id di tbl ms_user tidak kosong maka akan di ambil.. jadi akan murni mengambil dari employee id dari user
+
+		if (empty($id_dokter)) {
+			if ($data['user_dokter'] == null && $data['par_id'] == null) {
+				$dokter->employee_name = 'DOKTER PPDS';
+			}
+		} else {
+			$dokter = $this->db->get_where("hr.employee", [
+				"employee_id"	=> $id_dokter
+			])->row();
+		}
+
+
+
+
+
+
+		//($id_dokter) ? $id_dokter : 0;
 		$saleInput = [
 			"sale_num" 	=> $this->get_no_sale($data["unit_id"]),
 			"date_act"	=> date("Y-m-d H:i:s"),
@@ -120,7 +152,7 @@ class Recipe extends MY_Generator
 			"rcp_id" => $data["rcp_id"],
 			"service_id" => $data["services_id"],
 			"surety_id" => $data["surety_id"],
-			"doctor_id" => $data["par_id"],
+			"doctor_id" => ($id_dokter) ? $id_dokter : 0,
 			"doctor_name" => ($dokter->employee_ft . $dokter->employee_name . $dokter->employee_bt),
 			"own_id" => $data["own_id"],
 			"sale_total" => $totalAll,
@@ -139,8 +171,7 @@ class Recipe extends MY_Generator
 			return $arr + ['sale_id' => $saleId];
 		}, $saleDetailInput);
 
-		/* print_r($saleDetailInput);
-		die; */
+
 		foreach ($saleDetailInput as $key => $value) {
 			$this->db->insert("farmasi.sale_detail", $value);
 			$saleDetailId = $this->db->insert_id();
@@ -310,12 +341,20 @@ class Recipe extends MY_Generator
 					"width" => '10%',
 					"data" => get_type_kronis()
 				];
+			} elseif ($value == "ed_obat") {
+				$row[] = [
+					"id" => $value,
+					"label" => "BUD",
+					"type" => 'text',
+					"width" => "10%",
+
+				];
 			} elseif ($value == "dosis") {
 				$row[] = [
 					"id" => $value,
 					"label" => ucwords(str_replace('_', ' ', $value)),
 					"type" => 'text',
-					"width" => '10%',
+					"width" => '7%',
 				];
 			} else {
 				$row[] = [
@@ -371,13 +410,13 @@ class Recipe extends MY_Generator
 					],
 					"cetak_eresep" =>
 					[
-						"btn-act" => "cetak_eresep('" . $row['id_key'] ."','" . $row['rcp_status'] . "')",
+						"btn-act" => "cetak_eresep('" . $row['id_key'] . "','" . $row['rcp_status'] . "')",
 						"btn-icon" => "fa fa-print",
 						"btn-class" => "btn-warning",
 					],
 					"preview resep" =>
 					[
-						"btn-act" => "preview('" . $row['id_key'] ."','" . $row['rcp_status'] . "')",
+						"btn-act" => "preview('" . $row['id_key'] . "','" . $row['rcp_status'] . "')",
 						"btn-icon" => "fa fa-eye",
 						"btn-class" => "btn-success",
 					]
@@ -386,7 +425,7 @@ class Recipe extends MY_Generator
 				$obj[] = create_btnAction([
 					"Checkin" =>
 					[
-						"btn-act" => "set_val('" . $row['id_key'] ."')",
+						"btn-act" => "set_val('" . $row['id_key'] . "')",
 						"btn-icon" => "fa fa-cart-plus",
 						"btn-class" => "btn-default",
 					],
@@ -396,10 +435,10 @@ class Recipe extends MY_Generator
 						"btn-icon" => "fa fa-list-alt",
 						"btn-class" => "btn-success",
 					],
-					"cetak_eresep" =>
+					"preview resep" =>
 					[
-						"btn-act" => "cetak_eresep('" . $row['id_key'] ."','" . $row['rcp_status'] . "')",
-						"btn-icon" => "fa fa-print",
+						"btn-act" => "preview('" . $row['id_key'] . "','" . $row['rcp_status'] . "')",
+						"btn-icon" => "fa fa-eye",
 						"btn-class" => "btn-warning",
 					]
 				], $row['id_key']);
@@ -411,14 +450,14 @@ class Recipe extends MY_Generator
 						"btn-icon" => "fa fa-list-alt",
 						"btn-class" => "btn-success",
 					],
-					"cetak_eresep" =>
+					"preview resep" =>
 					[
-						"btn-act" => "cetak_eresep('" . $row['id_key'] ."','" . $row['rcp_status'] . "')",
-						"btn-icon" => "fa fa-print",
+						"btn-act" => "preview('" . $row['id_key'] . "','" . $row['rcp_status'] . "')",
+						"btn-icon" => "fa fa-eye",
 						"btn-class" => "btn-warning",
 					]
 				], $row['id_key']);
-			}elseif($row["rcp_status"]== "3"){
+			} elseif ($row["rcp_status"] == "3") {
 				$obj[] = create_btnAction([
 					"Checkin" =>
 					[
@@ -428,7 +467,7 @@ class Recipe extends MY_Generator
 					],
 					"cetak_eresep" =>
 					[
-						"btn-act" => "cetak_eresep('" . $row['id_key'] ."','" . $row['rcp_status'] . "')",
+						"btn-act" => "cetak_eresep('" . $row['id_key'] . "','" . $row['rcp_status'] . "')",
 						"btn-icon" => "fa fa-print",
 						"btn-class" => "btn-warning",
 					]
@@ -447,12 +486,13 @@ class Recipe extends MY_Generator
 		$data = $this->db->where('rcp_id', $id)
 			->join("yanmed.visit v", "v.visit_id=r.visit_id")
 			->join("yanmed.patient p", "p.px_id=v.px_id")
-			->join("hr.employee e", "e.employee_id=r.doctor_id","left")
+			->JOIN("hr.employee e", "e.employee_id=r.doctor_id", 'LEFT')
+			->JOIN("admin.ms_user u", "u.user_id=r.user_id", 'LEFT')
 			->join("yanmed.services s", "s.srv_id=r.services_id")
 			->join("admin.ms_unit mu", "s.unit_id=mu.unit_id")
 			->join("yanmed.ms_surety sur", "sur.surety_id=v.surety_id")
 			->join("farmasi.surety_ownership so", "so.surety_id=v.surety_id and so.own_id=1")
-			->select("r.*,so.*,r.doctor_id as par_id,s.unit_id as unit_id_lay,e.*,p.px_norm,p.px_name,p.px_address,mu.unit_name,sur.surety_name,v.pxsurety_no,v.sep_no")
+			->select("r.*,so.*,r.doctor_id as par_id,s.unit_id as unit_id_lay,e.*,p.px_norm,p.px_name,p.px_address,mu.unit_name,sur.surety_name,v.pxsurety_no,v.sep_no,person_name,u.employee_id as user_dokter")
 			->get("newfarmasi.recipe r")->row();
 
 		echo json_encode($data);
@@ -486,28 +526,47 @@ class Recipe extends MY_Generator
 		}
 		echo json_encode($resp);
 	}
-	private function ttd_resep($id){
+	public function ttd_resep($id)
+	{
 		$sql = $this->db->query("select user_id from newfarmasi.recipe 								
 								where rcp_id = $id ")->row();
+								// print_r($sql);die;
 		$this->load->library("curls");
-		$url = "api/external/user/get-ttd?user_id=".$sql->user_id;
-		$data=$this->curls->api_erm("GET",$url,null);
+		$url = "api/external/user/get-ttd?user_id=" . $sql->user_id;
+		$data = $this->curls->api_erm("GET", $url, null);
 		$resp = [
 			"code" => $data['status'],
 			"message" => $data['message'],
 			"ttd" => $data['url']
 		];
 		return $resp;
+	}
+
+	public function pdf_faktur($rcp){
+		$sale_id = $this->db->query("SELECT	sale_id FROM farmasi.sale s WHERE rcp_id = $rcp ")->row();
+		$html = "";
+		if (!empty($sale_id)){
+			$detailrs 				= $this->m_sale->rumah_sakit();
+		$detailpasien 			= $this->m_sale->get_detail_patient($sale_id->sale_id);
+		$data['detailrs'] 		= $detailrs;
+		$data['detailcetak'] 	= $detailpasien;
+		$data['listresep'] 		= $this->m_sale->resep_dijual2($sale_id->sale_id);
+		$data['pencetak'] 		=  $this->m_sale->get_employee($this->session->employee_id);
+		
+		$html = $this->load->view('sale/v_cetakanresep3', $data, true);			
+		return $html;
+		}else{
+			return $html;
+		}
+		
 
 	}
 
-	public function preview($id){
+	public function preview($id)
+	{	
+		$hasil['ttek'] = $this->ttd_resep($id);
+		$data['ttd'] = $hasil['ttek']['ttd'];
 
-		$hasil['ttek']= $this->ttd_resep($id);
-		$data['ttd']= $hasil['ttek']['ttd'];		
-		$this->db->where("rcp_id",$id)
-				 ->set("rcp_status","3")
-				 ->update("newfarmasi.recipe");
 		$data['resep'] = $this->db->query("SELECT
 		r.rcp_id,qty,racikan_qty,rcp_date,
 		racikan_id,dosis,racikan_dosis,item_name,racikan_desc,alergi		
@@ -516,65 +575,32 @@ class Recipe extends MY_Generator
 		JOIN newfarmasi.recipe_detail rd ON r.rcp_id = rd.rcp_id
 		JOIN ADMIN.ms_item i ON rd.item_id = i.item_id	
 	WHERE
-		r.rcp_id = $id")->result();
-
-		$data['pasien']= $this->db->query("SELECT	
-		concat(employee_ft,employee_name,employee_bt) as dokter,u.unit_name ,
+		r.rcp_id = $id")->result();		
+		$data['pasien'] = $this->db->query("SELECT	
+		person_name,
+		concat(em.employee_ft,em.employee_name,em.employee_bt) as dokter,
+		concat(em1.employee_ft,em1.employee_name,em1.employee_bt) as dpjp,
+		u.unit_name ,
 		px_norm,px_name,to_char(rcp_date,'dd-mm-yyyy') as tgl_resep,surety_name,
 		date(px_birthdate) as tgl_lahir,p.px_address,rcp_no,bb,u1.unit_name as asal_layanan,
-		jenis_resep,sep_no,v.pxsurety_no,iterasi,alergi
+		jenis_resep,sep_no,v.pxsurety_no,iterasi,alergi,last_srv_status
 		FROM
 		newfarmasi.recipe r
 		join yanmed.visit v on r.visit_id = v.visit_id
 		join admin.ms_unit u on r.unit_id = u.unit_id
 		join yanmed.patient p on r.px_id = p.px_id
-		left JOIN hr.employee e ON r.doctor_id = e.employee_id 
-		join yanmed.ms_surety s on r.surety_id = s.surety_id
-		left join yanmed.anamnese a on r.services_id = a.srv_id
-		join admin.ms_unit u1 on r.unit_id_layanan = u1.unit_id
-	WHERE
-		r.rcp_id = $id")->row();			
-			$html = $this->load->view("recipe/preview", $data);
-
-	}
-
-	public function cetak_eresep($id)
-	{
-		$hasil['ttek']= $this->ttd_resep($id);
-		$data['ttd']= $hasil['ttek']['ttd'];		
-		$this->db->where("rcp_id",$id)
-				 ->set("rcp_status","3")
-				 ->update("newfarmasi.recipe");
-		$data['resep'] = $this->db->query("SELECT
-		r.rcp_id,qty,racikan_qty,rcp_date,
-		racikan_id,dosis,racikan_dosis,item_name,racikan_desc,alergi		
-	FROM
-		newfarmasi.recipe r
-		JOIN newfarmasi.recipe_detail rd ON r.rcp_id = rd.rcp_id
-		JOIN ADMIN.ms_item i ON rd.item_id = i.item_id	
-	WHERE
-		r.rcp_id = $id")->result();
-
-		$data['pasien']= $this->db->query("SELECT	
-		concat(employee_ft,employee_name,employee_bt) as dokter,u.unit_name ,
-		px_norm,px_name,to_char(rcp_date,'dd-mm-yyyy') as tgl_resep,surety_name,
-		date(px_birthdate) as tgl_lahir,p.px_address,rcp_no,bb,u1.unit_name as asal_layanan,
-		jenis_resep,sep_no,v.pxsurety_no,iterasi,alergi
-		FROM
-		newfarmasi.recipe r
-		join yanmed.visit v on r.visit_id = v.visit_id
-		join admin.ms_unit u on r.unit_id = u.unit_id
-		join yanmed.patient p on r.px_id = p.px_id
-		left JOIN hr.employee e ON r.doctor_id = e.employee_id 
+		left JOIN admin.ms_user e ON r.user_id = e.user_id
+		left join hr.employee em on e.employee_id = em.employee_id
+		left join hr.employee em1 on r.doctor_id = em1.employee_id
 		join yanmed.ms_surety s on r.surety_id = s.surety_id
 		left join yanmed.anamnese a on r.services_id = a.srv_id
 		join admin.ms_unit u1 on r.unit_id_layanan = u1.unit_id
 	WHERE
 		r.rcp_id = $id")->row();
 			
-				
-			$html = $this->load->view("recipe/resep_2", $data, true);
-			$html .= '
+		$html = $this->load->view("recipe/preview", $data, true);
+		
+		$html .= '
 			<style>
 			.container {
 				display: flex;
@@ -623,22 +649,32 @@ class Recipe extends MY_Generator
 			} </style>
 ';
 
-			$mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => [105, 214]]);	
-			$css = '
+		$mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => [105, 214]]);
+		$pdf = new \Mpdf\Mpdf([
+			'format' => 'A4', // Atur format halaman, bisa 'A4', 'Letter', dll.
+'orientation' => 'P',
+		]);
+		$css = '
 				@page {
 					margin: 5mm 5mm 5mm 5mm; /* Atur margin atas, kanan, bawah, dan kiri */
 				}
 
 				.tabel_telaah td {
 					font-size: 7pt !important;
+					font-family: "Arial Black", Arial, sans-serif;
 				}
 
 				.table_identitas td {
 					font-size: 8pt !important;
+					vertical-align: top;
+					line-height: 1.5;
+					font-family: "Arial Black", Arial, sans-serif;			
+					
 				}
 
 				.table_identitas td p {
-					margin:10px !important;
+					margin:1px !important;
+								
 				}
 				
 				.item-racikan {
@@ -646,10 +682,149 @@ class Recipe extends MY_Generator
 				}
 			';
 
-			// Tambahkan CSS ke mPDF
-			$mpdf->WriteHTML($css, \Mpdf\HTMLParserMode::HEADER_CSS);
-			$mpdf->WriteHTML($html,1);
-			$mpdf->WriteHTML($html);			
-			$mpdf->Output();
+		// Tambahkan CSS ke mPDF
+		$html_faktur = $this->pdf_faktur($id);		
+		if(!empty($html_faktur)){
+		$mpdf->WriteHTML($css, \Mpdf\HTMLParserMode::HEADER_CSS);				
+		$mpdf->WriteHTML($html, 1);		
+		$mpdf->WriteHTML($html);		
+		$mpdf->AddPage('L');
+		$mpdf->WriteHTML($html_faktur);				
+		$mpdf->Output();
+		}else{
+		$mpdf->WriteHTML($css, \Mpdf\HTMLParserMode::HEADER_CSS);				
+		$mpdf->WriteHTML($html, 1);		
+		$mpdf->WriteHTML($html);					
+		$mpdf->Output();
+		}
+		
+		
+			
+	}
+
+	public function cetak_eresep($id)
+	{
+		$hasil['ttek'] = $this->ttd_resep($id);
+		$data['ttd'] = $hasil['ttek']['ttd'];
+		$this->db->where("rcp_id", $id)
+			->set("rcp_status", "3")
+			->update("newfarmasi.recipe");
+		$data['resep'] = $this->db->query("SELECT
+		r.rcp_id,qty,racikan_qty,rcp_date,
+		racikan_id,dosis,racikan_dosis,item_name,racikan_desc,alergi		
+	FROM
+		newfarmasi.recipe r
+		JOIN newfarmasi.recipe_detail rd ON r.rcp_id = rd.rcp_id
+		JOIN ADMIN.ms_item i ON rd.item_id = i.item_id	
+	WHERE
+		r.rcp_id = $id")->result();
+
+		$data['pasien'] = $this->db->query("SELECT	
+		person_name,
+		concat(em.employee_ft,em.employee_name,em.employee_bt) as dokter,
+		concat(em1.employee_ft,em1.employee_name,em1.employee_bt) as dpjp,
+		u.unit_name ,
+		px_norm,px_name,to_char(rcp_date,'dd-mm-yyyy') as tgl_resep,surety_name,
+		date(px_birthdate) as tgl_lahir,p.px_address,rcp_no,bb,u1.unit_name as asal_layanan,
+		jenis_resep,sep_no,v.pxsurety_no,iterasi,alergi,last_srv_status
+		FROM
+		newfarmasi.recipe r
+		join yanmed.visit v on r.visit_id = v.visit_id
+		join admin.ms_unit u on r.unit_id = u.unit_id
+		join yanmed.patient p on r.px_id = p.px_id
+		left JOIN admin.ms_user e ON r.user_id = e.user_id
+		left join hr.employee em on e.employee_id = em.employee_id
+		left join hr.employee em1 on r.doctor_id = em1.employee_id
+		join yanmed.ms_surety s on r.surety_id = s.surety_id
+		left join yanmed.anamnese a on r.services_id = a.srv_id
+		join admin.ms_unit u1 on r.unit_id_layanan = u1.unit_id
+	WHERE
+		r.rcp_id = $id")->row();
+
+
+		$html = $this->load->view("recipe/resep_2", $data, true);
+		$html .= '
+			<style>
+			.container {
+				display: flex;
+			}
+		
+			.left-div {
+				flex: 1;
+				padding: 1px;
+				width: 40%;
+				border: 0px solid #000;
+			}
+		
+			.right-div {
+				flex: 1;
+				padding: 1px;
+				width: 40%;
+				border: 0px solid #000;
+			}
+			
+			.item {
+			   font-size : 10px;
+			}
+		
+			.table-container {
+				position: absolute;
+				top: 135px; /* Ubah jarak dari atas sesuai kebutuhan Anda */
+				right: 55px; /* Ubah jarak dari kanan sesuai kebutuhan Anda */
+				width: 20%;
+				text-align: center;
+				border: 0px solid black;
+				font-size:11px;
+			}.mama {
+			font-size: 10px;
+			}
+			.table-container {
+				position: absolute;
+				top: 135px; /* Ubah jarak dari atas sesuai kebutuhan Anda */
+				right: 55px; /* Ubah jarak dari kanan sesuai kebutuhan Anda */
+				width: 20%;
+				text-align: center;
+				border: 0px solid black;
+				font-size:11px;
+			}
+			body {
+				font-size: 11px; /* Gaya font untuk seluruh dokumen */
+			} </style>
+';
+
+		$mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => [105, 214]]);
+		$css = '
+				@page {
+					margin: 5mm 5mm 5mm 5mm; /* Atur margin atas, kanan, bawah, dan kiri */
+				}
+
+				.tabel_telaah td {
+					font-size: 7pt !important;
+					font-family: "Arial Black", Arial, sans-serif;
+				}
+
+				.table_identitas td {
+					font-size: 8pt !important;
+					vertical-align: top;
+					line-height: 1.5;
+					font-family: "Arial Black", Arial, sans-serif;			
+					
+				}
+
+				.table_identitas td p {
+					margin:1px !important;
+								
+				}
+				
+				.item-racikan {
+					padding-left : 10px !important;
+				}
+			';
+
+		// Tambahkan CSS ke mPDF
+		$mpdf->WriteHTML($css, \Mpdf\HTMLParserMode::HEADER_CSS);
+		$mpdf->WriteHTML($html, 1);
+		$mpdf->WriteHTML($html);
+		$mpdf->Output();
 	}
 }

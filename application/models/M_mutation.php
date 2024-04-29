@@ -12,7 +12,7 @@ class M_mutation extends CI_Model {
 		left join admin.ms_unit u1 on m.unit_require = u1.unit_id
 		left join admin.ms_unit u2 on m.unit_sender = u2.unit_id
 		left join farmasi.ownership o on m.own_id = o.own_id
-		where 0=0 $sWhere $sOrder $sLimit
+		where 0=0 $sWhere order by mutation_date_act desc $sLimit
 		")->result_array();
 		return $data;
 	}
@@ -83,6 +83,7 @@ class M_mutation extends CI_Model {
 				//"mutation_id",
 				"mutation_date"=>["label"=>"Tgl. Mutasi"],
 				//"user_require",
+				//"mutation_date_act",
 				"mutation_status"=> [
 					"label" => "Status",
 					"custom" => function ($a) {
@@ -172,9 +173,9 @@ class M_mutation extends CI_Model {
 		$data["detail"] = $this->db->join("admin.ms_item mi","mi.item_id=md.item_id")
 								   ->join("newfarmasi.mutation m","m.mutation_id=md.mutation_id")
 								   ->join("newfarmasi.stock s","s.item_id=md.item_id AND s.unit_id = m.unit_sender AND s.own_id = m.own_id","left")
+								   ->order_by('md.item_id','asc')  
 								   ->get_where("newfarmasi.mutation_detail md",$where)
-								   ->result();
-		
+								   ->result();		
 		return $data;
 	}
 
@@ -220,7 +221,8 @@ WHERE
 FROM newfarmasi.mutation_detail md
 INNER JOIN admin.ms_item i on md.item_id = i.item_id
 WHERE md.mutation_id = $id
-GROUP BY i.item_code,i.item_name, item_unitofitem, md.qty_request,md.qty_send";
+GROUP BY i.item_id,i.item_code,i.item_name, item_unitofitem, md.qty_request,md.qty_send
+ORDER BY i.item_id asc";
 		$result = $this->db->query($sql);
 		$result = $result->result();
 		return $result;

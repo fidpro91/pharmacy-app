@@ -333,9 +333,10 @@ class Distribusi_bon extends MY_Generator {
 	}
 
 	public function get_data()
-	{
+	{ //orderby request desc
 		$this->load->library('datatable');
 		$attr 	= $this->input->post();
+		
 		$fields = $this->m_mutation->get_column_bon();
         $filter = [];	
 		$filter["custom"] = " to_char(mutation_date,'MM-YYYY')='" . $attr['tgl'] . "'";
@@ -343,6 +344,13 @@ class Distribusi_bon extends MY_Generator {
 		if($attr['sts'] != ' '){
 			$filter =array_merge($filter, ["mutation_status" => $attr['sts']]);
 		}
+			
+		if($attr['print'] != ' '){
+			$filter =array_merge($filter, ["is_print" =>$attr['print']]);
+		}else{
+			$filter =array_merge($filter, ["is_print is null"]);
+		}
+		
 		$data 	= $this->datatable->get_data($fields,$filter,'m_mutation',$attr);
 		$records["aaData"] = array();
 		$no   	= 1 + $attr['start']; 
@@ -398,9 +406,10 @@ class Distribusi_bon extends MY_Generator {
             $records["aaData"][] = $obj;
             $no++;
         }
-        $data = array_merge($data,$records);
+        $data = array_merge($data,$records);//print_r( $data);die;
         unset($data['dataku']);
         echo json_encode($data);
+		
 	}
 
 	public function find_one($id)
@@ -481,4 +490,12 @@ class Distribusi_bon extends MY_Generator {
 		$data['DataDetail'] = $this->m_mutation->get_permintaan_detail($id);
 		$this->load->view("mutation/cetakdistribusibon", $data);
 	}
+
+	public function update_print($id){		
+	$data = $this->db->where("mutation_id",$id)
+				 ->set("is_print","t")
+				 ->update("newfarmasi.mutation");
+	echo $data;
+	}
+
 }

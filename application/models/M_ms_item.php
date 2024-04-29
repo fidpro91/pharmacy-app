@@ -75,6 +75,7 @@ class M_ms_item extends CI_Model {
 					"item_dosis" => "trim",
 					"item_form" => "trim|integer",
 					"label_item_id" => "trim|integer",
+					"kode_satusehat" => "trim"
 				];
 		return $data;
 	}
@@ -111,6 +112,16 @@ class M_ms_item extends CI_Model {
 			LEFT JOIN farmasi.price p ON mi.item_id = p.item_id
 			LEFT JOIN farmasi.ownership ow ON p.own_id = ow.own_id
 			where lower(mi.item_name) like lower('%$where%') and mi.item_active = 't'"
+			)->result();
+		return $data;
+	}
+
+	public function get_item_kfa($where)
+	{
+		$data = $this->db->query(
+			"SELECT * from admin.ms_kfa a
+			WHERE lower(a.nama_kfa) like lower('%$where%')
+			limit 10"
 			)->result();
 		return $data;
 	}

@@ -67,7 +67,7 @@
 
     						<?= create_select([
 								"attr" => ["name" => "pay_type=Tipe pembayaran", "id" => "pay_type", "class" => "form-control"],
-								"option" => [["id" => '1', "text" => "Tunai"], ["id" => '2', "text" => "Kredit"]],
+								"option" => [ ["id" => '2', "text" => "Kredit"],["id" => '1', "text" => "Tunai"]],
 							]) ?>
     						<?= create_select2([
 								"attr" => ["name" => "ppn=PPN", "id" => "ppn", "class" => "form-control"],

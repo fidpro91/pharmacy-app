@@ -411,6 +411,12 @@ class Sale extends MY_Generator
 						"btn-act" => "cetak_prb('" . $row['id_key'] . "')",
 						"btn-icon" => "fa fa-newspaper-o",
 						"btn-class" => "btn-success",
+					],
+					"PDF FAKTUR" =>
+					[
+						"btn-act" => "faktur_pdf('" . $row['id_key'] . "',1)",
+						"btn-icon" => "fa fa-download",
+						"btn-class" => "btn-primary",
 					]
 				], $row['id_key']);
 			} else {
@@ -1096,11 +1102,16 @@ class Sale extends MY_Generator
 		$data['detailcetak'] 	= $detailpasien;
 		$data['listresep'] 		= $this->m_sale->resep_dijual2($sale_id);
 		$data['pencetak'] 		=  $this->m_sale->get_employee($this->session->employee_id);
+		
 		if ($type == 1) {
-			$mpdf = new \Mpdf\Mpdf();
-			$html = $this->load->view('sale/v_cetakanresep3', $data, true);
+			$mpdf = new \Mpdf\Mpdf([
+				'format' => 'A4', // Atur format halaman, bisa 'A4', 'Letter', dll.
+    'orientation' => 'P',
+			]);
+			$name = $detailpasien['namapasien'].".PDF";
+			$html = $this->load->view('sale/v_cetakanresep3', $data, true);		
 			$mpdf->WriteHTML($html);
-			$mpdf->Output();
+			$mpdf->Output($name,'D');
 		} else {
 			$this->load->view('sale/v_cetakanresep2', $data);
 		}

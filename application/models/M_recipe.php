@@ -7,7 +7,8 @@ class M_recipe extends CI_Model {
 		$data = $this->db->query("
 				select ".implode(',', $aColumns).",rcp_id as id_key from newfarmasi.recipe r
 				left join admin.ms_unit mu on mu.unit_id = r.unit_id_layanan
-				left join hr.employee e on e.employee_id = r.doctor_id
+				left JOIN admin.ms_user u ON r.user_id = u.user_id 
+				left JOIN hr.employee e ON r.doctor_id = e.employee_id  
 				left join yanmed.patient p on r.px_id = p.px_id
 				 where 0=0 $sWhere $sOrder $sLimit
 			")->result_array();
@@ -19,7 +20,8 @@ class M_recipe extends CI_Model {
 		$data = $this->db->query("
 				select ".implode(',', $aColumns).",rcp_id as id_key  from newfarmasi.recipe r
 				left join admin.ms_unit mu on mu.unit_id = r.unit_id_layanan
-				left join hr.employee e on e.employee_id = r.doctor_id
+				left JOIN admin.ms_user u ON r.user_id = u.user_id
+				left JOIN hr.employee e ON r.doctor_id = e.employee_id 
 				left join yanmed.patient p on r.px_id = p.px_id
 				where 0=0 $sWhere
 			")->num_rows();
@@ -35,7 +37,7 @@ class M_recipe extends CI_Model {
 				"px_norm",
 				"px_name",
 				"unit_name",
-				"employee_name",
+				"person_name"=>["label"=>"Dokter"],
 				"iterasi" => [
 					"custom" => function($a){
 						$label = null;
@@ -128,5 +130,33 @@ class M_recipe extends CI_Model {
 	public function find_one($where)
 	{
 		return $this->db->get_where("newfarmasi.recipe",$where)->row();
+	}
+
+	function faktur($rcp_id)
+	{
+		//$data	=	array();
+		$query_racik = $this->db->query("SELECT
+			c.racikan_id,
+			sale_qty,
+			(c.sale_price+(c.sale_price*COALESCE(C.percent_profit,0)))sale_price,
+			c.dosis,
+			mt.item_name,
+			a.sale_services,
+			a.embalase_item_sale,
+			a.sale_embalase,
+			(c.sale_price*sale_qty+(c.sale_price*sale_qty*COALESCE(percent_profit,0)))
+ as subtotal
+			FROM
+			farmasi.sale a
+			JOIN farmasi.sale_detail C ON a.sale_id = c.sale_id
+			JOIN admin.ms_item mt ON mt.item_id = c.item_id
+			WHERE
+			a.rcp_id = $rcp_id")
+		->result();
+		if (count($query_racik) < 1) {
+			$query_racik = array();
+		}
+
+		return $query_racik;
 	}
 }

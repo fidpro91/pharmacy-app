@@ -13,6 +13,7 @@
 		<?= form_hidden("px_id") ?>
 		<?= form_hidden("visit_id") ?>
 		<?= form_hidden("par_id") ?>
+		<?= form_hidden("user_dokter") ?>
 		<?= form_hidden("surety_id") ?>
 		<?= form_hidden("unit_id_lay") ?>
 		<?= form_hidden("services_id") ?>
@@ -180,17 +181,12 @@
 			const total_item = jumlah_barang * harga_satuan;
 			$(this).find('.price_total').val(total_item);
 		});
-		/* $(this).find("input").on('keyup', null, 'ctrl+a', function(e) {
-			$(".btnplus_list_recipe").click();
-			$(".autocom_item_id:last").focus();
-			e.stopImmediatePropagation();
-			return false;
-		});
-		$(this).find("input").on('keydown', null, 'ctrl+s', function(e) {
-			$("#btn-save-updated").click();
-			e.stopImmediatePropagation();
-			return false;
-		}); */
+
+		$(this).find('.ed_obat').datepicker({
+							format: "dd-mm-yyyy",							
+							autoclose : true
+						});
+
 		$(this).find("input:not([class*='autocom_item_id'])").on("keydown", function(e) {
 			if (e.which == 13) {
 				$(".btnplus_list_recipe").click();
@@ -283,7 +279,12 @@
 				const total_item = jumlah_barang * harga_satuan;
 				$(this).find('.price_total').val(total_item);
 				// $(this).find('.price_total').inputmask("IDR");
+				$(this).find('.ed_obat').datepicker({
+							format: "dd-mm-yyyy",							
+							autoclose : true
+						});
 			});
+			
 		});
 	});
 

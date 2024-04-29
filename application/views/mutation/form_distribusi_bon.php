@@ -92,6 +92,9 @@
     });
     $("#fm_mutation").on("submit",function(){
         if (confirm("Simpan data permintaan?")) {
+            $.blockUI({
+                baseZ: 2000
+            });
             $.ajax({
                 'type': "post",
                 'data': $("#fm_mutation").serialize(),
@@ -100,6 +103,7 @@
                 'success': function(data) {
                     alert(data.message);
                     if (data.code == '200') {
+                        $.unblockUI();
                         table.draw();
                         $("#modal_distribusi").modal('hide');
                     }

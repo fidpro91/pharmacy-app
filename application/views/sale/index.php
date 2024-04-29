@@ -241,6 +241,7 @@
   });
 
   function cetak_resep(id, type) {
+    
     var url = "<?php echo base_url() ?>sale/strukapotikresep/" + id + '/' + $('#unit_id_depo').val() + '/' + type;
     var left = ($(window).width() / 2) - (1200 / 2);
     var top = ($(window).height() / 2) - (800 / 2);
@@ -259,6 +260,14 @@
     var left = ($(window).width() / 2) - (800 / 2);
     var top = ($(window).height() / 2) - (400 / 2);
     window.open(url, "SURAT RUJUK BALIK", "width=800, height=400, top=" + top + ", left=" + left);
+  }
+
+  function faktur_pdf(id,type) {
+  
+    var url = "<?php echo base_url() ?>sale/strukapotikresep/" +  id + '/' + $('#unit_id_depo').val() + '/' + type;
+    var left = ($(window).width() / 2) - (800 / 2);
+    var top = ($(window).height() / 2) - (400 / 2);
+    window.open(url, "FAKTUR OBAT", "width=800, height=400, top=" + top + ", left=" + left);
   }
 
 

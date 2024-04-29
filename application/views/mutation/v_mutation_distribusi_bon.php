@@ -46,6 +46,12 @@
           "option" => [["id" => ' ', "text" => 'Pilih'], ["id" => '1', "text" => "Meminta"], ["id" => '2', "text" => "diproses"], ["id" => '3', "text" => "terima"]]
         ]) ?>
       </div>
+      <div class="col-md-2">
+        <?= create_select([
+          "attr" => ["name" => "is_print=status cetak", "id" => "is_print", "class" => "form-control"],
+          "option" => [["id" => ' ', "text" => "BELUM"], ["id" => 't', "text" => "SUDAH"]]
+        ]) ?>
+      </div>
       <div class="box-body" id="form_mutation" style="display: none;">
       </div>
 
@@ -85,6 +91,7 @@
           f.unit = $("#filter_unit").val();
           f.tgl = $("#tanggal").val();
           f.sts = $("#status").val();
+          f.print = $("#is_print").val();
         }
       },
       'columnDefs': [{
@@ -103,7 +110,7 @@
         }
       ],
     });
-    $("#filter_unit,#tanggal,#status").change(() => {
+    $("#filter_unit,#tanggal,#status,#is_print").change(() => {
       table.draw();
     });
   });
@@ -154,9 +161,14 @@
   });
 
   function cetak_struk(id) {
+    if (confirm("cetak struk bon?")) {
+      $.get('Distribusi_bon/update_print/' + id, (data) => {
+        console.log(data);
+      });
+    }
+
     var printdata = window.open("<?php echo base_url() ?>distribusi_bon/cetak_struk/" + id, "", "width=500, height=300");
-    // var printdata = window.open("<?php echo base_url() ?>mutation/cetak/" + id, "", "width=500, height=300");
-    //mutation/cetak/
+   
   }
   <?= $this->config->item('footerJS') ?>
 </script>
