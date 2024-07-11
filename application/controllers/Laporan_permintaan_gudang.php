@@ -47,8 +47,10 @@ class Laporan_permintaan_gudang extends MY_Generator
 			}
 
 			$param = array(
-				'jenis'=>$input['jenis_permintaan'],
-				'own_id'=>$input['own_id'],
+				'jenis'			=>$input['jenis_permintaan'],
+				'own_id'		=>$input['own_id'],
+				'comodity_id'	=>$input['comodity_id'],
+				'type_formularium'=>$input['type_formularium'],
 				'tanggal_awal'=>$tanggal_awal,
 				'tanggal_akhir'=>$tanggal_akhir,
 				'sumber_anggaran'=>$input['sumber_anggaran'],
@@ -84,6 +86,14 @@ class Laporan_permintaan_gudang extends MY_Generator
 				}
 			}
 
+			if (!empty($input["type_formularium"])) {
+				$where .= " And type_formularium = '".$input['type_formularium']."'";
+			}
+			
+			if (!empty($input["comodity_id"])) {
+				$where .= " And comodity_id = '".$input['comodity_id']."'";
+			}
+
 			$data['data']		= $this->m_laporan_gudang->get_lap_penerimaan($where);
 
 			$this->load->view('laporan_gudang/v_lap_penerimaan_01',$data);
@@ -109,6 +119,13 @@ class Laporan_permintaan_gudang extends MY_Generator
 				}
 			}
 
+			if (!empty($input["type_formularium"])) {
+				$where .= " And type_formularium = '".$input['type_formularium']."'";
+			}
+			
+			if (!empty($input["comodity_id"])) {
+				$where .= " And comodity_id = '".$input['comodity_id']."'";
+			}
 
 			$data['data']		= $this->m_laporan_gudang->get_lap_penerimaan_05($where);
 			$this->load->view('laporan_gudang/v_lap_penerimaan_05',$data);
@@ -136,6 +153,16 @@ class Laporan_permintaan_gudang extends MY_Generator
 					$where1 .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
 					$where2 .= "AND lower(pay_type) = '".strtolower($input['pembayaran'])."'";
 				}
+			}
+
+			if (!empty($input["type_formularium"])) {
+				$where1 .= " And type_formularium = '".$input['type_formularium']."'";
+				$where2 .= " And type_formularium = '".$input['type_formularium']."'";
+			}
+			
+			if (!empty($input["comodity_id"])) {
+				$where1 .= " And comodity_id = '".$input['comodity_id']."'";
+				$where2 .= " And comodity_id = '".$input['comodity_id']."'";
 			}
 
 
@@ -168,6 +195,15 @@ class Laporan_permintaan_gudang extends MY_Generator
 				}
 			}
 
+			if (!empty($input["type_formularium"])) {
+				$where1 .= " And type_formularium = '".$input['type_formularium']."'";
+				$where2 .= " And type_formularium = '".$input['type_formularium']."'";
+			}
+			
+			if (!empty($input["comodity_id"])) {
+				$where1 .= " And comodity_id = '".$input['comodity_id']."'";
+				$where2 .= " And comodity_id = '".$input['comodity_id']."'";
+			}
 
 			$data['data']		= $this->m_laporan_gudang->get_lap_penerimaan_02($where1,$where2);
 			$this->load->view('laporan_gudang/v_lap_penerimaan_02',$data);
@@ -197,6 +233,13 @@ class Laporan_permintaan_gudang extends MY_Generator
 				}
 			}
 
+			if (!empty($input["type_formularium"])) {
+				$where1 .= " And type_formularium = '".$input['type_formularium']."'";
+			}
+			
+			if (!empty($input["comodity_id"])) {
+				$where2 .= " And comodity_id = '".$input['comodity_id']."'";
+			}
 
 			$data['data']		= $this->m_laporan_gudang->get_lap_penerimaan_06($where1,$where2);
 			$this->load->view('laporan_gudang/v_lap_penerimaan_06',$data);

@@ -53,6 +53,19 @@
 										"column"=>["item_id","item_name"]
 								]
 						])?>
+						<?=create_select2(["attr"=>["name"=>"comodity_id=Komoditi Item","id"=>"comodity_id","class"=>"form-control"],
+								"model"=>[
+										"m_ms_comodity" =>["get_ms_comodity",["0"=>"0"]],
+										"column"=>["comodity_id","comodity_name"]
+								]
+						])?>
+						<?= create_select2([
+								"attr" => ["name" => "type_formularium=Jenis Formularium", "id" => "type_formularium", "class" => "form-control"],
+								"model" => [
+										"m_ms_item" => ["get_data_formularium", ["0" => '0']],
+										"column" => ["reff_id", "reff_name"]
+								],
+						]) ?>
 					</div>
 					<div class="col-md-6">
 						<?=create_select2(["attr"=>["name"=>"own_id","id"=>"own_id","class"=>"form-control","required"=>true],
