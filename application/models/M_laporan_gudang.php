@@ -110,6 +110,7 @@ INNER JOIN (
           SELECT r.supplier_id,r.rec_id,concat(r.rec_num,'|',r.receiver_num,'|',r.rec_date,'|',r.grand_total) gabung,r.grand_total as sub_total 
 				from newfarmasi.receiving r
           INNER JOIN newfarmasi.receiving_detail rd on r.rec_id = rd.rec_id
+		  INNER JOIN admin.ms_item mi on mi.item_id = rd.item_id
           left JOIN farmasi.po on po.po_id = r.po_id
           where 0=0 $where2 and r.receiver_unit = 55
           GROUP BY r.rec_id,r.supplier_id,r.rec_num,r.receiver_num,r.rec_date,r.grand_total order by r.rec_id desc

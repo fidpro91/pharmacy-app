@@ -156,12 +156,10 @@ class Laporan_permintaan_gudang extends MY_Generator
 			}
 
 			if (!empty($input["type_formularium"])) {
-				$where1 .= " And type_formularium = '".$input['type_formularium']."'";
 				$where2 .= " And type_formularium = '".$input['type_formularium']."'";
 			}
 			
 			if (!empty($input["comodity_id"])) {
-				$where1 .= " And comodity_id = '".$input['comodity_id']."'";
 				$where2 .= " And comodity_id = '".$input['comodity_id']."'";
 			}
 
@@ -196,12 +194,10 @@ class Laporan_permintaan_gudang extends MY_Generator
 			}
 
 			if (!empty($input["type_formularium"])) {
-				$where1 .= " And type_formularium = '".$input['type_formularium']."'";
 				$where2 .= " And type_formularium = '".$input['type_formularium']."'";
 			}
 			
 			if (!empty($input["comodity_id"])) {
-				$where1 .= " And comodity_id = '".$input['comodity_id']."'";
 				$where2 .= " And comodity_id = '".$input['comodity_id']."'";
 			}
 
