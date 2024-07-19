@@ -190,7 +190,11 @@ order by cb.supplier_name asc ")->result();
 		}
 
 		if (!empty($param["type_formularium"])) {
-			$where .= " And vp.type_formularium = '".$param['type_formularium']."'";
+			if ($param['type_formularium'] == 1271) {
+				$where .= " And (vp.type_formularium is null or vp.type_formularium < '0')";
+			}else{
+				$where .= " And vp.type_formularium = '".$param['type_formularium']."'";
+			}
 		}
 		
 		if (!empty($param["comodity_id"])) {

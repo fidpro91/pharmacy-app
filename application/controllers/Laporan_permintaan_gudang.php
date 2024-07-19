@@ -87,7 +87,11 @@ class Laporan_permintaan_gudang extends MY_Generator
 			}
 
 			if (!empty($input["type_formularium"])) {
-				$where .= " And type_formularium = '".$input['type_formularium']."'";
+				if ($input['type_formularium'] == 1271) {
+					$where .= " And (type_formularium is null or type_formularium < '0')";
+				}else{
+					$where .= " And type_formularium = '".$input['type_formularium']."'";
+				}
 			}
 			
 			if (!empty($input["comodity_id"])) {
@@ -120,7 +124,11 @@ class Laporan_permintaan_gudang extends MY_Generator
 			}
 
 			if (!empty($input["type_formularium"])) {
-				$where .= " And type_formularium = '".$input['type_formularium']."'";
+				if ($input['type_formularium'] == 1271) {
+					$where .= " And (type_formularium is null or type_formularium < '0')";
+				}else{
+					$where .= " And type_formularium = '".$input['type_formularium']."'";
+				}
 			}
 			
 			if (!empty($input["comodity_id"])) {
@@ -156,7 +164,11 @@ class Laporan_permintaan_gudang extends MY_Generator
 			}
 
 			if (!empty($input["type_formularium"])) {
-				$where2 .= " And type_formularium = '".$input['type_formularium']."'";
+				if ($input['type_formularium'] == 1271) {
+					$where2 .= " And (type_formularium is null or type_formularium < '0')";
+				}else{
+					$where2 .= " And type_formularium = '".$input['type_formularium']."'";
+				}
 			}
 			
 			if (!empty($input["comodity_id"])) {
@@ -194,7 +206,11 @@ class Laporan_permintaan_gudang extends MY_Generator
 			}
 
 			if (!empty($input["type_formularium"])) {
-				$where2 .= " And type_formularium = '".$input['type_formularium']."'";
+				if ($input['type_formularium'] == 1271) {
+					$where2 .= " And (type_formularium is null or type_formularium < '0')";
+				}else{
+					$where2 .= " And type_formularium = '".$input['type_formularium']."'";
+				}
 			}
 			
 			if (!empty($input["comodity_id"])) {
@@ -230,7 +246,11 @@ class Laporan_permintaan_gudang extends MY_Generator
 			}
 
 			if (!empty($input["type_formularium"])) {
-				$where1 .= " And type_formularium = '".$input['type_formularium']."'";
+				if ($input['type_formularium'] == 1271) {
+					$where1 .= " And (type_formularium is null or type_formularium < '0')";
+				}else{
+					$where1 .= " And type_formularium = '".$input['type_formularium']."'";
+				}
 			}
 			
 			if (!empty($input["comodity_id"])) {
