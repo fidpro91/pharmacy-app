@@ -39,6 +39,7 @@
   <!-- /.content-wrapper -->
 <?= modal_open("modal_penyesuaian", "Penyesuaian_stok","modal-lg") ?>
 <?= modal_close() ?>
+
 <script type="text/javascript">
     var table;
     $(document).ready(function() {

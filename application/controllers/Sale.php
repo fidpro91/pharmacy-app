@@ -11,6 +11,8 @@ class Sale extends MY_Generator
 			->lib_select2()
 			->lib_daterange()
 			->lib_inputmask();
+
+		$this->load->library("curls");
 		$this->load->model('m_sale');
 		$this->load->model('m_sale_detail');
 	}
@@ -30,7 +32,6 @@ class Sale extends MY_Generator
 	}
 
 	public function panggil_antrian($sale_id) {
-		$this->load->library("curls");
 		$this->curls->api_farmasi("GET","set_push/$sale_id/".$this->session->user_id);
 	}
 
@@ -181,22 +182,9 @@ class Sale extends MY_Generator
 			];
 		} else {
 			$this->db->trans_commit();
-			//kode antrian farmasi vclaim
-			// $kodeBoking = $this->db->query("select * from yanmed.antrean_online_bpjs where visit_id = $sess[visit_id] and status_antrean is null;")->row('kodebooking');
-			// if (!empty($kodeBoking)){
-			// 	$this->load->library('vclaim');
-			// 	$url = 'tambah_antrean_farmasi';
-			// 	$method = "post";
-			// 	$param = [
-			// 		"kode_booking"=>$kodeBoking,
-			// 		"jenisresep"=>$jenisresep,
-			// 		"nomorantrean"=>intval(explode('/', $this->get_no_sale($data['unit_id']))[1])
-			// 	];
-			// 	$kirim=$this->vclaim->connect($url,$method,$param);
-			// }
-
-			/* $this->db->query("
-			REFRESH MATERIALIZED VIEW CONCURRENTLY newfarmasi.v_antrean_apotek;"); */
+			$this->curls->send_log_stock("POST","trigger_sale/after_inserted",[
+				"sale_id"	=> $saleId
+			]);
 			$resp = [
 				"code" 		=> "200",
 				"sale_id" 	=> $saleId,
@@ -267,7 +255,6 @@ class Sale extends MY_Generator
 	}
 
 	public function cetak_prb($sale_id) {
-		$this->load->library("curls");
 		$prb = $this->db->group_by('srb_id,e.kodehfis,v.pxsurety_no,v.px_address,patient_name,px_birthdate')
 						 ->join("farmasi.sale s","s.service_id = sr.srv_id and s.visit_id=sr.visit_id")
 						->join("farmasi.sale_detail sd","sd.sale_id = s.sale_id")
@@ -509,6 +496,11 @@ class Sale extends MY_Generator
 		$input['sale_total'] = $grandtotal + $embalase;
 		$input['sale_embalase'] 	 = $embalase;
 		$this->db->where(["sale_id" => $input["sale_id"]])->update("farmasi.sale", $input);
+
+		//BEFORE DELETE
+		$this->curls->send_log_stock("POST","trigger_sale/before_delete",[
+			"sale_id"	=> $input["sale_id"]
+		]);
 		$this->db->where(["sale_id" => $input["sale_id"]])->delete("farmasi.sale_detail");
 		$this->db->insert_batch("farmasi.sale_detail", $detail);
 		$err = $this->db->error();
@@ -524,6 +516,9 @@ class Sale extends MY_Generator
 				"message"	=> "Data berhasil disimpan"
 			];
 			$this->db->trans_commit();
+			$this->curls->send_log_stock("POST","trigger_sale/after_inserted",[
+				"sale_id"	=> $input["sale_id"]
+			]);
 		}
 		echo json_encode($resp);
 	}
@@ -556,6 +551,10 @@ class Sale extends MY_Generator
 				]);
 			}
 		}
+		
+		$this->curls->send_log_stock("POST","trigger_sale/before_delete",[
+			"sale_id"	=> $id
+		]);
 		$this->db->where('sale_id', $id)->delete("farmasi.sale_detail");
 		$this->db->where('sale_id', $id)->delete("farmasi.sale");
 		$resp = array();
@@ -976,6 +975,7 @@ class Sale extends MY_Generator
 			$itemNonRacikan[$x]['own_id'] = $header['pasien']['own_id'];
 			$itemNonRacikan[$x]['racikan'] = 'f';
 			$itemNonRacikan[$x]['percent_profit'] = $header['profit'];
+			$v['price_total'] = 300;
 			$price_total = ($v['price_total'] * $header['profit']) + $v['price_total'];
 			$itemNonRacikan[$x]['subtotal'] = $price_total;
 			$total += $price_total;

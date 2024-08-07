@@ -10,6 +10,7 @@ class Mutation extends MY_Generator {
 						 ->lib_inputmulti()
 						 ->lib_select2()
 						 ->lib_inputmask();
+		$this->load->library("curls");
 		$this->load->model('m_mutation');
 	}
 
@@ -87,14 +88,24 @@ class Mutation extends MY_Generator {
 		}
 		$input['user_sender'] 		= $this->session->user_id;
 		$input['mutation_status'] 	= '2';
-		$input['mutation_no'] 		= $this->get_no_mutation();
 		$this->form_validation->set_data($input);
 		if ($this->m_mutation->validation()) {
 			$this->db->trans_begin();
 			if ($data['mutation_id']) {
 				$this->db->where('mutation_id',$data['mutation_id'])->update('newfarmasi.mutation',$input);
+				$this->curls->send_log_stock("POST","trigger_mutation/mutation_restock/in",[
+					"mutation_id"	=> $data['mutation_id']
+				]);
 				$this->db->where('mutation_id',$data['mutation_id'])->delete("newfarmasi.mutation_detail");
 			}else{
+				$input['mutation_no'] 		= $this->get_no_mutation();
+				//lock row 
+				$this->db->query("
+					SELECT * 
+					FROM newfarmasi.mutation
+					WHERE mutation_no = '".$this->db->escape_str($input['mutation_no'])."'
+					FOR UPDATE
+				");
 				$this->db->insert('newfarmasi.mutation',$input);
 				$data['mutation_id'] = $this->db->insert_id();
 			}
@@ -105,6 +116,9 @@ class Mutation extends MY_Generator {
 				$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
 			}else{
 				$this->db->trans_commit();
+				$this->curls->send_log_stock("POST","trigger_mutation/distribution/out",[
+					"mutation_id"	=> $data['mutation_id']
+				]);
 				$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil disimpan</div>');
 			}
 		}else{
@@ -131,9 +145,9 @@ class Mutation extends MY_Generator {
 			}
 			$detail[$x]['mutation_id'] 		= $data['mutation_id'];
 			$detail[$x]['qty_request'] 		= $value['qty_send'];
-			$detail[$x]['expired_date'] 	= $value['expired_date'];
+			// $detail[$x]['expired_date'] 	= $value['expired_date'];
 			$this->db->insert("newfarmasi.mutation_detail",$detail[$x]);
-			$mutationDetailId = $this->db->insert_id();
+			/* $mutationDetailId = $this->db->insert_id();
 			$this->update_stock([
 				"unit_id" 	=> $data['unit_sender'],
 				"own_id"	=> $data['own_id'],
@@ -148,7 +162,7 @@ class Mutation extends MY_Generator {
 			$dataku["qty"] = $value['qty_send'];
 			$dataku["trans_num"] = $data['mutation_no'];
 			$dataku["trans_type"] = 3;
-			$this->insert_stock_process($dataku,"Mutasi Keluar","minus");
+			$this->insert_stock_process($dataku,"Mutasi Keluar","minus"); */
 		}
 	}
 
@@ -304,7 +318,6 @@ class Mutation extends MY_Generator {
 				}
 			}
 		}elseif ($type='plus') {
-
 			$dataFifo = $this->db->get_where("newfarmasi.mutation_fifo",[
 								"mutation_id"	=> $fk["mutation_id"],
 								"mutationdetail_id"	=> $fk["mutation_detail_id"],
@@ -342,7 +355,10 @@ class Mutation extends MY_Generator {
 	public function delete_row($id)
 	{
 		$this->db->trans_begin();
-		$mutation_detail = $this->db->join("newfarmasi.mutation m","m.mutation_id=md.mutation_id")
+		$this->curls->send_log_stock("POST","trigger_mutation/mutation_restock/in",[
+			"mutation_id"	=> $id
+		]);
+		/* $mutation_detail = $this->db->join("newfarmasi.mutation m","m.mutation_id=md.mutation_id")
 									->get_where("newfarmasi.mutation_detail md",["md.mutation_id"=>$id])->result();
 		foreach ($mutation_detail as $key => $value) {
 			$this->update_stock([
@@ -360,7 +376,7 @@ class Mutation extends MY_Generator {
 			$dataku["trans_num"] = $value->mutation_no;
 			$dataku["trans_type"] = 3;
 			$this->insert_stock_process($dataku,"Hapus Mutasi","plus");
-		}
+		} */
 		$this->db->where('mutation_id',$id)->delete("newfarmasi.mutation_detail");
 		$this->db->where('mutation_id',$id)->delete("newfarmasi.mutation");
 		$resp = array();

@@ -87,8 +87,6 @@ if ( ! function_exists('generate_code_transaksi'))
 { 
 	function generate_code_transaksi($data){
 		$CI =& get_instance();
-		/* $query = $CI->db->query("SELECT LPAD((max(COALESCE(CAST(SUBSTRING_INDEX(".$data['column'].",'".$data['delimiter']."',".$data['number'].") AS UNSIGNED),0))+1),5,'0') AS nomax FROM ".$data['table'].";")->row(); */
-
 		$query = $CI->db->query("
         select 
         lpad(trim(coalesce(max(regexp_replace(((string_to_array(".$data['column'].",'".$data['delimiter']."'))[".$data['number']."]), '[^0-9]*', '', 'g')::integer)+1,1)::VARCHAR), ".$data['lpad'].", '0')
@@ -99,8 +97,10 @@ if ( ! function_exists('generate_code_transaksi'))
 		if (empty($query->nomax)) {
             $query->nomax = str_pad("1", $data['lpad'], "0", STR_PAD_LEFT);
         }
-		return str_replace('NOMOR', $query->nomax, $data['text']);
+		$code = str_replace('NOMOR', $query->nomax, $data['text']);
+		return $code;
 		
 	}
+	
 }
 ?>

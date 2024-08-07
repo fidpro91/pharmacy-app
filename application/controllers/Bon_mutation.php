@@ -10,6 +10,7 @@ class Bon_mutation extends MY_Generator {
 						 ->lib_inputmulti()
 						 ->lib_select2()
 						 ->lib_inputmask();
+		$this->load->library("curls");
 		$this->load->model('m_mutation');
 		$this->load->model('m_ms_unit');
 	}
@@ -304,7 +305,7 @@ class Bon_mutation extends MY_Generator {
 		])->update("newfarmasi.mutation_detail",[
 			"is_approved" => "t"
 		]);
-		$mutationDetail = $this->db->join("newfarmasi.mutation m","m.mutation_id=md.mutation_id")
+		/* $mutationDetail = $this->db->join("newfarmasi.mutation m","m.mutation_id=md.mutation_id")
 		->get_where("newfarmasi.mutation_detail md",["md.mutation_id"=>$this->input->post("mutation_id")])->result();
 		foreach ($mutationDetail as $key => $value) {
 			$dataku = [
@@ -319,13 +320,16 @@ class Bon_mutation extends MY_Generator {
 			$dataku["trans_type"] = 3;
 			$dataku["unit_sender"] = $value->unit_sender;
 			$this->insert_stock_process($dataku,"plus");
-		}
+		} */
 		if ($this->db->trans_status() === false) {
 			$err = $this->db->error();
 			$this->db->trans_rollback();
 			$this->session->set_flashdata('message','<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>'.$err['message'].'</div>');
 		}else{
 			$this->db->trans_commit();
+			$this->curls->send_log_stock("POST","trigger_mutation/distribution/in",[
+				"mutation_id"	=> $this->input->post("mutation_id")
+			]);
 			$this->session->set_flashdata('message','<div class="alert alert-success alert-dismissible"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>Data berhasil dikonfirmasi</div>');
 		}
 	}
@@ -356,7 +360,11 @@ class Bon_mutation extends MY_Generator {
 			redirect('bon_mutation');
 			exit();
 		}
-
+		
+		$this->curls->send_log_stock("POST","trigger_mutation/mutation_restock/out",[
+			"mutation_id"	=> $this->input->post("mutation_id")
+		]);
+		
 		$this->db->where([
 			"mutation_id" => $this->input->post("mutation_id")
 		])->update("newfarmasi.mutation",[
@@ -371,7 +379,7 @@ class Bon_mutation extends MY_Generator {
 			"is_approved" => "f"
 		]);
 
-		$mutationDetail = $this->db->join("newfarmasi.mutation m","m.mutation_id=md.mutation_id")
+		/* $mutationDetail = $this->db->join("newfarmasi.mutation m","m.mutation_id=md.mutation_id")
 		->get_where("newfarmasi.mutation_detail md",["md.mutation_id"=>$this->input->post("mutation_id")])->result();
 		foreach ($mutationDetail as $key => $value) {
 			$dataku = [
@@ -386,7 +394,7 @@ class Bon_mutation extends MY_Generator {
 			$dataku["trans_num"] = (!empty($value->mutation_no)?$value->mutation_no:$value->bon_no);
 			$dataku["trans_type"] = 3;
 			$this->insert_stock_process($dataku,"minus");
-		}
+		} */
 		if ($this->db->trans_status() === false) {
 			$err = $this->db->error();
 			$this->db->trans_rollback();

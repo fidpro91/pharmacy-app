@@ -11,6 +11,7 @@ class Distribusi_bon extends MY_Generator {
 						 ->lib_inputmulti()
 						 ->lib_select2()
 						 ->lib_inputmask();
+		$this->load->library("curls");
 		$this->load->model('m_mutation');
 	}
 
@@ -101,6 +102,9 @@ class Distribusi_bon extends MY_Generator {
 			];
 		}else{
 			$this->db->trans_commit();
+			$this->curls->send_log_stock("POST","trigger_mutation/distribution/out",[
+				"mutation_id"	=> $data['mutation_id']
+			]);
 			$resp = [
 				"code" 		=> "200",
 				"message"	=> "Sukses",
@@ -140,8 +144,7 @@ class Distribusi_bon extends MY_Generator {
 					 [
 						"qty_send" => $value["qty_send"]
 					 ]);
-			
-			$mutationDetail = $this->db->get_where("newfarmasi.mutation_detail",[
+			/* $mutationDetail = $this->db->get_where("newfarmasi.mutation_detail",[
 				"mutation_detil_id" => $value['mutation_detil_id']
 			])->row();
 			$this->update_stock([
@@ -156,7 +159,7 @@ class Distribusi_bon extends MY_Generator {
 			$dataku["trans_num"] = $data['mutation_no'];
 			$dataku["trans_type"] = 3;
 			$unit_penerima = $this->db->get_where("admin.ms_unit",["unit_id"=>$id_mut[2]])->row("unit_name");
-			$this->insert_stock_process($dataku,"Mutasi Keluar Ke $unit_penerima ","minus");
+			$this->insert_stock_process($dataku,"Mutasi Keluar Ke $unit_penerima ","minus"); */
             $sukses = true;
 		}
 
@@ -345,11 +348,11 @@ class Distribusi_bon extends MY_Generator {
 			$filter =array_merge($filter, ["mutation_status" => $attr['sts']]);
 		}
 			
-		if($attr['print'] != ' '){
+		/* if($attr['print'] != ' '){
 			$filter =array_merge($filter, ["is_print" =>$attr['print']]);
 		}else{
 			$filter =array_merge($filter, ["is_print is null"]);
-		}
+		} */
 		
 		$data 	= $this->datatable->get_data($fields,$filter,'m_mutation',$attr);
 		$records["aaData"] = array();
@@ -375,7 +378,7 @@ class Distribusi_bon extends MY_Generator {
 						"btn-class" => "btn-default"
 					]
 				]);
-			}elseif($row["mutation_status"] == 2){
+			}elseif($row["mutation_status"] == 2 || $row["mutation_status"] == 4){
 				$obj[] = create_btnAction([
 					"Batal Kirim"=>[
 						"btn-act" => "batal_mutasi(".$row['id_key'].")",

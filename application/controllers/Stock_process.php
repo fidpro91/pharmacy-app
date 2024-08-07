@@ -50,14 +50,20 @@ class Stock_process extends MY_Generator {
 		$attr 	= $this->input->post(); 
 		$fields = $this->m_stock_process->get_column();
 		$filter = [];
-		$filter['sp.item_id'] = $attr['item_id'];
+
 		if ($attr['tgl']) {
 			list($tgl1,$tgl2) = explode('/', $attr['tgl']); 
 			$filter["custom" ] = "(date(date_trans) between '$tgl1' and '$tgl2')"; 
 		}
+
 		if (!empty($attr['unit'])) {
 			$filter = array_merge($filter, ["sp.unit_id" => $attr['unit']]);
 		}
+		
+		if (!empty($attr['item_id'])) {
+			$filter['sp.item_id'] = $attr['item_id'];
+		}
+
 		if (!empty($attr['own_id'])) {
 			$filter = array_merge($filter, ["sp.own_id" => $attr['own_id']]);
 		}

@@ -71,7 +71,7 @@ function newexportaction(e, dt, button, config) {
   });
 
   $(document).ready(()=>{
-    $('body').on( 'init.dt', function ( e, ctx ) {
+    $('body').on( 'draw.dt', function ( e, ctx ) {
       var api = new $.fn.dataTable.Api( ctx );
       $('.dataTables_filter input').unbind();
       $('.dataTables_filter input').bind('keyup', function(e){

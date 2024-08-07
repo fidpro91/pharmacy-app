@@ -91,7 +91,8 @@
           table.draw();
           e.preventDefault();
       });
-      table.draw();
+      // table.draw();
+      table.ajax.reload();
       // location.reload();
     });
     <?= $this->config->item('footerJS') ?>
