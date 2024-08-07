@@ -110,6 +110,7 @@ INNER JOIN (
           SELECT r.supplier_id,r.rec_id,concat(r.rec_num,'|',r.receiver_num,'|',r.rec_date,'|',r.grand_total) gabung,r.grand_total as sub_total 
 				from newfarmasi.receiving r
           INNER JOIN newfarmasi.receiving_detail rd on r.rec_id = rd.rec_id
+		  INNER JOIN admin.ms_item mi on mi.item_id = rd.item_id
           left JOIN farmasi.po on po.po_id = r.po_id
           where 0=0 $where2 and r.receiver_unit = 55
           GROUP BY r.rec_id,r.supplier_id,r.rec_num,r.receiver_num,r.rec_date,r.grand_total order by r.rec_id desc
@@ -188,6 +189,17 @@ order by cb.supplier_name asc ")->result();
 			$where .= "AND lower(vp.estimate_resource) like lower('".$param['sumber_anggaran']."')";
 		}
 
+		if (!empty($param["type_formularium"])) {
+			if ($param['type_formularium'] == 1271) {
+				$where .= " And (vp.type_formularium is null or vp.type_formularium < '0')";
+			}else{
+				$where .= " And vp.type_formularium = '".$param['type_formularium']."'";
+			}
+		}
+		
+		if (!empty($param["comodity_id"])) {
+			$where .= " And vp.comodity_id = '".$param['comodity_id']."'";
+		}
 		$sql    = "	SELECT
 						* 
 					FROM 
@@ -197,7 +209,7 @@ order by cb.supplier_name asc ")->result();
 					where vp.rec_type = ".$param['jenis']."
 					AND vp.own_id = ".$param['own_id']."
 					AND vf.cat_unit_code = '$unit_code'
-					AND vp.receiver_date between  '".$param['tanggal_awal']."' and '".$param['tanggal_akhir']."'
+					AND (vp.receiver_date between  '".$param['tanggal_awal']."' and '".$param['tanggal_akhir']."')
 					$where
 				  ";
 		$result = $this->db->query($sql);
