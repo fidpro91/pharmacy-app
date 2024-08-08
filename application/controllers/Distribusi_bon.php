@@ -169,7 +169,7 @@ class Distribusi_bon extends MY_Generator {
 	public function batal_mutation($id)
 	{
 		$this->db->trans_begin();
-		$header = $this->db->get_where("newfarmasi.mutation",[
+		/* $header = $this->db->get_where("newfarmasi.mutation",[
 			"mutation_id"	=> $id
 		])->row_array();
 		$detail = $this->db->get_where("newfarmasi.mutation_detail",[
@@ -193,7 +193,7 @@ class Distribusi_bon extends MY_Generator {
 			$dataku["trans_num"] = $header['mutation_no'];
 			$dataku["trans_type"] = 3;
 			$this->insert_stock_process($dataku,"Batal Mutasi","plus");
-		}
+		} */
 		
 		$this->db->where(["mutation_id"=>$id])->update("newfarmasi.mutation",[
 			"mutation_status"	=> 1
@@ -202,6 +202,9 @@ class Distribusi_bon extends MY_Generator {
 		$resp = array();
 		if ($this->db->trans_status() !== false) {
 			$this->db->trans_commit();
+			$this->curls->send_log_stock("POST","trigger_mutation/mutation_restock/in",[
+				"mutation_id"	=> $id
+			]);
 			$resp['message'] 	= 'Data berhasil dibatalkan';
 			$resp['code'] 		= '200';
 		}else{
@@ -348,11 +351,11 @@ class Distribusi_bon extends MY_Generator {
 			$filter =array_merge($filter, ["mutation_status" => $attr['sts']]);
 		}
 			
-		if($attr['print'] != ' '){
+		/* if($attr['print'] != ' '){
 			$filter =array_merge($filter, ["is_print" =>$attr['print']]);
 		}else{
 			$filter =array_merge($filter, ["is_print is null"]);
-		}
+		} */
 		
 		$data 	= $this->datatable->get_data($fields,$filter,'m_mutation',$attr);
 		$records["aaData"] = array();
