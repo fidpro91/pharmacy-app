@@ -11,6 +11,7 @@ class Opname_header extends MY_Generator {
 						 ->lib_select2()
 						 ->lib_inputmask();
 		$this->load->model('m_opname_header');
+		$this->load->library("curls");
 	}
 
 	public function index()
@@ -141,6 +142,9 @@ class Opname_header extends MY_Generator {
 				"message" => "Data berhasil disimpan"
 			];
 			$this->db->trans_commit();
+			$this->curls->send_log_stock("POST","trigger_opname/after_inserted",[
+				"opname_id"	=> $data["opname_header_id"]
+			]);
 		}
 		return $resp;
 	}
@@ -194,6 +198,9 @@ class Opname_header extends MY_Generator {
 
 	public function delete_row($id)
 	{
+		$this->curls->send_log_stock("POST","trigger_opname/before_delete",[
+			"opname_id"	=> $id
+		]);
 		$this->db->trans_begin();
 		$this->db->where('opname_header_id',$id)->delete("newfarmasi.opname");
 		$this->db->where('opname_header_id',$id)->delete("newfarmasi.opname_header");
@@ -214,6 +221,9 @@ class Opname_header extends MY_Generator {
 		$resp = array();
 		$this->db->trans_begin();
 		foreach ($this->input->post('data') as $key => $value) {
+			$this->curls->send_log_stock("POST","trigger_opname/before_delete",[
+				"opname_id"	=> $value
+			]);
 			$this->db->where('opname_header_id',$value)->delete("newfarmasi.opname");
 			$this->db->where('opname_header_id',$value)->delete("newfarmasi.opname_header");
 			$err = $this->db->error();

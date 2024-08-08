@@ -348,11 +348,11 @@ class Distribusi_bon extends MY_Generator {
 			$filter =array_merge($filter, ["mutation_status" => $attr['sts']]);
 		}
 			
-		/* if($attr['print'] != ' '){
+		if($attr['print'] != ' '){
 			$filter =array_merge($filter, ["is_print" =>$attr['print']]);
 		}else{
 			$filter =array_merge($filter, ["is_print is null"]);
-		} */
+		}
 		
 		$data 	= $this->datatable->get_data($fields,$filter,'m_mutation',$attr);
 		$records["aaData"] = array();

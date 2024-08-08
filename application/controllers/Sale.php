@@ -975,7 +975,6 @@ class Sale extends MY_Generator
 			$itemNonRacikan[$x]['own_id'] = $header['pasien']['own_id'];
 			$itemNonRacikan[$x]['racikan'] = 'f';
 			$itemNonRacikan[$x]['percent_profit'] = $header['profit'];
-			$v['price_total'] = 300;
 			$price_total = ($v['price_total'] * $header['profit']) + $v['price_total'];
 			$itemNonRacikan[$x]['subtotal'] = $price_total;
 			$total += $price_total;
