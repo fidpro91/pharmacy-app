@@ -12,6 +12,7 @@ class Recipe extends MY_Generator
 			->lib_select2()
 			->lib_inputmask();
 
+		$this->load->library("curls");
 		$this->load->model('m_recipe');
 		$this->load->model('m_sale');
 	}
@@ -215,6 +216,9 @@ class Recipe extends MY_Generator
 			];
 		} else {
 			$this->db->trans_commit();
+			$this->curls->send_log_stock("POST","trigger_sale/after_inserted",[
+				"sale_id"	=> $saleId
+			]);
 			$resp = [
 				"code" 		=> "200",
 				"sale_id" 	=> $saleId,
