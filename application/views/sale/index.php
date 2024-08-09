@@ -152,11 +152,13 @@
       }
       e.preventDefault();
     });
+
+    $("#unit_id_depo, #sale_type, #filter_pembayaran, #filter_tanggal").change(() => {
+        table.draw();
+    });
+
   });
 
-  $("#unit_id_depo, #sale_type, #filter_pembayaran, #filter_tanggal").change(() => {
-      table.draw();
-  });
 
   $("#btn-add").click(function() {
     $("#form_sale").show();
