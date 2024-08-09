@@ -164,6 +164,9 @@ class Sale2 extends MY_Generator
 			];
 		} else {
 			$this->db->trans_commit();
+			$this->curls->send_log_stock("POST","trigger_sale/after_inserted",[
+				"sale_id"	=> $saleId
+			]);
 			$resp = [
 				"code" 		=> "200",
 				"sale_id" 	=> $saleId,
@@ -470,6 +473,12 @@ class Sale2 extends MY_Generator
 		$input['sale_total'] = $grandtotal + $embalase;
 		$input['sale_embalase'] 	 = $embalase;
 		$this->db->where(["sale_id" => $input["sale_id"]])->update("farmasi.sale", $input);
+
+		//BEFORE DELETE
+		$this->curls->send_log_stock("POST","trigger_sale/before_delete",[
+			"sale_id"	=> $input["sale_id"]
+		]);
+		
 		$this->db->where(["sale_id" => $input["sale_id"]])->delete("farmasi.sale_detail");
 		$this->db->insert_batch("farmasi.sale_detail", $detail);
 		$err = $this->db->error();
@@ -485,6 +494,10 @@ class Sale2 extends MY_Generator
 				"message"	=> "Data berhasil disimpan"
 			];
 			$this->db->trans_commit();
+
+			$this->curls->send_log_stock("POST","trigger_sale/after_inserted",[
+				"sale_id"	=> $input["sale_id"]
+			]);
 		}
 		echo json_encode($resp);
 	}
@@ -517,6 +530,9 @@ class Sale2 extends MY_Generator
 				]);
 			}
 		}
+		$this->curls->send_log_stock("POST","trigger_sale/before_delete",[
+			"sale_id"	=> $id
+		]);
 		$this->db->where('sale_id', $id)->delete("farmasi.sale_detail");
 		$this->db->where('sale_id', $id)->delete("farmasi.sale");
 		$resp = array();
