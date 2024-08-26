@@ -120,7 +120,12 @@
 
     $("body").on("focus", ".autocom_item_id", function() {
 	    $(this).autocomplete({
-            source: "<?php echo site_url('receiving/get_item');?>",
+            source: function (request, response) {
+                $.getJSON("<?php echo site_url('receiving/get_item');?>", {
+                    term: request.term,
+                    own_id : $("#own_id").val()
+                }, response);
+            },
             autoFocus: true,
 			minLength:3,
             select: function (event, ui) {

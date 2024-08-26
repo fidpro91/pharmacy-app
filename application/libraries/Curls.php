@@ -20,7 +20,8 @@ class Curls
     public function send_log_stock($method,$url,$data = array()){
         $ch = curl_init(); 
         // $base_url = base_url('api/get_simrs/');
-        $url = "http://192.168.1.21/mobile-jkn/api/".$url;
+        $url = "http://localhost:88/api-ehos/api/".$url;
+        // $url = "http://192.168.1.21/mobile-jkn/api/".$url;
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HTTPHEADER,array("Content-Type: application/json"));
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);

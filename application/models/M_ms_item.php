@@ -104,12 +104,12 @@ class M_ms_item extends CI_Model {
 		return $this->db->get_where("admin.ms_item",$where)->result();
 	}
 
-	public function get_item_autocomplete($where)
+	public function get_item_autocomplete($where,$own_id = null)
 	{
 		$data = $this->db->query(
 			"SELECT mc.classification_name,mi.item_package as kemasan,mi.item_id,mi.item_code,mi.item_name as value,mi.item_package,mi.item_unitofitem,ow.own_name,p.price_buy::numeric,p.price_sell::numeric FROM admin.ms_item mi
 			join admin.ms_classification mc on mi.classification_id = mc.classification_id
-			LEFT JOIN farmasi.price p ON mi.item_id = p.item_id
+			LEFT JOIN farmasi.price p ON mi.item_id = p.item_id ".($own_id?"and P.own_id = '$own_id'":null)."
 			LEFT JOIN farmasi.ownership ow ON p.own_id = ow.own_id
 			where lower(mi.item_name) like lower('%$where%') and mi.item_active = 't'"
 			)->result();

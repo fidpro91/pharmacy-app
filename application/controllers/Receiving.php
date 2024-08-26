@@ -506,9 +506,10 @@ class Receiving extends MY_Generator {
 
 	public function get_item()
 	{
-		$term = $this->input->get('term');
+		$term 	= $this->input->get('term');
+		$own_id = $this->input->get('own_id');
 		$this->load->model('m_ms_item');
-		echo json_encode($this->m_ms_item->get_item_autocomplete($term));
+		echo json_encode($this->m_ms_item->get_item_autocomplete($term,$own_id));
 	}
 
 	public function find_po_detail($id)
