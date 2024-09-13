@@ -36,4 +36,4 @@ assets/*
 system/*
 /system2
 /index.php
-application/libraries/Curls.php
+application/libraries/Curls.phpapplication/libraries/Curls.php
