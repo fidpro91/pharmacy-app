@@ -133,6 +133,7 @@ class Sale extends MY_Generator
 			exit;
 		}
 		$sukses = true;
+		$totalSale=0;
 		foreach ($saleDetail as $row){
 			$cek = $this->db->query("SELECT s.*,i.item_name FROM newfarmasi.stock s
          	join admin.ms_item i on s.item_id = i.item_id
@@ -147,6 +148,20 @@ class Sale extends MY_Generator
 				$sukses = false;
 				break;
 			}
+			$totalSale += $row["subtotal"];
+		}
+
+		//fix grand total
+		$totalSale = $totalSale + $totalService;
+		$embalase = $totalSale / 100;
+		$embalase = abs(ceil($embalase) - $embalase) * 100;
+		$totalSale = $totalSale + $embalase + $data["embalase_item"];
+		if ($totalSale != $input['sale_total']) {
+			echo json_encode([
+				"code" 		=> "204",
+				"message"	=> "Total penjualan tidak sama dengan dengan subtotal detail penjulan. Mohon refresh halaman kemudian ulangi input item",
+			]);
+			$sukses = false;
 		}
 
 		if ($sukses == false){

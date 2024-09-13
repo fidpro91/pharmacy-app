@@ -205,6 +205,14 @@ class Recipe extends MY_Generator
 				$i++;
 			}
 			$this->db->insert_batch("newfarmasi.review_recipe", $telaaah);
+		}else {
+			$this->db->trans_rollback();
+			$resp = [
+				"code" 		=> "202",
+				"message"	=> "Mohon mengisikan telaah resep"
+			];
+			echo json_encode($resp);
+			exit();
 		}
 
 		$err = $this->db->error();
