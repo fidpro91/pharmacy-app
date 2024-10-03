@@ -567,17 +567,21 @@ class Sale extends MY_Generator
 			}
 		}
 		
-		$this->curls->send_log_stock("POST","trigger_sale/before_delete",[
+		$beforeDelete = $this->curls->send_log_stock("POST","trigger_sale/before_delete",[
 			"sale_id"	=> $id
 		]);
-		$this->db->where('sale_id', $id)->delete("farmasi.sale_detail");
-		$this->db->where('sale_id', $id)->delete("farmasi.sale");
-		$resp = array();
-		if ($this->db->affected_rows()) {
-			$resp['message'] = 'Data berhasil dihapus';
-		} else {
-			$err = $this->db->error();
-			$resp['message'] = $err['message'];
+		if ($beforeDelete["code"] == 200) {
+			// $this->db->where('sale_id', $id)->delete("farmasi.sale_detail");
+			$this->db->where('sale_id', $id)->delete("farmasi.sale");
+			$resp = array();
+			if ($this->db->affected_rows()) {
+				$resp['message'] = 'Data berhasil dihapus';
+			} else {
+				$err = $this->db->error();
+				$resp['message'] = $err['message'];
+			}
+		}else{
+			$resp['message'] = $beforeDelete['message'];
 		}
 		echo json_encode($resp);
 	}
