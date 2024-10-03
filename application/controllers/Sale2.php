@@ -13,7 +13,9 @@ class Sale2 extends MY_Generator
 			->lib_inputmask();
 		$this->load->model('m_sale');
 		$this->load->model('m_sale_detail');
+		$this->load->library("curls");
 	}
+	
 	public function index()
 	{
 		// session_destroy();
