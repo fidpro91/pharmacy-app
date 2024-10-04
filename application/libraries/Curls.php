@@ -29,7 +29,7 @@ class Curls
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
         $result = curl_exec($ch);
         curl_close($ch);
-        return ($result);
+        return json_decode($result);
     }
     
     public function api_sregep($method,$url,$data = array()){
