@@ -53,7 +53,7 @@ class Stock_process extends MY_Generator {
 
 		if ($attr['tgl']) {
 			list($tgl1,$tgl2) = explode('/', $attr['tgl']); 
-			$filter["custom" ] = "(date(date_trans) between '$tgl1' and '$tgl2')"; 
+			$filter["custom" ] = "(date(date_act) between '$tgl1' and '$tgl2')"; 
 		}
 
 		if (!empty($attr['unit'])) {

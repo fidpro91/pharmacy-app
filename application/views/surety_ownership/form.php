@@ -2,7 +2,10 @@
 	<?=form_open("surety_ownership/save",["method"=>"post","class"=>"form-horizontal","id"=>"fm_surety_ownership"],$model)?>
 		<?=form_hidden("surety_id")?>
 		<?=form_hidden("own_id")?>
-		<?=create_input("priority")?>
+		<?= create_select([
+				"attr" => ["name" => "priority", "id" => "priority", "class" => "form-control", 'required' => true],
+				"option" => [["id" => '1', "text" => "Cito"], ["id" => '0', "text" => "Non Cito"]],
+		]) ?>
 		<?=create_input("percent_profit")?>
 	<?=form_close()?>
 	<div class="box-footer">

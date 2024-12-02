@@ -23,7 +23,10 @@ class Surety_ownership extends MY_Generator {
 				$input[$key] = $data[$key];
 			}
 			if ($data['surety_id']) {
-				$this->db->where('surety_id',$data['surety_id'])->update('farmasi.surety_ownership',$input);
+				$this->db->where([
+					'surety_id'	=>	$data['surety_id'],
+					'own_id'	=> $data['surety_id']
+				])->update('farmasi.surety_ownership',$input);
 			}else{
 				$this->db->insert('farmasi.surety_ownership',$input);
 			}
