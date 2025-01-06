@@ -465,78 +465,180 @@ class Sale extends MY_Generator
 		$input["embalase_item_sale"] = 0;
 		$totalAll = 0;
 		$sukses = true;
+
+		$item_ids = array_column($post['list_obat_edited'], 'item_id');
+		$stok_items = $this->db->query("
+			SELECT s.*, i.item_name
+			FROM newfarmasi.stock s
+			JOIN admin.ms_item i ON s.item_id = i.item_id
+			WHERE s.item_id IN (".implode(',', $item_ids).")
+			AND s.own_id = {$input['own_id']}
+			AND s.unit_id = {$input['unit_id']}
+		")->result_array();
+
+		$stok_indexed = [];
+		foreach ($stok_items as $stok) {
+			$stok_indexed[$stok['item_id']] = $stok;
+		}
+		$sale_detail_rules = $this->m_sale_detail->rules();
 		foreach ($post['list_obat_edited'] as $x => $v) {
-			$cek = $this->db->query("SELECT s.*,i.item_name FROM newfarmasi.stock s
-         	join admin.ms_item i on s.item_id = i.item_id
-			WHERE s.item_id = ".$v['item_id']."
-			AND own_id = ".$input['own_id']."
-			AND unit_id = ".$input['unit_id'])->row();
-			if ($cek->stock_summary<$v['sale_qty']){
+
+			if (!isset($stok_indexed[$v['item_id']]) || $stok_indexed[$v['item_id']]['stock_summary'] < $v['sale_qty']) {
 				echo json_encode([
-					"code" 		=> "204",
-					"message"	=> "Stock item $cek->item_name kurang dari jumlah penjualan",
+					"code"    => "204",
+					"message" => "Stock item {$stok_indexed[$v['item_id']]['item_name']} kurang dari jumlah penjualan",
 				]);
 				$sukses = false;
 				break;
 			}
-			foreach ($this->m_sale_detail->rules() as $key => $value) {
+
+			foreach ($sale_detail_rules as $key => $value) {
 				if ($key != 'sale_id') {
 					$detail[$x][$key] = (isset($v[$key]) ? $v[$key] : null);
 				}
 			}
-			$detail[$x]['sale_id'] 	= $input['sale_id'];
-			$detail[$x]['kronis'] 	= $input['kronis'];
-			$detail[$x]['own_id'] 	= $input['own_id'];
+
+			$detail[$x]['sale_id'] = $input['sale_id'];
+			$detail[$x]['kronis'] = $input['kronis'];
+			$detail[$x]['own_id'] = $input['own_id'];
 			$detail[$x]['percent_profit'] = $post['profit'];
-			$detail[$x]['racikan'] = 'f';
-			if ($v['racikan_id'] != 'null' && $v['racikan_id'] != '') {
+			$detail[$x]['racikan'] = !empty($v['racikan_id']) ? 't' : 'f';
+
+			if (!empty($v['racikan_id'])) {
 				$detail[$x]['racikan_id'] = $v['racikan_id'];
 				$detail[$x]['racikan_qty'] = $v['sale_qty'];
 				$detail[$x]['racikan_dosis'] = $v['dosis'];
-				$detail[$x]['racikan'] = 't';
 			} else {
 				$input["embalase_item_sale"] += $post["profit_item"];
 			}
+
 			$price_total = ($v['price_total'] * $post['profit']) + $v['price_total'];
 			$detail[$x]['subtotal'] = $price_total;
 			$totalAll += $price_total;
 		}
-		if ($sukses == false) {
+		if (!$sukses) {
 			$this->db->trans_rollback();
 			exit();
 		}
+
 		$grandtotal = $totalAll + $input['sale_services'] + $input["embalase_item_sale"];
-		$embalase = $grandtotal / 100;
-		$embalase = abs(ceil($embalase) - $embalase) * 100;
+		$embalase = ceil($grandtotal / 100) * 100 - $grandtotal;
 		$input['sale_total'] = $grandtotal + $embalase;
-		$input['sale_embalase'] 	 = $embalase;
+		$input['sale_embalase'] = $embalase;
+
 		$this->db->where(["sale_id" => $input["sale_id"]])->update("farmasi.sale", $input);
 
-		//BEFORE DELETE
-		$this->curls->send_log_stock("POST","trigger_sale/before_delete",[
-			"sale_id"	=> $input["sale_id"]
-		]);
 		$this->db->where(["sale_id" => $input["sale_id"]])->delete("farmasi.sale_detail");
 		$this->db->insert_batch("farmasi.sale_detail", $detail);
-		$err = $this->db->error();
+
 		if ($this->db->trans_status() === false) {
 			$this->db->trans_rollback();
 			$resp = [
-				"code" 		=> "202",
-				"message"	=> $err['message']
+				"code"    => "202",
+				"message" => $this->db->error()['message']
 			];
 		} else {
-			$resp = [
-				"code" 		=> "200",
-				"message"	=> "Data berhasil disimpan"
-			];
 			$this->db->trans_commit();
-			$this->curls->send_log_stock("POST","trigger_sale/after_inserted",[
-				"sale_id"	=> $input["sale_id"]
+			$this->curls->send_log_stock("POST", "trigger_sale/after_inserted", [
+				"sale_id" => $input["sale_id"]
 			]);
+			$resp = [
+				"code"    => "200",
+				"message" => "Data berhasil disimpan"
+			];
 		}
 		echo json_encode($resp);
+
 	}
+
+//	public function update_data()
+//	{
+//		$post = $this->input->post();
+//		$input = [];
+//		$this->db->trans_begin();
+//		foreach ($this->m_sale->rules() as $key => $value) {
+//			$input[$key] = (!empty($post[$key]) ? $post[$key] : null);
+//		}
+//		$input['user_id'] = ($this->session->user_id ? $this->session->user_id : 21);
+//		$input['sale_id'] = $post["sale_id"];
+//		$detail = [];
+//		$input["embalase_item_sale"] = 0;
+//		$totalAll = 0;
+//		$sukses = true;
+//		foreach ($post['list_obat_edited'] as $x => $v) {
+//			$cek = $this->db->query("SELECT s.*,i.item_name FROM newfarmasi.stock s
+//         	join admin.ms_item i on s.item_id = i.item_id
+//			WHERE s.item_id = ".$v['item_id']."
+//			AND own_id = ".$input['own_id']."
+//			AND unit_id = ".$input['unit_id'])->row();
+//			if ($cek->stock_summary<$v['sale_qty']){
+//				echo json_encode([
+//					"code" 		=> "204",
+//					"message"	=> "Stock item $cek->item_name kurang dari jumlah penjualan",
+//				]);
+//				$sukses = false;
+//				break;
+//			}
+//			foreach ($this->m_sale_detail->rules() as $key => $value) {
+//				if ($key != 'sale_id') {
+//					$detail[$x][$key] = (isset($v[$key]) ? $v[$key] : null);
+//				}
+//			}
+//			$detail[$x]['sale_id'] 	= $input['sale_id'];
+//			$detail[$x]['kronis'] 	= $input['kronis'];
+//			$detail[$x]['own_id'] 	= $input['own_id'];
+//			$detail[$x]['percent_profit'] = $post['profit'];
+//			$detail[$x]['racikan'] = 'f';
+//			if ($v['racikan_id'] != 'null' && $v['racikan_id'] != '') {
+//				$detail[$x]['racikan_id'] = $v['racikan_id'];
+//				$detail[$x]['racikan_qty'] = $v['sale_qty'];
+//				$detail[$x]['racikan_dosis'] = $v['dosis'];
+//				$detail[$x]['racikan'] = 't';
+//			} else {
+//				$input["embalase_item_sale"] += $post["profit_item"];
+//			}
+//			$price_total = ($v['price_total'] * $post['profit']) + $v['price_total'];
+//			$detail[$x]['subtotal'] = $price_total;
+//			$totalAll += $price_total;
+//		}
+////		var_dump($detail);die;
+//		if ($sukses == false) {
+//			$this->db->trans_rollback();
+//			exit();
+//		}
+//		$grandtotal = $totalAll + $input['sale_services'] + $input["embalase_item_sale"];
+//		$embalase = $grandtotal / 100;
+//		$embalase = abs(ceil($embalase) - $embalase) * 100;
+//
+//		$input['sale_total'] = $grandtotal + $embalase;
+//		$input['sale_embalase'] 	 = $embalase;
+//		$this->db->where(["sale_id" => $input["sale_id"]])->update("farmasi.sale", $input);
+//
+//		//BEFORE DELETE
+//		$this->curls->send_log_stock("POST","trigger_sale/before_delete",[
+//			"sale_id"	=> $input["sale_id"]
+//		]);
+//		$this->db->where(["sale_id" => $input["sale_id"]])->delete("farmasi.sale_detail");
+//		$this->db->insert_batch("farmasi.sale_detail", $detail);
+//		$err = $this->db->error();
+//		if ($this->db->trans_status() === false) {
+//			$this->db->trans_rollback();
+//			$resp = [
+//				"code" 		=> "202",
+//				"message"	=> $err['message']
+//			];
+//		} else {
+//			$resp = [
+//				"code" 		=> "200",
+//				"message"	=> "Data berhasil disimpan"
+//			];
+//			$this->db->trans_commit();
+//			$this->curls->send_log_stock("POST","trigger_sale/after_inserted",[
+//				"sale_id"	=> $input["sale_id"]
+//			]);
+//		}
+//		echo json_encode($resp);
+//	}
 
 	public function find_one($id)
 	{
