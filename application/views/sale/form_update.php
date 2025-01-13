@@ -1,5 +1,25 @@
 <style>
     .ui-autocomplete { z-index:2147483647; }
+
+	#loading {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.5);
+		z-index: 9999;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		color: #fff;
+		font-size: 18px;
+	}
+
+	.spinner {
+		animation: spin 1s linear infinite;
+	}
+
 </style>
 <?= form_open("sale/update_data", ["method" => "post", "id" => "form_update_sale"]) ?>
 <div class="row">
@@ -98,6 +118,13 @@
         </div>
     </div>
 </div>
+
+<div id="loading" style="display: none;">
+	<div class="spinner">
+		Loading...
+	</div>
+</div>
+
 <?= form_close() ?>
 
 <script>
@@ -192,7 +219,13 @@
                         return false;
                     }
                     location.reload(true);
-                }
+                },
+				beforeSend: function () {
+					$("#loading").show();
+				},
+				complete: function () {
+					$("#loading").hide();
+				}
             });
         }
     });
