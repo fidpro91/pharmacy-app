@@ -79,7 +79,7 @@
 
 							<?= create_select([
 								"attr" => ["name" => "asal_pembelian=Asal Pembelian", "id" => "asal_pembelian", "class" => "form-control"],
-								"option" => [["id" => '1', "text" => "Katalog"], ["id" => '2', "text" => "Non Katalog"]],
+								"option" => [["id" => '1', "text" => "E-Purchasing"], ["id" => '2', "text" => "PL"]],
 							]) ?>
 							
     					</div>
