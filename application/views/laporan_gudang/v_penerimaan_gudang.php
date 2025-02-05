@@ -53,6 +53,13 @@
 										"column"=>["item_id","item_name"]
 								]
 						])?>
+						<?=create_select2(["attr"=>["name"=>"asal_pembelian","id"=>"asal_pembelian","class"=>"form-control"],
+									"option" => [
+										    ["id" => '0', "text" => "Pilih"],
+											["id" => '1', "text" => "E-purchasing"],
+											["id" => '2', "text" => "PL"]
+									],
+							])?>
 					</div>
 					<div class="col-md-6">
 						<?=create_select2(["attr"=>["name"=>"own_id","id"=>"own_id","class"=>"form-control","required"=>true],
@@ -77,6 +84,7 @@
 						</div>
 						<?=create_inputDaterange("tanggal",["locale"=>["format"=>"YYYY-MM-DD","separator"=>"/"]])?>
 					</div>
+					
 				</div>
 			<div class="box-footer">
 				<button class="btn btn-primary" type="submit" onclick="$('#formlaporan').submit()">Tampilkan</button>
