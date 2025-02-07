@@ -135,6 +135,7 @@ class M_receiving extends CI_Model {
 					"transfer_by" => "trim|integer",
 					"no_transaksi" => "trim",
 					"grand_total" => "trim|numeric",
+					"asal_pembelian" => "trim|integer"
 				];
 		return $data;
 	}
