@@ -513,9 +513,9 @@ class Sale extends MY_Generator
 		$this->db->where(["sale_id" => $input["sale_id"]])->update("farmasi.sale", $input);
 
 		//BEFORE DELETE
-		/* $this->curls->send_log_stock("POST","trigger_sale/before_delete",[
+		$this->curls->send_log_stock("POST","trigger_sale/before_delete",[
 			"sale_id"	=> $input["sale_id"]
-		]); */
+		]);
 		$this->db->where(["sale_id" => $input["sale_id"]])->delete("farmasi.sale_detail");
 		$this->db->insert_batch("farmasi.sale_detail", $detail);
 		$err = $this->db->error();
